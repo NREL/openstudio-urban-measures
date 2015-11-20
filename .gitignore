@@ -1,0 +1,11 @@
+run/
+.DS_Store
+.idea
+.ruby-version
+.bundle
+~$*
+*.pem
+aws.log
+Gemfile.lock
+faraday.log
+workflow/data_point
