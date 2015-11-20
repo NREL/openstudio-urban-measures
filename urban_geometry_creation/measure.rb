@@ -1,0 +1,295 @@
+# see the URL below for information on how to write OpenStudio measures
+# http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
+
+require 'json'
+
+# start the measure
+class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
+
+  # human readable name
+  def name
+    return "UrbanGeometryCreation"
+  end
+
+  # human readable description
+  def description
+    return "This measure reads a city.json file and creates geometry for either 1 building in the dataset or all of them."
+  end
+
+  # human readable description of modeling approach
+  def modeler_description
+    return ""
+  end
+  
+  def point_to_xy(point)
+    md = /\[(.*),(.*)\]/.match(point[@point_symbol])
+    result = [md[1].to_f, md[2].to_f]
+    return result
+  end
+  
+  def create_building(fid, building, space_per_building, model)
+    
+    surf_elev_m	= building[:surf_elev_m].to_f
+    roof_elev_m	= building[:roof_elev_m].to_f
+    num_story = building[:num_story].to_i
+    floor_to_floor_height = 3.65 # assume 12 ft
+    
+    if surf_elev_m == 0 and roof_elev_m == 0
+      surf_elev_m = nil
+      roof_elev_m = nil
+    end
+    
+    if roof_elev_m == 0 and roof_elev_m < surf_elev_m
+      roof_elev_m = nil
+    end
+    
+    if num_story == 0
+      num_story = nil 
+    end
+    
+    if surf_elev_m and roof_elev_m and num_story
+      floor_to_floor_height = (roof_elev_m - surf_elev_m) / num_story
+    elsif surf_elev_m and roof_elev_m.nil? and num_story
+      roof_elev_m = surf_elev_m + num_story*floor_to_floor_height
+    elsif surf_elev_m and roof_elev_m and num_story.nil?
+      num_story = ((roof_elev_m-surf_elev_m) / floor_to_floor_height).to_i
+      num_story = 1 if num_story < 1 
+    elsif surf_elev_m.nil? and roof_elev_m and num_story
+      surf_elev_m = roof_elev_m - num_story*floor_to_floor_height
+    elsif surf_elev_m.nil? and roof_elev_m.nil? and num_story
+      surf_elev_m = 0
+      roof_elev_m = num_story*floor_to_floor_height
+    else
+      @runner.registerWarning("Insufficient elevation information for building #{fid}")
+      return []
+    end
+    
+    if floor_to_floor_height < 2.5 # 8 ft
+      @runner.registerWarning("Building #{fid}, surf_elev_m = #{surf_elev_m}, roof_elev_m = #{roof_elev_m}, num_story = #{num_story}, floor_to_floor_height = #{floor_to_floor_height}")
+    end
+    
+    # zero out surface elevation here if desired
+    surf_elev_m = 0
+
+    floor_print = OpenStudio::Point3dVector.new
+    building[:points].each do |point|
+      val = point_to_xy(point)
+      floor_print << OpenStudio::Point3d.new(val[0].to_f - @min_x, val[1].to_f - @min_y, surf_elev_m)
+    end
+    
+    if floor_print.size < 3
+      @runner.registerWarning("Cannot create footprint for building #{fid}, fewer than 3 points")
+      return []
+    end
+    
+    floor_print = OpenStudio::removeCollinear(floor_print)
+    normal = OpenStudio::getOutwardNormal(floor_print)
+    if normal.empty?
+      @runner.registerWarning("Cannot create footprint for building #{fid}, cannot compute outward normal")
+      return []
+    elsif normal.get.z > 0
+      floor_print = OpenStudio::reverse(floor_print)
+      @runner.registerWarning("Reversing floor print for building #{fid}")
+    end
+    
+    if space_per_building
+      return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+    else
+      return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+    end
+    
+  end
+  
+  def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+
+    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height*num_story, model)
+    if space.empty?
+      @runner.registerWarning("Cannot create footprint for building #{fid}")
+      return []
+    end
+    
+    name = "Bldg #{fid}"
+    space.get.setName(name)
+    
+    thermal_zone = OpenStudio::Model::ThermalZone.new(model)
+    thermal_zone.setName(name + " ThermalZone")
+    space.get.setThermalZone(thermal_zone)
+    
+    if num_story > 1
+      area = space.get.floorArea * num_story
+      #thermal_zone.setFloorArea(area) # DLM: doesn't work 
+    end
+    
+    return [space.get]
+  end
+
+  def create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+    
+    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height, model)
+    if space.empty?
+      @runner.registerWarning("Cannot create footprint for building #{fid}")
+      return []
+    end
+    
+    name = "Bldg #{fid} Floor 1"
+    space.get.setName(name)
+    
+    thermal_zone = OpenStudio::Model::ThermalZone.new(model)
+    thermal_zone.setName(name + " ThermalZone")
+    space.get.setThermalZone(thermal_zone)
+    
+    result = [space.get]
+    
+    # create higher floors
+    (2..num_story).each do |floor|
+      name = "Bldg #{fid} Floor #{floor}"
+      
+      new_space = space.get.clone(model).to_Space.get
+      new_space.setZOrigin((floor-1) * floor_to_floor_height)
+      new_space.setName(name)
+      
+      thermal_zone = OpenStudio::Model::ThermalZone.new(model)
+      thermal_zone.setName(name + " ThermalZone")
+      new_space.setThermalZone(thermal_zone)
+      
+      result << new_space
+    end  
+    return result
+  end
+
+  def add_windows(model)
+    model.getSurfaces.each do |surface|
+      if surface.surfaceType == 'Wall' and surface.outsideBoundaryCondition == 'Outdoors'
+        surface.setWindowToWallRatio(0.3)
+      end
+    end
+  end
+
+  # define the arguments that the user will input
+  def arguments(model)
+    args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    # path to the city.json file
+    city_json_path = OpenStudio::Ruleset::OSArgument.makePathArgument("city_json_path", true, "json", true)
+    city_json_path.setDisplayName("City JSON Path")
+    city_json_path.setDescription("Path to city.json.")
+    args << city_json_path
+    
+    # the id of the building to create
+    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
+    building_id.setDisplayName("Building ID")
+    building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
+    args << building_id
+
+    return args
+  end
+
+  # define what happens when the measure is run
+  def run(model, runner, user_arguments)
+    super(model, runner, user_arguments)
+
+    # use the built-in error checking
+    if !runner.validateUserArguments(arguments(model), user_arguments)
+      return false
+    end
+
+    # assign the user inputs to variables
+    city_json_path = runner.getStringArgumentValue("city_json_path", user_arguments)
+    building_id = runner.getStringArgumentValue("building_id", user_arguments)
+    
+    # instance variables
+    @runner = runner
+    @point_symbol = :point_xy_2913
+    @min_x = Float::MAX 
+    @min_y = Float::MAX 
+    
+    # read json
+    buildings = {}
+    File.open(city_json_path, 'r') do |file|
+      buildings = JSON.parse(file.read, {:symbolize_names => true})
+    end
+    
+    if buildings.length == 0
+      runner.registerError("No buildings found in #{city_json_path}")
+      return false
+    end
+    runner.registerInfo("#{buildings.length} buildings found")
+    
+    # find min and max x coordinate
+    buildings.each_value do |building|
+      building[:points].each do |point|
+        val = point_to_xy(point)
+        @min_x = val[0].to_f if val[0].to_f < @min_x
+        @min_y = val[1].to_f if val[1].to_f < @min_y
+      end
+    end
+    runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
+    
+    # creating buildings
+    if (building_id == "*All*")
+    
+      num_bldgs = 0
+      max_bldgs = Float::INFINITY
+      max_bldgs = 10
+      
+      # make all buildings
+      buildings.each_pair do |fid, building|
+        if num_bldgs >= max_bldgs 
+          next
+        end
+        if !/Commercial/.match(building[:bldg_use])
+          next
+        end
+        create_building(fid, building, true, model)
+        num_bldgs += 1
+      end
+      
+    else
+      
+      # make requested building
+      building = buildings[building_id.intern]
+      
+      if building.nil?
+        runner.registerError("Cannot find building #{building_id}")
+        return
+      end
+      
+      create_building(building_id, building, false, model)
+      
+    end
+
+    # match surfaces
+    runner.registerInfo("matching surfaces")
+    spaces = OpenStudio::Model::SpaceVector.new
+    model.getSpaces.each do |space|
+      spaces << space
+    end
+    OpenStudio::Model.intersectSurfaces(spaces)
+    OpenStudio::Model.matchSurfaces(spaces)
+
+    runner.registerInfo("changing adjacent surfaces to adiabatic")
+    model.getSurfaces.each do |surface|
+      adjacent_surface = surface.adjacentSurface
+      if !adjacent_surface.empty?
+        surface_construction = surface.construction
+        if !surface_construction.empty?
+          surface.setConstruction(surface_construction.get)
+        end
+        surface.setOutsideBoundaryCondition('Adiabatic')
+        
+        adjacent_surface_construction = adjacent_surface.get.construction
+        if !adjacent_surface_construction.empty?
+          adjacent_surface.get.setConstruction(adjacent_surface_construction.get)
+        end
+        adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
+      end
+    end
+
+    return true
+
+  end
+  
+end
+
+# register the measure to be used by the application
+UrbanGeometryCreation.new.registerWithApplication
