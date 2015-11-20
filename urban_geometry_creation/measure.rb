@@ -73,6 +73,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     floor_print = OpenStudio::Point3dVector.new
     building[:points].each do |point|
+      if point[:multi_part_plygn_index] != 1
+        @runner.registerWarning("Cannot create footprint for building #{fid}, contains multi polygon")
+        return []
+      end
+      if point[:plygn_index] != 1
+        @runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
+        return []
+      end
+      
       val = point_to_xy(point)
       floor_print << OpenStudio::Point3d.new(val[0].to_f - @min_x, val[1].to_f - @min_y, surf_elev_m)
     end
@@ -118,6 +127,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if num_story > 1
       area = space.get.floorArea * num_story
       #thermal_zone.setFloorArea(area) # DLM: doesn't work 
+      thermal_zone.setDouble(5,area) 
+      
+      volume = area*floor_to_floor_height*num_story
+      thermal_zone.setVolume(volume)
     end
     
     return [space.get]
@@ -230,7 +243,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
       num_bldgs = 0
       max_bldgs = Float::INFINITY
-      max_bldgs = 10
+      #max_bldgs = 10
       
       # make all buildings
       buildings.each_pair do |fid, building|
@@ -240,9 +253,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         if !/Commercial/.match(building[:bldg_use])
           next
         end
-        create_building(fid, building, true, model)
-        num_bldgs += 1
+        
+        spaces = create_building(fid, building, true, model)
+        if !spaces.empty?
+          num_bldgs += 1
+        end
+        
+        GC.start
       end
+      
+      runner.registerInfo("Created #{num_bldgs} buildings")
       
     else
       
@@ -251,10 +271,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       
       if building.nil?
         runner.registerError("Cannot find building #{building_id}")
-        return
+        return false
       end
       
-      create_building(building_id, building, false, model)
+      spaces = create_building(building_id, building, false, model)
+      if spaces.empty?
+        runner.registerError("Failed to create spaces for building #{building_id}")
+        return false
+      end
+      
+      # TODO: add surrounding buildings
       
     end
 
