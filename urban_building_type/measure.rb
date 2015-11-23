@@ -100,8 +100,11 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     when "Other"
       rendering_color.setRGB(0, 0, 0)          
     else
-      @runner.registerError("Unknown space use #{space_use}")
-      return false
+      @runner.registerWarning("Unknown space use #{space_type_name}")
+      return true
+      
+      #@runner.registerError("Unknown space use #{space_type_name}")
+      #return false
     end
     
     return true
@@ -128,6 +131,8 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
+    
+    @runner = runner
 
     # use the built-in error checking
     if !runner.validateUserArguments(arguments(model), user_arguments)

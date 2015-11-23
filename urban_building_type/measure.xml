@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>bbce5c82-3fa6-4cec-b71f-77622e169a97</version_id>
+  <version_id>3f9c233f-05f3-4674-b07f-81f2ff672439</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -79,7 +79,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E1D92DA1</checksum>
+      <checksum>1233AFE3</checksum>
     </file>
   </files>
 </measure>
