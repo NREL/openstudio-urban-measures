@@ -21,6 +21,26 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return ""
   end
   
+  # define the arguments that the user will input
+  def arguments(model)
+    args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    # path to the city.json file
+    #city_json_path = OpenStudio::Ruleset::OSArgument.makePathArgument("city_json_path", true, "json", true)
+    city_json_path = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_json_path", true)
+    city_json_path.setDisplayName("City JSON Path")
+    city_json_path.setDescription("Path to city.json.")
+    args << city_json_path
+    
+    # the id of the building to create
+    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
+    building_id.setDisplayName("Building ID")
+    building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
+    args << building_id
+
+    return args
+  end
+  
   def point_to_xy(point)
     md = /\[(.*),(.*)\]/.match(point[@point_symbol])
     result = [md[1].to_f, md[2].to_f]
@@ -29,6 +49,40 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       result[1] = 0.3048*result[1]
     end
     return result
+  end
+  
+  def fix_space_use(space_use, building)
+    units_res = building[:units_res]
+    if space_use == "Multi Family Residential"
+      if units_res
+        if units_res.to_i <= 4
+          space_use= "Multifamily (2 to 4 units)"
+        else
+          space_use= "Multifamily (5 or more units)"
+        end
+      else
+        # TODO: check number of floors or area or something
+        space_use= "Multifamily (2 to 4 units)"
+      end
+    end
+    return space_use
+  end
+  
+  def create_space_type(bldg_use, space_use, model)
+    
+    # check if we already have this space type
+    model.getSpaceTypes.each do |s|
+      if s.name.get == space_use
+        return s
+      end
+    end
+    
+    space_type = OpenStudio::Model::SpaceType.new(model)
+    space_type.setName(space_use)
+    space_type.setStandardsBuildingType(bldg_use)
+    space_type.setStandardsSpaceType(space_use)
+      
+    return space_type
   end
   
   def create_building(fid, building, space_per_building, model)
@@ -105,15 +159,26 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @runner.registerWarning("Reversing floor print for building #{fid}")
     end
     
+    # get the building use and fix any issues
+    bldg_use = fix_space_use(building[:bldg_use], building)
+    building_space_type = create_space_type(bldg_use, bldg_use, model)
+    model.getBuilding.setSpaceType(building_space_type)
+    
+    # TODO: get space type by floor for mixed use
+    space_types = []
+    (1..num_story).each do |floor|
+      space_types << create_space_type(bldg_use, bldg_use, model)
+    end
+      
     if space_per_building
-      return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+      return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     else
-      return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+      return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     end
     
   end
   
-  def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+  def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
 
     space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height*num_story, model)
     if space.empty?
@@ -128,6 +193,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     thermal_zone.setName(name + " ThermalZone")
     space.get.setThermalZone(thermal_zone)
     
+    # no floor by floor space type in create_space_per_building
+    
     if num_story > 1
       area = space.get.floorArea * num_story
       #thermal_zone.setFloorArea(area) # DLM: doesn't work 
@@ -140,7 +207,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return [space.get]
   end
 
-  def create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, model)
+  def create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     
     space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height, model)
     if space.empty?
@@ -150,6 +217,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     name = "Bldg #{fid} Floor 1"
     space.get.setName(name)
+    space.get.setSpaceType(space_types[0])
     
     thermal_zone = OpenStudio::Model::ThermalZone.new(model)
     thermal_zone.setName(name + " ThermalZone")
@@ -164,6 +232,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       new_space = space.get.clone(model).to_Space.get
       new_space.setZOrigin((floor-1) * floor_to_floor_height)
       new_space.setName(name)
+      space.get.setSpaceType(space_types[floor-1])
       
       thermal_zone = OpenStudio::Model::ThermalZone.new(model)
       thermal_zone.setName(name + " ThermalZone")
@@ -180,25 +249,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         surface.setWindowToWallRatio(0.3)
       end
     end
-  end
-
-  # define the arguments that the user will input
-  def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
-    
-    # path to the city.json file
-    city_json_path = OpenStudio::Ruleset::OSArgument.makePathArgument("city_json_path", true, "json", true)
-    city_json_path.setDisplayName("City JSON Path")
-    city_json_path.setDescription("Path to city.json.")
-    args << city_json_path
-    
-    # the id of the building to create
-    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
-    building_id.setDisplayName("Building ID")
-    building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
-    args << building_id
-
-    return args
   end
 
   # define what happens when the measure is run

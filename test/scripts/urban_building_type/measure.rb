@@ -1,6 +1,18 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
+module OpenStudio
+  module Model
+    class RenderingColor
+      def setRGB(r, g, b)
+        self.setRenderingRedValue(r)
+        self.setRenderingGreenValue(g)
+        self.setRenderingBlueValue(b)
+      end
+    end
+  end
+end
+
 # start the measure
 class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 
@@ -23,13 +35,94 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
 
-    # the name of the space to add to the model
-    space_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("space_name", true)
-    space_name.setDisplayName("New space name")
-    space_name.setDescription("This name will be used as the name of the new space.")
-    args << space_name
-
     return args
+  end
+  
+  def apply_space_type(space_type)
+    
+    space_type_name = space_type.name.get
+    
+    rendering_color = space_type.renderingColor
+    if rendering_color.empty?
+      rendering_color = OpenStudio::Model::RenderingColor.new(space_type.model)
+      space_type.setRenderingColor(rendering_color)
+    else
+      rendering_color = rendering_color.get
+    end
+    
+    case space_type_name
+    when "Single-Family"
+      rendering_color.setRGB(0, 0, 0)
+    when "Multifamily (2 to 4 units)"
+      rendering_color.setRGB(0, 0, 0)
+    when "Multifamily (5 or more units)"
+      rendering_color.setRGB(0, 0, 0)
+    when "Mobile Home"
+      rendering_color.setRGB(0, 0, 0)
+    when "Vacant"
+      rendering_color.setRGB(0, 0, 0)
+    when "Office"
+      rendering_color.setRGB(0, 0, 0)
+    when "Laboratory"
+      rendering_color.setRGB(0, 0, 0)
+    when "Nonrefrigerated warehouse"
+      rendering_color.setRGB(0, 0, 0)
+    when "Food sales"
+      rendering_color.setRGB(0, 0, 0)
+    when "Public order and safety"
+      rendering_color.setRGB(0, 0, 0)
+    when "Outpatient health care"
+      rendering_color.setRGB(0, 0, 0)
+    when "Refrigerated warehouse"
+      rendering_color.setRGB(0, 0, 0)
+    when "Religious worship"
+      rendering_color.setRGB(0, 0, 0)
+    when "Public assembly"
+      rendering_color.setRGB(0, 0, 0)
+    when "Education"
+      rendering_color.setRGB(0, 0, 0)
+    when "Food service"
+      rendering_color.setRGB(0, 0, 0)
+    when "Inpatient health care"
+      rendering_color.setRGB(0, 0, 0)
+    when "Nursing"
+      rendering_color.setRGB(0, 0, 0)
+    when "Lodging"
+      rendering_color.setRGB(0, 0, 0)
+    when "Strip shopping mall"
+      rendering_color.setRGB(0, 0, 0)    
+    when "Enclosed mall"
+      rendering_color.setRGB(0, 0, 0)
+    when "Retail other than mall"
+      rendering_color.setRGB(0, 0, 0)
+    when "Service"
+      rendering_color.setRGB(0, 0, 0)
+    when "Other"
+      rendering_color.setRGB(0, 0, 0)          
+    else
+      @runner.registerError("Unknown space use #{space_use}")
+      return false
+    end
+    
+    return true
+  end
+  
+  def apply_hvac(thermal_zone)
+  
+    cooling_schedule = OpenStudio::Model::ScheduleConstant.new(thermal_zone.model)
+    cooling_schedule.setValue(25)
+    
+    heating_schedule = OpenStudio::Model::ScheduleConstant.new(thermal_zone.model)
+    heating_schedule.setValue(20)
+    
+    thermostat = OpenStudio::Model::ThermostatSetpointDualSetpoint.new(thermal_zone.model)
+    thermostat.setCoolingSetpointTemperatureSchedule(cooling_schedule)
+    thermostat.setHeatingSetpointTemperatureSchedule(heating_schedule)
+
+    thermal_zone.setThermostatSetpointDualSetpoint(thermostat)
+    thermal_zone.setUseIdealAirLoads(true)
+    
+    return true
   end
 
   # define what happens when the measure is run
@@ -40,31 +133,17 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
-    # assign the user inputs to variables
-    space_name = runner.getStringArgumentValue("space_name", user_arguments)
-
-    # check the space_name for reasonableness
-    if space_name.empty?
-      runner.registerError("Empty space name was entered.")
-      return false
+    
+    result = true
+    model.getSpaceTypes.each do |space_type|
+      result = result && apply_space_type(space_type)
     end
 
-    # report initial condition of model
-    runner.registerInitialCondition("The building started with #{model.getSpaces.size} spaces.")
+    model.getThermalZones.each do |thermal_zone|
+      result = result && apply_hvac(thermal_zone)
+    end
 
-    # add a new space to the model
-    new_space = OpenStudio::Model::Space.new(model)
-    new_space.setName(space_name)
-
-
-    # echo the new space's name back to the user
-    runner.registerInfo("Space #{new_space.name} was added.")
-
-    # report final condition of model
-    runner.registerFinalCondition("The building finished with #{model.getSpaces.size} spaces.")
-
-    return true
+    return result
 
   end
   

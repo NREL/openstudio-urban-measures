@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>d95ddc94-9d2f-415d-8db2-260dec5614dd</version_id>
+  <version_id>d580f79c-c8ed-40d7-82ca-c6c9db934caa</version_id>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -13,7 +13,7 @@
       <name>city_json_path</name>
       <display_name>City JSON Path</display_name>
       <description>Path to city.json.</description>
-      <type>Path</type>
+      <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
     </argument>
@@ -64,17 +64,6 @@
   </attributes>
   <files>
     <file>
-      <version>
-        <software_program>OpenStudio</software_program>
-        <identifier>1.9.0</identifier>
-        <min_compatible>1.9.0</min_compatible>
-      </version>
-      <filename>measure.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>script</usage_type>
-      <checksum>0A1522F9</checksum>
-    </file>
-    <file>
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
@@ -87,10 +76,15 @@
       <checksum>D9279F89</checksum>
     </file>
     <file>
-      <filename>out.txt</filename>
-      <filetype>txt</filetype>
-      <usage_type>test</usage_type>
-      <checksum>7FC7BBCC</checksum>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.9.0</identifier>
+        <min_compatible>1.9.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>383B1F5E</checksum>
     </file>
   </files>
 </measure>

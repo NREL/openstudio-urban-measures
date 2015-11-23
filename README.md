@@ -1,6 +1,35 @@
 # OpenStudio Urban Measures
 
-## 
+This repository contains OpenStudio measures for urban modelling.  The repository is built around a data format exported by NREL's GIS department, https://github.nrel.gov/jabbottw/City_Building_Model.  Exports from GIS are in CSV format, a script in this repository, city_csv_to_json.rb, is used to translate these exports into a JSON format.  Measures in this repository can take this format and create simulation ready building models. The urban_geometry_creation measure creates geometry for a single building in the dataset, it assigns stub space types with names that match CBECS PBA codes for commercial buildings or RECS Structure codes for residential buildings.  Mixed-use buildings may have difference space types per floor, the primary building space type will be assigned at the building level.  The urban_building_type measure assigns constructions, space loads, and HVAC systems according to the CBECS PBA codes.  Finally, the urban_dencity_reports measure pushes information about the building to a DENCity database.
 
-1. Run city_csv_to_json on city data
-2. Run measure
+For reference the RECS Structure codes are:
+
+* Single-Family
+* Multifamily (2 to 4 units)
+* Multifamily (5 or more units)
+* Mobile Home
+
+The CBECS PBA codes are:
+
+* Vacant
+* Office
+* Laboratory
+* Nonrefrigerated warehouse
+* Food sales
+* Public order and safety
+* Outpatient health care
+* Refrigerated warehouse
+* Religious worship
+* Public assembly
+* Education
+* Food service
+* Inpatient health care
+* Nursing
+* Lodging
+* Strip shopping mall
+* Enclosed mall
+* Retail other than mall
+* Service
+* Other
+
+
