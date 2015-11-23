@@ -1,0 +1,188 @@
+[openstudio.LocalLibraryController] <-2> Creating LocalLibraryController with base app 0030F75C
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/openstudio-urban-measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/.git
+[utilities.bcl.BCLXML] <2> 'E:/openstudio-urban-measures/.git/measure.xml' does not exist
+[utilities.bcl.BCLMeasure] <2> 'E:/openstudio-urban-measures/.git' is not a measure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/urban_geometry_creation
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/openstudio-urban-measures/urban_geometry_creation
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/openstudio-urban-measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/.git
+[utilities.bcl.BCLXML] <2> 'E:/openstudio-urban-measures/.git/measure.xml' does not exist
+[utilities.bcl.BCLMeasure] <2> 'E:/openstudio-urban-measures/.git' is not a measure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/urban_geometry_creation
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/openstudio-urban-measures/urban_geometry_creation
+[openstudio.model.YearDescription] <-1> 'UseWeatherFile' is not yet a supported option for YearDescription
+[utilities.idd.IddField] <-1> Field 'Column Separator' of object 'OutputControl:Table:Style' is both required and has default value, setting required = false.
+[openstudio.openstudio_lib.MainRightColumnController] <-2> Setting new edit widget: 104598D8
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/CalibrationReports
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/RadianceMeasure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReplaceModel
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/ReportRequest
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/test/OpenStudio 1.9.0/share/openstudio-1.9.0/pat/Measures/StandardReports
+[utilities.bcl.BCLMeasure] <-2> Loading measures in path: E:/openstudio-urban-measures
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/.git
+[utilities.bcl.BCLXML] <2> 'E:/openstudio-urban-measures/.git/measure.xml' does not exist
+[utilities.bcl.BCLMeasure] <2> 'E:/openstudio-urban-measures/.git' is not a measure
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/urban_building_type
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/openstudio-urban-measures/urban_building_type
+[utilities.bcl.BCLMeasure] <-2> Attempting to load measure: E:/openstudio-urban-measures/urban_geometry_creation
+[utilities.bcl.BCLMeasure] <-2> Success loading measure: E:/openstudio-urban-measures/urban_geometry_creation
+[openstudio.runmanager.Workflow] <-2> creating workflow
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {62c2b3a3-1974-47ab-8869-5c383a9fbcfb}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {62c2b3a3-1974-47ab-8869-5c383a9fbcfb}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {62c2b3a3-1974-47ab-8869-5c383a9fbcfb}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {b7697b72-b15c-4add-be9b-62619d7cde50}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {b7697b72-b15c-4add-be9b-62619d7cde50}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {b7697b72-b15c-4add-be9b-62619d7cde50}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {b234c62c-5288-4de7-a9f3-70668781c5f2}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {b234c62c-5288-4de7-a9f3-70668781c5f2}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {b234c62c-5288-4de7-a9f3-70668781c5f2}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {c6bf5ee4-6384-41e2-842e-f9cbe57321b6}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {c6bf5ee4-6384-41e2-842e-f9cbe57321b6}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {c6bf5ee4-6384-41e2-842e-f9cbe57321b6}
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[saveModel] <-2> Saved model to 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/in.osm'
+[saveModelTempDir] <-2> Copying C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources to E:/openstudio-urban-measures/test
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources' to 'E:/openstudio-urban-measures/test'
+[copyDir] <-1> Creating directory named = 'test' in parentDstDir = 'E:/openstudio-urban-measures'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files' to 'E:/openstudio-urban-measures/test/files'
+[copyDir] <-1> Creating directory named = 'files' in parentDstDir = 'E:/openstudio-urban-measures/test'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/files' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run' to 'E:/openstudio-urban-measures/test/run'
+[copyDir] <-1> Creating directory named = 'run' in parentDstDir = 'E:/openstudio-urban-measures/test'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/run' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts' to 'E:/openstudio-urban-measures/test/scripts'
+[copyDir] <-1> Creating directory named = 'scripts' in parentDstDir = 'E:/openstudio-urban-measures/test'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/scripts' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts'
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[saveModel] <-2> Saved model to 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/in.osm'
+[saveModelTempDir] <-2> Copying C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources to E:/openstudio-urban-measures/test
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources' to 'E:/openstudio-urban-measures/test'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/files' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/run' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/scripts' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files' to 'E:/openstudio-urban-measures/test/files'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/files' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run' to 'E:/openstudio-urban-measures/test/run'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/run' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts' to 'E:/openstudio-urban-measures/test/scripts'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/scripts' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts'
+[openstudio.completePathToFile] <-1> Path 'e:/test/OpenStudio 1.9.0/*.osm' could not be resolved to an existing file. Returning an empty path.
+[openstudio.completePathToFile] <-1> Path 'e:/test/OpenStudio 1.9.0/*.osm' could not be resolved to an existing file. Returning an empty path.
+[openstudio.MeasureManager] <-1> Loaded 2 arguments for measure UrbanGeometryCreation({5ab85d6b-c9af-4361-8ab9-613ee99a5666} version: {d95ddc94-9d2f-415d-8db2-260dec5614dd})
+[openstudio.completePathToFile] <-1> Path 'e:/test/OpenStudio 1.9.0/*.osm' could not be resolved to an existing file. Returning an empty path.
+[openstudio.completePathToFile] <-1> Path 'e:/test/OpenStudio 1.9.0/*.osm' could not be resolved to an existing file. Returning an empty path.
+[openstudio.MeasureManager] <-1> Loaded 1 arguments for measure Urban Building Type({df81b2ab-8dca-484f-9016-8e6fe3e13cb6} version: {a39fecb3-fbea-4d37-a65a-1fa9dc2d47a0})
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {b7697b72-b15c-4add-be9b-62619d7cde50} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {7ed65b63-d5de-4e31-bd01-a6b1c8d54fa9} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {b234c62c-5288-4de7-a9f3-70668781c5f2} 0
+[openstudio.runmanager.RunManager] <-1> Time to load for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse tools for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse params for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-1> Time to parse files for uuid: {c6bf5ee4-6384-41e2-842e-f9cbe57321b6} 0
+[openstudio.runmanager.RunManager] <-2> WorkflowFound {9babe6d4-5b3a-43aa-9095-8dad102931a2} with uuid {62c2b3a3-1974-47ab-8869-5c383a9fbcfb} deleting
+[openstudio.runmanager.Workflow] <-2> creating workflow
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {ea7aa71d-4e63-480f-9a37-577b4410c073}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {ea7aa71d-4e63-480f-9a37-577b4410c073}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {ea7aa71d-4e63-480f-9a37-577b4410c073}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {f61e79ae-895e-4250-a7ea-db5c63c7121d}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {f61e79ae-895e-4250-a7ea-db5c63c7121d}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {f61e79ae-895e-4250-a7ea-db5c63c7121d}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {4c3df2c1-f8cb-45f7-8f2b-1659d62be376}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {4c3df2c1-f8cb-45f7-8f2b-1659d62be376}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {4c3df2c1-f8cb-45f7-8f2b-1659d62be376}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {b58d39be-4e32-47b0-ad80-d5e118c27579}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {b58d39be-4e32-47b0-ad80-d5e118c27579}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {b58d39be-4e32-47b0-ad80-d5e118c27579}
+[openstudio.runmanager.Job_Impl] <-2> Returning previously saved outputfiles
+[openstudio.runmanager.RunManager] <-2> (C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run.db) Persisting job status for {2377554e-84af-4b73-b36c-db06bab93e32}
+[openstudio.runmanager.RunManager] <-2> Deleted previous data job status for {2377554e-84af-4b73-b36c-db06bab93e32}
+[openstudio.runmanager.RunManager] <-2> Not persisting, job has not actually finished {2377554e-84af-4b73-b36c-db06bab93e32}
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[openstudio.project.ProjectDatabase] <-1> DB Message: cannot start a transaction within a transaction Unable to begin transaction
+[saveModel] <-2> Saved model to 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/in.osm'
+[saveModelTempDir] <-2> Copying C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources to E:/openstudio-urban-measures/test
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources' to 'E:/openstudio-urban-measures/test'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/files' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/run' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/run'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/scripts' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/scripts'
+[copyDir] <-1> copyDir 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files' to 'E:/openstudio-urban-measures/test/files'
+[synchDirStructures] <-1> Synching destination 'E:/openstudio-urban-measures/test/files' with source 'C:/Users/dmacumbe/AppData/Local/Temp/1/OpenStudio.D12808/resources/files'

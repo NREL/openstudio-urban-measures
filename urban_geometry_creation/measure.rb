@@ -24,6 +24,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def point_to_xy(point)
     md = /\[(.*),(.*)\]/.match(point[@point_symbol])
     result = [md[1].to_f, md[2].to_f]
+    if @point_symbol == :point_xy_2913
+      result[0] = 0.3048*result[0]
+      result[1] = 0.3048*result[1]
+    end
     return result
   end
   
@@ -65,7 +69,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
     
     if floor_to_floor_height < 2.5 # 8 ft
-      @runner.registerWarning("Building #{fid}, surf_elev_m = #{surf_elev_m}, roof_elev_m = #{roof_elev_m}, num_story = #{num_story}, floor_to_floor_height = #{floor_to_floor_height}")
+      @runner.registerWarning("Floor to floor height is smaller than expected for building #{fid}, surf_elev_m = #{surf_elev_m}, roof_elev_m = #{roof_elev_m}, num_story = #{num_story}, floor_to_floor_height = #{floor_to_floor_height}")
     end
     
     # zero out surface elevation here if desired
@@ -210,9 +214,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     city_json_path = runner.getStringArgumentValue("city_json_path", user_arguments)
     building_id = runner.getStringArgumentValue("building_id", user_arguments)
     
+    # point data available in the following formats
+    # Point_xy_2913 (NAD83(HARN) / Oregon North (ft)) (local projection)
+    # Point_xy_96703 (Equal Area Projection for the United States)
+    # Point_xy_4326 (WGS 84) (longitude, lattitude (deg))
+    # Point_xy_26910 (NAD 83 UTM Zone 10 )
+
     # instance variables
     @runner = runner
-    @point_symbol = :point_xy_2913
+    @point_symbol = :point_xy_26910
     @min_x = Float::MAX 
     @min_y = Float::MAX 
     
@@ -250,9 +260,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         if num_bldgs >= max_bldgs 
           next
         end
-        if !/Commercial/.match(building[:bldg_use])
-          next
-        end
+        #if !/Commercial/.match(building[:bldg_use])
+        #  next
+        #end
         
         spaces = create_building(fid, building, true, model)
         if !spaces.empty?
