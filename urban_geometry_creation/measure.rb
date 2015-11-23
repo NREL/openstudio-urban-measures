@@ -84,7 +84,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       
     return space_type
   end
-  
+
   def create_building(fid, building, space_per_building, model)
     
     surf_elev_m	= building[:surf_elev_m].to_f
@@ -163,6 +163,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     bldg_use = fix_space_use(building[:bldg_use], building)
     building_space_type = create_space_type(bldg_use, bldg_use, model)
     model.getBuilding.setSpaceType(building_space_type)
+    #model.getBuilding.setNominalFloortoFloorHeight
+    #model.getBuilding.setStandardsNumberOfStories
+    #model.getBuilding.setStandardsNumberOfAboveGroundStories
+    #model.getBuilding.setStandardsNumberOfLivingUnits
+    #model.getBuilding.setNominalFloortoCeilingHeight
+    model.getBuilding.setStandardsBuildingType(bldg_use)
+    model.getBuilding.setRelocatable(false)
     
     # TODO: get space type by floor for mixed use
     space_types = []

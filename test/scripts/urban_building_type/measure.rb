@@ -142,7 +142,34 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     model.getThermalZones.each do |thermal_zone|
       result = result && apply_hvac(thermal_zone)
     end
+    
+    # hack code to get this working
+    translator = OpenStudio::OSVersion::VersionTranslator.new
+    path = OpenStudio::Path.new(File.dirname(__FILE__) + "/resources/MinimalTemplate.osm")
+    minimal_model = translator.loadModel(path).get
 
+    space_type = minimal_model.getBuilding.spaceType.get.clone(model).to_SpaceType.get
+    model.getBuilding.setSpaceType(space_type)
+    
+    default_construction_set = minimal_model.getBuilding.defaultConstructionSet.get.clone(model).to_DefaultConstructionSet.get
+    model.getBuilding.setDefaultConstructionSet(default_construction_set)
+    
+    # have to assign constructions to adiabatic surfaces
+    exterior_wall = default_construction_set.defaultExteriorSurfaceConstructions.get.wallConstruction.get
+    interior_roof = default_construction_set.defaultInteriorSurfaceConstructions.get.roofCeilingConstruction.get
+    interior_floor = default_construction_set.defaultInteriorSurfaceConstructions.get.floorConstruction.get
+    model.getSurfaces.each do |surface|
+      if surface.outsideBoundaryCondition == "Adiabatic"
+        if surface.surfaceType == "Wall" 
+          surface.setConstruction(exterior_wall)
+        elsif surface.surfaceType == "RoofCeiling"
+          surface.setConstruction(interior_roof)
+        elsif surface.surfaceType == "Floor"
+          surface.setConstruction(interior_floor)          
+        end
+      end
+    end
+    
     return result
 
   end
