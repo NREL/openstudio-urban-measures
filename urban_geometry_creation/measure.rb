@@ -53,19 +53,69 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   
   def fix_space_use(space_use, building)
     units_res = building[:units_res]
+    bldg_footprint_m2 = building[:bldg_footprint_m2].to_f
+    
+    if space_use.nil?
+      zone = building[:zone]
+      if zone.nil?
+        if bldg_footprint_m2 > 300 
+          space_use = "Commercial Office"
+        else
+          space_use = "Single Family Residential"
+        end
+      elsif /R/.match(zone)
+        if bldg_footprint_m2 > 300 
+          space_use = "Multi Family Residential"
+        else
+          space_use = "Single Family Residential"
+        end
+      else
+        space_use = "Commercial Office"
+      end
+    end
+    
+    cbecs_space_use = nil
     if space_use == "Multi Family Residential"
       if units_res
         if units_res.to_i <= 4
-          space_use= "Multifamily (2 to 4 units)"
+          cbecs_space_use= "Multifamily (2 to 4 units)"
         else
-          space_use= "Multifamily (5 or more units)"
+          cbecs_space_use= "Multifamily (5 or more units)"
         end
       else
-        # TODO: check number of floors or area or something
-        space_use= "Multifamily (2 to 4 units)"
+        if bldg_footprint_m2 > 800
+          cbecs_space_use= "Multifamily (5 or more units)"
+        else
+          cbecs_space_use= "Multifamily (2 to 4 units)"
+        end
       end
+    elsif space_use == "Single Family Residential"
+      cbecs_space_use= "Single-Family"
+    elsif space_use == "Commercial Grocery"
+      cbecs_space_use = "Food sales"
+    elsif space_use == "Commercial Hotel"
+      cbecs_space_use = "Lodging"
+    elsif space_use == "Commercial Office"
+      cbecs_space_use = "Office"
+    elsif space_use == "Commercial Restaurant"
+      cbecs_space_use = "Food service"
+    elsif space_use == "Commercial Retail"
+      cbecs_space_use = "Retail other than mall"
+    elsif space_use == "Industrial"   
+      cbecs_space_use = "Nonrefrigerated warehouse"
+    elsif space_use == "Institutional"    
+      cbecs_space_use = "Office"      
+    elsif space_use == "Institutional Religious"    
+      cbecs_space_use = "Religious worship"
+    elsif space_use == "Parking"    
+      cbecs_space_use = "Other"
+    elsif space_use == "Vacant"    
+      cbecs_space_use = "Vacant"
+    else
+      raise "Unknown space_use '#{space_use}'"
     end
-    return space_use
+    
+    return cbecs_space_use
   end
   
   def create_space_type(bldg_use, space_use, model)

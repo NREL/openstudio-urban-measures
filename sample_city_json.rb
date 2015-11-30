@@ -20,11 +20,12 @@ buildings.each_value do |building|
   building_ids << building[:bldg_fid]
 end
 
-building_ids = building_ids.slice(0,100)
+#building_ids = building_ids.slice(0,100)
 n = building_ids.length
-weights = Array.new(n, 1.0/n)
+weights = Array.new(n, (1.0/n).round(8))
 
 join_str = "','"
+puts "n = #{n}"
 puts "building_ids = |'#{building_ids.join(join_str)}'|"
 puts "building_ids = ['#{building_ids.join(join_str)}']"
 puts "weights = [#{weights.join(',')}]"
