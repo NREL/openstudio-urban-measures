@@ -186,8 +186,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return []
       end
       if point[:plygn_index] != 1
-        @runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
-        return []
+        #@runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
+        #return []
+        @runner.registerWarning("Ignoring inner polygon for footprint for building #{fid}")
+        next
       end
       
       val = point_to_xy(point)
@@ -231,8 +233,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     elsif create_method == :space_per_floor
       return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-    elsif create_method == :building_shades
-      return create_building_shades(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     end
     
     return nil
@@ -303,24 +303,20 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
-  def create_building_shades(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-
-    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height*num_story, model)
-    if space.empty?
-      @runner.registerWarning("Cannot create footprint for building #{fid}")
-      return []
-    end
+  def convert_to_shading_surface_group(space)
     
-    name = "Bldg #{fid}"
+    name = space.name.to_s
+    model = space.model
     shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
-    shading_group.setName(name)
     
-    space.get.surfaces.each do |surface|
+    space.surfaces.each do |surface|
       shading_surface = OpenStudio::Model::ShadingSurface.new(surface.vertices, model)
       shading_surface.setShadingSurfaceGroup(shading_group)
     end
     
-    space.get.remove
+    space.remove
+    
+    shading_group.setName(name)
     
     return [shading_group]
   end  
@@ -379,6 +375,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
+   
+    # spaces of surrounding buildings
+    intersecting_spaces = []
     
     # creating buildings
     if (building_id == "*All*")
@@ -433,11 +432,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           return false
         end
         
-        spaces = create_building(intersecting_bldg_id, intersecting_building, :building_shades, model)
+        spaces = create_building(intersecting_bldg_id, intersecting_building, :space_per_building, model)
         if spaces.nil? || spaces.empty?
           runner.registerError("Failed to create spaces for intersecting building #{intersecting_bldg_id}")
           return false
         end
+        
+        intersecting_spaces.concat(spaces)
       end
       
     end
@@ -467,6 +468,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         end
         adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
       end
+    end
+    
+    intersecting_spaces.each do |space|
+      convert_to_shading_surface_group(space)
     end
 
     return true

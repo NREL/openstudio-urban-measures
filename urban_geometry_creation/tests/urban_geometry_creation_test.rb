@@ -76,7 +76,8 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     building_id = "142484"
     #building_id = "105868"
     #building_id = "96354"
-
+    #building_id = "193716"
+    
     # get arguments
     arguments = measure.arguments(model)
     argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
