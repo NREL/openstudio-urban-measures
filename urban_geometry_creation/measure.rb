@@ -135,7 +135,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return space_type
   end
 
-  def create_building(fid, building, space_per_building, model)
+  def create_building(fid, building, create_method, model)
     
     surf_elev_m	= building[:surf_elev_m].to_f
     roof_elev_m	= building[:roof_elev_m].to_f
@@ -227,12 +227,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       space_types << create_space_type(bldg_use, bldg_use, model)
     end
       
-    if space_per_building
+    if create_method == :space_per_building
       return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-    else
+    elsif create_method == :space_per_floor
       return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
+    elsif create_method == :building_shades
+      return create_building_shades(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     end
     
+    return nil
   end
   
   def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
@@ -299,6 +302,28 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end  
     return result
   end
+  
+  def create_building_shades(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
+
+    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height*num_story, model)
+    if space.empty?
+      @runner.registerWarning("Cannot create footprint for building #{fid}")
+      return []
+    end
+    
+    name = "Bldg #{fid}"
+    shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
+    shading_group.setName(name)
+    
+    space.get.surfaces.each do |surface|
+      shading_surface = OpenStudio::Model::ShadingSurface.new(surface.vertices, model)
+      shading_surface.setShadingSurfaceGroup(shading_group)
+    end
+    
+    space.get.remove
+    
+    return [shading_group]
+  end  
 
   def add_windows(model)
     model.getSurfaces.each do |surface|
@@ -371,8 +396,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         #  next
         #end
         
-        spaces = create_building(fid, building, true, model)
-        if !spaces.empty?
+        spaces = create_building(fid, building, :space_per_building, model)
+        if !spaces.nil? && !spaces.empty?
           num_bldgs += 1
         end
         
@@ -391,13 +416,29 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return false
       end
       
-      spaces = create_building(building_id, building, false, model)
-      if spaces.empty?
+      spaces = create_building(building_id, building, :space_per_floor, model)
+      if spaces.nil? || spaces.empty?
         runner.registerError("Failed to create spaces for building #{building_id}")
         return false
       end
       
-      # TODO: add surrounding buildings
+      # add surrounding buildings
+      # todo: this should be surrounding_buildings instead
+      intersecting_bldg_ids = building[:intersecting_bldg_fid].gsub('[','').gsub(']','')
+      intersecting_bldg_ids.split(',').each do |intersecting_bldg_id|
+        intersecting_building = buildings[intersecting_bldg_id.strip.intern]
+              
+        if intersecting_building.nil?
+          runner.registerError("Cannot find intersecting building #{intersecting_bldg_id}")
+          return false
+        end
+        
+        spaces = create_building(intersecting_bldg_id, intersecting_building, :building_shades, model)
+        if spaces.nil? || spaces.empty?
+          runner.registerError("Failed to create spaces for intersecting building #{intersecting_bldg_id}")
+          return false
+        end
+      end
       
     end
 

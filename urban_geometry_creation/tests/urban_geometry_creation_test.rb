@@ -74,6 +74,8 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # load the test model
     city_json_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/city.json")
     building_id = "142484"
+    #building_id = "105868"
+    #building_id = "96354"
 
     # get arguments
     arguments = measure.arguments(model)
