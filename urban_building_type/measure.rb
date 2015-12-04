@@ -1,6 +1,12 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
+puts "GEM_PATH =" + ENV["GEM_PATH"]
+puts "Gem.path =" + Gem.path.join(';')
+
+require 'openstudio-standards'
+require 'fileutils'
+
 module OpenStudio
   module Model
     class RenderingColor
@@ -139,6 +145,36 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       return false
     end
     
+    # check building space type to see if we are doing residential or commercial path
+    building = model.getBuilding
+    building_space_type = building.spaceType
+    if building_space_type.empty?
+      runner.registerError("Cannot determine building space type")
+      return false
+    end
+    
+    residential = false
+    
+    building_space_type_name = building_space_type.get.name.get
+    if building_space_type_name == "Single-Family" || 
+       building_space_type_name == "Multifamily (2 to 4 units)"
+       building_space_type_name == "Multifamily (5 or more units)"
+       building_space_type_name == "Mobile Home"
+      residential = true
+    else
+      residential = false
+    end
+    
+    beopt_measures_dir = File.dirname(__FILE__) + "/resources/beopt-measures/"
+    if File.exists?(beopt_measures_dir)
+      FileUtils.rm_rf(beopt_measures_dir)
+    end
+    if residential
+      beopt_measures_zip = OpenStudio::toPath( File.dirname(__FILE__) + "/resources/beopt-measures.zip");
+      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
+      unzip_file.extractAllFiles(OpenStudio::toPath( beopt_measures_dir))
+    end
+    
     result = true
     model.getSpaceTypes.each do |space_type|
       result = result && apply_space_type(space_type)
@@ -148,6 +184,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       result = result && apply_hvac(thermal_zone)
     end
     
+    ####################################################################################################################
     # hack code to get this working
     translator = OpenStudio::OSVersion::VersionTranslator.new
     path = OpenStudio::Path.new(File.dirname(__FILE__) + "/resources/MinimalTemplate.osm")

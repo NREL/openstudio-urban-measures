@@ -32,4 +32,13 @@ The CBECS PBA codes are:
 * Service
 * Other
 
+# Installation
 
+## OpenStudio Standards
+
+1. Check out https://github.com/NREL/openstudio-standards
+2. `cd \openstudio-standards\openstudio-standards`
+3. `bundle install`
+4. `rake build`
+5. `gem install --user-install pkg/openstudio-standards-0.1.0.gem`
+6. Set environment variable GEM_PATH to the user gem directory, e.g. C:\Users\dmacumbe\.gem\ruby\2.0.0

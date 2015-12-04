@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>bbce5c82-3fa6-4cec-b71f-77622e169a97</version_id>
+  <version_id>45c7c50a-2a30-4ffa-9f05-136709e4fa31</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -59,16 +59,16 @@
       <checksum>B1E02AE9</checksum>
     </file>
     <file>
-      <filename>standards_json_goes_here</filename>
-      <filetype></filetype>
-      <usage_type>resource</usage_type>
-      <checksum>00000000</checksum>
-    </file>
-    <file>
       <filename>MinimalTemplate.osm</filename>
       <filetype>osm</filetype>
       <usage_type>resource</usage_type>
       <checksum>C48B2E8F</checksum>
+    </file>
+    <file>
+      <filename>beopt-measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>8C3CD6AB</checksum>
     </file>
     <file>
       <version>
@@ -79,7 +79,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E1D92DA1</checksum>
+      <checksum>3014E0A9</checksum>
     </file>
   </files>
 </measure>

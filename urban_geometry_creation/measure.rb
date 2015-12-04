@@ -314,8 +314,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       shading_surface.setShadingSurfaceGroup(shading_group)
     end
     
-    space.remove
+    thermal_zone = space.thermalZone
+    if !thermal_zone.empty?
+      thermal_zone.get.remove
+    end
     
+    space.remove
+
     shading_group.setName(name)
     
     return [shading_group]

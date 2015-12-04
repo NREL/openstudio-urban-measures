@@ -71,7 +71,7 @@ OS:WeatherFile,
   -105.18,                                !- Longitude {deg}
   -7,                                     !- Time Zone {hr}
   1829,                                   !- Elevation {m}
-  file:files/USA_CO_Golden-NREL.724666_TMY3.epw, !- Url
+  file:///E:/openstudio-urban-measures/test/files/USA_CO_Golden-NREL.724666_TMY3.epw, !- Url
   BDF687C1;                               !- Checksum
 
 OS:RunPeriod,

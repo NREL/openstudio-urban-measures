@@ -53,19 +53,69 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   
   def fix_space_use(space_use, building)
     units_res = building[:units_res]
+    bldg_footprint_m2 = building[:bldg_footprint_m2].to_f
+    
+    if space_use.nil?
+      zone = building[:zone]
+      if zone.nil?
+        if bldg_footprint_m2 > 300 
+          space_use = "Commercial Office"
+        else
+          space_use = "Single Family Residential"
+        end
+      elsif /R/.match(zone)
+        if bldg_footprint_m2 > 300 
+          space_use = "Multi Family Residential"
+        else
+          space_use = "Single Family Residential"
+        end
+      else
+        space_use = "Commercial Office"
+      end
+    end
+    
+    cbecs_space_use = nil
     if space_use == "Multi Family Residential"
       if units_res
         if units_res.to_i <= 4
-          space_use= "Multifamily (2 to 4 units)"
+          cbecs_space_use= "Multifamily (2 to 4 units)"
         else
-          space_use= "Multifamily (5 or more units)"
+          cbecs_space_use= "Multifamily (5 or more units)"
         end
       else
-        # TODO: check number of floors or area or something
-        space_use= "Multifamily (2 to 4 units)"
+        if bldg_footprint_m2 > 800
+          cbecs_space_use= "Multifamily (5 or more units)"
+        else
+          cbecs_space_use= "Multifamily (2 to 4 units)"
+        end
       end
+    elsif space_use == "Single Family Residential"
+      cbecs_space_use= "Single-Family"
+    elsif space_use == "Commercial Grocery"
+      cbecs_space_use = "Food sales"
+    elsif space_use == "Commercial Hotel"
+      cbecs_space_use = "Lodging"
+    elsif space_use == "Commercial Office"
+      cbecs_space_use = "Office"
+    elsif space_use == "Commercial Restaurant"
+      cbecs_space_use = "Food service"
+    elsif space_use == "Commercial Retail"
+      cbecs_space_use = "Retail other than mall"
+    elsif space_use == "Industrial"   
+      cbecs_space_use = "Nonrefrigerated warehouse"
+    elsif space_use == "Institutional"    
+      cbecs_space_use = "Office"      
+    elsif space_use == "Institutional Religious"    
+      cbecs_space_use = "Religious worship"
+    elsif space_use == "Parking"    
+      cbecs_space_use = "Other"
+    elsif space_use == "Vacant"    
+      cbecs_space_use = "Vacant"
+    else
+      raise "Unknown space_use '#{space_use}'"
     end
-    return space_use
+    
+    return cbecs_space_use
   end
   
   def create_space_type(bldg_use, space_use, model)
@@ -85,7 +135,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return space_type
   end
 
-  def create_building(fid, building, space_per_building, model)
+  def create_building(fid, building, create_method, model)
     
     surf_elev_m	= building[:surf_elev_m].to_f
     roof_elev_m	= building[:roof_elev_m].to_f
@@ -136,8 +186,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return []
       end
       if point[:plygn_index] != 1
-        @runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
-        return []
+        #@runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
+        #return []
+        @runner.registerWarning("Ignoring inner polygon for footprint for building #{fid}")
+        next
       end
       
       val = point_to_xy(point)
@@ -177,12 +229,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       space_types << create_space_type(bldg_use, bldg_use, model)
     end
       
-    if space_per_building
+    if create_method == :space_per_building
       return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-    else
+    elsif create_method == :space_per_floor
       return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
     end
     
+    return nil
   end
   
   def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
@@ -249,6 +302,29 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end  
     return result
   end
+  
+  def convert_to_shading_surface_group(space)
+    
+    name = space.name.to_s
+    model = space.model
+    shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
+    
+    space.surfaces.each do |surface|
+      shading_surface = OpenStudio::Model::ShadingSurface.new(surface.vertices, model)
+      shading_surface.setShadingSurfaceGroup(shading_group)
+    end
+    
+    thermal_zone = space.thermalZone
+    if !thermal_zone.empty?
+      thermal_zone.get.remove
+    end
+    
+    space.remove
+
+    shading_group.setName(name)
+    
+    return [shading_group]
+  end  
 
   def add_windows(model)
     model.getSurfaces.each do |surface|
@@ -304,6 +380,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
+   
+    # spaces of surrounding buildings
+    intersecting_spaces = []
     
     # creating buildings
     if (building_id == "*All*")
@@ -321,8 +400,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         #  next
         #end
         
-        spaces = create_building(fid, building, true, model)
-        if !spaces.empty?
+        spaces = create_building(fid, building, :space_per_building, model)
+        if !spaces.nil? && !spaces.empty?
           num_bldgs += 1
         end
         
@@ -341,13 +420,31 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return false
       end
       
-      spaces = create_building(building_id, building, false, model)
-      if spaces.empty?
+      spaces = create_building(building_id, building, :space_per_floor, model)
+      if spaces.nil? || spaces.empty?
         runner.registerError("Failed to create spaces for building #{building_id}")
         return false
       end
       
-      # TODO: add surrounding buildings
+      # add surrounding buildings
+      # todo: this should be surrounding_buildings instead
+      intersecting_bldg_ids = building[:intersecting_bldg_fid].gsub('[','').gsub(']','')
+      intersecting_bldg_ids.split(',').each do |intersecting_bldg_id|
+        intersecting_building = buildings[intersecting_bldg_id.strip.intern]
+              
+        if intersecting_building.nil?
+          runner.registerError("Cannot find intersecting building #{intersecting_bldg_id}")
+          return false
+        end
+        
+        spaces = create_building(intersecting_bldg_id, intersecting_building, :space_per_building, model)
+        if spaces.nil? || spaces.empty?
+          runner.registerError("Failed to create spaces for intersecting building #{intersecting_bldg_id}")
+          return false
+        end
+        
+        intersecting_spaces.concat(spaces)
+      end
       
     end
 
@@ -376,6 +473,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         end
         adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
       end
+    end
+    
+    intersecting_spaces.each do |space|
+      convert_to_shading_surface_group(space)
     end
 
     return true

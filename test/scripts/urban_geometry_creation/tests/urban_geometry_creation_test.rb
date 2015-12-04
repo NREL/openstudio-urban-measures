@@ -33,7 +33,8 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # create hash of argument values.
     # If the argument has a default that you want to use, you don't need it in the hash
     args_hash = {}
-    args_hash["city_json_path"] = city_json_path
+    #args_hash["city_json_path"] = city_json_path
+    args_hash["city_json_path"] = city_json_path.to_s
     args_hash["building_id"] = building_id
 
     # populate argument with specified hash value if specified
@@ -73,7 +74,10 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # load the test model
     city_json_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/city.json")
     building_id = "142484"
-
+    #building_id = "105868"
+    #building_id = "96354"
+    #building_id = "193716"
+    
     # get arguments
     arguments = measure.arguments(model)
     argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
