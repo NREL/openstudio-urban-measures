@@ -350,10 +350,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     building_id = runner.getStringArgumentValue("building_id", user_arguments)
     
     # point data available in the following formats
-    # Point_xy_2913 (NAD83(HARN) / Oregon North (ft)) (local projection)
-    # Point_xy_96703 (Equal Area Projection for the United States)
-    # Point_xy_4326 (WGS 84) (longitude, lattitude (deg))
-    # Point_xy_26910 (NAD 83 UTM Zone 10 )
+    # point_xy_2913 (NAD83(HARN) / Oregon North (ft)) (local projection)
+    # point_xy_96703 (Equal Area Projection for the United States)
+    # point_xy_4326 (WGS 84) (longitude, lattitude (deg))
+    # point_xy_26910 (NAD 83 UTM Zone 10 )
 
     # instance variables
     @runner = runner
