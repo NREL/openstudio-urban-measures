@@ -115,63 +115,99 @@ def run_measure(model, measure, args_hash, runner)
   end
 end
 
-def apply_residential(model, runner)
-  building = model.getBuilding
-  building_space_type = building.spaceType
-  building_space_type_name = building_space_type.get.name.get
-  
-  # DLM: this measure seems to be broken
-  # apply a beopt measure
-  #require_relative 'beopt-measures/ModifySiteWaterMainsTemperature/measure.rb'
-  #measure = ModifySiteWaterMainsTemperature.new
-  #args_hash = {}
-  #run_measure(model, measure, args_hash, runner)
-  
-  # apply another beopt measure
-  require_relative 'beopt-measures/AddBuildingAmericaBenchmarkOccupants/measure.rb'
-  measure = AddBuildingAmericaBenchmarkOccupants.new
-  args_hash = {}
-  args_hash["NumBr"] = 1
-  args_hash["space_type"] = building_space_type.get.handle.to_s
-  run_measure(model, measure, args_hash, runner)
+def default_args_hash(model, measure)
+	args_hash = {}
+	arguments = measure.arguments(model)
+	arguments.each do |arg|	
+		if arg.hasDefaultValue
+			type = arg.type.valueName
+			case type
+			when "Boolean"
+				args_hash[arg.name] = arg.defaultValueAsBool
+			when "Double"
+				args_hash[arg.name] = arg.defaultValueAsDouble
+			when "Integer"
+				args_hash[arg.name] = arg.defaultValueAsInteger
+			when "String"
+				args_hash[arg.name] = arg.defaultValueAsString
+			end
+		else
+			args_hash[arg.name] = nil
+		end
+	end
+	return args_hash
+end
 
+def apply_residential(model, runner)
+  # building = model.getBuilding
+  # building_space_type = building.spaceType
+  # building_space_type_name = building_space_type.get.name.get
+  
+  # ProcessConstructionsExteriorInsulatedWallsWoodStud
+  require_relative 'beopt-measures/ProcessConstructionsExteriorInsulatedWallsWoodStud/measure.rb'
+  measure = ProcessConstructionsExteriorInsulatedWallsWoodStud.new
+  args_hash = default_args_hash(model, measure)
+  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
+  run_measure(model, measure, args_hash, runner) 
+  
+  # ProcessConstructionsSlab
+  require_relative 'beopt-measures/ProcessConstructionsSlab/measure.rb'
+  measure = ProcessConstructionsSlab.new
+  args_hash = default_args_hash(model, measure)
+  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
+  run_measure(model, measure, args_hash, runner)
+  
+  # ProcessConstructionsInteriorUninsulatedFloors
+  require_relative 'beopt-measures/ProcessConstructionsInteriorUninsulatedFloors/measure.rb'
+  measure = ProcessConstructionsInteriorUninsulatedFloors.new
+  args_hash = default_args_hash(model, measure)
+  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
+  run_measure(model, measure, args_hash, runner)    
+  
+  # ProcessConstructionsInsulatedRoof
+  require_relative 'beopt-measures/ProcessConstructionsInsulatedRoof/measure.rb'
+  measure = ProcessConstructionsInsulatedRoof.new
+  args_hash = default_args_hash(model, measure)
+  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
+  run_measure(model, measure, args_hash, runner)
+    
   ####################################################################################################################
   # hack code to get this working
   
   result = true
-  model.getSpaceTypes.each do |space_type|
-    result = result && apply_residential_space_type(space_type, runner)
-  end
+  # model.getSpaceTypes.each do |space_type|
+    # result = result && apply_residential_space_type(space_type, runner)
+  # end
 
-  model.getThermalZones.each do |thermal_zone|
-    result = result && apply_residential_hvac(thermal_zone, runner)
-  end
+  # model.getThermalZones.each do |thermal_zone|
+    # result = result && apply_residential_hvac(thermal_zone, runner)
+  # end
     
-  translator = OpenStudio::OSVersion::VersionTranslator.new
-  path = OpenStudio::Path.new(File.dirname(__FILE__) + "/MinimalTemplate.osm")
-  minimal_model = translator.loadModel(path).get
+  # translator = OpenStudio::OSVersion::VersionTranslator.new
+  # path = OpenStudio::Path.new(File.dirname(__FILE__) + "/MinimalTemplate.osm")
+  # minimal_model = translator.loadModel(path).get
 
-  space_type = minimal_model.getBuilding.spaceType.get.clone(model).to_SpaceType.get
-  model.getBuilding.setSpaceType(space_type)
+  # space_type = minimal_model.getBuilding.spaceType.get.clone(model).to_SpaceType.get
+  # model.getBuilding.setSpaceType(space_type)
   
-  default_construction_set = minimal_model.getBuilding.defaultConstructionSet.get.clone(model).to_DefaultConstructionSet.get
-  model.getBuilding.setDefaultConstructionSet(default_construction_set)
+  # default_construction_set = minimal_model.getBuilding.defaultConstructionSet.get.clone(model).to_DefaultConstructionSet.get
+  # model.getBuilding.setDefaultConstructionSet(default_construction_set)
   
-  # have to assign constructions to adiabatic surfaces
-  exterior_wall = default_construction_set.defaultExteriorSurfaceConstructions.get.wallConstruction.get
-  interior_roof = default_construction_set.defaultInteriorSurfaceConstructions.get.roofCeilingConstruction.get
-  interior_floor = default_construction_set.defaultInteriorSurfaceConstructions.get.floorConstruction.get
-  model.getSurfaces.each do |surface|
-    if surface.outsideBoundaryCondition == "Adiabatic"
-      if surface.surfaceType == "Wall" 
-        surface.setConstruction(exterior_wall)
-      elsif surface.surfaceType == "RoofCeiling"
-        surface.setConstruction(interior_roof)
-      elsif surface.surfaceType == "Floor"
-        surface.setConstruction(interior_floor)          
-      end
-    end
-  end
+  # # have to assign constructions to adiabatic surfaces
+  # exterior_wall = default_construction_set.defaultExteriorSurfaceConstructions.get.wallConstruction.get
+  # interior_roof = default_construction_set.defaultInteriorSurfaceConstructions.get.roofCeilingConstruction.get
+  # interior_floor = default_construction_set.defaultInteriorSurfaceConstructions.get.floorConstruction.get
+  # model.getSurfaces.each do |surface|
+    # if surface.outsideBoundaryCondition == "Adiabatic"
+      # if surface.surfaceType == "Wall" 
+        # surface.setConstruction(exterior_wall)
+      # elsif surface.surfaceType == "RoofCeiling"
+        # surface.setConstruction(interior_roof)
+      # elsif surface.surfaceType == "Floor"
+        # surface.setConstruction(interior_floor)          
+      # end
+    # end
+  # end
   
   return result
     
