@@ -30,12 +30,14 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     city_json_path = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_json_path", true)
     city_json_path.setDisplayName("City JSON Path")
     city_json_path.setDescription("Path to city.json.")
+	city_json_path.setDefaultValue("../../../../lib/city_data/city.json")
     args << city_json_path
     
     # the id of the building to create
     building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
     building_id.setDisplayName("Building ID")
     building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
+	building_id.setDefaultValue("142484")
     args << building_id
 
     return args
