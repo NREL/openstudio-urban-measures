@@ -3,6 +3,7 @@ require 'fileutils'
 require 'json'
 
 # converts building and points csv files to a JSON format
+# ruby city_csv_to_json.rb e:\insight-center\portland\portland_bldg_footprints.csv e:\insight-center\portland\portland_bldg_points.csv city.json
 
 buildings_csv = ARGV[0]
 points_csv = ARGV[1]
@@ -43,6 +44,7 @@ class Building
   def initialize(row, all_points)
     @row = row
     @all_points = all_points
+    @last_space_type_source = nil
   end
   
   def id
@@ -74,13 +76,80 @@ class Building
   end  
   
   def space_type
-    #@row[:bldg_type]
-    return nil
+    space_use = @row[:bldg_use]
+    
+    
+    if space_use.nil?
+      @last_space_type_source = "Inferred"
+      
+      zone = @row[:zone]
+      if zone.nil?
+        if bldg_footprint_m2 > 300 
+          space_use = "Commercial Office"
+        else
+          space_use = "Single Family Residential"
+        end
+      elsif /R/.match(zone)
+        if @row[:bldg_footprint_m2] > 300 
+          space_use = "Multi Family Residential"
+        else
+          space_use = "Single Family Residential"
+        end
+      else
+        space_use = "Commercial Office"
+      end
+    else
+      @last_space_type_source = "Assessor"
+    end
+    
+    cbecs_space_use = nil
+    if space_use == "Multi Family Residential"
+      if @row[:units_res]
+        if @row[:units_res].to_i <= 4
+          cbecs_space_use= "Multifamily (2 to 4 units)"
+        else
+          cbecs_space_use= "Multifamily (5 or more units)"
+        end
+      else
+        if @row[:bldg_footprint_m2] > 800
+          cbecs_space_use= "Multifamily (5 or more units)"
+        else
+          cbecs_space_use= "Multifamily (2 to 4 units)"
+        end
+      end
+    elsif space_use == "Single Family Residential"
+      cbecs_space_use= "Single-Family"
+    elsif space_use == "Commercial Grocery"
+      cbecs_space_use = "Food sales"
+    elsif space_use == "Commercial Hotel"
+      cbecs_space_use = "Lodging"
+    elsif space_use == "Commercial Office"
+      cbecs_space_use = "Office"
+    elsif space_use == "Commercial Restaurant"
+      cbecs_space_use = "Food service"
+    elsif space_use == "Commercial Retail"
+      cbecs_space_use = "Retail other than mall"
+    elsif space_use == "Industrial"   
+      cbecs_space_use = "Nonrefrigerated warehouse"
+    elsif space_use == "Institutional"    
+      cbecs_space_use = "Office"      
+    elsif space_use == "Institutional Religious"    
+      cbecs_space_use = "Religious worship"
+    elsif space_use == "Parking"    
+      cbecs_space_use = "Other"
+    elsif space_use == "Vacant"    
+      cbecs_space_use = "Vacant"
+    else
+      raise "Unknown space_use '#{space_use}'"
+    end
+    
+    return cbecs_space_use
   end
   
   def space_type_source
-    #@row[:bldg_type]
-    return nil
+    result = @last_space_type_source
+    @last_space_type_source = nil
+    return result
   end
   
   def number_of_stories
@@ -96,7 +165,11 @@ class Building
   end
   
   def number_of_stories_source
-    return nil
+    result = nil
+    if !@row[:num_story].nil?
+      result = "Assessor"
+    end
+    return result
   end
   
   def number_of_residential_units
@@ -104,7 +177,11 @@ class Building
   end
   
   def number_of_residential_units_source
-    return nil
+    result = nil
+    if !@row[:units_res].nil?
+      result = "Assessor"
+    end
+    return result
   end
   
   def year_built
@@ -112,7 +189,11 @@ class Building
   end  
   
   def year_built_source
-    return nil
+    result = nil
+    if !@row[:year_built].nil?
+      result = "Assessor"
+    end
+    return result
   end  
   
   def structure_type
@@ -155,15 +236,22 @@ class Building
     result = @row[:roof_type].nil? ? nil : @row[:roof_type].to_s
     if result == "Asphalt Shingle"
       result = nil
+    elsif result == "Wood Shake"
+      result = nil
     elsif result == "Metal"
       result = nil
     elsif result == "Multi-level"
       result = "Multi-level Flat"
     end
+    return result
   end  
   
   def roof_type_source
-    return nil
+    result = nil
+    if roof_type && !@row[:roof_type].nil?
+      result = "Assessor"
+    end
+    return result
   end  
   
   def floor_area
@@ -171,7 +259,11 @@ class Building
   end  
   
   def floor_area_source
-    return nil
+    result = nil
+    if !@row[:bldg_area_m2].nil?
+      result = "Assessor"
+    end
+    return result
   end  
   
   def intersecting_building_ids
@@ -198,6 +290,8 @@ class Building
     plygn_indices = points.collect {|p| p[:plygn_index] }.uniq
     
     footprint = {}
+    footprint[:area] = @row[:bldg_footprint_m2]
+    footprint[:perimeter] = @row[:bldg_perimeter_m]
     footprint[:polygons] = []
     multi_part_plygn_indices.sort.each do |multi_part_plygn_index|
       plygn_indices.sort.each do |plygn_index|
