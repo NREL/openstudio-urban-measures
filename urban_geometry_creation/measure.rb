@@ -62,7 +62,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return space_type
   end
   
-  def floor_print_from_polygon(polygon, elevation)
+  def floor_print_from_polygon(building, polygon, elevation)
     if !polygon[:holes].empty?
       #@runner.registerWarning("Cannot create footprint for building #{building[:id]}, contains inner polygon")
       #return []
@@ -137,7 +137,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     story[:footprint][:polygons].each do |polygon|
       next if polygon[:coordinate_system] != "Local Cartesian"
       
-      floor_print = floor_print_from_polygon(polygon, story[:elevation])
+      floor_print = floor_print_from_polygon(building, polygon, story[:elevation])
       next if !floor_print
       
       floor_to_floor_height = story[:floor_to_floor_height]
@@ -206,7 +206,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     building[:footprint][:polygons].each do |polygon|
       next if polygon[:coordinate_system] != "Local Cartesian"
     
-      floor_print = floor_print_from_polygon(polygon, min_elevation)
+      floor_print = floor_print_from_polygon(building, polygon, min_elevation)
       next if !floor_print
 
       space = OpenStudio::Model::Space.fromFloorPrint(floor_print, total_height, model)
