@@ -1,5 +1,6 @@
-@import url(node_modules/cesium/Source/Widgets/widgets.css);
-@import url(node_modules/cesium/Source/Widgets/lighter.css);
+@import url(../node_modules/cesium/Source/Widgets/widgets.css);
+@import url(../node_modules/cesium/Source/Widgets/lighter.css);
+
 
 html {
     height: 100%;
