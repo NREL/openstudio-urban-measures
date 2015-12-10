@@ -28,9 +28,18 @@ document.addEventListener('DOMContentLoaded', function() {
 
   Cesium.BingMapsApi.defaultKey = 'OS7Aeoxh8uTsCDK8Ei7i~adKTbclqLHxxcbR5EHd15A~ArarK4g2lDPp3--tA7K-lNaVf4miYu4kJOgNISo7EbiWvsQZ67e5JcEHik2w1RFK';
 
+  var imageryProvider = new Cesium.BingMapsImageryProvider({
+          url : "http://dev.virtualearth.net/"
+      });
+  
   var viewer;
   try {
-    viewer = new Cesium.Viewer('cesiumContainer', {});
+    viewer = new Cesium.Viewer('cesiumContainer', {            
+            imageryProvider : imageryProvider,
+            baseLayerPicker : false,
+            scene3DOnly : false
+          });
+    viewer._geocoder._viewModel._url = 'http://dev.virtualearth.net/';
   } catch (exception) {
     var message = Cesium.formatError(exception);
     console.error(message);
