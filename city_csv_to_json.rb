@@ -631,6 +631,8 @@ File.open(points_csv, 'r') do |file|
 end
 
 city_json = {}
+city_json[:version] = "0.1"
+city_json[:region] = {}
 city_json[:taxlots] = []
 city_json[:buildings] = []
 
@@ -656,6 +658,33 @@ File.open(buildings_csv, 'r') do |file|
     end
   end
 end
+
+max_wgs_84_x = nil
+min_wgs_84_x = nil
+max_wgs_84_y = nil
+min_wgs_84_y = nil
+city_json[:buildings].each do |building|
+  building[:footprint][:polygons].each do |polygon|
+    next if polygon[:coordinate_system] != "WGS 84"
+      
+    polygon[:points].each do |p|
+      max_wgs_84_x = p[:x] if max_wgs_84_x.nil? || p[:x] > max_wgs_84_x
+      min_wgs_84_x = p[:x] if min_wgs_84_x.nil? || p[:x] < min_wgs_84_x
+      max_wgs_84_y = p[:y] if max_wgs_84_y.nil? || p[:y] > max_wgs_84_y
+      min_wgs_84_y = p[:y] if min_wgs_84_y.nil? || p[:y] < min_wgs_84_y
+    end
+  end
+end
+mean_wgs_84_x = (max_wgs_84_x + min_wgs_84_x)/2.0
+mean_wgs_84_y = (max_wgs_84_y + min_wgs_84_y)/2.0
+wgs_84_region_pts = []
+wgs_84_region_pts << {:x=>min_wgs_84_x, :y=>min_wgs_84_y}
+wgs_84_region_pts << {:x=>min_wgs_84_x, :y=>max_wgs_84_y}
+wgs_84_region_pts << {:x=>max_wgs_84_x, :y=>max_wgs_84_y}
+wgs_84_region_pts << {:x=>max_wgs_84_x, :y=>min_wgs_84_y}
+
+city_json[:region][:wgs_84_centroid] = {:x=>mean_wgs_84_x, :y=>mean_wgs_84_y}
+city_json[:region][:polygon] = {:coordinate_system=>"WGS 84", :points=>wgs_84_region_pts, :holes=>[]}
 
 puts "writing file out_json = #{out_json}"
 

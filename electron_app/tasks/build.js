@@ -20,7 +20,8 @@ var paths = {
         './vendor/**',
         './**/*.html',
         './**/*.+(jpg|png|svg)',
-        './stylesheets/*.css'
+        './stylesheets/*.css',
+        './city.json'
     ],
 }
 
@@ -66,6 +67,8 @@ var bundle = function (src, dest) {
         deferred.resolve();
     }).catch(function (err) {
         console.error('Build: Error during rollup', err.stack);
+        //deferred.resolve();
+        deferred.reject();
     });
 
     return deferred.promise;

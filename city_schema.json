@@ -6,6 +6,25 @@
 		"additionalProperties": false
 	},
 	"properties": {
+		"version": {
+			"description": "Current version is 0.1",
+			"type": "string"
+		},
+		"region": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"wgs_84_centroid": {
+					"$ref": "#/definitions/Point"
+				},
+				"polygon": {
+					"$ref": "#/definitions/Polygon"
+				}
+			},
+			"additionalProperties": false
+		},
 		"buildings": {
 			"type": "array",
 			"items": {
@@ -17,10 +36,6 @@
 				"$ref": "#/definitions/Taxlot"
 			},
 			"additionalProperties": false
-		},
-		"version": {
-			"description": "Current version is 0.1",
-			"type": "string"
 		}
 	},
 	"required": [
