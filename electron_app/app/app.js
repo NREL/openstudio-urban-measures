@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
   imageryErrorEvent.addEventListener(imageryError);
 
   var imageryProvider = new Cesium.BingMapsImageryProvider({
-          url : "https://dev.virtualearth.net/",
+          url : "http://dev.virtualearth.net/",
           //tileProtocol: "http",
           tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
           errorEvent: imageryErrorEvent,
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             imageryProvider : imageryProvider,
             baseLayerPicker : true,
             scene3DOnly : false,
-            sceneModePicker: false,
+            sceneModePicker: true,
             homeButton: false,
             baseLayerPicker: false
           });
@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   var extent = new Cesium.Rectangle(west, south, east, north);
   
-  
-  scene.sceneMode = Cesium.SceneMode.SCENE2D;
+  scene.mode = Cesium.SceneMode.SCENE2D;
+  //scene.mode = Cesium.SceneMode.SCENE3D;
   
   // Show the rectangle.  Not required; just for show.
   viewer.entities.add({
