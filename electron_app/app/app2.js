@@ -12,11 +12,12 @@ var app = remote.app;
 var appDir = jetpack.cwd(app.getAppPath());
 var city = appDir.read('city.json', 'json');
 var map;
-//var infoWindow = new google.maps.InfoWindow;
 
 /** @this {google.maps.Polygon} */
-/*
 function showArrays(event) {
+  
+  console.log(this);
+  
   // Since this polygon has only one path, we can call getPath() to return the
   // MVCArray of LatLngs.
   var vertices = this.getPath();
@@ -32,52 +33,61 @@ function showArrays(event) {
         xy.lng();
   }
 
+  var infoWindow = new google.maps.InfoWindow;
+  
   // Replace the info window's content and position.
   infoWindow.setContent(contentString);
   infoWindow.setPosition(event.latLng);
 
   infoWindow.open(map);
 }
-*/
-function polygonEntity(polygon, extrudedHeight){
+
+
+
+function polygonCoordinates(polygon){
   var outer_points = [];
   var holes = [];
 
   for (let point of polygon['points']){
-    outer_points.push({lng: point['x'], lat: point['y']});
+    outer_points.push([point['x'], point['y']]);
   }
   
-  var result =  new google.maps.Polygon({
-    paths: outer_points,
-    strokeColor: '#FF0000',
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: '#FF0000',
-    fillOpacity: 0.35,
-    editable: true
-  });
-  
-  //editable: true
-  //draggable: true
-  //geodesic: true
-  
-  //result.addListener('click', showArrays);
+  var result = [];
+  result.push(outer_points);
 
   return result;
 }
 
 function drawBuilding(map, building) {
-  //console.log(building);
+ 
   var height = building['roof_elevation'] - building['surface_elevation'];
+  var coordinates;
   
   for (let polygon of building['footprint']['polygons']){
     if (polygon['coordinate_system'] == "WGS 84"){
-      var entity = polygonEntity(polygon, height);
-      entity.setMap(map);
+      coordinates = polygonCoordinates(polygon, height);
     }
   }
-}
-
+  
+  var geoJSON = {"type": "FeatureCollection",
+                 "features": [{
+                   "type": "Feature",
+                   "properties": {
+                      "height": height,
+                      "name": building['name'],
+                      "building": building
+                    },
+                    "geometry": {
+                      "type": "Polygon",
+                      "coordinates": coordinates
+                    }
+                 }]
+                };
+  map.data.addGeoJson(geoJSON);
+ 
+};
+                
+     
 document.addEventListener('DOMContentLoaded', function() {
   
   console.log('DOMContentLoaded Started');
@@ -99,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     north: region_points[2]['y']
   }
   map.fitBounds(bounds);
-
+/*
   var drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: google.maps.drawing.OverlayType.MARKER,
     drawingControl: true,
@@ -124,12 +134,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   drawingManager.setMap(map);
-  
+  */
   var building;
   for (building of city['buildings']){
     drawBuilding(map, building);
   }
-  
+  map.data.setStyle({
+    fillColor: 'green',
+    fillOpacity: 0.3,
+    strokeWeight: 3
+  });
+  map.data.addListener('mouseover', function(event) {
+    console.log(event.feature.getProperty('building'));
+  });
   console.log('DOMContentLoaded Completed');
 });
 
