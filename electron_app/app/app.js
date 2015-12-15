@@ -77,8 +77,13 @@ document.addEventListener('DOMContentLoaded', function() {
           //tileProtocol: "http",
           tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
           errorEvent: imageryErrorEvent,
+          //proxy : new Cesium.DefaultProxy('/proxy/'),
           key: bingKey
       });
+      
+  //var imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
+  //  url: 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+  //});
   
   //var imageryProvider = new Cesium.OpenStreetMapImageryProvider({
   //        url : "//a.tile.openstreetmap.org/"
