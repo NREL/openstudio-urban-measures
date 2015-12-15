@@ -78,6 +78,7 @@ var bundleApplication = function () {
     return Q.all([
         bundle(srcDir.path('background.js'), destDir.path('background.js')),
         bundle(srcDir.path('app.js'), destDir.path('app.js')),
+        bundle(srcDir.path('app2.js'), destDir.path('app2.js'))
     ]);
 };
 
