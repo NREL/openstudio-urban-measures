@@ -26,11 +26,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     args = OpenStudio::Ruleset::OSArgumentVector.new
     
     # path to the city.json file
-    #city_json_path = OpenStudio::Ruleset::OSArgument.makePathArgument("city_json_path", true, "json", true)
     city_json_path = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_json_path", true)
     city_json_path.setDisplayName("City JSON Path")
     city_json_path.setDescription("Path to city.json.")
-	city_json_path.setDefaultValue("../../../../lib/city_data/city.json")
+	city_json_path.setDefaultValue("../../../../openstudio-urban-measures/city.json")
     args << city_json_path
     
     # the id of the building to create

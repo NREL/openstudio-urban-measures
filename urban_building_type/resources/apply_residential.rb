@@ -12,59 +12,15 @@ def apply_residential_space_type(space_type, runner)
   
   case space_type_name
   when "Single-Family"
-    rendering_color.setRGB(0, 0, 0)
+    rendering_color.setRGB(0, 0, 0)	
   when "Multifamily (2 to 4 units)"
     rendering_color.setRGB(0, 0, 0)
   when "Multifamily (5 or more units)"
     rendering_color.setRGB(0, 0, 0)
   when "Mobile Home"
-    rendering_color.setRGB(0, 0, 0)
-  when "Vacant"
-    rendering_color.setRGB(0, 0, 0)
-  when "Office"
-    rendering_color.setRGB(0, 0, 0)
-  when "Laboratory"
-    rendering_color.setRGB(0, 0, 0)
-  when "Nonrefrigerated warehouse"
-    rendering_color.setRGB(0, 0, 0)
-  when "Food sales"
-    rendering_color.setRGB(0, 0, 0)
-  when "Public order and safety"
-    rendering_color.setRGB(0, 0, 0)
-  when "Outpatient health care"
-    rendering_color.setRGB(0, 0, 0)
-  when "Refrigerated warehouse"
-    rendering_color.setRGB(0, 0, 0)
-  when "Religious worship"
-    rendering_color.setRGB(0, 0, 0)
-  when "Public assembly"
-    rendering_color.setRGB(0, 0, 0)
-  when "Education"
-    rendering_color.setRGB(0, 0, 0)
-  when "Food service"
-    rendering_color.setRGB(0, 0, 0)
-  when "Inpatient health care"
-    rendering_color.setRGB(0, 0, 0)
-  when "Nursing"
-    rendering_color.setRGB(0, 0, 0)
-  when "Lodging"
-    rendering_color.setRGB(0, 0, 0)
-  when "Strip shopping mall"
-    rendering_color.setRGB(0, 0, 0)    
-  when "Enclosed mall"
-    rendering_color.setRGB(0, 0, 0)
-  when "Retail other than mall"
-    rendering_color.setRGB(0, 0, 0)
-  when "Service"
-    rendering_color.setRGB(0, 0, 0)
-  when "Other"
-    rendering_color.setRGB(0, 0, 0)          
+    rendering_color.setRGB(0, 0, 0)         
   else
-    @runner.registerWarning("Unknown space use #{space_type_name}")
-    return true
-    
-    #@runner.registerError("Unknown space use #{space_type_name}")
-    #return false
+    runner.registerWarning("Unknown space use #{space_type_name}")
   end
   
   return true
@@ -86,6 +42,65 @@ def apply_residential_hvac(thermal_zone, runner)
   thermal_zone.setUseIdealAirLoads(true)
   
   return true
+end
+
+def apply_residential_constructions(model, space_type, runner)
+
+  space_type_name = space_type.name.get
+
+  case space_type_name
+  when "Single-Family"
+	
+	require_relative 'beopt-measures/ProcessConstructionsExteriorInsulatedWallsWoodStud/measure.rb'
+	measure = ProcessConstructionsExteriorInsulatedWallsWoodStud.new
+	args_hash = default_args_hash(model, measure)
+	args_hash = nondefault_args_hash(args_hash, args_hash)
+	args_hash["selectedliving"] = space_type_name
+	run_measure(model, measure, args_hash, runner)
+
+	require_relative 'beopt-measures/ProcessConstructionsSlab/measure.rb'
+	measure = ProcessConstructionsSlab.new
+	args_hash = default_args_hash(model, measure)
+	args_hash = nondefault_args_hash(args_hash, args_hash)
+	args_hash["selectedliving"] = space_type_name
+	run_measure(model, measure, args_hash, runner)
+
+	require_relative 'beopt-measures/ProcessConstructionsInteriorUninsulatedWalls/measure.rb'
+	measure = ProcessConstructionsInteriorUninsulatedWalls.new
+	args_hash = default_args_hash(model, measure)
+	args_hash = nondefault_args_hash(args_hash, args_hash)
+	args_hash["selectedliving"] = space_type_name
+	run_measure(model, measure, args_hash, runner)
+
+	require_relative 'beopt-measures/ProcessConstructionsInteriorUninsulatedFloors/measure.rb'
+	measure = ProcessConstructionsInteriorUninsulatedFloors.new
+	args_hash = default_args_hash(model, measure)
+	args_hash = nondefault_args_hash(args_hash, args_hash)
+	args_hash["selectedliving"] = space_type_name
+	run_measure(model, measure, args_hash, runner)
+
+	require_relative 'beopt-measures/ProcessConstructionsInsulatedRoof/measure.rb'
+	measure = ProcessConstructionsInsulatedRoof.new
+	args_hash = default_args_hash(model, measure)
+	args_hash = nondefault_args_hash(args_hash, args_hash)
+	args_hash["selectedliving"] = space_type_name
+	run_measure(model, measure, args_hash, runner)		
+	
+  when "Multifamily (2 to 4 units)"	
+	runner.registerError("Have not defined measures and inputs for #{space_type_name}.")
+	return false
+  when "Multifamily (5 or more units)"
+	runner.registerError("Have not defined measures and inputs for #{space_type_name}.")
+	return false
+  when "Mobile Home"
+	runner.registerError("Have not defined measures and inputs for #{space_type_name}.")
+	return false          
+  else
+    runner.registerWarning("Unknown space use #{space_type_name}")
+  end
+  
+  return true	
+	
 end
 
 def run_measure(model, measure, args_hash, runner)
@@ -138,75 +153,27 @@ def default_args_hash(model, measure)
 	return args_hash
 end
 
+def nondefault_args_hash(args_hash, scenario)
+	# stub for modifying args_hash to a set of inputs based on the scenario
+	
+	args_hash = scenario
+	
+	return args_hash
+end
+
 def apply_residential(model, runner)
-  # building = model.getBuilding
-  # building_space_type = building.spaceType
-  # building_space_type_name = building_space_type.get.name.get
-  
-  # ProcessConstructionsExteriorInsulatedWallsWoodStud
-  require_relative 'beopt-measures/ProcessConstructionsExteriorInsulatedWallsWoodStud/measure.rb'
-  measure = ProcessConstructionsExteriorInsulatedWallsWoodStud.new
-  args_hash = default_args_hash(model, measure)
-  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
-  run_measure(model, measure, args_hash, runner) 
-  
-  # ProcessConstructionsSlab
-  require_relative 'beopt-measures/ProcessConstructionsSlab/measure.rb'
-  measure = ProcessConstructionsSlab.new
-  args_hash = default_args_hash(model, measure)
-  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
-  run_measure(model, measure, args_hash, runner)
-  
-  # ProcessConstructionsInteriorUninsulatedFloors
-  require_relative 'beopt-measures/ProcessConstructionsInteriorUninsulatedFloors/measure.rb'
-  measure = ProcessConstructionsInteriorUninsulatedFloors.new
-  args_hash = default_args_hash(model, measure)
-  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
-  run_measure(model, measure, args_hash, runner)    
-  
-  # ProcessConstructionsInsulatedRoof
-  require_relative 'beopt-measures/ProcessConstructionsInsulatedRoof/measure.rb'
-  measure = ProcessConstructionsInsulatedRoof.new
-  args_hash = default_args_hash(model, measure)
-  args_hash["selectedliving"] = "Multifamily (2 to 4 units)"
-  run_measure(model, measure, args_hash, runner)
-    
-  ####################################################################################################################
-  # hack code to get this working
   
   result = true
-  # model.getSpaceTypes.each do |space_type|
-    # result = result && apply_residential_space_type(space_type, runner)
-  # end
+  
+  # modify the geometry (e.g., roof=attic) based on the building?
+  
+  model.getSpaceTypes.each do |space_type|
+    result = result && apply_residential_space_type(space_type, runner)
+	result = result && apply_residential_constructions(model, space_type, runner)
+  end
 
   # model.getThermalZones.each do |thermal_zone|
     # result = result && apply_residential_hvac(thermal_zone, runner)
-  # end
-    
-  # translator = OpenStudio::OSVersion::VersionTranslator.new
-  # path = OpenStudio::Path.new(File.dirname(__FILE__) + "/MinimalTemplate.osm")
-  # minimal_model = translator.loadModel(path).get
-
-  # space_type = minimal_model.getBuilding.spaceType.get.clone(model).to_SpaceType.get
-  # model.getBuilding.setSpaceType(space_type)
-  
-  # default_construction_set = minimal_model.getBuilding.defaultConstructionSet.get.clone(model).to_DefaultConstructionSet.get
-  # model.getBuilding.setDefaultConstructionSet(default_construction_set)
-  
-  # # have to assign constructions to adiabatic surfaces
-  # exterior_wall = default_construction_set.defaultExteriorSurfaceConstructions.get.wallConstruction.get
-  # interior_roof = default_construction_set.defaultInteriorSurfaceConstructions.get.roofCeilingConstruction.get
-  # interior_floor = default_construction_set.defaultInteriorSurfaceConstructions.get.floorConstruction.get
-  # model.getSurfaces.each do |surface|
-    # if surface.outsideBoundaryCondition == "Adiabatic"
-      # if surface.surfaceType == "Wall" 
-        # surface.setConstruction(exterior_wall)
-      # elsif surface.surfaceType == "RoofCeiling"
-        # surface.setConstruction(interior_roof)
-      # elsif surface.surfaceType == "Floor"
-        # surface.setConstruction(interior_floor)          
-      # end
-    # end
   # end
   
   return result

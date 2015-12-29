@@ -73,7 +73,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       runner.registerInfo("Processing Residential Building")
       residential = true
     else
-      runner.registerInfo("Processing Residential Building")
+      runner.registerInfo("Processing Commercial Building")
       residential = false
     end
     
@@ -82,10 +82,11 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       FileUtils.rm_rf(beopt_measures_dir)
     end
     
+	residential=true # tk temp
     if residential
-      beopt_measures_zip = OpenStudio::toPath( File.dirname(__FILE__) + "/resources/beopt-measures.zip");
+      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/beopt-measures.zip");
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath( beopt_measures_dir))
+      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
     end
     
     result = nil
