@@ -6,6 +6,25 @@
 		"additionalProperties": false
 	},
 	"properties": {
+		"version": {
+			"description": "Current version is 0.1",
+			"type": "string"
+		},
+		"region": {
+			"type": "object",
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"wgs_84_centroid": {
+					"$ref": "#/definitions/Point"
+				},
+				"polygon": {
+					"$ref": "#/definitions/Polygon"
+				}
+			},
+			"additionalProperties": false
+		},
 		"buildings": {
 			"type": "array",
 			"items": {
@@ -17,12 +36,12 @@
 				"$ref": "#/definitions/Taxlot"
 			},
 			"additionalProperties": false
-		},
-		"version": {
-			"description": "Current version is 0.1",
-			"type": "string"
 		}
 	},
+	"required": [
+		"buildings",
+		"taxlots"
+	],
 	"additionalProperties": false,
 	"definitions": {
 		"Source": {
@@ -175,8 +194,8 @@
 					"type": "string"
 				},
 				"building_number": {
-					"description": "Number of building on taxlot",
-					"type": "number"
+					"description": "Number of building on taxlot if there are multiple buildings ",
+					"type": "integer"
 				},
 				"name": {
 					"description": "Building name",
@@ -203,27 +222,33 @@
 				},
 				"number_of_stories": {
 					"description": "The maximum number of building stories",
-					"type": "number"
-				},
-				"number_of_stories_above_ground": {
-					"type": "number"
-				},
-				"number_of_stories_below_ground": {
-					"type": "number"
+					"type": "integer"
 				},
 				"number_of_stories_source": {
 					"$ref": "#/definitions/Source"
 				},
+				"number_of_stories_above_ground": {
+					"type": "integer"
+				},
+				"number_of_stories_above_ground_source": {
+					"$ref": "#/definitions/Source"
+				},
+				"number_of_stories_below_ground": {
+					"type": "integer"
+				},
+				"number_of_stories_below_ground_source": {
+					"$ref": "#/definitions/Source"
+				},
 				"number_of_residential_units": {
 					"description": "Total number of residential units in the building. ",
-					"type": "number"
+					"type": "integer"
 				},
 				"number_of_residential_units_source": {
 					"$ref": "#/definitions/Source"
 				},
 				"year_built": {
 					"description": "The year construction of the building was completed ",
-					"type": "number"
+					"type": "integer"
 				},
 				"year_built_source": {
 					"$ref": "#/definitions/Source"
@@ -249,27 +274,42 @@
 						"Unsafe"
 					]
 				},
+				"structure_condition_source": {
+					"$ref": "#/definitions/Source"
+				},
 				"average_roof_height": {
 					"description": "Average height of the roof relative to surface elevation (m)",
 					"type": "number"
+				},
+				"average_roof_height_source": {
+					"$ref": "#/definitions/Source"
 				},
 				"maximum_roof_height": {
 					"description": "Maximum height of the roof relative to surface elevation (m)",
 					"type": "number"
 				},
+				"maximum_roof_height_source": {
+					"$ref": "#/definitions/Source"
+				},
 				"minimum_roof_height": {
 					"description": "Minimum height of the roof relative to surface elevation (m)",
 					"type": "number"
+				},
+				"minimum_roof_height_source": {
+					"$ref": "#/definitions/Source"
 				},
 				"surface_elevation": {
 					"description": "The surface elevation (above NAVD88 datum) of the building (m)",
 					"type": "number"
 				},
+				"surface_elevation_source": {
+					"$ref": "#/definitions/Source"
+				},
 				"roof_elevation": {
 					"description": "The maximum roof elevation (above NAVD88 datum) of the building (m)",
 					"type": "number"
 				},
-				"height_source": {
+				"roof_elevation_source": {
 					"$ref": "#/definitions/Source"
 				},
 				"roof_type": {
@@ -324,22 +364,44 @@
 				}
 			},
 			"required": [
-				"id"
+				"id",
+				"source_id",
+				"space_type",
+				"number_of_stories",
+				"surface_elevation",
+				"roof_elevation",
+				"floor_area",
+				"intersecting_building_ids",
+				"surrounding_building_ids"
 			],
 			"additionalProperties": false
 		},
 		"Story": {
 			"type": "object",
 			"properties": {
+				"name": {
+					"type": "string"
+				},
 				"story_number": {
 					"description": "First above ground floor is 1, first below ground floor is 0, second below ground floor is -1",
+					"type": "integer"
+				},
+				"floor_to_floor_height": {
+					"description": "Floor to floor height of this story (m)",
 					"type": "number"
+				},
+				"elevation": {
+					"description": "Elevation of the story floor (m)",
+					"type": "number"
+				},
+				"window_to_wall_ratio": {
+					"type": "number",
+					"minimum": 0,
+					"maximum": 1,
+					"exclusiveMaximum": true
 				},
 				"space_type": {
 					"$ref": "#/definitions/SpaceType"
-				},
-				"height": {
-					"description": "Floor to floor height of this story (m)"
 				},
 				"footprint": {
 					"$ref": "#/definitions/Footprint"

@@ -42,265 +42,202 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return args
   end
   
-  def point_to_xy(point)
-    md = /\[(.*),(.*)\]/.match(point[@point_symbol])
-    result = [md[1].to_f, md[2].to_f]
-    if @point_symbol == :point_xy_2913
-      result[0] = 0.3048*result[0]
-      result[1] = 0.3048*result[1]
-    end
-    return result
-  end
-  
-  def fix_space_use(space_use, building)
-    units_res = building[:units_res]
-    bldg_footprint_m2 = building[:bldg_footprint_m2].to_f
-    
-    if space_use.nil?
-      zone = building[:zone]
-      if zone.nil?
-        if bldg_footprint_m2 > 300 
-          space_use = "Commercial Office"
-        else
-          space_use = "Single Family Residential"
-        end
-      elsif /R/.match(zone)
-        if bldg_footprint_m2 > 300 
-          space_use = "Multi Family Residential"
-        else
-          space_use = "Single Family Residential"
-        end
-      else
-        space_use = "Commercial Office"
-      end
-    end
-    
-    cbecs_space_use = nil
-    if space_use == "Multi Family Residential"
-      if units_res
-        if units_res.to_i <= 4
-          cbecs_space_use= "Multifamily (2 to 4 units)"
-        else
-          cbecs_space_use= "Multifamily (5 or more units)"
-        end
-      else
-        if bldg_footprint_m2 > 800
-          cbecs_space_use= "Multifamily (5 or more units)"
-        else
-          cbecs_space_use= "Multifamily (2 to 4 units)"
-        end
-      end
-    elsif space_use == "Single Family Residential"
-      cbecs_space_use= "Single-Family"
-    elsif space_use == "Commercial Grocery"
-      cbecs_space_use = "Food sales"
-    elsif space_use == "Commercial Hotel"
-      cbecs_space_use = "Lodging"
-    elsif space_use == "Commercial Office"
-      cbecs_space_use = "Office"
-    elsif space_use == "Commercial Restaurant"
-      cbecs_space_use = "Food service"
-    elsif space_use == "Commercial Retail"
-      cbecs_space_use = "Retail other than mall"
-    elsif space_use == "Industrial"   
-      cbecs_space_use = "Nonrefrigerated warehouse"
-    elsif space_use == "Institutional"    
-      cbecs_space_use = "Office"      
-    elsif space_use == "Institutional Religious"    
-      cbecs_space_use = "Religious worship"
-    elsif space_use == "Parking"    
-      cbecs_space_use = "Other"
-    elsif space_use == "Vacant"    
-      cbecs_space_use = "Vacant"
-    else
-      raise "Unknown space_use '#{space_use}'"
-    end
-    
-    return cbecs_space_use
-  end
-  
   def create_space_type(bldg_use, space_use, model)
+    
+    name = "#{bldg_use}:#{space_use}"
     
     # check if we already have this space type
     model.getSpaceTypes.each do |s|
-      if s.name.get == space_use
+      if s.name.get == name
         return s
       end
     end
     
     space_type = OpenStudio::Model::SpaceType.new(model)
-    space_type.setName(space_use)
+    space_type.setName(name)
     space_type.setStandardsBuildingType(bldg_use)
     space_type.setStandardsSpaceType(space_use)
       
     return space_type
   end
-
-  def create_building(fid, building, create_method, model)
-    
-    surf_elev_m	= building[:surf_elev_m].to_f
-    roof_elev_m	= building[:roof_elev_m].to_f
-    num_story = building[:num_story].to_i
-    floor_to_floor_height = 3.65 # assume 12 ft
-    
-    if surf_elev_m == 0 and roof_elev_m == 0
-      surf_elev_m = nil
-      roof_elev_m = nil
+  
+  def floor_print_from_polygon(building, polygon, elevation)
+    if !polygon[:holes].empty?
+      #@runner.registerWarning("Cannot create footprint for building #{building[:id]}, contains inner polygon")
+      #return []
+      @runner.registerWarning("Ignoring inner polygon for footprint for building #{building[:id]}")
+      return nil
     end
     
-    if roof_elev_m == 0 and roof_elev_m < surf_elev_m
-      roof_elev_m = nil
-    end
-    
-    if num_story == 0
-      num_story = nil 
-    end
-    
-    if surf_elev_m and roof_elev_m and num_story
-      floor_to_floor_height = (roof_elev_m - surf_elev_m) / num_story
-    elsif surf_elev_m and roof_elev_m.nil? and num_story
-      roof_elev_m = surf_elev_m + num_story*floor_to_floor_height
-    elsif surf_elev_m and roof_elev_m and num_story.nil?
-      num_story = ((roof_elev_m-surf_elev_m) / floor_to_floor_height).to_i
-      num_story = 1 if num_story < 1 
-    elsif surf_elev_m.nil? and roof_elev_m and num_story
-      surf_elev_m = roof_elev_m - num_story*floor_to_floor_height
-    elsif surf_elev_m.nil? and roof_elev_m.nil? and num_story
-      surf_elev_m = 0
-      roof_elev_m = num_story*floor_to_floor_height
-    else
-      @runner.registerWarning("Insufficient elevation information for building #{fid}")
-      return []
-    end
-    
-    if floor_to_floor_height < 2.5 # 8 ft
-      @runner.registerWarning("Floor to floor height is smaller than expected for building #{fid}, surf_elev_m = #{surf_elev_m}, roof_elev_m = #{roof_elev_m}, num_story = #{num_story}, floor_to_floor_height = #{floor_to_floor_height}")
-    end
-    
-    # zero out surface elevation here if desired
-    surf_elev_m = 0
-
     floor_print = OpenStudio::Point3dVector.new
-    building[:points].each do |point|
-      if point[:multi_part_plygn_index] != 1
-        @runner.registerWarning("Cannot create footprint for building #{fid}, contains multi polygon")
-        return []
-      end
-      if point[:plygn_index] != 1
-        #@runner.registerWarning("Cannot create footprint for building #{fid}, contains inner polygon")
-        #return []
-        @runner.registerWarning("Ignoring inner polygon for footprint for building #{fid}")
-        next
-      end
-      
-      val = point_to_xy(point)
-      floor_print << OpenStudio::Point3d.new(val[0].to_f - @min_x, val[1].to_f - @min_y, surf_elev_m)
+    polygon[:points].each do |p|
+      floor_print << OpenStudio::Point3d.new(p[:x] - @min_x, p[:y] - @min_y, elevation)
     end
-    
+  
     if floor_print.size < 3
-      @runner.registerWarning("Cannot create footprint for building #{fid}, fewer than 3 points")
-      return []
+      @runner.registerWarning("Cannot create footprint for building #{building[:id]}, fewer than 3 points")
+      return nil
     end
-    
+  
     floor_print = OpenStudio::removeCollinear(floor_print)
     normal = OpenStudio::getOutwardNormal(floor_print)
     if normal.empty?
-      @runner.registerWarning("Cannot create footprint for building #{fid}, cannot compute outward normal")
-      return []
+      @runner.registerWarning("Cannot create footprint for building #{building[:id]}, cannot compute outward normal")
+      return nil
     elsif normal.get.z > 0
       floor_print = OpenStudio::reverse(floor_print)
-      @runner.registerWarning("Reversing floor print for building #{fid}")
+      @runner.registerWarning("Reversing floor print for building #{building[:id]}")
     end
     
+    return floor_print
+  end
+
+  def create_building(building, create_method, model)
+    
+    surface_elevation	= building[:surface_elevation]
+    roof_elevation	= building[:roof_elevation]
+    number_of_stories = building[:number_of_stories]
+    number_of_stories_above_ground = building[:number_of_stories_above_ground]
+    number_of_stories_below_ground = building[:number_of_stories_below_ground]
+    number_of_residential_units = building[:number_of_residential_units]
+    
     # get the building use and fix any issues
-    bldg_use = fix_space_use(building[:bldg_use], building)
+    bldg_use = building[:space_type]
     building_space_type = create_space_type(bldg_use, bldg_use, model)
     model.getBuilding.setSpaceType(building_space_type)
-    #model.getBuilding.setNominalFloortoFloorHeight
-    #model.getBuilding.setStandardsNumberOfStories
-    #model.getBuilding.setStandardsNumberOfAboveGroundStories
-    #model.getBuilding.setStandardsNumberOfLivingUnits
+    #model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
+    model.getBuilding.setStandardsNumberOfStories(number_of_stories)
+    if number_of_stories_above_ground
+      model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+    end
+    if number_of_residential_units
+      model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+    end
     #model.getBuilding.setNominalFloortoCeilingHeight
     model.getBuilding.setStandardsBuildingType(bldg_use)
     model.getBuilding.setRelocatable(false)
-    
-    # TODO: get space type by floor for mixed use
-    space_types = []
-    (1..num_story).each do |floor|
-      space_types << create_space_type(bldg_use, bldg_use, model)
-    end
       
-    if create_method == :space_per_building
-      return create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-    elsif create_method == :space_per_floor
-      return create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
+    spaces = []
+    if create_method == :space_per_floor
+      building[:stories].each do |story|
+        new_spaces = create_space_per_floor(building, story, model)
+        spaces.concat(new_spaces)
+      end
+    elsif create_method == :space_per_building
+      spaces = create_space_per_building(building, model)
     end
-    
-    return nil
+
+    return spaces
   end
+
+  def create_space_per_floor(building, story, model)
   
-  def create_space_per_building(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-
-    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height*num_story, model)
-    if space.empty?
-      @runner.registerWarning("Cannot create footprint for building #{fid}")
-      return []
-    end
-    
-    name = "Bldg #{fid}"
-    space.get.setName(name)
-    
-    thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-    thermal_zone.setName(name + " ThermalZone")
-    space.get.setThermalZone(thermal_zone)
-    
-    # no floor by floor space type in create_space_per_building
-    
-    if num_story > 1
-      area = space.get.floorArea * num_story
-      #thermal_zone.setFloorArea(area) # DLM: doesn't work 
-      thermal_zone.setDouble(5,area) 
+    result = []
+    story[:footprint][:polygons].each do |polygon|
+      next if polygon[:coordinate_system] != "Local Cartesian"
       
-      volume = area*floor_to_floor_height*num_story
-      thermal_zone.setVolume(volume)
-    end
-    
-    return [space.get]
-  end
-
-  def create_space_per_floor(fid, floor_print, surf_elev_m, floor_to_floor_height, num_story, space_types, model)
-    
-    space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height, model)
-    if space.empty?
-      @runner.registerWarning("Cannot create footprint for building #{fid}")
-      return []
-    end
-    
-    name = "Bldg #{fid} Floor 1"
-    space.get.setName(name)
-    space.get.setSpaceType(space_types[0])
-    
-    thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-    thermal_zone.setName(name + " ThermalZone")
-    space.get.setThermalZone(thermal_zone)
-    
-    result = [space.get]
-    
-    # create higher floors
-    (2..num_story).each do |floor|
-      name = "Bldg #{fid} Floor #{floor}"
+      floor_print = floor_print_from_polygon(building, polygon, story[:elevation])
+      next if !floor_print
       
-      new_space = space.get.clone(model).to_Space.get
-      new_space.setZOrigin((floor-1) * floor_to_floor_height)
-      new_space.setName(name)
-      space.get.setSpaceType(space_types[floor-1])
+      floor_to_floor_height = story[:floor_to_floor_height]
+      
+      space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height, model)
+      if space.empty?
+        @runner.registerWarning("Cannot create story #{story[:name]} for building #{building[:id]}")
+        next
+      end
+      space = space.get
+      
+      story_space_type = create_space_type(building[:space_type], story[:space_type], model)
+      
+      space.setName(story[:name] + " Space")
+      space.setSpaceType(story_space_type)
+      
+      bounding_box = space.boundingBox
+      m = OpenStudio::Matrix.new(4,4,0)
+      m[0,0] = 1
+      m[1,1] = 1
+      m[2,2] = 1
+      m[3,3] = 1
+      m[0,3] = bounding_box.minX.get
+      m[1,3] = bounding_box.minY.get
+      m[2,3] = bounding_box.minZ.get
+      space.changeTransformation(OpenStudio::Transformation.new(m))
+      
+      space.surfaces.each do |surface|
+        if surface.surfaceType == "Wall"
+          if story[:story_number] < 1
+            surface.setOutsideBoundaryCondition("Ground")
+          else
+            surface.setWindowToWallRatio(story[:window_to_wall_ratio])
+          end
+        end
+      end
+        
+      building_story = OpenStudio::Model::BuildingStory.new(model)
+      building_story.setName(story[:name])
+      space.setBuildingStory(building_story)
       
       thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-      thermal_zone.setName(name + " ThermalZone")
-      new_space.setThermalZone(thermal_zone)
+      thermal_zone.setName(story[:name] + " ThermalZone")
+      space.setThermalZone(thermal_zone)
       
-      result << new_space
-    end  
+      result << space 
+    end
+    
+    return result
+  end
+  
+  def create_space_per_building(building, model)
+  
+    min_elevation = nil
+    total_height = 0
+    building[:stories].each do |story|
+      if min_elevation
+        min_elevation = [min_elevation, story[:elevation]].min
+      else
+        min_elevation = story[:elevation]
+      end
+      total_height += story[:floor_to_floor_height]
+    end
+    
+    result = []
+    building[:footprint][:polygons].each do |polygon|
+      next if polygon[:coordinate_system] != "Local Cartesian"
+    
+      floor_print = floor_print_from_polygon(building, polygon, min_elevation)
+      next if !floor_print
+
+      space = OpenStudio::Model::Space.fromFloorPrint(floor_print, total_height, model)
+      if space.empty?
+        @runner.registerWarning("Cannot create geometry for building #{building[:id]}")
+        next
+      end
+      space = space.get
+      
+      building_space_type = create_space_type(building[:space_type], building[:space_type], model)
+      
+      space.setName("Building #{building[:id]} Space")
+      space.setSpaceType(building_space_type)
+      
+      bounding_box = space.boundingBox
+      m = OpenStudio::Matrix.new(4,4,0)
+      m[0,0] = 1
+      m[1,1] = 1
+      m[2,2] = 1
+      m[3,3] = 1
+      m[0,3] = bounding_box.minX.get
+      m[1,3] = bounding_box.minY.get
+      m[2,3] = bounding_box.minZ.get
+      space.changeTransformation(OpenStudio::Transformation.new(m))
+      
+      thermal_zone = OpenStudio::Model::ThermalZone.new(model)
+      thermal_zone.setName("Building #{building[:id]} ThermalZone")
+      space.setThermalZone(thermal_zone)
+      
+      result << space 
+    end
+    
     return result
   end
   
@@ -348,24 +285,18 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     city_json_path = runner.getStringArgumentValue("city_json_path", user_arguments)
     building_id = runner.getStringArgumentValue("building_id", user_arguments)
     
-    # point data available in the following formats
-    # point_xy_2913 (NAD83(HARN) / Oregon North (ft)) (local projection)
-    # point_xy_96703 (Equal Area Projection for the United States)
-    # point_xy_4326 (WGS 84) (longitude, lattitude (deg))
-    # point_xy_26910 (NAD 83 UTM Zone 10 )
-
     # instance variables
     @runner = runner
-    @point_symbol = :point_xy_26910
     @min_x = Float::MAX 
     @min_y = Float::MAX 
     
     # read json
-    buildings = {}
+    city = {}
     File.open(city_json_path, 'r') do |file|
-      buildings = JSON.parse(file.read, {:symbolize_names => true})
+      city = JSON.parse(file.read, {:symbolize_names => true})
     end
     
+    buildings = city[:buildings]
     if buildings.length == 0
       runner.registerError("No buildings found in #{city_json_path}")
       return false
@@ -373,17 +304,19 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     runner.registerInfo("#{buildings.length} buildings found")
     
     # find min and max x coordinate
-    buildings.each_value do |building|
-      building[:points].each do |point|
-        val = point_to_xy(point)
-        @min_x = val[0].to_f if val[0].to_f < @min_x
-        @min_y = val[1].to_f if val[1].to_f < @min_y
+    buildings.each do |building|
+      building[:footprint][:polygons].each do |polygon|
+        next if polygon[:coordinate_system] != "Local Cartesian"
+        polygon[:points].each do |point|
+          @min_x = point[:x] if point[:x] < @min_x
+          @min_y = point[:y] if point[:y] < @min_y
+        end
       end
     end
     runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
    
-    # spaces of surrounding buildings
-    intersecting_spaces = []
+    # buildings to convert to shading surfaces later
+    convert_to_shades = []
     
     # creating buildings
     if (building_id == "*All*")
@@ -393,7 +326,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       #max_bldgs = 10
       
       # make all buildings
-      buildings.each_pair do |fid, building|
+      buildings.each do |building|
         if num_bldgs >= max_bldgs 
           next
         end
@@ -401,7 +334,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         #  next
         #end
         
-        spaces = create_building(fid, building, :space_per_building, model)
+        spaces = create_building(building, :space_per_building, model)
         if !spaces.nil? && !spaces.empty?
           num_bldgs += 1
         end
@@ -414,37 +347,34 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     else
       
       # make requested building
-      building = buildings[building_id.intern]
-      
+      building = buildings.find{|b| b[:id] == building_id}
       if building.nil?
         runner.registerError("Cannot find building #{building_id}")
         return false
       end
       
-      spaces = create_building(building_id, building, :space_per_floor, model)
+      spaces = create_building(building, :space_per_floor, model)
       if spaces.nil? || spaces.empty?
         runner.registerError("Failed to create spaces for building #{building_id}")
         return false
       end
       
-      # add surrounding buildings
-      # todo: this should be surrounding_buildings instead
-      intersecting_bldg_ids = building[:intersecting_bldg_fid].gsub('[','').gsub(']','')
-      intersecting_bldg_ids.split(',').each do |intersecting_bldg_id|
-        intersecting_building = buildings[intersecting_bldg_id.strip.intern]
+      other_building_ids = building[:intersecting_building_ids].concat(building[:surrounding_building_ids]).uniq
+      other_building_ids.each do |other_building_id|
+        other_building = buildings.find{|b| b[:id] == other_building_id}
               
-        if intersecting_building.nil?
-          runner.registerError("Cannot find intersecting building #{intersecting_bldg_id}")
+        if other_building.nil?
+          runner.registerError("Cannot find other building #{other_building_id}")
           return false
         end
         
-        spaces = create_building(intersecting_bldg_id, intersecting_building, :space_per_building, model)
+        spaces = create_building(other_building, :space_per_building, model)
         if spaces.nil? || spaces.empty?
-          runner.registerError("Failed to create spaces for intersecting building #{intersecting_bldg_id}")
+          runner.registerError("Failed to create spaces for other building #{other_building_id}")
           return false
         end
         
-        intersecting_spaces.concat(spaces)
+        convert_to_shades.concat(spaces)
       end
       
     end
@@ -476,7 +406,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
-    intersecting_spaces.each do |space|
+    convert_to_shades.each do |space|
       convert_to_shading_surface_group(space)
     end
 
