@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>e104f556-9c52-44e1-984b-e319b709d88a</version_id>
+  <version_id>2b9f4b5a-f3e3-478f-b0be-adb169364f46</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -65,12 +65,6 @@
       <checksum>C48B2E8F</checksum>
     </file>
     <file>
-      <filename>apply_commercial.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>C483E2FC</checksum>
-    </file>
-    <file>
       <filename>beopt-measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
@@ -92,6 +86,12 @@
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
       <checksum>9801BFDF</checksum>
+    </file>
+    <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>2613417F</checksum>
     </file>
   </files>
 </measure>
