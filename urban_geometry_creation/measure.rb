@@ -92,7 +92,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return floor_print
   end
 
-  def create_building(building, create_method, model)
+  def create_building(building, is_primary, create_method, model)
     
     surface_elevation	= building[:surface_elevation]
     roof_elevation	= building[:roof_elevation]
@@ -101,22 +101,25 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     number_of_stories_below_ground = building[:number_of_stories_below_ground]
     number_of_residential_units = building[:number_of_residential_units]
     
-    # get the building use and fix any issues
-    bldg_use = building[:space_type]
-    building_space_type = create_space_type(bldg_use, bldg_use, model)
-    model.getBuilding.setSpaceType(building_space_type)
-    #model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
-    model.getBuilding.setStandardsNumberOfStories(number_of_stories)
-    if number_of_stories_above_ground
-      model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+    if is_primary
+      # get the building use and fix any issues
+      bldg_use = building[:space_type]
+      building_space_type = create_space_type(bldg_use, bldg_use, model)
+      model.getBuilding.setSpaceType(building_space_type)
+      #model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
+      model.getBuilding.setStandardsNumberOfStories(number_of_stories)
+
+      if number_of_stories_above_ground
+        model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+      end
+      if number_of_residential_units
+        model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+      end
+      #model.getBuilding.setNominalFloortoCeilingHeight
+      model.getBuilding.setStandardsBuildingType(bldg_use)
+      model.getBuilding.setRelocatable(false)
     end
-    if number_of_residential_units
-      model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
-    end
-    #model.getBuilding.setNominalFloortoCeilingHeight
-    model.getBuilding.setStandardsBuildingType(bldg_use)
-    model.getBuilding.setRelocatable(false)
-      
+    
     spaces = []
     if create_method == :space_per_floor
       building[:stories].each do |story|
@@ -257,7 +260,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       thermal_zone.get.remove
     end
     
+    space_type = space.spaceType
+    
     space.remove
+    
+    if !space_type.empty? && space_type.get.spaces.empty?
+      space_type.get.remove
+    end
 
     shading_group.setName(name)
     
@@ -334,7 +343,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         #  next
         #end
         
-        spaces = create_building(building, :space_per_building, model)
+        is_primary = false
+        spaces = create_building(building, is_primary, :space_per_building, model)
         if !spaces.nil? && !spaces.empty?
           num_bldgs += 1
         end
@@ -353,7 +363,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return false
       end
       
-      spaces = create_building(building, :space_per_floor, model)
+      is_primary = true
+      spaces = create_building(building, is_primary, :space_per_floor, model)
       if spaces.nil? || spaces.empty?
         runner.registerError("Failed to create spaces for building #{building_id}")
         return false
@@ -368,7 +379,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           return false
         end
         
-        spaces = create_building(other_building, :space_per_building, model)
+        is_primary = false
+        spaces = create_building(other_building, is_primary, :space_per_building, model)
         if spaces.nil? || spaces.empty?
           runner.registerError("Failed to create spaces for other building #{other_building_id}")
           return false
