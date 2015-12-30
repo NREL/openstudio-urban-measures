@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>14db5ba2-1f73-4bbe-a9e1-9a594bc0d5fc</version_id>
+  <version_id>e104f556-9c52-44e1-984b-e319b709d88a</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -77,6 +77,12 @@
       <checksum>6FE5DF1D</checksum>
     </file>
     <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>FD6B623F</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -85,13 +91,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>757739CB</checksum>
-    </file>
-    <file>
-      <filename>apply_residential.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>FD6B623F</checksum>
+      <checksum>9801BFDF</checksum>
     </file>
   </files>
 </measure>
