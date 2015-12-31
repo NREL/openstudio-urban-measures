@@ -355,7 +355,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       runner.registerInfo("Created #{num_bldgs} buildings")
       
     else
-      
       # make requested building
       building = buildings.find{|b| b[:id] == building_id}
       if building.nil?

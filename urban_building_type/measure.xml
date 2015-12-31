@@ -77,6 +77,12 @@
       <checksum>FD6B623F</checksum>
     </file>
     <file>
+      <filename>beopt-measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>642E37F0</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>

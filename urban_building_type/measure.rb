@@ -68,12 +68,9 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       return false
     end
     standards_building_type = building_space_type.get.standardsBuildingType.get
-    
-    residential = false
-    if standards_building_type == "Single-Family" || 
-       standards_building_type == "Multifamily (2 to 4 units)"
-       standards_building_type == "Multifamily (5 or more units)"
-       standards_building_type == "Mobile Home"
+
+	residential = false
+    if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
       runner.registerInfo("Processing Residential Building")
       residential = true
     else
