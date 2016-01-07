@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>25809c55-550f-4597-bb7a-1944f0201421</version_id>
+  <version_id>762926bf-963a-422a-af61-10783507e84d</version_id>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -16,6 +16,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+      <default_value>../../../../openstudio-urban-measures/city.json</default_value>
     </argument>
     <argument>
       <name>building_id</name>
@@ -24,6 +25,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+      <default_value>142484</default_value>
     </argument>
   </arguments>
   <provenances/>
@@ -64,16 +66,16 @@
   </attributes>
   <files>
     <file>
-      <filename>city.json</filename>
-      <filetype>json</filetype>
-      <usage_type>test</usage_type>
-      <checksum>673005D7</checksum>
-    </file>
-    <file>
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
       <checksum>FC66A79C</checksum>
+    </file>
+    <file>
+      <filename>city.json</filename>
+      <filetype>json</filetype>
+      <usage_type>test</usage_type>
+      <checksum>BAC54F8C</checksum>
     </file>
     <file>
       <version>
@@ -84,7 +86,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>3FAB3B32</checksum>
+      <checksum>0E8F50AF</checksum>
     </file>
   </files>
 </measure>

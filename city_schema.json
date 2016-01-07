@@ -10,6 +10,12 @@
 			"description": "Current version is 0.1",
 			"type": "string"
 		},
+		"variables": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/Variable"
+			}
+		},
 		"region": {
 			"type": "object",
 			"properties": {
@@ -32,10 +38,17 @@
 			}
 		},
 		"taxlots": {
+			"type": "array",
 			"items": {
 				"$ref": "#/definitions/Taxlot"
 			},
 			"additionalProperties": false
+		},
+		"scenarios": {
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/Scenario"
+			}
 		}
 	},
 	"required": [
@@ -361,6 +374,28 @@
 					"items": {
 						"$ref": "#/definitions/Story"
 					}
+				},
+				"custom_models": {
+					"description": "Optional list of custom models to override the footprint.  If no footprint is present then the first custom model is used as the default.",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"osm_filename": {},
+							"geojson_filename": {}
+						},
+						"required": [
+							"id",
+							"name"
+						],
+						"additionalProperties": false
+					}
 				}
 			},
 			"required": [
@@ -407,6 +442,139 @@
 					"$ref": "#/definitions/Footprint"
 				}
 			},
+			"additionalProperties": false
+		},
+		"Variable": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"values": {
+					"type": "array",
+					"minItems": 1,
+					"items": {
+						"type": "string"
+					}
+				}
+			},
+			"required": [
+				"id",
+				"name",
+				"values"
+			],
+			"additionalProperties": false
+		},
+		"Scenario": {
+			"type": "object",
+			"properties": {
+				"id": {
+					"description": "ID for this scenario",
+					"type": "string"
+				},
+				"name": {
+					"description": "Name of this scenario",
+					"type": "string"
+				},
+				"variable_values": {
+					"description": "Variable values that are applied to all buildings in this scenario unless overridden at the building level",
+					"type": "array",
+					"minItems": 1,
+					"items": [
+						{
+							"type": "object",
+							"properties": {
+								"variable_id": {
+									"type": "string"
+								},
+								"variable_value": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"variable_id",
+								"variable_value"
+							],
+							"additionalProperties": false
+						}
+					],
+					"additionalItems": false
+				},
+				"buildings": {
+					"description": "Specify variable values at the building level, overrides global variable values for particular buildings",
+					"type": "array",
+					"items": [
+						{
+							"type": "object",
+							"properties": {
+								"building_id": {
+									"type": "string"
+								},
+								"variable_values": {
+									"description": "Variable values that are applied to all buildings in this scenario unless overridden at the building level",
+									"type": "array",
+									"items": [
+										{
+											"type": "object",
+											"properties": {
+												"variable_id": {
+													"type": "string"
+												},
+												"variable_value": {
+													"type": "string"
+												}
+											},
+											"additionalProperties": false
+										}
+									],
+									"additionalItems": false
+								},
+								"custom_model_id": {
+									"description": "Swaps out the model based on footprint for a custom model.  Analysis workflow decides at what stage in workflow the model substitution measure runs.",
+									"type": "string"
+								}
+							},
+							"additionalProperties": false
+						}
+					],
+					"additionalItems": false
+				},
+				"district_systems": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"items": [
+							{}
+						],
+						"properties": {
+							"id": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"type": {
+								"type": "string"
+							},
+							"building_ids": {
+								"type": "array",
+								"items": {
+									"type": "string"
+								}
+							}
+						},
+						"additionalProperties": false
+					}
+				}
+			},
+			"required": [
+				"id",
+				"name",
+				"variable_values"
+			],
 			"additionalProperties": false
 		}
 	}

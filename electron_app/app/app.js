@@ -72,23 +72,27 @@ document.addEventListener('DOMContentLoaded', function() {
   var imageryErrorEvent = new Cesium.Event();
   imageryErrorEvent.addEventListener(imageryError);
 
-  var imageryProvider = new Cesium.BingMapsImageryProvider({
-          url : "http://dev.virtualearth.net/",
-          //tileProtocol: "http",
-          tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
-          errorEvent: imageryErrorEvent,
-          //proxy : new Cesium.DefaultProxy('/proxy/'),
-          key: bingKey
-      });
+  //var imageryProvider = new Cesium.BingMapsImageryProvider({
+  //        url : "http://dev.virtualearth.net/",
+  //        //tileProtocol: "http",
+  //        tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
+  //        errorEvent: imageryErrorEvent,
+  //        //proxy : new Cesium.DefaultProxy('/proxy/'),
+  //        key: bingKey
+  //    });
       
   //var imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
   //  url: 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
   //});
   
   //var imageryProvider = new Cesium.OpenStreetMapImageryProvider({
-  //        url : "//a.tile.openstreetmap.org/"
+  //        url : "http://a.tile.openstreetmap.org/"
   //    });
 
+  var imageryProvider = Cesium.createOpenStreetMapImageryProvider({
+          url : "http://a.tile.openstreetmap.org/"
+      });
+      
   var viewer;
   try {
     viewer = new Cesium.Viewer('cesiumContainer', {            

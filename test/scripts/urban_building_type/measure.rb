@@ -62,18 +62,22 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       runner.registerError("Cannot determine building space type")
       return false
     end
+
+    if building_space_type.get.standardsBuildingType.empty?
+      runner.registerError("Cannot determine standards building type")
+      return false
+    end
+    standards_building_type = building_space_type.get.standardsBuildingType.get
     
     residential = false
-    
-    building_space_type_name = building_space_type.get.name.get
-    if building_space_type_name == "Single-Family" || 
-        building_space_type_name == "Multifamily (2 to 4 units)"
-        building_space_type_name == "Multifamily (5 or more units)"
-        building_space_type_name == "Mobile Home"
+    if standards_building_type == "Single-Family" || 
+       standards_building_type == "Multifamily (2 to 4 units)"
+       standards_building_type == "Multifamily (5 or more units)"
+       standards_building_type == "Mobile Home"
       runner.registerInfo("Processing Residential Building")
       residential = true
     else
-      runner.registerInfo("Processing Residential Building")
+      runner.registerInfo("Processing Commercial Building")
       residential = false
     end
     
@@ -83,9 +87,9 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     end
     
     if residential
-      beopt_measures_zip = OpenStudio::toPath( File.dirname(__FILE__) + "/resources/beopt-measures.zip");
+      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/beopt-measures.zip");
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath( beopt_measures_dir))
+      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
     end
     
     result = nil
