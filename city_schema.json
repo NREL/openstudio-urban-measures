@@ -1,64 +1,37 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"description": "Comment describing your JSON Schema",
-	"items": {
-		"type": "object",
-		"additionalProperties": false
-	},
+	"id": "http://json-schema.org/geojson/geojson.json#",
+	"title": "Geo JSON object",
+	"description": "Schema for a Geo JSON object",
+	"type": "object",
 	"properties": {
-		"version": {
-			"description": "Current version is 0.1",
-			"type": "string"
+		"crs": {
+			"$ref": "#/definitions/crs"
 		},
-		"variables": {
-			"type": "array",
-			"items": {
-				"$ref": "#/definitions/Variable"
-			}
-		},
-		"region": {
-			"type": "object",
-			"properties": {
-				"name": {
-					"type": "string"
-				},
-				"wgs_84_centroid": {
-					"$ref": "#/definitions/Point"
-				},
-				"polygon": {
-					"$ref": "#/definitions/Polygon"
-				}
-			},
-			"additionalProperties": false
-		},
-		"buildings": {
-			"type": "array",
-			"items": {
-				"$ref": "#/definitions/Building"
-			}
-		},
-		"taxlots": {
-			"type": "array",
-			"items": {
-				"$ref": "#/definitions/Taxlot"
-			},
-			"additionalProperties": false
-		},
-		"scenarios": {
-			"type": "array",
-			"items": {
-				"$ref": "#/definitions/Scenario"
-			}
+		"bbox": {
+			"$ref": "#/definitions/bbox"
 		}
 	},
 	"required": [
-		"buildings",
-		"taxlots"
+		"type"
 	],
-	"additionalProperties": false,
+	"oneOf": [
+		{
+			"$ref": "#/definitions/bbox"
+		},
+		{
+			"$ref": "#/definitions/geometryCollection"
+		},
+		{
+			"$ref": "#/definitions/feature"
+		},
+		{
+			"$ref": "#/definitions/featureCollection"
+		}
+	],
 	"definitions": {
-		"Source": {
-			"description": "Source of the number of stories data.",
+		"source": {
+			"description": "Data source",
 			"type": "string",
 			"enum": [
 				"Measured",
@@ -68,7 +41,8 @@
 				"Inferred"
 			]
 		},
-		"SpaceType": {
+		"spaceType": {
+			"description": "Overall building space type.",
 			"type": "string",
 			"enum": [
 				"Single-Family",
@@ -97,328 +71,14 @@
 				"Other"
 			]
 		},
-		"Footprint": {
-			"type": "object",
-			"properties": {
-				"area": {
-					"description": "Area of the footprint (m^2)",
-					"type": "number"
-				},
-				"perimeter": {
-					"description": "Perimeter of the footprint (m)",
-					"type": "number"
-				},
-				"polygons": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Polygon"
-					}
-				}
-			},
-			"additionalProperties": false
-		},
-		"Polygon": {
-			"type": "object",
-			"properties": {
-				"coordinate_system": {
-					"description": "Point x, y units depend on coordinate system.  When 'WGS 84' x=longitude, y=lattitude (deg).",
-					"type": "string",
-					"enum": [
-						"WGS 84",
-						"Local Cartesian"
-					]
-				},
-				"points": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Point"
-					}
-				},
-				"holes": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"properties": {
-							"points": {
-								"type": "array",
-								"items": {
-									"$ref": "#/definitions/Point"
-								}
-							}
-						},
-						"additionalProperties": false
-					}
-				}
-			},
-			"additionalProperties": false
-		},
-		"Point": {
-			"type": "object",
-			"properties": {
-				"x": {
-					"type": "number"
-				},
-				"y": {
-					"type": "number"
-				}
-			},
-			"additionalProperties": false
-		},
-		"Taxlot": {
-			"type": "object",
-			"properties": {
-				"id": {
-					"description": "Unique id",
-					"type": "string"
-				},
-				"source_id": {
-					"description": "Original source id",
-					"type": "string"
-				},
-				"zoning": {
-					"type": "string",
-					"enum": [
-						"Residential",
-						"Commercial"
-					]
-				},
-				"polygon": {
-					"$ref": "#/definitions/Footprint"
-				}
-			},
-			"required": [
-				"id"
-			],
-			"additionalProperties": false
-		},
-		"Building": {
-			"type": "object",
-			"properties": {
-				"id": {
-					"description": "Unique id",
-					"type": "string"
-				},
-				"source_id": {
-					"description": "Original source id",
-					"type": "string"
-				},
-				"taxlot_id": {
-					"description": "Taxlot id",
-					"type": "string"
-				},
-				"building_number": {
-					"description": "Number of building on taxlot if there are multiple buildings ",
-					"type": "integer"
-				},
-				"name": {
-					"description": "Building name",
-					"type": "string"
-				},
-				"address": {
-					"description": "Street address",
-					"type": "string"
-				},
-				"status": {
-					"description": "Building's status",
-					"type": "string",
-					"enum": [
-						"Proposed",
-						"Existing",
-						"Demolished"
-					]
-				},
-				"space_type": {
-					"$ref": "#/definitions/SpaceType"
-				},
-				"space_type_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"number_of_stories": {
-					"description": "The maximum number of building stories",
-					"type": "integer"
-				},
-				"number_of_stories_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"number_of_stories_above_ground": {
-					"type": "integer"
-				},
-				"number_of_stories_above_ground_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"number_of_stories_below_ground": {
-					"type": "integer"
-				},
-				"number_of_stories_below_ground_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"number_of_residential_units": {
-					"description": "Total number of residential units in the building. ",
-					"type": "integer"
-				},
-				"number_of_residential_units_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"year_built": {
-					"description": "The year construction of the building was completed ",
-					"type": "integer"
-				},
-				"year_built_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"structure_type": {
-					"description": "The predominant construction method used to build the structure.",
-					"type": "string",
-					"enum": [
-						"Reinforced Masonry",
-						"Unreinforced Masonry",
-						"Steel Framed",
-						"Wood Framed"
-					]
-				},
-				"structure_type_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"structure_condition": {
-					"description": "The general condition of the structure.",
-					"type": "string",
-					"enum": [
-						"Safe",
-						"Unsafe"
-					]
-				},
-				"structure_condition_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"average_roof_height": {
-					"description": "Average height of the roof relative to surface elevation (m)",
-					"type": "number"
-				},
-				"average_roof_height_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"maximum_roof_height": {
-					"description": "Maximum height of the roof relative to surface elevation (m)",
-					"type": "number"
-				},
-				"maximum_roof_height_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"minimum_roof_height": {
-					"description": "Minimum height of the roof relative to surface elevation (m)",
-					"type": "number"
-				},
-				"minimum_roof_height_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"surface_elevation": {
-					"description": "The surface elevation (above NAVD88 datum) of the building (m)",
-					"type": "number"
-				},
-				"surface_elevation_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"roof_elevation": {
-					"description": "The maximum roof elevation (above NAVD88 datum) of the building (m)",
-					"type": "number"
-				},
-				"roof_elevation_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"roof_type": {
-					"description": "The basic roof structure type",
-					"type": "string",
-					"enum": [
-						"Complex",
-						"Flat",
-						"Multi-level Flat",
-						"Pitched"
-					]
-				},
-				"roof_type_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"floor_area": {
-					"description": "Usable floor area (m^2)",
-					"type": "number"
-				},
-				"floor_area_source": {
-					"$ref": "#/definitions/Source"
-				},
-				"intersecting_building_ids": {
-					"description": "Ids of other buildings which are in contact with this building",
-					"type": "array",
-					"items": {
-						"type": "string",
-						"items": [
-							{}
-						]
-					}
-				},
-				"surrounding_building_ids": {
-					"description": "Ids of other buildings which are close enough to ths building to include in shading calculations",
-					"type": "array",
-					"items": {
-						"type": "string",
-						"properties": {
-							"building_id": {}
-						}
-					}
-				},
-				"footprint": {
-					"$ref": "#/definitions/Footprint"
-				},
-				"stories": {
-					"description": "Information about each story in the building",
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Story"
-					}
-				},
-				"custom_models": {
-					"description": "Optional list of custom models to override the footprint.  If no footprint is present then the first custom model is used as the default.",
-					"type": "array",
-					"items": {
-						"type": "object",
-						"properties": {
-							"id": {
-								"type": "string"
-							},
-							"name": {
-								"type": "string"
-							},
-							"osm_filename": {},
-							"geojson_filename": {}
-						},
-						"required": [
-							"id",
-							"name"
-						],
-						"additionalProperties": false
-					}
-				}
-			},
-			"required": [
-				"id",
-				"source_id",
-				"space_type",
-				"number_of_stories",
-				"surface_elevation",
-				"roof_elevation",
-				"floor_area",
-				"intersecting_building_ids",
-				"surrounding_building_ids"
-			],
-			"additionalProperties": false
-		},
-		"Story": {
+		"story": {
 			"type": "object",
 			"properties": {
 				"name": {
 					"type": "string"
 				},
 				"story_number": {
-					"description": "First above ground floor is 1, first below ground floor is 0, second below ground floor is -1",
+					"description": "First above ground floor is story 1, first below ground floor is 0, second below ground floor is -1",
 					"type": "integer"
 				},
 				"floor_to_floor_height": {
@@ -430,152 +90,596 @@
 					"type": "number"
 				},
 				"window_to_wall_ratio": {
+					"description": "Ratio of exterior window area to exterior wall area.",
 					"type": "number",
 					"minimum": 0,
 					"maximum": 1,
 					"exclusiveMaximum": true
 				},
 				"space_type": {
-					"$ref": "#/definitions/SpaceType"
-				},
-				"footprint": {
-					"$ref": "#/definitions/Footprint"
+					"$ref": "#/definitions/spaceType"
 				}
 			},
 			"additionalProperties": false
 		},
-		"Variable": {
+		"buildingProperties": {
+			"additionalProperties": false
+		},
+		"taxlotProperties": {
+			"additionalProperties": false
+		},
+		"resultProperties": {
+			"additionalProperties": false
+		},
+		"position": {
+			"description": "A single position",
+			"type": "array",
+			"minItems": 2,
+			"items": [
+				{
+					"type": "number"
+				},
+				{
+					"type": "number"
+				}
+			],
+			"additionalItems": false
+		},
+		"positionArray": {
+			"description": "An array of positions",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/position"
+			}
+		},
+		"lineString": {
+			"description": "An array of two or more positions",
+			"allOf": [
+				{
+					"$ref": "#/definitions/positionArray"
+				},
+				{
+					"minItems": 2
+				}
+			]
+		},
+		"linearRing": {
+			"description": "An array of four positions where the first equals the last",
+			"allOf": [
+				{
+					"$ref": "#/definitions/positionArray"
+				},
+				{
+					"minItems": 4
+				}
+			]
+		},
+		"polygon": {
+			"description": "An array of linear rings",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/linearRing"
+			}
+		},
+		"geometry": {
+			"title": "geometry",
+			"description": "One geometry as defined by GeoJSON",
+			"type": "object",
+			"required": [
+				"coordinates",
+				"type"
+			],
+			"oneOf": [
+				{
+					"title": "Point",
+					"properties": {
+						"type": {
+							"enum": [
+								"Point"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/position"
+						}
+					}
+				},
+				{
+					"title": "MultiPoint",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiPoint"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/positionArray"
+						}
+					}
+				},
+				{
+					"title": "LineString",
+					"properties": {
+						"type": {
+							"enum": [
+								"LineString"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/lineString"
+						}
+					}
+				},
+				{
+					"title": "MultiLineString",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiLineString"
+							]
+						},
+						"coordinates": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/lineString"
+							}
+						}
+					}
+				},
+				{
+					"title": "Polygon",
+					"properties": {
+						"type": {
+							"enum": [
+								"Polygon"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/polygon"
+						}
+					}
+				},
+				{
+					"title": "MultiPolygon",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiPolygon"
+							]
+						},
+						"coordinates": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/polygon"
+							}
+						}
+					}
+				}
+			]
+		},
+		"linkedObject": {
 			"type": "object",
 			"properties": {
-				"id": {
+				"href": {
+					"type": "string",
+					"format": "uri",
+					"FIXME": "spec says \"dereferenceable\", cannot enforce that"
+				},
+				"type": {
+					"description": "Suggested values: proj4, ogjwkt, esriwkt",
+					"type": "string"
+				}
+			},
+			"required": [
+				"href"
+			]
+		},
+		"linkedCrs": {
+			"properties": {
+				"type": {
+					"enum": [
+						"link"
+					]
+				},
+				"properties": {
+					"$ref": "#/definitions/linkedObject"
+				}
+			}
+		},
+		"namedCrs": {
+			"properties": {
+				"type": {
+					"enum": [
+						"name"
+					]
+				},
+				"properties": {
+					"properties": {
+						"name": {
+							"type": "string",
+							"FIXME": "semantic validation necessary"
+						}
+					},
+					"required": [
+						"name"
+					],
+					"additionalProperties": false
+				}
+			}
+		},
+		"crs": {
+			"title": "crs",
+			"description": "a Coordinate Reference System object",
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"type": {
 					"type": "string"
 				},
-				"name": {
-					"type": "string"
+				"properties": {
+					"type": "object"
+				}
+			},
+			"required": [
+				"type",
+				"properties"
+			],
+			"additionalProperties": false,
+			"oneOf": [
+				{
+					"$ref": "#/definitions/namedCrs"
 				},
-				"values": {
+				{
+					"$ref": "#/definitions/linkedCrs"
+				}
+			]
+		},
+		"bbox": {
+			"description": "A bounding box as defined by GeoJSON",
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"FIXME": "unenforceable constraint: even number of elements in array"
+		},
+		"geometryCollection": {
+			"title": "GeometryCollection",
+			"description": "A collection of geometry objects",
+			"properties": {
+				"type": {
+					"enum": [
+						"GeometryCollection"
+					]
+				},
+				"geometries": {
 					"type": "array",
-					"minItems": 1,
 					"items": {
-						"type": "string"
+						"$ref": "#/definitions/geometry"
 					}
 				}
 			},
 			"required": [
-				"id",
-				"name",
-				"values"
-			],
-			"additionalProperties": false
+				"geometries"
+			]
 		},
-		"Scenario": {
-			"type": "object",
+		"feature": {
+			"title": "Feature",
+			"description": "A Geo JSON feature object",
 			"properties": {
-				"id": {
-					"description": "ID for this scenario",
-					"type": "string"
+				"type": {
+					"enum": [
+						"Feature"
+					]
 				},
-				"name": {
-					"description": "Name of this scenario",
-					"type": "string"
-				},
-				"variable_values": {
-					"description": "Variable values that are applied to all buildings in this scenario unless overridden at the building level",
-					"type": "array",
-					"minItems": 1,
-					"items": [
+				"geometry": {
+					"oneOf": [
 						{
-							"type": "object",
-							"properties": {
-								"variable_id": {
-									"type": "string"
-								},
-								"variable_value": {
-									"type": "string"
-								}
-							},
-							"required": [
-								"variable_id",
-								"variable_value"
-							],
-							"additionalProperties": false
-						}
-					],
-					"additionalItems": false
-				},
-				"buildings": {
-					"description": "Specify variable values at the building level, overrides global variable values for particular buildings",
-					"type": "array",
-					"items": [
+							"type": "null"
+						},
 						{
-							"type": "object",
-							"properties": {
-								"building_id": {
-									"type": "string"
-								},
-								"variable_values": {
-									"description": "Variable values that are applied to all buildings in this scenario unless overridden at the building level",
-									"type": "array",
-									"items": [
-										{
-											"type": "object",
-											"properties": {
-												"variable_id": {
-													"type": "string"
-												},
-												"variable_value": {
-													"type": "string"
-												}
-											},
-											"additionalProperties": false
-										}
-									],
-									"additionalItems": false
-								},
-								"custom_model_id": {
-									"description": "Swaps out the model based on footprint for a custom model.  Analysis workflow decides at what stage in workflow the model substitution measure runs.",
-									"type": "string"
-								}
-							},
-							"additionalProperties": false
+							"$ref": "#/definitions/geometry"
 						}
-					],
-					"additionalItems": false
+					]
 				},
-				"district_systems": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"items": [
-							{}
-						],
-						"properties": {
-							"id": {
-								"type": "string"
-							},
-							"name": {
-								"type": "string"
-							},
-							"type": {
-								"type": "string"
-							},
-							"building_ids": {
-								"type": "array",
-								"items": {
-									"type": "string"
+				"properties": {
+					"type": "object",
+					"properties": {
+						"feature_type": {
+							"description": "Type of structure that this feature represents. ",
+							"type": "string",
+							"enum": [
+								"Building",
+								"Taxlot",
+								"Other"
+							]
+						},
+						"source_id": {
+							"description": "Id of this feature in the source data.",
+							"type": "string"
+						},
+						"name": {
+							"description": "Feature name",
+							"type": "string"
+						},
+						"address": {
+							"description": "Street address",
+							"type": "string"
+						},
+						"footprint_area": {
+							"description": "Area of the footprint (m^2)",
+							"type": "number"
+						},
+						"footprint_area_source": {
+							"$ref": "#/definitions/source"
+						},
+						"footprint_perimeter": {
+							"description": "Perimeter of the footprint (m)",
+							"type": "number"
+						},
+						"footprint_perimeter_source": {
+							"$ref": "#/definitions/source"
+						},
+						"zoning": {
+							"type": "string",
+							"enum": [
+								"Vacant",
+								"Mixed",
+								"Residential",
+								"Commercial",
+								"OpenSpace"
+							]
+						},
+						"zoning_source": {
+							"$ref": "#/definitions/source"
+						},
+						"building_properties": {
+							"description": "Not a real property, just a section divider.  Properties below this are for buildings.",
+							"type": "null"
+						},
+						"taxlot_id": {
+							"description": "Id of the taxlot that this building is located on.",
+							"type": "string"
+						},
+						"building_number": {
+							"description": "Index of building on taxlot if there are multiple buildings on taxlot. ",
+							"type": "integer"
+						},
+						"building_status": {
+							"description": "Building status",
+							"type": "string",
+							"enum": [
+								"Proposed",
+								"Existing",
+								"Demolished"
+							]
+						},
+						"building_status_source": {
+							"$ref": "#/definitions/source"
+						},
+						"space_type": {
+							"$ref": "#/definitions/spaceType"
+						},
+						"space_type_source": {
+							"$ref": "#/definitions/source"
+						},
+						"number_of_stories": {
+							"description": "The maximum number of building stories",
+							"type": "integer"
+						},
+						"number_of_stories_source": {
+							"$ref": "#/definitions/source"
+						},
+						"number_of_stories_above_ground": {
+							"description": "The maximum number of building stories above ground",
+							"type": "integer"
+						},
+						"number_of_stories_above_ground_source": {
+							"$ref": "#/definitions/source"
+						},
+						"number_of_stories_below_ground": {
+							"description": "The maximum number of building stories below ground",
+							"type": "integer"
+						},
+						"number_of_stories_below_ground_source": {
+							"$ref": "#/definitions/source"
+						},
+						"number_of_residential_units": {
+							"description": "Total number of residential units in the building. ",
+							"type": "integer"
+						},
+						"number_of_residential_units_source": {
+							"$ref": "#/definitions/source"
+						},
+						"year_built": {
+							"description": "The year construction of the building was completed ",
+							"type": "integer"
+						},
+						"year_built_source": {
+							"$ref": "#/definitions/source"
+						},
+						"structure_type": {
+							"description": "The predominant construction method used to build the structure.",
+							"type": "string",
+							"enum": [
+								"Reinforced Masonry",
+								"Unreinforced Masonry",
+								"Steel Framed",
+								"Wood Framed"
+							]
+						},
+						"structure_type_source": {
+							"$ref": "#/definitions/source"
+						},
+						"structure_condition": {
+							"description": "The general condition of the structure.",
+							"type": "string",
+							"enum": [
+								"Safe",
+								"Unsafe"
+							]
+						},
+						"structure_condition_source": {
+							"$ref": "#/definitions/source"
+						},
+						"average_roof_height": {
+							"description": "Average height of the roof relative to surface elevation (m)",
+							"type": "number"
+						},
+						"average_roof_height_source": {
+							"$ref": "#/definitions/source"
+						},
+						"maximum_roof_height": {
+							"description": "Maximum height of the roof relative to surface elevation (m)",
+							"type": "number"
+						},
+						"maximum_roof_height_source": {
+							"$ref": "#/definitions/source"
+						},
+						"minimum_roof_height": {
+							"description": "Minimum height of the roof relative to surface elevation (m)",
+							"type": "number"
+						},
+						"minimum_roof_height_source": {
+							"$ref": "#/definitions/source"
+						},
+						"surface_elevation": {
+							"description": "The surface elevation (above NAVD88 datum) of the building (m)",
+							"type": "number"
+						},
+						"surface_elevation_source": {
+							"$ref": "#/definitions/source"
+						},
+						"roof_elevation": {
+							"description": "The maximum roof elevation (above NAVD88 datum) of the building (m)",
+							"type": "number"
+						},
+						"roof_elevation_source": {
+							"$ref": "#/definitions/source"
+						},
+						"roof_type": {
+							"description": "The basic roof structure type",
+							"type": "string",
+							"enum": [
+								"Complex",
+								"Flat",
+								"Multi-level Flat",
+								"Pitched"
+							]
+						},
+						"roof_type_source": {
+							"$ref": "#/definitions/source"
+						},
+						"floor_area": {
+							"description": "Usable floor area (m^2)",
+							"type": "number"
+						},
+						"floor_area_source": {
+							"$ref": "#/definitions/source"
+						},
+						"window_to_wall_ratio": {
+							"description": "Ratio of exterior window area to exterior wall area.",
+							"type": "number",
+							"minimum": 0,
+							"maximum": 1,
+							"exclusiveMaximum": true
+						},
+						"window_to_wall_ratio_source": {
+							"$ref": "#/definitions/source"
+						},
+						"intersecting_building_ids": {
+							"description": "Ids of other buildings which are in contact with this building",
+							"type": "array",
+							"items": {
+								"type": "string",
+								"items": [
+									{}
+								]
+							}
+						},
+						"surrounding_building_ids": {
+							"description": "Ids of other buildings which are close enough to ths building to include in shading calculations",
+							"type": "array",
+							"items": {
+								"type": "string",
+								"properties": {
+									"building_id": {}
 								}
 							}
 						},
-						"additionalProperties": false
+						"stories": {
+							"description": "Information about each story in the building",
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/story"
+							}
+						},
+						"measured_euis": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"fuel_type": {
+										"type": "string",
+										"enum": [
+											"Electricity",
+											"Gas",
+											"Combined"
+										]
+									},
+									"begin_date": {},
+									"end_date": {},
+									"eui": {
+										"type": "number"
+									}
+								}
+							}
+						},
+						"taxlot_properties": {
+							"description": "Not a real property, just a section divider.  Properties below this are for taxlots",
+							"type": "null"
+						},
+						"building_ids": {
+							"description": "Ids of buildings on this taxlot.",
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						},
+						"results": {
+							"type": "array"
+						}
+					},
+					"additionalProperties": false
+				},
+				"id": {
+					"FIXME": "may be there, type not known (string? number?)"
+				}
+			},
+			"required": [
+				"geometry",
+				"properties"
+			]
+		},
+		"featureCollection": {
+			"title": "FeatureCollection",
+			"description": "A Geo JSON feature collection",
+			"properties": {
+				"type": {
+					"enum": [
+						"FeatureCollection"
+					]
+				},
+				"features": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/feature"
 					}
 				}
 			},
 			"required": [
-				"id",
-				"name",
-				"variable_values"
-			],
-			"additionalProperties": false
+				"features"
+			]
 		}
 	}
 }
