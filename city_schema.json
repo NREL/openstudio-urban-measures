@@ -121,6 +121,9 @@
 				},
 				{
 					"type": "number"
+				},
+				{
+					"type": "number"
 				}
 			],
 			"additionalItems": false

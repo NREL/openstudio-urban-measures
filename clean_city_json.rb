@@ -11,6 +11,77 @@ if !File.exists?(input_json)
   raise "input_json = #{input_json} does not exist"
 end
 
+def map_zoning(result)
+
+  if result == "MIXRES"
+    result = "Mixed"
+    @last_zoning_source = "Assessor"
+  elsif result == "MIXED"
+    result = "Mixed"      
+    @last_zoning_source = "Assessor"
+  elsif result == "RESIDENT"
+    result = "Residential"
+    @last_zoning_source = "Assessor"
+  elsif result == "RETAIL/ENT"
+    result = "Commercial"
+    @last_zoning_source = "Assessor"
+  elsif result == "MIPS"
+    result = "Commercial" 
+    @last_zoning_source = "Assessor"
+  elsif result == "VACANT"
+    result = "Vacant"       
+    @last_zoning_source = "Assessor"
+  elsif result == "VISITOR"
+    result = "Commercial"     
+    @last_zoning_source = "Assessor"      
+  elsif result == "OpenSpace"
+    result = "OpenSpace"      
+    @last_zoning_source = "Assessor"
+  elsif result == "CIE"
+    result = "Commercial"    
+    @last_zoning_source = "Assessor"
+  elsif result == "MISSING DATA"
+    result = nil       
+  elsif result == "RX"
+    result = "Residential" 
+  elsif result == "RH"
+    result = "Residential" 
+  elsif result == "R1"
+      result = "Residential"
+  elsif result == "R2"
+      result = "Residential"
+  elsif result == "R3"
+      result = "Residential"
+  elsif result == "R4"
+      result = "Residential"
+  elsif result == "R5"
+    result = "Residential"
+  elsif result == "R6"
+      result = "Residential"
+  elsif result == "R7"
+      result = "Residential"
+  elsif result == "CX"
+    result = "Commercial"   
+  elsif result == "CS"
+    result = "Commercial"     
+  elsif result == "CM"
+    result = "Commercial"    
+  elsif result == "CG"
+    result = "Commercial" 
+  elsif result == "CO2"
+    result = "Commercial"     
+  elsif result == "IG1"
+    result = "Commercial"           
+  elsif result == "EX"
+    result = "Commercial"   
+  elsif result == "OS"
+    result = "OpenSpace"      
+    @last_zoning_source = "Assessor"    
+  end
+  
+  return result
+end
+
 # this class can be extended per city if needed
 class Taxlot
   def initialize(object)
@@ -23,39 +94,7 @@ class Taxlot
   end
   
   def zoning
-    result = @object[:landuse]
-    if result == "MIXRES"
-      result = "Mixed"
-      @last_zoning_source = "Assessor"
-    elsif result == "MIXED"
-      result = "Mixed"      
-      @last_zoning_source = "Assessor"
-    elsif result == "RESIDENT"
-      result = "Residential"
-      @last_zoning_source = "Assessor"
-    elsif result == "RETAIL/ENT"
-      result = "Commercial"
-      @last_zoning_source = "Assessor"
-    elsif result == "MIPS"
-      result = "Commercial" 
-      @last_zoning_source = "Assessor"
-    elsif result == "VACANT"
-      result = "Vacant"       
-      @last_zoning_source = "Assessor"
-    elsif result == "VISITOR"
-      result = "Commercial"     
-      @last_zoning_source = "Assessor"      
-    elsif result == "OpenSpace"
-      result = "OpenSpace"      
-      @last_zoning_source = "Assessor"
-    elsif result == "CIE"
-      result = "Commercial"    
-      @last_zoning_source = "Assessor"
-    elsif result == "MISSING DATA"
-      result = nil       
-    end
-    
-    return result
+    return map_zoning(@object[:landuse])
   end  
   
   def zoning_source
@@ -134,39 +173,7 @@ class Building
   end
   
   def zoning
-    result = @object[:zone]
-    if result == "MIXRES"
-      result = "Mixed"
-      @last_zoning_source = "Assessor"
-    elsif result == "MIXED"
-      result = "Mixed"      
-      @last_zoning_source = "Assessor"
-    elsif result == "RESIDENT"
-      result = "Residential"
-      @last_zoning_source = "Assessor"
-    elsif result == "RETAIL/ENT"
-      result = "Commercial"
-      @last_zoning_source = "Assessor"
-    elsif result == "MIPS"
-      result = "Commercial" 
-      @last_zoning_source = "Assessor"
-    elsif result == "VACANT"
-      result = "Vacant"       
-      @last_zoning_source = "Assessor"
-    elsif result == "VISITOR"
-      result = "Commercial"     
-      @last_zoning_source = "Assessor"      
-    elsif result == "OpenSpace"
-      result = "OpenSpace"      
-      @last_zoning_source = "Assessor"
-    elsif result == "CIE"
-      result = "Commercial"    
-      @last_zoning_source = "Assessor"
-    elsif result == "MISSING DATA"
-      result = nil       
-    end
-    
-    return result
+    return map_zoning(@object[:zone])
   end  
   
   def zoning_source
