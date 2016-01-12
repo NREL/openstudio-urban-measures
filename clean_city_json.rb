@@ -15,31 +15,22 @@ def map_zoning(result)
 
   if result == "MIXRES"
     result = "Mixed"
-    @last_zoning_source = "Assessor"
   elsif result == "MIXED"
     result = "Mixed"      
-    @last_zoning_source = "Assessor"
   elsif result == "RESIDENT"
     result = "Residential"
-    @last_zoning_source = "Assessor"
   elsif result == "RETAIL/ENT"
     result = "Commercial"
-    @last_zoning_source = "Assessor"
   elsif result == "MIPS"
     result = "Commercial" 
-    @last_zoning_source = "Assessor"
   elsif result == "VACANT"
     result = "Vacant"       
-    @last_zoning_source = "Assessor"
   elsif result == "VISITOR"
-    result = "Commercial"     
-    @last_zoning_source = "Assessor"      
+    result = "Commercial"          
   elsif result == "OpenSpace"
     result = "OpenSpace"      
-    @last_zoning_source = "Assessor"
   elsif result == "CIE"
     result = "Commercial"    
-    @last_zoning_source = "Assessor"
   elsif result == "MISSING DATA"
     result = nil       
   elsif result == "RX"
@@ -76,10 +67,69 @@ def map_zoning(result)
     result = "Commercial"   
   elsif result == "OS"
     result = "OpenSpace"      
-    @last_zoning_source = "Assessor"    
+  elsif result == "Single Family"
+    result = "Residential"       
   end
   
   return result
+end
+
+class BBox
+  def initialize
+    @three_dim = nil
+    @x = []
+    @y = []
+    @z = []
+  end
+  
+  def add_feature(feature)
+    type = feature[:geometry][:type]
+    
+    all_coordinates = []
+    if type == "Polygon"
+      # "coordinates" member must be an array of LinearRing coordinate arrays
+      feature[:geometry][:coordinates].each do |linear_ring|
+        linear_ring.each do |point|
+          all_coordinates << point
+        end
+      end
+    elsif type == "MultiPolygon"
+      # "coordinates" member must be an array of Polygon coordinate arrays
+      feature[:geometry][:coordinates].each do |polygon|
+        polygon.each do |linear_ring|
+          all_coordinates << point
+        end
+      end
+    else
+      raise "Unknown geometry type #{type}"
+    end
+    
+    all_coordinates.each do |point|
+      if @three_dim.nil?
+        @three_dim = (point.length == 3)
+      end
+      
+      @x << point[0]
+      @x << point[0]
+      
+      @y << point[1]
+      @y << point[1]
+      
+      @z << point[2] if @three_dim
+      @z << point[2] if @three_dim
+    end
+  end
+  
+  def to_hash
+    bbox = []
+    if @three_dim
+      bbox = [@x.min, @y.min, @z.min, @x.max, @y.max, @z.max]
+    else
+      bbox = [@x.min, @y.min, @x.max, @y.max]
+    end
+    return bbox
+  end
+
 end
 
 # this class can be extended per city if needed
@@ -196,17 +246,13 @@ class Building
       
       zone = @object[:zone]
       if zone.nil?
-        if @object[:bldg_footprint_m2].nil?
-          space_use = "Single Family Residential"
-        elsif @object[:bldg_footprint_m2] > 300 
+        if floor_area > 300 
           space_use = "Commercial Office"
         else
           space_use = "Single Family Residential"
         end
       elsif /R/.match(zone)
-        if @object[:bldg_footprint_m2].nil?
-          space_use = "Single Family Residential"
-        elsif @object[:bldg_footprint_m2] > 300 
+        if floor_area > 300 
           space_use = "Multi Family Residential"
         else
           space_use = "Single Family Residential"
@@ -227,7 +273,7 @@ class Building
           cbecs_space_use= "Multifamily (5 or more units)"
         end
       else
-        if @object[:bldg_footprint_m2] > 800
+        if floor_area > 800
           cbecs_space_use= "Multifamily (5 or more units)"
         else
           cbecs_space_use= "Multifamily (2 to 4 units)"
@@ -276,6 +322,15 @@ class Building
       if @object[:roof_elev_m] && @object[:surf_elev_m]
         height = @object[:roof_elev_m].to_f - @object[:surf_elev_m].to_f
         num_floors_height = height / @assumed_floor_to_floor_height
+      elsif @object[:avg_height_m] 
+        height = @object[:avg_height_m].to_f
+        num_floors_height = height / @assumed_floor_to_floor_height      
+      elsif @object[:min_height_m] 
+        height = @object[:min_height_m].to_f
+        num_floors_height = height / @assumed_floor_to_floor_height      
+      elsif @object[:max_height_m]  
+        height = @object[:max_height_m].to_f
+        num_floors_height = height / @assumed_floor_to_floor_height 
       end
       
       num_floors_area = nil
@@ -546,7 +601,13 @@ class Building
   end  
   
   def floor_area
-    @object[:bldg_area_m2].nil? ? nil : @object[:bldg_area_m2]
+    result = @object[:bldg_area_m2].nil? ? nil : @object[:bldg_area_m2]
+    if result.nil?
+      if footprint_area && number_of_stories
+        result = footprint_area*number_of_stories
+      end
+    end
+    return result
   end  
   
   def floor_area_source
@@ -669,8 +730,25 @@ city_json = {}
 File.open(input_json, 'r') do |file|
   json = JSON.parse(file.read, :symbolize_names => true)
   city_json[:crs] = json[:crs]
+
+  bbox = BBox.new
+  json[:features].each do |feature|
+    bbox.add_feature(feature)
+  end
+  city_json[:bbox] = bbox.to_hash
+   
   city_json[:type] = json[:type]
   city_json[:features] = []
+  
+  test = []
+  json[:features].each do |feature|
+    if feature[:properties].has_key?(:bldg_use)
+      #test << feature[:properties][:zone].to_s
+      test << feature[:properties][:bldg_use].to_s
+    end
+  end
+  #puts test.uniq.join(', ')
+  #exit
   
   json[:features].each do |feature|
     # figure out if this is a taxlot or a building

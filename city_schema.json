@@ -102,15 +102,6 @@
 			},
 			"additionalProperties": false
 		},
-		"buildingProperties": {
-			"additionalProperties": false
-		},
-		"taxlotProperties": {
-			"additionalProperties": false
-		},
-		"resultProperties": {
-			"additionalProperties": false
-		},
 		"position": {
 			"description": "A single position",
 			"type": "array",
