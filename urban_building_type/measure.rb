@@ -48,8 +48,6 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
     
-    @runner = runner
-
     # use the built-in error checking
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
@@ -71,33 +69,26 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 
 	residential = false
     if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
-      runner.registerInfo("Processing Residential Building")
+      runner.registerInfo("Processing Residential Building, #{standards_building_type}")
       residential = true
     else
-      runner.registerInfo("Processing Commercial Building")
+      runner.registerInfo("Processing Commercial Building, #{standards_building_type}")
       residential = false
     end
     
-    beopt_measures_dir = File.dirname(__FILE__) + "/resources/beopt-measures/"
+    beopt_measures_dir = "./resources/measures/"
     if File.exists?(beopt_measures_dir)
       FileUtils.rm_rf(beopt_measures_dir)
     end
-    
-    if residential
-      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/beopt-measures.zip");
-      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
-    end
-    
+
     result = nil
     if residential
+      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
+      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
+	  unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
       result = apply_residential(model, runner)
     else
       result = apply_commercial(model, runner)
-    end
-    
-    if File.exists?(beopt_measures_dir)
-      FileUtils.rm_rf(beopt_measures_dir)
     end
     
     return result
