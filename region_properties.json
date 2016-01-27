@@ -1,0 +1,42 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "http://json-schema.org/geojson/geojson.json#",
+	"title": "Geo JSON object",
+	"description": "Schema for a Geo JSON object",
+	"type": "object",
+	"properties": {
+		"id": {
+			"description": "Unique id used to refer to this feature within this dataset.",
+			"type": "string"
+		},
+		"parent_region_id": {
+			"description": "Id of larger region that contains this one.",
+			"type": "string"
+		},
+		"geojson_id": {
+			"description": "Id of the geojson for this feature",
+			"type": "string"
+		},
+		"state": {
+			"description": "Two character code for state containing this feature.",
+			"type": "string"
+		},
+		"name": {
+			"description": "Feature name",
+			"type": "string"
+		}
+	},
+	"definitions": {
+		"source": {
+			"description": "Data source",
+			"type": "string",
+			"enum": [
+				"Measured",
+				"Assessor",
+				"Developer",
+				"User Input",
+				"Inferred"
+			]
+		}
+	}
+}

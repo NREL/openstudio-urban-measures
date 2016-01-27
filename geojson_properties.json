@@ -1,0 +1,338 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "http://json-schema.org/geojson/geojson.json#",
+	"title": "Geo JSON object",
+	"description": "Schema for a Geo JSON object",
+	"type": "object",
+	"properties": {
+		"id": {
+			"FIXME": "may be there, type not known (string? number?)"
+		},
+		"bbox": {
+			"$ref": "#/definitions/bbox"
+		},
+		"type": {
+			"type": "string",
+			"enum": [
+				"Feature"
+			]
+		},
+		"feature_type": {
+			"type": "string",
+			"enum": [
+				"Building",
+				"Taxlot",
+				"Region"
+			]
+		},
+		"building_id": {
+			"type": "string"
+		},
+		"taxlot_id": {
+			"type": "string"
+		},
+		"region_id": {
+			"type": "string"
+		},
+		"geometry": {
+			"oneOf": [
+				{
+					"type": "null"
+				},
+				{
+					"$ref": "#/definitions/geometry"
+				}
+			]
+		},
+		"properties": {
+			"type": [
+				"object",
+				"null"
+			]
+		}
+	},
+	"required": [
+		"geometry",
+		"properties"
+	],
+	"definitions": {
+		"position": {
+			"description": "A single position",
+			"type": "array",
+			"minItems": 2,
+			"items": [
+				{
+					"type": "number"
+				},
+				{
+					"type": "number"
+				}
+			],
+			"additionalItems": false
+		},
+		"positionArray": {
+			"description": "An array of positions",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/position"
+			}
+		},
+		"lineString": {
+			"description": "An array of two or more positions",
+			"allOf": [
+				{
+					"$ref": "#/definitions/positionArray"
+				},
+				{
+					"minItems": 2
+				}
+			]
+		},
+		"linearRing": {
+			"description": "An array of four positions where the first equals the last",
+			"allOf": [
+				{
+					"$ref": "#/definitions/positionArray"
+				},
+				{
+					"minItems": 4
+				}
+			]
+		},
+		"polygon": {
+			"description": "An array of linear rings",
+			"type": "array",
+			"items": {
+				"$ref": "#/definitions/linearRing"
+			}
+		},
+		"geometry": {
+			"title": "geometry",
+			"description": "One geometry as defined by GeoJSON",
+			"type": "object",
+			"required": [
+				"coordinates",
+				"type"
+			],
+			"oneOf": [
+				{
+					"title": "Point",
+					"properties": {
+						"type": {
+							"enum": [
+								"Point"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/position"
+						}
+					}
+				},
+				{
+					"title": "MultiPoint",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiPoint"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/positionArray"
+						}
+					}
+				},
+				{
+					"title": "LineString",
+					"properties": {
+						"type": {
+							"enum": [
+								"LineString"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/lineString"
+						}
+					}
+				},
+				{
+					"title": "MultiLineString",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiLineString"
+							]
+						},
+						"coordinates": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/lineString"
+							}
+						}
+					}
+				},
+				{
+					"title": "Polygon",
+					"properties": {
+						"type": {
+							"enum": [
+								"Polygon"
+							]
+						},
+						"coordinates": {
+							"$ref": "#/definitions/polygon"
+						}
+					}
+				},
+				{
+					"title": "MultiPolygon",
+					"properties": {
+						"type": {
+							"enum": [
+								"MultiPolygon"
+							]
+						},
+						"coordinates": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/polygon"
+							}
+						}
+					}
+				}
+			]
+		},
+		"linkedObject": {
+			"type": "object",
+			"properties": {
+				"href": {
+					"type": "string",
+					"format": "uri",
+					"FIXME": "spec says \"dereferenceable\", cannot enforce that"
+				},
+				"type": {
+					"description": "Suggested values: proj4, ogjwkt, esriwkt",
+					"type": "string"
+				}
+			},
+			"required": [
+				"href"
+			]
+		},
+		"linkedCrs": {
+			"properties": {
+				"type": {
+					"enum": [
+						"link"
+					]
+				},
+				"properties": {
+					"$ref": "#/definitions/linkedObject"
+				}
+			}
+		},
+		"namedCrs": {
+			"properties": {
+				"type": {
+					"enum": [
+						"name"
+					]
+				},
+				"properties": {
+					"properties": {
+						"name": {
+							"type": "string",
+							"FIXME": "semantic validation necessary"
+						}
+					},
+					"required": [
+						"name"
+					],
+					"additionalProperties": false
+				}
+			}
+		},
+		"crs": {
+			"title": "crs",
+			"description": "a Coordinate Reference System object",
+			"type": [
+				"object",
+				"null"
+			],
+			"properties": {
+				"type": {
+					"type": "string"
+				},
+				"properties": {
+					"type": "object"
+				}
+			},
+			"required": [
+				"type",
+				"properties"
+			],
+			"additionalProperties": false,
+			"oneOf": [
+				{
+					"$ref": "#/definitions/namedCrs"
+				},
+				{
+					"$ref": "#/definitions/linkedCrs"
+				}
+			]
+		},
+		"bbox": {
+			"description": "A bounding box as defined by GeoJSON",
+			"type": "array",
+			"items": {
+				"type": "number"
+			},
+			"FIXME": "unenforceable constraint: even number of elements in array"
+		},
+		"geometryCollection": {
+			"title": "GeometryCollection",
+			"description": "A collection of geometry objects",
+			"properties": {
+				"type": {
+					"enum": [
+						"GeometryCollection"
+					]
+				},
+				"geometries": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/geometry"
+					}
+				}
+			},
+			"required": [
+				"geometries"
+			]
+		},
+		"feature": {
+			"title": "Feature",
+			"description": "A Geo JSON feature object",
+			"type": "object",
+			"additionalProperties": false
+		},
+		"featureCollection": {
+			"title": "FeatureCollection",
+			"description": "A Geo JSON feature collection",
+			"properties": {
+				"type": {
+					"enum": [
+						"FeatureCollection"
+					]
+				},
+				"features": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/feature"
+					}
+				}
+			},
+			"required": [
+				"features"
+			]
+		}
+	}
+}

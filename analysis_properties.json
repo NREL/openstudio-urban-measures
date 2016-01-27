@@ -1,0 +1,69 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "http://json-schema.org/geojson/geojson.json#",
+	"title": "Geo JSON object",
+	"description": "Schema for a Geo JSON object",
+	"type": "object",
+	"properties": {
+		"id": {
+			"description": "Unique id used to refer to this feature within this dataset.",
+			"type": "string"
+		},
+		"dencity_id": {
+			"description": "Id of corresponding analysis in DEnCity database.",
+			"type": "string"
+		},
+		"dencity_url": {
+			"description": "Url of DEnCity database.",
+			"type": "string"
+		},
+		"analysis_type": {
+			"type": "string",
+			"enum": [
+				"Manual",
+				"Sensitivity",
+				"Optimization",
+				"Calibration",
+				"Sampling"
+			]
+		},
+		"timestamp": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"variables": {
+			"description": "Variables exposed in this analysis.",
+			"items": {
+				"$ref": "#/definitions/variable"
+			}
+		},
+		"optimal_datapoint_id": {
+			"description": "Optimal datapoint id, used when calibrating models.",
+			"type": "string"
+		}
+	},
+	"definitions": {
+		"variable": {
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"display_name": {
+					"type": "string"
+				}
+			},
+			"additionalProperties": false
+		},
+		"source": {
+			"description": "Data source",
+			"type": "string",
+			"enum": [
+				"Measured",
+				"Assessor",
+				"Developer",
+				"User Input",
+				"Inferred"
+			]
+		}
+	}
+}

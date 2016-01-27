@@ -1,0 +1,81 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"id": "http://json-schema.org/geojson/geojson.json#",
+	"title": "Geo JSON object",
+	"description": "Schema for a Geo JSON object",
+	"type": "object",
+	"properties": {
+		"id": {
+			"description": "Unique id used to refer to this feature within this dataset.",
+			"type": "string"
+		},
+		"source_id": {
+			"description": "Original id in the source dataset, not used to link objects in this dataset.",
+			"type": "string"
+		},
+		"region_id": {
+			"description": "Id of the region containing this building",
+			"type": "string"
+		},
+		"subregion_id": {
+			"description": "Id of the subregion if the region is divided into multiple subregions.  ",
+			"type": "string"
+		},
+		"geojson_id": {
+			"description": "Id of the geojson for this feature",
+			"type": "string"
+		},
+		"name": {
+			"description": "Feature name",
+			"type": "string"
+		},
+		"legal_name": {
+			"description": "Legal name used to identify this feature.",
+			"type": "string"
+		},
+		"address": {
+			"description": "Street address",
+			"type": "string"
+		},
+		"footprint_area": {
+			"description": "Area of the footprint (m^2)",
+			"type": "number"
+		},
+		"footprint_area_source": {
+			"$ref": "#/definitions/source"
+		},
+		"footprint_perimeter": {
+			"description": "Perimeter of the footprint (m)",
+			"type": "number"
+		},
+		"footprint_perimeter_source": {
+			"$ref": "#/definitions/source"
+		},
+		"zoning": {
+			"type": "string",
+			"enum": [
+				"Vacant",
+				"Mixed",
+				"Residential",
+				"Commercial",
+				"OpenSpace"
+			]
+		},
+		"zoning_source": {
+			"$ref": "#/definitions/source"
+		}
+	},
+	"definitions": {
+		"source": {
+			"description": "Data source",
+			"type": "string",
+			"enum": [
+				"Measured",
+				"Assessor",
+				"Developer",
+				"User Input",
+				"Inferred"
+			]
+		}
+	}
+}
