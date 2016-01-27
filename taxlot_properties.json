@@ -1,12 +1,20 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"id": "http://json-schema.org/geojson/geojson.json#",
-	"title": "Geo JSON object",
-	"description": "Schema for a Geo JSON object",
+	"id": "http://json-schema.org/openstudio-urban-modeling/taxlot_properties.json#",
+	"title": "Taxlot object",
+	"description": "Schema for a Taxlot object",
 	"type": "object",
 	"properties": {
 		"id": {
 			"description": "Unique id used to refer to this feature within this dataset.",
+			"type": "string"
+		},
+		"timestamp_created": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_updated": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
 			"type": "string"
 		},
 		"source_id": {

@@ -9,7 +9,7 @@
 			"description": "Unique id used to refer to this feature within this dataset.",
 			"type": "string"
 		},
-		"is_template_template": {
+		"is_template_analysis": {
 			"description": "True if this analysis is a tempalte which is not designed to run directly.",
 			"type": "boolean"
 		},

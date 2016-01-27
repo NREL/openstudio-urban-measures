@@ -17,6 +17,10 @@
 			"description": "Ids of analysis associated with this feature.",
 			"type": "string"
 		},
+		"workflow_id": {
+			"description": "Id of the workflow associated with this feature.",
+			"type": "string"
+		},
 		"dencity_id": {
 			"description": "Id of corresponding datapoint in DEnCity database.",
 			"type": "string"

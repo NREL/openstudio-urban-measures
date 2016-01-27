@@ -1,12 +1,20 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"id": "http://json-schema.org/geojson/geojson.json#",
-	"title": "Geo JSON object",
-	"description": "Schema for a Geo JSON object",
+	"id": "http://json-schema.org/openstudio-urban-modeling/district_system_properties.json#",
+	"title": "Properties of a District System object",
+	"description": "Schema for a District System object",
 	"type": "object",
 	"properties": {
 		"id": {
 			"description": "Unique id used to refer to this feature within this dataset.",
+			"type": "string"
+		},
+		"timestamp_created": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_updated": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
 			"type": "string"
 		},
 		"source_id": {
@@ -36,33 +44,6 @@
 		"address": {
 			"description": "Street address",
 			"type": "string"
-		},
-		"footprint_area": {
-			"description": "Area of the footprint (m^2)",
-			"type": "number"
-		},
-		"footprint_area_source": {
-			"$ref": "#/definitions/source"
-		},
-		"footprint_perimeter": {
-			"description": "Perimeter of the footprint (m)",
-			"type": "number"
-		},
-		"footprint_perimeter_source": {
-			"$ref": "#/definitions/source"
-		},
-		"zoning": {
-			"type": "string",
-			"enum": [
-				"Vacant",
-				"Mixed",
-				"Residential",
-				"Commercial",
-				"OpenSpace"
-			]
-		},
-		"zoning_source": {
-			"$ref": "#/definitions/source"
 		}
 	},
 	"definitions": {

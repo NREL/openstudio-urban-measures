@@ -1,12 +1,20 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
-	"id": "http://json-schema.org/geojson/geojson.json#",
+	"id": "http://json-schema.org/openstudio-urban-modeling/geojson_properties.json#",
 	"title": "Geo JSON object",
 	"description": "Schema for a Geo JSON object",
 	"type": "object",
 	"properties": {
 		"id": {
 			"FIXME": "may be there, type not known (string? number?)"
+		},
+		"timestamp_created": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_updated": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
 		},
 		"bbox": {
 			"$ref": "#/definitions/bbox"
@@ -22,7 +30,8 @@
 			"enum": [
 				"Building",
 				"Taxlot",
-				"Region"
+				"Region",
+				"District System"
 			]
 		},
 		"building_id": {
@@ -32,6 +41,9 @@
 			"type": "string"
 		},
 		"region_id": {
+			"type": "string"
+		},
+		"district_system_id": {
 			"type": "string"
 		},
 		"geometry": {
