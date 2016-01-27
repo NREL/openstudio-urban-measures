@@ -388,12 +388,38 @@
 								"Other"
 							]
 						},
+						"id": {
+							"description": "Id used to refer to this feature within this dataset. Id is unique at the region level.  This id is equal to the id at the feature level to make queries easier.",
+							"type": "number"
+						},
 						"source_id": {
-							"description": "Id of this feature in the source data.",
+							"description": "Original id in the source dataset, not used to link objects in this dataset.",
+							"type": [
+								"string",
+								"number"
+							]
+						},
+						"state": {
+							"description": "Two character code for state containing this feature.",
 							"type": "string"
+						},
+						"region": {
+							"description": "Typically a county or city which provides a consistent level of information for all features.",
+							"type": [
+								"string",
+								"number"
+							]
+						},
+						"subregion_id": {
+							"description": "A region is divided into multiple subregions.  ",
+							"type": "number"
 						},
 						"name": {
 							"description": "Feature name",
+							"type": "string"
+						},
+						"legal_name": {
+							"description": "Legal name used to identify this feature.",
 							"type": "string"
 						},
 						"address": {

@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function() {
   viewer.dataSources.add(city_datasource);
   
   city_datasource.load(city, {
-    stroke: Cesium.Color.HOTPINK,
+    stroke: Cesium.Color.RED,
     fill: Cesium.Color.PINK,
     strokeWidth: 3,
     markerSymbol: '?'
@@ -180,6 +180,16 @@ document.addEventListener('DOMContentLoaded', function() {
       
       //var average_roof_height = value.properties["average_roof_height"];
       values[i].polygon.extrudedHeight = height;
+      
+      var floor_area = value.properties["floor_area"];
+      if (floor_area < 0.09290304*100000){
+        var zoning = value.properties["zoning"];
+        if (zoning == "Commercial"){
+          values[i].polygon.material = Cesium.Color.BLUE;
+          values[i].polygon.outlineColor = Cesium.Color.BLACK;
+          console.log(values[i].polygon);
+        }
+      }
     } 
   })
   

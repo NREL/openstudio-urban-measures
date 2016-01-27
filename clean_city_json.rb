@@ -97,7 +97,9 @@ class BBox
       # "coordinates" member must be an array of Polygon coordinate arrays
       feature[:geometry][:coordinates].each do |polygon|
         polygon.each do |linear_ring|
-          all_coordinates << point
+          linear_ring.each do |point|
+            all_coordinates << point
+          end
         end
       end
     else
@@ -730,6 +732,7 @@ city_json = {}
 File.open(input_json, 'r') do |file|
   json = JSON.parse(file.read, :symbolize_names => true)
   city_json[:crs] = json[:crs]
+  city_json[:crs][:properties][:name] = "urn:ogc:def:crs:OGC:1.3:CRS84"
 
   bbox = BBox.new
   json[:features].each do |feature|
