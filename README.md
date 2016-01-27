@@ -2,6 +2,8 @@
 
 This repository contains OpenStudio measures and utilities for urban modeling. An overview of this functionality is shown below:
 
+<img src="./overview.jpg" alt="Overview" width="600">
+
 ![Overview](./overview.jpg  =600x "Overview")
 
 The OpenStudio Urban Modeling platform is built around the OpenStudio City Database.  The OpenStudio City Database stores information about buildings and analyses and imports/exports data through a RESTful API.  Building, taxlot, and region data is transfered in GeoJSON format; supported properties are defined in [JSON Schema](http://json-schema.org/) format for [buildings](./building_properties.json), [taxlots](./taxlot_properties.json), , and [regions](./taxlot_properties.json).  Analysis data is transferred in the [OpenStudio Analysis JSON](https://github.com/NREL/OpenStudio-analysis-gem) format.  Simulation results are stored in a [DEnCity](http://dencity.org/) database; high level simulation results can be imported into the OpenStudio City Database.  A typical workflow is detailed below:
