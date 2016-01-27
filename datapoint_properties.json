@@ -25,6 +25,18 @@
 			"description": "Url of DEnCity database.",
 			"type": "string"
 		},
+		"timestamp_created": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_started": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_completed": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
 		"variable_values": {
 			"description": "Values of all analysis variables assigned for this datapoint.",
 			"items": {

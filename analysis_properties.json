@@ -9,6 +9,14 @@
 			"description": "Unique id used to refer to this feature within this dataset.",
 			"type": "string"
 		},
+		"is_template_template": {
+			"description": "True if this analysis is a tempalte which is not designed to run directly.",
+			"type": "boolean"
+		},
+		"template_analysis_id": {
+			"description": "Points to the template analysis this analysis was creted from.",
+			"type": "string"
+		},
 		"dencity_id": {
 			"description": "Id of corresponding analysis in DEnCity database.",
 			"type": "string"
@@ -27,7 +35,22 @@
 				"Sampling"
 			]
 		},
-		"timestamp": {
+		"input_type": {
+			"type": "string",
+			"enum": [
+				"Building",
+				"District System"
+			]
+		},
+		"timestamp_created": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_started": {
+			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
+			"type": "string"
+		},
+		"timestamp_completed": {
 			"description": "YYYY-MM-DDTHH:MM:SS.SSSZ",
 			"type": "string"
 		},
