@@ -1,0 +1,24 @@
+<h2>Regions</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Region ID</th>  
+    <th>Actions</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @regions.each do |region| %>
+    <tr>
+      <td><%= link_to region.id, region %></td>
+      <td><%= region.type %></td>
+      <td><%= region.region_id %></td>
+      <td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+

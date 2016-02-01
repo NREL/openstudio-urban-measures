@@ -1,0 +1,24 @@
+<h2>District System</h2>
+
+<h3 class="edit-name"><%= @district_system.id %> <%= link_to "[ edit ]", edit_district_system_path(@district_system), class: "edit-link" %></h3>
+
+<table class="table table-striped">
+  <% @district_system.attributes.keys.sort.each do |key| %>
+    <tr>
+      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
+      <td><%= @district_system[key] %></td>
+    </tr>
+   <% end %>
+</table>
+<h3>Geometry (GeoJson)</h3>
+<table class="table table-striped">
+  <tr>
+  	<th>Type</th>
+    <td><%= @district_system.geometry.type %></td>
+  </tr>
+  <tr>
+  	<th>Coordinates</th>
+  	<td><% @district_system.geometry.coordinates[0].each do |c| %><%= c %><br/><% end %></td>
+  </tr>
+</table>
+

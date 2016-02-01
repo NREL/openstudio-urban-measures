@@ -1,0 +1,24 @@
+<h2>Taxlot</h2>
+
+<h3 class="edit-name"><%= @taxlot.id %> <%= link_to "[ edit ]", edit_taxlot_path(@taxlot), class: "edit-link" %></h3>
+
+<table class="table table-striped">
+  <% @taxlot.attributes.keys.sort.each do |key| %>
+    <tr>
+      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
+      <td><%= @taxlot[key] %></td>
+    </tr>
+   <% end %>
+</table>
+<h3>Geometry (GeoJson)</h3>
+<table class="table table-striped">
+  <tr>
+  	<th>Type</th>
+    <td><%= @taxlot.geometry.type %></td>
+  </tr>
+  <tr>
+  	<th>Coordinates</th>
+  	<td><% @taxlot.geometry.coordinates[0].each do |c| %><%= c %><br/><% end %></td>
+  </tr>
+</table>
+

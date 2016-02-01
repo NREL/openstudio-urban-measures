@@ -1,0 +1,24 @@
+<h2>Taxlots</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Lot fid</th>  
+    <th>Actions</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @taxlots.each do |taxlot| %>
+    <tr>
+      <td><%= link_to taxlot.id, taxlot %></td>
+      <td><%= taxlot.type %></td>
+      <td><%= taxlot.lot_fid %></td>
+      <td><%= link_to 'Edit', edit_taxlot_path(taxlot) %> | <%= link_to 'Destroy', taxlot, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+

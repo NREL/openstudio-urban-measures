@@ -1,0 +1,24 @@
+<h2>District Systems</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>system ID</th>  
+    <th>Actions</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @district_systems.each do |system| %>
+    <tr>
+      <td><%= link_to system.id, district_system %></td>
+      <td><%= system.type %></td>
+      <td><%= system.system_id %></td>
+      <td><%= link_to 'Edit', edit_district_system_path(system) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+

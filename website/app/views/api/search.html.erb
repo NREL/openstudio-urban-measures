@@ -1,0 +1,59 @@
+<h2>Search Options</h2>
+
+<%= bootstrap_form_tag url: '/structures/search', layout: :horizontal do |f| %>
+	<h3>Proximity Search</h3>
+  <p>Find all items near a building.</p>
+  <fieldset>
+  	<%= f.text_field :bldg_fid, value: @bldg_fid, control_col: 'col-sm-4', label: 'Building FID' %>
+  </fieldset>
+  <fieldset>
+  	<%= f.text_field :distance, value: @distance, append: 'ft', control_col: 'col-sm-4', label: 'Max Distance' %>
+  </fieldset>
+  <fieldset>
+    <%= f.select :prox_type, options_for_select(@types, @prox_type), control_col: 'col-sm-4', label: 'Item type to return' %>
+  </fieldset>
+  <%= f.form_group do %>
+  	<%= f.primary 'Proximity Search' %>
+  <% end %>
+
+  
+	<h3>Region Search</h3>
+  <p>Find all items within a specified region.</p>
+  <fieldset>
+  	<%= f.text_field :region_id, value: @region_id, control_col: 'col-sm-4', label: 'Region ID' %>
+  </fieldset>
+  <fieldset>
+    <%= f.select :region_type, options_for_select(@types, @region_type), control_col: 'col-sm-4', label: 'Item type to return' %>
+  </fieldset>
+  <%= f.form_group do %>
+  	<%= f.primary 'Region Search' %>
+  <% end %>
+<% end %>
+
+<% unless @results.nil? %>
+	<h2>Search Results (<%= @results.count %>)</h2>
+
+	<table class="tablesorter table table-striped">
+	  <thead>
+	  <tr>
+	    <th>ID</th>
+	    <th>Type</th>
+	    <th>Bldg fid</th>
+	    <th>Lot fid</th>
+	    <th>Actions</th>
+	  </tr>
+	  </thead>
+	  <tbody>
+	  <% @results.each do |structure| %>
+	    <tr>
+	      <td><%= link_to structure.id, structure %></td>
+	      <td><%= structure.type %></td>
+	      <td><%= structure.bldg_fid %></td>
+	      <td><%= structure.lot_fid %></td>
+	      <td><%= link_to 'Edit', edit_structure_path(structure) %> | <%= link_to 'Destroy', structure, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	    </tr>
+	  <% end %>
+	  </tbody>
+	</table>
+
+<% end %>

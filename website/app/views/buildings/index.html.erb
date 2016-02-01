@@ -1,0 +1,23 @@
+<h2>Buildings</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Bldg fid</th>  
+    <th>Actions</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @buildings.each do |building| %>
+    <tr>
+      <td><%= link_to building.id, building %></td>
+      <td><%= building.type %></td>
+      <td><%= building.bldg_fid %></td>
+      <td><%= link_to 'Edit', edit_building_path(building) %> | <%= link_to 'Destroy', building, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
