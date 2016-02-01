@@ -11,7 +11,7 @@ Make sure MongoDB is installed and running on your machine
 mongod
 ```
 
-In a separate console install the gem dependencies
+In a separate console, install the gem dependencies
 
 ```
 bundle install

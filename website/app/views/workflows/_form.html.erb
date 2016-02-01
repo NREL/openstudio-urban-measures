@@ -1,0 +1,11 @@
+<%= bootstrap_form_tag url: (@workflow.new_record? ? '/workflow' : "/workflows/#{@workflow.id}"),  method: (@workflow.new_record? ? :post : :put), layout: :horizontal do |f| %>
+
+  <fieldset>
+    <%= f.file_field :json_file, control_col: 'col-sm-4' %>
+  </fieldset>
+
+  <%= f.form_group do %>
+    <%= f.primary @workflow.new_record? ? 'Create' : 'Update' %>
+  <% end %>
+<% end %>
+

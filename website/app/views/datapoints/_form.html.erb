@@ -1,0 +1,17 @@
+<%= form_for(@datapoint) do |f| %>
+  <% if @datapoint.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@datapoint.errors.count, "error") %> prohibited this datapoint from being saved:</h2>
+
+      <ul>
+      <% @datapoint.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

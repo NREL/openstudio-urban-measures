@@ -39,9 +39,21 @@ namespace :testing do
     rescue => e
       puts "ERROR: #{e.response}"
     end
+  end
 
+  # Test import workflow
+  desc 'POST workflow'
+  task post_workflow: :environment do
 
+    # TODO
 
+  end
+
+  # Test import workflow_file
+  desc 'POST workflow_file'
+  task post_workflow_file: :environment do
+
+    # TODO
 
   end
 

@@ -1,4 +1,4 @@
-# District system class
+# District system model
 class DistrictSystem
   include Mongoid::Document
   include Mongoid::Timestamps

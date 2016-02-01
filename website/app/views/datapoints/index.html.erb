@@ -1,0 +1,23 @@
+<h2>Datapoints</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Workflow</th>  
+    <th>Actions</th>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @datapoints.each do |datapoint| %>
+    <tr>
+      <td><%= link_to datapoint.id, datapoint %></td>
+      <td><%= datapoint.type %></td>
+      <td><%= datapoint.bldg_fid %></td>
+      <td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

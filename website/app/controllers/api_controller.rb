@@ -1,9 +1,9 @@
 # API controller
 class ApiController < ApplicationController
 
-# import
-# POST api/batch_upload (New and Update)
-def batch_upload
+  # import
+  # POST api/batch_upload (New and Update)
+  def batch_upload
 
     error = false
     error_message = ''
@@ -103,9 +103,9 @@ def batch_upload
         end
       end
     else
-      # analysis does not belong to user
+      # data parameter provided
       error = true
-      error_message << "No data parameter provided."
+      error_message += "No data parameter provided."
      
     end  
    
@@ -230,6 +230,94 @@ def batch_upload
     end
   end
 
-  protected
+  def workflow
+
+    error = false
+    error_message = ''
+    
+    if params[:workflow]
+
+      data = params[:workflow]
+
+      # update or create
+      if data[:id]
+        wf = Workflow.find(data[:id])
+      else
+        wf = Workflow.new
+      end
+      # imported workflows are always 'templates'
+      wf.type = 'template'
+      wf, error, error_message = Workflow.create_update_workflow(data, wf)
+
+    else
+      error = true
+      error_message += "No workflow parameter provided."
+    end
+
+    respond_to do |format|
+      if !error
+        format.json { render json: "Workflow Imported", status: :created, location: workflows_url }
+      else
+        format.json { render json: { error: error_message }, status: :unprocessable_entity }
+      end
+    end
+
+  end
+
+  # POST /api/workflow_file.json
+  def workflow_file
+    
+    # expects workflow_id and file params
+
+    error = false
+    error_messages = []
+    clean_params = file_params
+
+    @workflow = Workflow.find(clean_params[:workflow_id])
+
+    if !@workflow
+      error = true
+      error_messages << "Workflow #{@workflow.id} could not be found."
+    else
+      basic_path = WORKFLOW_FILES_BASIC_PATH
+      # save to file_path:
+      if clean_params[:file_data] && clean_params[:file_data][:file_name]
+        file_name = clean_params[:file_data][:file_name]
+        file = @workflow.workflow_files.find_by_file_name(file_name)
+        if file
+          error = true
+          error_messages << "File #{file_name} already exists. Delete the file first and reupload."
+        else
+          file_uri = "#{basic_path}#{@workflow.id}/#{file_name}"
+          FileUtils.mkpath("#{Rails.root}#{basic_path}") unless Dir.exist?("#{Rails.root}#{basic_path}")
+          Dir.mkdir("#{Rails.root}#{basic_path}#{@workflow.id}/") unless Dir.exist?("#{Rails.root}#{basic_path}#{@workflow.id}/")
+
+          the_file = File.open("#{Rails.root}/#{file_uri}", 'wb') do |f|
+            f.write(Base64.strict_decode64(clean_params[:file_data][:file]))
+          end
+          @wf = WorkflowFile.add_from_path(file_uri)
+          @workflow.workflow_files << @wf
+          @workflow.save
+        end
+      else
+        error = true
+        error_messages << 'No file data to save.'
+      end
+    end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_messages, related_file: @wf }, status: :unprocessable_entity }
+      else
+        format.json { render 'workflow_file', status: :created, location: workflow_url(@workflow) }
+      end
+    end
+  end
+
+  private
+
+  def file_params
+    params.require(:workflow_id)
+    params.permit(:workflow_id, file_data: [:file_name, :file])
+  end
 
 end

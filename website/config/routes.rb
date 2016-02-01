@@ -1,17 +1,21 @@
 Rails.application.routes.draw do
 
   # apipie
-  root 'buildings#index'
+  root 'admin#home'
 
   resources :regions
   resources :district_systems
   resources :taxlots
   resources :buildings
+  resources :datapoints
+  resources :workflows
 
   scope "/api" do
     post 'batch_upload' => 'api#batch_upload'
     match 'search' => 'api#search', :via => [:get, :post]
     post 'export' => 'api#export'
+    post 'workflow' => 'api#workflow'
+    post 'workflow_file' => 'api#workflow_file'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get
@@ -22,6 +26,7 @@ Rails.application.routes.draw do
     get :backup_database
     post :restore_database
     get :clear_database
+    get :home
   end
   
 

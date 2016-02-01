@@ -94,4 +94,8 @@ class AdminController < ApplicationController
 
     success
   end
+
+  def home
+
+  end
 end

@@ -1,4 +1,4 @@
-# Building class
+# Building model
 class Building
   include Mongoid::Document
   include Mongoid::Timestamps
@@ -12,6 +12,7 @@ class Building
 
   # Relations
   belongs_to :geometry
+  has_many :datapoints
 
 end
 
