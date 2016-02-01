@@ -27,7 +27,7 @@ namespace :testing do
   desc 'Export features (api/export)'
   task export_features: :environment do
 
-    # set array of types to return. Choices:  all, building, region, taxlot, district_system
+    # set array of types to return. Choices:  All, Building, Region, Taxlot, District System
     types = ['all']
     json_request = JSON.generate('types' => types)
     

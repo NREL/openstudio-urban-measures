@@ -127,40 +127,33 @@ def batch_upload
   	# types: array of types to export
 
   	# for now, choose what types to export only
-  	@possible_types = ['all', 'building', 'district system', 'region', 'taxlot']
+  	@possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
   	# TODO: allow query (same as on search page) to export data
 
   	@types = Array.new
   	if params[:types] 
   		params[:types].each do |type|
-  			if @possible_types.include? type
-  				@types << type
+  			if @possible_types.include? type.capitalize
+  				@types << type.capitalize
   			end
   		end
   	else
-  		@types << 'all'
+  		@types << 'All'
   	end
 
-  	if @types.include? 'all'
-  		@possible_types.delete('all')
+  	if @types.include? 'All'
+  		@possible_types.delete('All')
   		@types = @possible_types
   	end
 
   	# retrieve each type
   	@results = []
-  	if @types.include? 'building'
-  		@results = @results + Building.all.includes(:geometry)
-  	end
-  	if @types.include? 'taxlot'
-  		@results = @results + Taxlot.all.includes(:geometry)
-  	end
-  	if @types.include? 'region'
-  		@results = @results + Region.all.includes(:geometry)
-  	end
-  	if @types.include? 'district system'
-  		@results = @results + DistrictSystem.all.includes(:geometry)
-  	end
+    @types.each do |type|
+      type = type.gsub(" ", "")
+      model = type.constantize
+      @results = @results + model.all.includes(:geometry)
+    end
 
   	json_data = Geometry.build_geojson(@results)
 
@@ -175,15 +168,15 @@ def batch_upload
   	# TODO: finish this
   	# TODO: allow picking multiple types
 
-    @types = ['all', 'building', 'district system', 'region', 'taxlot']
+    @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
    
-    @results = nil
+    @results = []
 
     @bldg_fid = nil
     @distance = nil
-    @prox_type = 'building'
+    @prox_types = ['Building']
     @region_id = nil
-    @region_type = 'building'
+    @region_types = ['Building']
 
     # Process POST
     if params[:commit]
@@ -191,24 +184,43 @@ def batch_upload
       if params[:commit] == 'Proximity Search'
         @bldg_fid = params[:bldg_fid]
         @distance = params[:distance].empty? ? '500' : params[:distance]
-        @prox_type = params[:prox_type].empty? ? 'building' : params[:prox_type]
+        @prox_type = params[:prox_type].empty? ? @prox_types : params[:prox_type]
 
-        bldg = Structure.find_by(bldg_fid: @bldg_fid)
+        bldg = Building.find_by(bldg_fid: @bldg_fid)
         coords = bldg.geometry.coordinates
         # TODO: This doesn't work
-        # TODO: include prox_type
-        @results = Structure.geo_near(coords).max_distance(@distance)
+        # TODO: include prox_type & refactor
+        @results = Building.geo_near(coords).max_distance(@distance)
         logger("RESULTS: #{@results.count}")
 
       elsif params[:commit] == 'Region Search'
         @region_id = params[:region_id].empty? ? '1' : params[:region_id]
-        @region_type = params[:region_type].empty? ? 'building' : params[:region_type]
-        # TODO: simple region_id search?
-        if @region_type == 'all'
-          @results = Structure.where(region_id: @region_id)
-        else
-          @results = Structure.where(region_id: @region_id, type: @region_type)
+        @region_types = params[:region_type].empty? ? @region_types : params[:region_type]
+
+        # figure out what types
+        @types = Array.new
+    
+        @region_types.each do |type|
+          if @possible_types.include? type.capitalize
+            @types << type.capitalize
+          end
         end
+
+        if @types.include? 'All'
+          @possible_types.delete('All')
+          @types = @possible_types
+        end
+
+        # Iterate through array and get all results
+        @types.each do |type|
+          # remove spaces (for district system)
+          type = type.gsub(" ", "")
+
+          model = type.constantize
+
+          @results = @results + model.where(region_id: @region_id)
+        end
+
       end
     end
 
@@ -217,5 +229,7 @@ def batch_upload
     	format.html { render 'api/search' }  
     end
   end
+
+  protected
 
 end
