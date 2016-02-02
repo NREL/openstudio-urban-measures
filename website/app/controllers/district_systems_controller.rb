@@ -18,7 +18,7 @@ class DistrictSystemsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson([@district_system])}
+      format.json{ render json: Geometry.build_feature(@district_system)}
     end
   end
 

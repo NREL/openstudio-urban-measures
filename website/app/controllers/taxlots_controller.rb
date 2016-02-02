@@ -18,7 +18,7 @@ class TaxlotsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson([@taxlot])}
+      format.json{ render json: Geometry.build_feature(@taxlot)}
     end
   end
 

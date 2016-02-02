@@ -20,4 +20,9 @@ module ApplicationHelper
       active if page == 'Search'
     end
   end
+
+  def get_route()
+    route = request.env['PATH_INFO'].slice(request.env['PATH_INFO'].rindex('/')+1..request.env['PATH_INFO'].length)
+    route = route.slice(-5,5) == '.html' ? route.slice(0,route.length-5) : route
+  end
 end

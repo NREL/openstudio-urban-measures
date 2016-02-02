@@ -19,7 +19,7 @@ class BuildingsController < ApplicationController
 
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson([@building])}
+      format.json{ render json: Geometry.build_feature(@building)}
     end
   end
 

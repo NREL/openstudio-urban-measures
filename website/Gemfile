@@ -9,6 +9,8 @@ gem 'mongoid', '~> 4.0.2'
 
 # JSON parsing and conversion
 gem 'multi_json'
+# GeoJSON Mapping
+gem 'leaflet-rails'
 
 # HTTP requests testing
 gem 'rest-client'

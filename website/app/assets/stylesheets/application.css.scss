@@ -1,6 +1,10 @@
 /*
  *= require rails_bootstrap_forms
+ *= require leaflet
  */
+
+//= depend_on_asset "layers.png"
+//= depend_on_asset "layers-2x.png"
 
 $sansFontFamily: 'PT Sans', sans-serif;
 $baseFontSize: 15px;
@@ -526,3 +530,8 @@ h2.header-large {
   padding-left:80px;
   height:100px;
 }
+
+#map { 
+height: 400px;
+width: 600px; 
+margin-left:300px;}

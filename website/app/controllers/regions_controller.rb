@@ -18,7 +18,7 @@ class RegionsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson([@region])}
+      format.json{ render json: Geometry.build_feature(@region)}
     end
   end
 
