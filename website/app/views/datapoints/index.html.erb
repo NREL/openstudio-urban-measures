@@ -6,7 +6,7 @@
     <th>ID</th>
     <th>Type</th>
     <th>Workflow</th>  
-    <th>Actions</th>
+    <% if can? :update, Datapoint %><th>Actions</th><% end %>
 
   </tr>
   </thead>
@@ -16,7 +16,7 @@
       <td><%= link_to datapoint.id, datapoint %></td>
       <td><%= datapoint.type %></td>
       <td><%= datapoint.bldg_fid %></td>
-      <td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
   </tbody>

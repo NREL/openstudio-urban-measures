@@ -6,7 +6,7 @@
     <th>ID</th>
     <th>Type</th>
     <th>Region ID</th>  
-    <th>Actions</th>
+   <% if can? :update, Region %> <th>Actions</th><% end %>
 
   </tr>
   </thead>
@@ -16,7 +16,7 @@
       <td><%= link_to region.id, region %></td>
       <td><%= region.type %></td>
       <td><%= region.region_id %></td>
-      <td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% if can? :update, Region %><td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
   </tbody>

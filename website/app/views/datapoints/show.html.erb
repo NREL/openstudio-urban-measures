@@ -1,6 +1,6 @@
 <h2>Datapoint</h2>
 
-<h3 class="edit-name"><%= @datapoint.id %> <%= link_to "[ edit ]", edit_datapoint_path(@datapoint), class: "edit-link" %></h3>
+<h3 class="edit-name"><%= @datapoint.id %> <% if can? :update, Datapoint %><%= link_to "[ edit ]", edit_datapoint_path(@datapoint), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
   <% @datapoint.attributes.keys.sort.each do |key| %>

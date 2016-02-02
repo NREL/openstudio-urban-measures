@@ -6,7 +6,7 @@
     <th>ID</th>
     <th>Type</th>
     <th>system ID</th>  
-    <th>Actions</th>
+    <% if can? :update, DistrictSystem %><th>Actions</th><% end %>
 
   </tr>
   </thead>
@@ -16,7 +16,7 @@
       <td><%= link_to system.id, district_system %></td>
       <td><%= system.type %></td>
       <td><%= system.system_id %></td>
-      <td><%= link_to 'Edit', edit_district_system_path(system) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      <% if can? :update, DistrictSystem %><td><%= link_to 'Edit', edit_district_system_path(system) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
   </tbody>

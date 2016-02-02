@@ -84,7 +84,7 @@ class Geometry
             elsif association == 'region'
               object.type = 'region'
               @geometry.region = object
-            elsif association = 'district system'
+            elsif association == 'district system'
               object.type = 'district_system'
               @geometry.district_system = object  
             end

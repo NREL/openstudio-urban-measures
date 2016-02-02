@@ -12,5 +12,6 @@ class Region
 
   # Relations
   belongs_to :geometry
+  belongs_to :user
 
 end

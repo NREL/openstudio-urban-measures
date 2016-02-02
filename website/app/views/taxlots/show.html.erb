@@ -1,6 +1,6 @@
 <h2>Taxlot</h2>
 
-<h3 class="edit-name"><%= @taxlot.id %> <%= link_to "[ edit ]", edit_taxlot_path(@taxlot), class: "edit-link" %></h3>
+<h3 class="edit-name"><%= @taxlot.id %> <% if can? :update, Taxlot %><%= link_to "[ edit ]", edit_taxlot_path(@taxlot), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
   <% @taxlot.attributes.keys.sort.each do |key| %>

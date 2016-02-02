@@ -1,6 +1,6 @@
 <h2>District System</h2>
 
-<h3 class="edit-name"><%= @district_system.id %> <%= link_to "[ edit ]", edit_district_system_path(@district_system), class: "edit-link" %></h3>
+<h3 class="edit-name"><%= @district_system.id %> <% if can? :update, DistrictSystem %><%= link_to "[ edit ]", edit_district_system_path(@district_system), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
   <% @district_system.attributes.keys.sort.each do |key| %>

@@ -13,8 +13,10 @@ gem 'multi_json'
 # HTTP requests testing
 gem 'rest-client'
 
-# for 'respond_to in rails >= 4.2'
-#gem 'responders'
+# user auth, roles, & permissions
+gem 'devise'
+gem 'cancancan', '~> 1.9'
+gem 'role_model'
 
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 4.0.0'

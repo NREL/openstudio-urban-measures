@@ -1,4 +1,5 @@
 class WorkflowsController < ApplicationController
+  load_and_authorize_resource
   before_action :set_workflow, only: [:show, :edit, :update, :destroy]
 
   # GET /workflows

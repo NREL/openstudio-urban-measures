@@ -39,11 +39,13 @@ GEM
     apipie-rails (0.3.5)
       json
     arel (6.0.3)
+    bcrypt (3.1.10)
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
     bootstrap_form (2.3.0)
     bson (3.2.6)
     builder (3.2.2)
+    cancancan (1.13.1)
     coffee-rails (4.1.1)
       coffee-script (>= 2.2.0)
       railties (>= 4.0.0, < 5.1.x)
@@ -52,6 +54,13 @@ GEM
       execjs
     coffee-script-source (1.10.0)
     connection_pool (2.2.0)
+    devise (3.5.6)
+      bcrypt (~> 3.0)
+      orm_adapter (~> 0.1)
+      railties (>= 3.2.6, < 5)
+      responders
+      thread_safe (~> 0.1)
+      warden (~> 1.2.3)
     domain_name (0.5.24)
       unf (>= 0.0.5, < 1.0.0)
     erubis (2.7.0)
@@ -92,6 +101,7 @@ GEM
       mini_portile2 (~> 2.0.0.rc2)
     optionable (0.2.0)
     origin (2.1.1)
+    orm_adapter (0.5.0)
     rack (1.6.4)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -120,10 +130,13 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (10.5.0)
+    responders (2.1.1)
+      railties (>= 4.2.0, < 5.1)
     rest-client (1.8.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    role_model (0.8.2)
     sass (3.2.19)
     sass-rails (4.0.5)
       railties (>= 4.0.0, < 5.0)
@@ -152,6 +165,8 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.1)
+    warden (1.2.6)
+      rack (>= 1.0)
 
 PLATFORMS
   ruby
@@ -160,12 +175,15 @@ DEPENDENCIES
   apipie-rails
   bootstrap-sass (~> 3.1.1)
   bootstrap_form
+  cancancan (~> 1.9)
+  devise
   jbuilder (~> 1.2)
   jquery-rails
   mongoid (~> 4.0.2)
   multi_json
   rails (= 4.2.5)
   rest-client
+  role_model
   sass-rails (~> 4.0.0)
   turbolinks
   uglifier (>= 1.3.0)

@@ -13,6 +13,7 @@ class Building
   # Relations
   belongs_to :geometry
   has_many :datapoints
+  belongs_to :user
 
 end
 

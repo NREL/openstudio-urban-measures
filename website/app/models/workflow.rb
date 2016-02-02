@@ -12,6 +12,7 @@ class Workflow
     end
   end
   has_many :datapoints # one instance and one template
+  belongs_to :user
 
   def self.create_update_workflow(data, workflow)
   	

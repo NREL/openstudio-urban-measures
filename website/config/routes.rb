@@ -3,6 +3,14 @@ Rails.application.routes.draw do
   # apipie
   root 'admin#home'
 
+  devise_for :users
+  resources :users
+
+  devise_scope :user do
+    get '/login' => 'devise/sessions#new'
+    get '/logout' => 'devise/sessions#destroy'
+  end
+
   resources :regions
   resources :district_systems
   resources :taxlots

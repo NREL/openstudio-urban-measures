@@ -1,4 +1,5 @@
 class DistrictSystemsController < ApplicationController
+  load_and_authorize_resource
   before_action :set_district_system, only: [:show, :edit, :update, :destroy]
 
   # GET /district_systems

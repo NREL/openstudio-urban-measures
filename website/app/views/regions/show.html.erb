@@ -1,6 +1,6 @@
 <h2>Region</h2>
 
-<h3 class="edit-name"><%= @region.id %> <%= link_to "[ edit ]", edit_region_path(@region), class: "edit-link" %></h3>
+<h3 class="edit-name"><%= @region.id %> <% if can? :update, Region %><%= link_to "[ edit ]", edit_region_path(@region), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
   <% @region.attributes.keys.sort.each do |key| %>

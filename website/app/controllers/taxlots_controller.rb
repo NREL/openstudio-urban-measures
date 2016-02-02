@@ -1,4 +1,5 @@
 class TaxlotsController < ApplicationController
+  load_and_authorize_resource
   before_action :set_taxlot, only: [:show, :edit, :update, :destroy]
 
   # GET /taxlots

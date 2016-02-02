@@ -1,6 +1,6 @@
 <h2>Workflow</h2>
 
-<h3 class="edit-name"><%= @workflow.id %> <%= link_to "[ edit ]", edit_workflow_path(@workflow), class: "edit-link" %></h3>
+<h3 class="edit-name"><%= @workflow.id %> <% if can? :update, Workflow %><%= link_to "[ edit ]", edit_workflow_path(@workflow), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
   <% @workflow.attributes.keys.sort.each do |key| %>
