@@ -9,6 +9,7 @@ gem 'mongoid', '~> 4.0.2'
 
 # JSON parsing and conversion
 gem 'multi_json'
+
 # GeoJSON Mapping
 gem 'leaflet-rails'
 
@@ -39,6 +40,10 @@ gem 'jbuilder', '~> 1.2'
 
 # Document API
 gem 'apipie-rails'
+
+# Time Zone Information
+gem 'tzinfo'
+gem 'tzinfo-data', platforms: [:x64_mingw, :mingw, :mswin]
 
 #group :development, :test do
 #  gem 'capistrano'
