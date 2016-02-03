@@ -424,21 +424,21 @@ def apply_residential_hvac(model, living_space_type, living_thermal_zone, baseme
     args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)
 
-    # measure = ProcessFurnace.new
-    # args_hash = default_args_hash(model, measure)
-    # args_hash["living_thermal_zone"] = living_thermal_zone_name
-    # if basement_thermal_zone
-	  # args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    # end	
-    # run_measure(model, measure, args_hash, runner)
+    measure = ProcessFurnace.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end	
+    run_measure(model, measure, args_hash, runner)
 	
-    # measure = ProcessCentralAirConditioner.new
-    # args_hash = default_args_hash(model, measure)
-    # args_hash["living_thermal_zone"] = living_thermal_zone_name
-    # if basement_thermal_zone
-	  # args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    # end	
-    # run_measure(model, measure, args_hash, runner)	
+    measure = ProcessCentralAirConditioner.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end	
+    run_measure(model, measure, args_hash, runner)	
 	
   when "Multifamily (2 to 4 units)"	
 
@@ -447,13 +447,21 @@ def apply_residential_hvac(model, living_space_type, living_thermal_zone, baseme
     args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)
 
-    # measure = ProcessElectricBaseboard.new
-    # args_hash = default_args_hash(model, measure)
-    # args_hash["living_thermal_zone"] = living_thermal_zone_name
-    # if basement_thermal_zone
-	  # args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    # end
-    # run_measure(model, measure, args_hash, runner)	
+    measure = ProcessElectricBaseboard.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessCentralAirConditioner.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end	
+    run_measure(model, measure, args_hash, runner)	
   
   when "Multifamily (5 or more units)"
 
@@ -462,13 +470,21 @@ def apply_residential_hvac(model, living_space_type, living_thermal_zone, baseme
     args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)
 
-    # measure = ProcessElectricBaseboard.new
-    # args_hash = default_args_hash(model, measure)
-    # args_hash["living_thermal_zone"] = living_thermal_zone_name
-    # if basement_thermal_zone
-	  # args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    # end
-    # run_measure(model, measure, args_hash, runner)	
+    measure = ProcessElectricBaseboard.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessCentralAirConditioner.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    if basement_thermal_zone
+	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
+    end	
+    run_measure(model, measure, args_hash, runner)	
   
   when "Mobile Home"
 	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")

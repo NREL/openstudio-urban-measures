@@ -1,0 +1,347 @@
+{
+  "provenance":{
+    "display_name":"fullVariationDR",
+    "name":"fullvariationdr",
+    "user_created_date":"2015-12-02 19:12:31 -0700",
+    "analysis_types":"lhs",
+    "analysis_information":{
+      "sample_method":"all_variables",
+      "number_of_samples":2,
+      "objective_functions":[
+        "standard_report_legacy.total_natural_gas",
+        "standard_report_legacy.total_electricity"
+      ]
+    }
+  },
+  "measure_definitions":[
+    {
+      "id":"aa838dcb-5916-47ac-90ab-a8cf3e2ee566",
+      "version_id":"1b472929-fcd9-4333-a6e7-8a664392ebbc",
+      "name":"CreateDOEPrototypeBuilding",
+      "display_name":"Create DOE Prototype Building",
+      "type":"RubyMeasure",
+      "arguments":[
+        {
+          "display_name":"Building Type",
+          "display_name_short":"Bld Type",
+          "name":"building_type",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Climate Zone",
+          "display_name_short":"Climate",
+          "name":"climate_zone",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Building Vintage",
+          "display_name_short":"Vintage",
+          "name":"building_vintage",
+          "default_value":null,
+          "data_type":"string",
+          "description":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"5dc297c8-47cc-44f8-b124-04cfb5c797be",
+      "version_id":"fcd35150-0f59-4167-8a16-fe221708384a",
+      "name":"SetDRWeatherFile",
+      "display_name":"Set DR Weather File",
+      "type":"RubyMeasure",
+      "arguments":[
+        {
+          "display_name":"Weather Directory Name",
+          "display_name_short":"Weather Directory Name",
+          "name":"weather_directory_name",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Weather File Name",
+          "display_name_short":"Weather File Name",
+          "name":"weather_file_name",
+          "default_value":null,
+          "data_type":"string",
+          "description":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"ec82504f-807b-4854-92f7-a0bb9eab5bb0",
+      "version_id":"74bc4586-8030-4001-bce9-6042c7caf2a3",
+      "name":"ReduceElectricEquipmentLoadsByPercentage",
+      "display_name":"Reduce Electric Equipment Loads by Percentage",
+      "type":"RubyMeasure",
+      "arguments":[
+        {
+          "display_name":"Apply the Measure to a Specific Space Type or to the Entire Model.",
+          "display_name_short":"Equip Spaces",
+          "name":"space_type",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Electric Equipment Power Reduction (%).",
+          "display_name_short":"Elec Equip Reduction %",
+          "name":"elecequip_power_reduction_percent",
+          "default_value":null,
+          "data_type":"double",
+          "description":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"60b27b15-45b5-4a15-9d61-fab36fd20386",
+      "version_id":"e707b1a9-f5e7-467b-be5f-9ce839623b0a",
+      "name":"ReduceLightingLoadsByPercentage",
+      "display_name":"Reduce Lighting Loads by Percentage",
+      "type":"RubyMeasure",
+      "arguments":[
+        {
+          "display_name":"Apply the Measure to a Specific Space Type or to the Entire Model.",
+          "display_name_short":"Lght Spaces",
+          "name":"space_type",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Lighting Power Reduction (%).",
+          "display_name_short":"Lght Reduction %",
+          "name":"lighting_power_reduction_percent",
+          "default_value":null,
+          "data_type":"double",
+          "description":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"5257f40e-0020-436b-adc4-54bc0b7d4910",
+      "version_id":"693d94cd-3e44-4cbd-b7d7-b3a59692bab6",
+      "name":"SetTimestep",
+      "display_name":"Set Timestep",
+      "type":"EnergyPlusMeasure",
+      "arguments":[
+        {
+          "display_name":"Number of EnergyPlus simulation timesteps per hourMust evenly divide 60",
+          "display_name_short":"Number of EnergyPlus simulation timesteps per hourMust evenly divide 60",
+          "name":"timestep",
+          "data_type":"integer",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"fd4a9bf7-2068-4f1b-bdc0-ff47b46fee3a",
+      "version_id":"037255b9-e7b7-43ed-9b58-25deb1ee4bff",
+      "name":"SetThermalComfort",
+      "display_name":"Set Thermal Comfort",
+      "type":"EnergyPlusMeasure",
+      "arguments":[]
+    },
+    {
+      "id":"877ace29-91a3-4836-8707-cd3efdd3be73",
+      "version_id":"e887eb89-976f-4fc6-b909-430aac61846c",
+      "name":"SwapDXPerfCurves",
+      "display_name":"Swap DX Perf Curves",
+      "type":"EnergyPlusMeasure",
+      "arguments":[]
+    },
+    {
+      "id":"7dec3fb6-3921-42f3-a279-a68fd39d7c21",
+      "version_id":"e3f24746-33e5-46ec-98ce-4c7bece1befa",
+      "name":"AddZoneCapacitanceMultiplier",
+      "display_name":"Add Zone Capacitance Multiplier",
+      "type":"EnergyPlusMeasure",
+      "arguments":[
+        {
+          "display_name":"Temperature Capacitance Multiplier",
+          "display_name_short":"Temperature Capacitance Multiplier",
+          "name":"temp_cap_mult",
+          "data_type":"double",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Humidity Capacitance Multiplier",
+          "display_name_short":"Humidity Capacitance Multiplier",
+          "name":"hum_cap_mult",
+          "data_type":"double",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"906a680d-2161-4d14-8ef5-bc29129d2f60",
+      "version_id":"9b4f405a-a4d3-43b2-a654-a30dc919f022",
+      "name":"InjectTimeseriesDR",
+      "display_name":"Inject Timeseries for DR",
+      "type":"EnergyPlusMeasure",
+      "arguments":[]
+    },
+    {
+      "id":"390171e6-a20a-40a5-8789-929b79959c09",
+      "version_id":"671b2abe-60ee-4104-8137-6105d2d07c56",
+      "name":"RunEnergyPlusDR",
+      "display_name":"Run Energy Plus for DR",
+      "type":"EnergyPlusMeasure",
+      "arguments":[
+        {
+          "display_name":"SQL filename",
+          "display_name_short":"SQL Filename",
+          "name":"file_name",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"8ea7d34b-4a47-485f-b403-c32d1746c679",
+      "version_id":"d709560b-a081-46e6-983e-50acea978054",
+      "name":"DrScheduleMaker",
+      "display_name":"DR Schedule Maker",
+      "type":"EnergyPlusMeasure",
+      "arguments":[
+        {
+          "display_name":"Name of DR Schedule",
+          "display_name_short":"Name of DR Schedule",
+          "name":"schedule_name",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"DR Event Start Time",
+          "display_name_short":"DR Event Start Time",
+          "name":"event_start_time",
+          "data_type":"double",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"DR Event Duration",
+          "display_name_short":"DR Event Duration",
+          "name":"event_duration",
+          "data_type":"double",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"8a8fa4e1-f299-469f-bf89-c91d5a399aed",
+      "version_id":"4cbc94bf-14f4-4b21-981e-cfa760100398",
+      "name":"DrSetpointModification",
+      "display_name":"DR Setpoint Modification",
+      "type":"EnergyPlusMeasure",
+      "arguments":[
+        {
+          "display_name":"DR Event Schedule Name",
+          "display_name_short":"DR Event Schedule Name",
+          "name":"dr_event_schedule",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Event Delta T",
+          "display_name_short":"Event Delta T",
+          "name":"event_delta_t",
+          "default_value":null,
+          "data_type":"double",
+          "description":"",
+          "units":""
+        }
+      ]
+    },
+    {
+      "id":"6e504b62-5736-4aea-a744-17d7e8fb5e50",
+      "version_id":"313c2713-e9ff-45ab-a0b4-46b1f79acf7c",
+      "name":"DsgridReports",
+      "display_name":"Demand Side Grid Reporting",
+      "type":"ReportingMeasure",
+      "arguments":[
+        {
+          "display_name":"Baseline SQL file name",
+          "display_name_short":"Baseline SQL file name",
+          "name":"base_sql_name",
+          "data_type":"string",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Output HDF5 File",
+          "display_name_short":"Output HDF5 File",
+          "name":"hdf5_output",
+          "data_type":"bool",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Output CSV File",
+          "display_name_short":"Output CSV File",
+          "name":"csv_output",
+          "data_type":"bool",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        },
+        {
+          "display_name":"Save QAQC Timeseries",
+          "display_name_short":"Save QAQC Timeseries",
+          "name":"save_qaqc",
+          "data_type":"bool",
+          "default_value":null,
+          "description":"",
+          "display_units":"",
+          "units":""
+        }
+      ]
+    }
+  ]
+}

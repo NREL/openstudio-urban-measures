@@ -117,7 +117,8 @@ def apply_residential(workspace, runner, standards_space_type)
   
   living_thermal_zone, basement_thermal_zone = get_thermal_zones(workspace)
  
-  result = result && apply_residential_infil(workspace, standards_space_type, living_thermal_zone, basement_thermal_zone, runner)
+  # FIXME: for this to work on the server, need to update weather.rb with a method which retrieves weather file path from workspace (issue #3)
+  # result = result && apply_residential_infil(workspace, standards_space_type, living_thermal_zone, basement_thermal_zone, runner)
   
   return result
     

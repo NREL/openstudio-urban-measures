@@ -72,13 +72,13 @@ class OpenStudio::Model::Model
   # @return [Bool] returns true if successful, false if not
   # @example Create a Small Office, 90.1-2010, in ASHRAE Climate Zone 5A (Chicago)
   #   model.create_prototype_building('SmallOffice', '90.1-2010', 'ASHRAE 169-2006-5A')
-  def apply_standard(runner, building_type, building_vintage, climate_zone, sizing_run_dir = Dir.pwd, debug = false)  
-
+  def apply_standard(runner, building_type, building_vintage, climate_zone, sizing_run_dir = Dir.pwd, debug = false)
+  
     logStream = OpenStudio::StringStreamLogSink.new
     logStream.setLogLevel(OpenStudio::Warn)
     
     begin
-runner.registerInfo( "1" )
+
       self.load_openstudio_standards_json
       lookup_building_type = self.get_lookup_name(building_type)
       
@@ -96,48 +96,28 @@ runner.registerInfo( "1" )
         runner.registerError("Could not find prototype inputs for #{search_criteria}, cannot create model.")
         return false
       end
-runner.registerInfo( "2" )
       #self.load_building_type_methods(building_type, building_vintage, climate_zone)
       #self.load_geometry(building_type, building_vintage, climate_zone)
       #self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
       space_type_map = self.define_space_type_map(building_type, building_vintage, climate_zone)
-runner.registerInfo( "2a" )
-      runner.registerInfo( "Before: #{self.getSpaceTypes.size}" )
-      self.assign_space_type_stubs(lookup_building_type, space_type_map)
-      runner.registerInfo( "After: #{self.getSpaceTypes.size}" )
-runner.registerInfo( "3" )
-      
+      self.assign_space_type_stubs(lookup_building_type, space_type_map)      
       self.add_loads(building_vintage, climate_zone)
-runner.registerInfo( "3a" )	  
       self.apply_infiltration_standard
-runner.registerInfo( "3b" )	  
       self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
-runner.registerInfo( "3c" )
       self.modify_surface_convection_algorithm(building_vintage)
-runner.registerInfo( "3d" )	  
       self.add_constructions(lookup_building_type, building_vintage, climate_zone)
-runner.registerInfo( "3e" )	  
       self.create_thermal_zones(building_type,building_vintage, climate_zone)
-runner.registerInfo( "3f" )	  
       self.add_hvac(building_type, building_vintage, climate_zone, prototype_input, self.standards)
-runner.registerInfo( "3g" )	  
       self.add_swh(building_type, building_vintage, climate_zone, prototype_input, self.standards, space_type_map)
-runner.registerInfo( "3h" )	  
       self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
-runner.registerInfo( "3i" )	  
       self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
-runner.registerInfo( "3j" )	  
       self.add_design_days_and_weather_file(self.standards, building_type, building_vintage, climate_zone)
-runner.registerInfo( "3k" )	  
       self.set_sizing_parameters(building_type, building_vintage)
-runner.registerInfo( "3l" )	  
       self.yearDescription.get.setDayofWeekforStartDay('Sunday')
-runner.registerInfo( "4" )
       # Perform a sizing run
       if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
         return false
       end
-runner.registerInfo( "5" )
       # If there are any multizone systems, set damper positions
       # and perform a second sizing run
       has_multizone_systems = false
@@ -150,15 +130,12 @@ runner.registerInfo( "5" )
           break
         end
       end
-runner.registerInfo( "6" )
       # Apply the prototype HVAC assumptions
       # which include sizing the fan pressure rises based
       # on the flow rate of the system.
       self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
-runner.registerInfo( "7" )
       # Apply the HVAC efficiency standard
       self.applyHVACEfficiencyStandard
-runner.registerInfo( "8" )
       # Add daylighting controls per standard
       # only four zones in large hotel have daylighting controls
       # todo: YXC to merge to the main function
@@ -167,7 +144,6 @@ runner.registerInfo( "8" )
       else
         self.add_daylighting_controls(building_vintage)
       end
-runner.registerInfo( "9" )
       if building_type == "QuickServiceRestaurant" || building_type == "FullServiceRestaurant"
         self.update_exhaust_fan_efficiency(building_vintage)
         self.update_waterheater_loss_coefficient(building_vintage)
@@ -181,7 +157,6 @@ runner.registerInfo( "9" )
       if debug
         self.request_timeseries_outputs
       end
-runner.registerInfo( "10" )
     rescue Exception => e  
     
       runner.registerError("#{e}")
@@ -207,6 +182,25 @@ end
 
 # returns "Large", "Medium", or "Small"
 def office_size(model, runner)
+  result = "Medium"
+  
+  floor_area = model.getBuilding.floorArea
+    
+  # todo: put in real ranges
+  if floor_area > 200000000 # FIXME: seems there is currently a bug in openstudio-standards gem when building_type='LargeOffice' (~line 716 of create_thermal_zones in Prototype.Model.rb)
+    result = "Large"
+  elsif floor_area > 1
+    result = "Medium"
+  elsif floor_area > 0
+    result = "Small"
+  else
+    runner.registerError("Building floor area is 0, cannot determine office size")
+  end
+  
+  return result
+end
+
+def hotel_size(model, runner)
   result = "Large"
   
   floor_area = model.getBuilding.floorArea
@@ -215,11 +209,9 @@ def office_size(model, runner)
   if floor_area > 2
     result = "Large"
   elsif floor_area > 1
-    result = "Medium"
-  elsif floor_area > 0
     result = "Small"
   else
-    runner.registerError("Building floor area is 0, cannot determine office size")
+    runner.registerError("Building floor area is 0, cannot determine hotel size")
   end
   
   return result
@@ -258,15 +250,21 @@ def prototype_building_type(model, runner)
   when "Laboratory"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Nonrefrigerated warehouse"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    result = 'Warehouse'
+    
   when "Food sales"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Public order and safety"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Outpatient health care"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    result = 'Outpatient'
+    
   when "Refrigerated warehouse"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    result = 'Warehouse'
+    
   when "Religious worship"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Public assembly"
@@ -276,17 +274,30 @@ def prototype_building_type(model, runner)
   when "Food service"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Inpatient health care"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+
+    result = 'Hospital'
+  
   when "Nursing"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Lodging"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    size = hotel_size(model, runner)
+    if size == 'Large'
+      result = 'LargeHotel'
+    elsif size == 'Small'
+      result = 'SmallHotel'
+    end
+    
   when "Strip shopping mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")   
+    
+    result = 'RetailStripmall'
+    
   when "Enclosed mall"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Retail other than mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    result = 'RetailStandalone'
+    
   when "Service"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Other"
@@ -334,15 +345,21 @@ def map_space_type(space_type, runner)
   when "Laboratory"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Nonrefrigerated warehouse"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    new_space_type = 'Warehouse - med/blk'
+    
   when "Food sales"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Public order and safety"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Outpatient health care"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    new_space_type = 'Hospital - exam'
+    
   when "Refrigerated warehouse"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    new_space_type = 'Warehouse - med/blk'
+    
   when "Religious worship"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Public assembly"
@@ -352,17 +369,31 @@ def map_space_type(space_type, runner)
   when "Food service"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Inpatient health care"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    new_space_type = 'Hospital - exam'
+    
   when "Nursing"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Lodging"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    new_building_type = 'Lodging' 
+    
+    size = hotel_size(space_type.model, runner)
+    if size == "Large"
+      new_space_type = 'Hotel/Motel - rooms'
+    elsif size == "Small"
+      new_space_type = 'Hotel/Motel - rooms'
+    end  
+  
   when "Strip shopping mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")   
+    
+    new_space_type = 'Retail'
+    
   when "Enclosed mall"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Retail other than mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    
+    new_space_type = 'Retail'
+    
   when "Service"
     runner.registerError("#{standards_building_type} is not a commercial building type")
   when "Other"
@@ -376,16 +407,67 @@ def map_space_type(space_type, runner)
 
 end
 
+def load_building_type_methods(runner, building_type)
+
+  building_methods = nil
+
+  case building_type
+  when 'SecondarySchool'
+    building_methods = 'Prototype.secondary_school'    
+  when 'PrimarySchool'
+    building_methods = 'Prototype.primary_school'
+  when 'SmallOffice'
+    building_methods = 'Prototype.small_office'
+  when 'MediumOffice'
+    building_methods = 'Prototype.medium_office'
+  when 'LargeOffice'
+    building_methods = 'Prototype.large_office'
+  when 'SmallHotel'
+    building_methods = 'Prototype.small_hotel'
+  when 'LargeHotel'
+    building_methods = 'Prototype.large_hotel'
+  when 'Warehouse'
+    building_methods = 'Prototype.warehouse'
+  when 'RetailStandalone'
+    building_methods = 'Prototype.retail_standalone'
+  when 'RetailStripmall'
+    building_methods = 'Prototype.retail_stripmall'
+  when 'QuickServiceRestaurant'
+    building_methods = 'Prototype.quick_service_restaurant'
+  when 'FullServiceRestaurant'
+    building_methods = 'Prototype.full_service_restaurant'
+  when 'Hospital'
+    building_methods = 'Prototype.hospital'
+  when 'Outpatient'
+    building_methods = 'Prototype.outpatient'
+  when 'MidriseApartment'
+    building_methods = 'Prototype.mid_rise_apartment'
+  else
+    OpenStudio::logFree(OpenStudio::Error, 'openstudio.model.Model',"Building Type = #{building_type} not recognized")
+    return false
+  end
+
+  spec = Gem::Specification.find_by_name("openstudio-standards")
+  gem_root = spec.gem_dir
+  require "#{gem_root}/lib/openstudio-standards/prototypes/#{building_methods}"
+
+  return true
+
+end 
+
 def apply_commercial(model, runner)
 
   building_type = prototype_building_type(model, runner)
+  building_vintage = '90.1-2010'
+  climate_zone = 'ASHRAE 169-2006-5A'
+
+  # result = load_building_type_methods(runner, building_type)
   
   model.getSpaceTypes.each do |space_type|
     map_space_type(space_type, runner)
   end
   
-  runner.registerInfo(building_type)
-  result = model.apply_standard(runner, building_type, '90.1-2010', 'ASHRAE 169-2006-5A')
+  result = model.apply_standard(runner, building_type, building_vintage, climate_zone)
   if !result
     runner.registerError("Cannot apply building type")
     return result
