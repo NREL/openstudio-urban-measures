@@ -16,7 +16,11 @@ Rails.application.routes.draw do
   resources :taxlots
   resources :buildings
   resources :datapoints
-  resources :workflows
+  resources :workflows do
+    member do
+      get 'download_zipfile'
+    end
+  end
 
   scope "/api" do
     post 'batch_upload' => 'api#batch_upload'

@@ -26,18 +26,31 @@ class WorkflowsController < ApplicationController
   # POST /workflows.json
   def create
     @workflow = Workflow.new
+    
+    error = false
+    error_message = ''
 
-    if params[:json_file]
+    if params[:json_file] && params[:json_file].class.name == 'ActionDispatch::Http::UploadedFile'
+      # TODO: move this into create_update function?
       data = read_json_file(params[:json_file])
       if data.nil?
         error = true
         error_message += 'No data to process'
       else
-        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow)
+        @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow)
       end
     else
       error = true
       error_message += 'No file was uploaded'
+    end
+
+    unless error
+      if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
+        zip_file = params[:zip_file]
+        logger.info("****FILE DATA: #{zip_file.inspect}")
+        @workflow, error, error_message = Workflow.add_workflow_file(zip_file, @workflow)
+      
+      end
     end
 
     respond_to do |format|
@@ -54,7 +67,11 @@ class WorkflowsController < ApplicationController
   # PATCH/PUT /workflows/1
   # PATCH/PUT /workflows/1.json
   def update
-    if params[:json_file]
+    error = false
+    error_message = ''
+    
+    if params[:json_file] && params[:json_file].class.name == 'ActionDispatch::Http::UploadedFile'
+      # TODO: move this into create_update function?
       data = read_json_file(params[:json_file])
       if data.nil?
         error = true
@@ -65,6 +82,12 @@ class WorkflowsController < ApplicationController
     else
       error = true
       error_message += 'No file was uploaded'
+    end
+
+    # TODO zipfile
+    if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
+      zip_file = params[:zip_file]
+      @workflow, error, error_message = Workflow.add_workflow_file(zip_file, @workflow)
     end
 
     respond_to do |format|
@@ -88,6 +111,20 @@ class WorkflowsController < ApplicationController
     end
   end
 
+  # download a related workflowfile
+  def download_zipfile
+    file = @workflow.workflow_file
+    fail 'file not found in database' unless file
+
+    file_data = get_file_data(file)
+    if file_data
+      send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment'
+    else
+      fail 'file not found in database'
+    end
+  end
+
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_workflow
@@ -100,6 +137,7 @@ class WorkflowsController < ApplicationController
     end
 
     # Read in Workflow JSON
+    # TODO: add error handling here and return gracefully
     def read_json_file(file_data)
       if file_data.class.to_s == 'Hash'
          data = file_data
@@ -114,5 +152,22 @@ class WorkflowsController < ApplicationController
         data = nil
       end
       return data
+    end
+
+    # download a file
+    def get_file_data(file)
+      begin
+        file_data = nil
+        fail 'File not stored on the server' unless File.exist?("#{Rails.root}#{file.uri}")
+        file_data = File.read("#{Rails.root}#{file.uri}")
+
+        fail "Could not find file to download #{file.uri}" if file_data.nil?
+      rescue => e
+        flash[:notice] = "Could not find file to download #{file.uri}. #{e.message}"
+        logger.error "Could not find file to download #{file.uri}. #{e.message}"
+        redirect_to(:back)
+      end
+
+      file_data
     end
 end

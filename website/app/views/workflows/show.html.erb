@@ -5,8 +5,13 @@
 <table class="table table-striped">
   <% @workflow.attributes.keys.sort.each do |key| %>
     <tr>
-      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
-      <td><%= @workflow[key] %></td>
+    	<% if key == 'workflow_file' %>
+    		<th>Related Zip File</th>
+    		<td> <%= link_to @workflow.workflow_file.file_name, download_zipfile_workflow_path(@workflow) %><br/></td>
+	    <% else %>
+	      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
+      	<td><%= @workflow[key] %></td>
+      <% end %>
     </tr>
    <% end %>
 </table>

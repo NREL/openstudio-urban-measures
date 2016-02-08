@@ -245,8 +245,7 @@ class ApiController < ApplicationController
       else
         wf = Workflow.new
       end
-      # imported workflows are always 'templates'
-      wf.type = 'template'
+
       wf, error, error_message = Workflow.create_update_workflow(data, wf)
 
     else

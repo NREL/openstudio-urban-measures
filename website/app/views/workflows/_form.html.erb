@@ -1,7 +1,10 @@
-<%= bootstrap_form_tag url: (@workflow.new_record? ? '/workflow' : "/workflows/#{@workflow.id}"),  method: (@workflow.new_record? ? :post : :put), layout: :horizontal do |f| %>
+<%= bootstrap_form_tag url: (@workflow.new_record? ? '/workflows' : "/workflows/#{@workflow.id}"),  method: (@workflow.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4' do |f| %>
 
-  <fieldset>
-    <%= f.file_field :json_file, control_col: 'col-sm-4' %>
+  <fieldset class="pad-top-30">
+    <%= f.file_field :json_file, label: 'OSW file' %>
+  </fieldset>
+  <fieldset class="pad-top-30 pad-bot-30">
+  	<%= f.file_field :zip_file, label: 'Related Zip file' %>
   </fieldset>
 
   <%= f.form_group do %>
