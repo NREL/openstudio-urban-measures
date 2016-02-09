@@ -6,116 +6,23 @@ class ApiController < ApplicationController
   def batch_upload
 
     error = false
-    error_message = ''
-    saved_structures = 0
-    total_count = 0
+    message = ''
 
     # get json data (data param)
     if params[:data]
-
-      # check that crs -> properties -> name == EPSG:4326 (if not, don't upload)
-      # TODO: allow longer version of coordinate name
-      if params[:data][:crs][:properties][:name] != 'EPSG:4326'
-        error = true
-        error_message += 'Cannot upload coordinate systems other than EPSG:4326.'
-
-      else
-        features = params[:data][:features] ? params[:data][:features] : []
-        total_count = features.count
-        # import items in the features array
-        features.each do |item|
-         
-          if item[:properties]
-            properties = item[:properties]
-          else
-            properties = nil
-            error = true
-            error_message += "Missing properties for data item."
-          end
-
-          unless properties.nil?
-          
-            # TODO: use 'type' to determine which type this is (building, region, taxlot, or district_system) 
-            # TODO: probably don't need to store 'type' in each model, but must export it back out 
-
-            # BUILDING
-            if properties[:bldg_fid] && properties[:bldg_fid] != 'null'
-            	# ID provided?
-            	if properties[:id] && properties[:id] != 'null'
-              	@structure = Building.find_or_create_by(id: properties[:id])
-              else
-               	# TODO: find_or_create by source_id & source_name 
-               	@structure = Building.find_or_create_by(bldg_fid: properties[:bldg_fid])
-              end 	
-              @structure.type = 'building'
-            # TAXLOT
-            elsif properties[:lot_fid] && properties[:lot_fid] != 'null'
-            	# ID provided?
-            	if properties[:id] && properties[:id] != 'null'
-            		@structure = Taxlot.find_or_create_by(id: properties[:id])
-            	else
-            		# TODO: find_or_create by source_id & source_name 
-              	@structure = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
-              end
-              @structure.type = 'taxlot'
-            end
-            # TODO: add region and district_system
-            
-            properties.each do |key, value|
-              if value != 'null'
-                @structure[key] = value
-              end
-            end
-
-            # geojson fields are under geometry
-            if item[:geometry]
-              geometry = item[:geometry]
-              if @structure.geometry.nil?
-                @geometry = Geometry.new
-
-                # set association
-                association = @structure.class.name.downcase
-                # TODO: there's got to be a better way to do this
-                if association == 'building'
-                	@geometry.building = @structure
-                elsif association == 'taxlot'
-                	@geometry.taxlot = @structure
-                end
-                # TODO: add region and district_system
-              else
-                @geometry = @structure.geometry
-              end
-
-              @geometry.type = geometry[:type]
-              @geometry.coordinates = geometry[:coordinates]
-              
-              if @geometry.save!
-                saved_structures += 1
-              else
-                error = true
-                error_message += "Could not process: #{@geometry.errors}."
-              end
-            else
-              error = true
-              error_message += "Missing geometry for data item."
-            end
-          end
-        end
-      end
+      # sent last result, doesn't mean anything here
+      result, error, message = Geometry.create_update_feature(params[:data])
     else
       # data parameter provided
       error = true
-      error_message += "No data parameter provided."
-     
+      message += "No data parameter provided."
     end  
-   
-    logger.info("SAVED STRUCTURES: #{saved_structures}")
-
+  
     respond_to do |format|
       if !error
-        format.json { render json: "Created #{saved_structures} entries from #{total_count} uploaded.", status: :created, location: buildings_url }
+        format.json { render json: message, status: :created, location: buildings_url }
       else
-        format.json { render json: { error: error_message }, status: :unprocessable_entity }
+        format.json { render json: { error: message }, status: :unprocessable_entity }
       end
     end
   end

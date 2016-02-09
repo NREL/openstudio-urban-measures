@@ -7,7 +7,7 @@ namespace :testing do
   task batch_upload_features: :environment do
    
     #filename = "#{Rails.root}/data/san_francisco_bldg_footprints_4326.geojson"
-    filename = "#{Rails.root}/data/test.geojson"
+    filename = "#{Rails.root}/lib/test.geojson"
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file)

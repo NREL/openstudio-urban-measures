@@ -35,28 +35,17 @@
 
     // nesting depends on what we're plotting
     coords = geojsonFeature["geometry"]["coordinates"];
-
-    if (coords[0].constructor === Array) {
-      if (coords[0][0].constructor === Array) {
-        if (coords[0][0][0].constructor === Array) {
-          lng = coords[0][0][0][0];
-          lat = coords[0][0][0][1];
-        }
-        else {
-        // deepest is 3 levels
-        lng = coords[0][0][0];
-        lat = coords[0][0][1];
-        }
-      }
-      else {
-        lng = coords[0][0];
-        lat = coords[0][1];
-      }
-    }
+    if (geojsonFeature["geometry"]["type"] == "Polygon") {
+      // polygon (3rd level)
+      lng = coords[0][0][0];
+      lat = coords[0][0][1];
+    }  
     else {
-      lng = coords[0];
-      lat = coords[1];
+      //assume multipolygon (4th level)
+      lng = coords[0][0][0][0];
+      lat = coords[0][0][0][1];
     }
+
 
     var map = L.map('map').setView([lat, lng], 18);
 
