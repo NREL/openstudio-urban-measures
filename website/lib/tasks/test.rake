@@ -7,7 +7,7 @@ namespace :testing do
   task batch_upload_features: :environment do
    
     #filename = "#{Rails.root}/data/san_francisco_bldg_footprints_4326.geojson"
-    filename = "#{Rails.root}/lib/test.geojson"
+    filename = "#{Rails.root}/data/test.geojson"
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file)
@@ -45,7 +45,18 @@ namespace :testing do
   desc 'POST workflow'
   task post_workflow: :environment do
 
-    # TODO
+    filename = "#{Rails.root}/data/test.osw"
+    json_file = MultiJson.load(File.read(filename))
+    json_request = JSON.generate('workflow' => json_file)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/workflow')
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}" 
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
 
   end
 

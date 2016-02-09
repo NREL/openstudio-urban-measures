@@ -230,10 +230,13 @@ class ApiController < ApplicationController
     end
   end
 
+  # POST /api/workflow.json
   def workflow
 
     error = false
     error_message = ''
+    created_flag = false
+    @workflow = nil
     
     if params[:workflow]
 
@@ -241,33 +244,46 @@ class ApiController < ApplicationController
 
       # update or create
       if data[:id]
-        wf = Workflow.find(data[:id])
+        workflows = Workflow.where(id: data[:id])
+        if workflows.count > 0
+          @workflow = workflows.first
+          logger.info("WORKFLOW FOUND: UPDATING")
+        else
+          error = true
+          error_message = "No workflows match ID #{data[:id]}.  Cannot update."
+          logger.info("WORKFLOW NOT FOUND!")
+        end
       else
-        wf = Workflow.new
+        @workflow = Workflow.new
+        created_flag = true
+        logger.info("NEW WORKFLOW: CREATING")
       end
-
-      wf, error, error_message = Workflow.create_update_workflow(data, wf)
-
+      unless error
+        @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow)
+      end
     else
       error = true
       error_message += "No workflow parameter provided."
     end
 
     respond_to do |format|
-      if !error
-        format.json { render json: "Workflow Imported", status: :created, location: workflows_url }
-      else
-        format.json { render json: { error: error_message }, status: :unprocessable_entity }
+        if error
+          format.json { render json: { error: error_messages, workflow: @workflow }, status: :unprocessable_entity }
+        else
+          if created_flag
+            status = :created
+          else
+            status = :ok
+          end
+          format.json { render 'workflows/show', status: status, location: workflows_url(@workflow) }
+        end
       end
-    end
-
   end
 
   # POST /api/workflow_file.json
   def workflow_file
     
     # expects workflow_id and file params
-
     error = false
     error_messages = []
     clean_params = file_params

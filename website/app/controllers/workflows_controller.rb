@@ -47,9 +47,7 @@ class WorkflowsController < ApplicationController
     unless error
       if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
         zip_file = params[:zip_file]
-        logger.info("****FILE DATA: #{zip_file.inspect}")
         @workflow, error, error_message = Workflow.add_workflow_file(zip_file, @workflow)
-      
       end
     end
 
