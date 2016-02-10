@@ -77,6 +77,20 @@
 		"zip_code": {
 			"description": "Five digit zip code.",
 			"type": "string"
+		},
+		"footprint_area": {
+			"description": "Area of the footprint (m^2)",
+			"type": "number"
+		},
+		"footprint_area_source": {
+			"$ref": "file:///E:/openstudio-urban-measures/building_properties.json#/definitions/source"
+		},
+		"footprint_perimeter": {
+			"description": "Perimeter of the footprint (m)",
+			"type": "number"
+		},
+		"footprint_perimeter_source": {
+			"$ref": "file:///E:/openstudio-urban-measures/building_properties.json#/definitions/source"
 		}
 	},
 	"definitions": {
