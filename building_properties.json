@@ -309,6 +309,13 @@
 			}
 		}
 	},
+	"required": [
+		"source_name",
+		"source_id",
+		"intersecting_building_source_ids",
+		"region_source_name",
+		"region_source_ids"
+	],
 	"definitions": {
 		"source": {
 			"description": "Data source",

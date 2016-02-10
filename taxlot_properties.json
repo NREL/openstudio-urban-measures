@@ -94,6 +94,12 @@
 			"$ref": "#/definitions/source"
 		}
 	},
+	"required": [
+		"source_name",
+		"source_id",
+		"region_source_name",
+		"region_source_ids"
+	],
 	"definitions": {
 		"source": {
 			"description": "Data source",

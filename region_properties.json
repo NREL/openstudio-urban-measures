@@ -93,6 +93,10 @@
 			"$ref": "file:///E:/openstudio-urban-measures/building_properties.json#/definitions/source"
 		}
 	},
+	"required": [
+		"source_name",
+		"source_id"
+	],
 	"definitions": {
 		"source": {
 			"description": "Data source",
