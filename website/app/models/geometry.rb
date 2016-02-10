@@ -5,16 +5,16 @@ class Geometry
 
   # Fields
   field :type, type: String
-  field :coordinates, type: Array  # format order for coordinates is: [long, lat]
-  field :centroid, type: Array
+  field :coordinates, type: Array # format order for coordinates is: [long, lat]
+  field :centroid, type: Array # [ lng, lat] index
 
   # Validation
 
   # Relations
-  has_one :building, autosave: true, dependent: :destroy
-  has_one :taxlot, autosave: true, dependent: :destroy
-  has_one :district_system, autosave: true, dependent: :destroy
-  has_one :region, autosave: true, dependent: :destroy
+  belongs_to :building
+  belongs_to :taxlot
+  belongs_to :district_system
+  belongs_to :region
 
   # Indexes
   index({ centroid: "2d" }, { min: -200, max: 200 })
@@ -73,7 +73,8 @@ class Geometry
           message += "Missing properties for data item."
         end
 
-        # instantiate object
+        # instantiate object 
+        # TODO: temporary
         if is_bulk
           # TODO: make this better.  Will there be a "type" variable?
           if properties[:bldg_fid] && properties[:bldg_fid] != 'null'
@@ -97,6 +98,9 @@ class Geometry
             object.type = 'taxlot'
           end
           # TODO: regions and district systems
+        else
+          # set object type anyway
+          object.type = object.class.name.underscore  
         end
 
         unless properties.nil?
@@ -110,24 +114,10 @@ class Geometry
           # geojson fields are under geometry
           if item[:geometry]
             geometry = item[:geometry]
+
             if object.geometry.nil?
               @geometry = Geometry.new
-
-              # set association
-              association = object.class.name.downcase
-              if association == 'building'
-                object.type = 'building'
-                @geometry.building = object
-              elsif association == 'taxlot'
-                object.type = 'taxlot'
-                @geometry.taxlot = object
-              elsif association == 'region'
-                object.type = 'region'
-                @geometry.region = object
-              elsif association == 'district system'
-                object.type = 'district_system'
-                @geometry.district_system = object  
-              end
+              object.geometry = @geometry
             else
               @geometry = object.geometry
             end
@@ -136,11 +126,11 @@ class Geometry
             @geometry.coordinates = geometry[:coordinates]
             @geometry.centroid = calculate_centroid(@geometry.coordinates, @geometry.type)
 
-            if @geometry.save!
+            if object.save!
               saved_objects += 1
             else
               error = true
-              message += "Could not process: #{@geometry.errors}."
+              message += "Could not process: #{object.errors}."
             end
           end
         end

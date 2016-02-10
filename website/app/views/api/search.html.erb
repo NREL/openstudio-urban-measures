@@ -7,10 +7,10 @@
   	<%= f.text_field :bldg_fid, value: @bldg_fid, label: 'Building FID' %>
   </fieldset>
   <fieldset>
-  	<%= f.text_field :distance, value: @distance, append: 'ft', label: 'Max Distance' %>
+  	<%= f.text_field :distance, value: @distance, append: 'm', label: 'Max Distance' %>
   </fieldset>
   <fieldset>
-    <%= f.select :prox_type, options_for_select(@possible_types, @prox_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
+    <%= f.select :prox_types, options_for_select(@possible_types, @prox_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
   </fieldset>
   <%= f.form_group do %>
   	<%= f.primary 'Proximity Search' %>
@@ -23,7 +23,7 @@
   	<%= f.text_field :region_id, value: @region_id, label: 'Region ID' %>
   </fieldset>
   <fieldset>
-    <%= f.select :region_type, options_for_select(@possible_types, @region_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
+    <%= f.select :region_types, options_for_select(@possible_types, @region_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
   </fieldset>
   <%= f.form_group do %>
   	<%= f.primary 'Region Search' %>

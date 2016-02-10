@@ -1,4 +1,5 @@
-<%= form_for(@datapoint) do |f| %>
+<%= bootstrap_form_for(@datapoint, layout: :horizontal, control_col: 'col-sm-4') do |f| %>
+  <% if @datapoint.building %><h3 class="edit-name">Building: <%=link_to @datapoint.building.id, @datapoint.building %></h3><% end %>
   <% if @datapoint.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@datapoint.errors.count, "error") %> prohibited this datapoint from being saved:</h2>
@@ -10,8 +11,25 @@
       </ul>
     </div>
   <% end %>
+  <fieldset>
+    <%= f.text_field :building_id, {label: 'Building ID', disabled: true} %>
+    <%= f.hidden_field :building_id %>
+  </fieldset>
+  <fieldset>
+    <%= f.text_field :dencity_id, label: 'DEnCity ID' %>
+  </fieldset>
+  <fieldset>
+    <%= f.text_field :dencity_url, label: 'DEnCity URL' %>
+  </fieldset>
+    <fieldset>
+    <%= f.text_field :analysis_id, label: 'Analysis ID' %>
+  </fieldset>
+  <fieldset>
+    <%= f.select :template_workflow, options_for_select(@workflows), { label: 'Template Workflow', include_blank: true} %>
+  </fieldset>
 
-  <div class="actions">
-    <%= f.submit %>
+  <%= f.form_group do %>
+    <%= f.primary @datapoint.new_record? ? 'Create' : 'Update' %>
+  <% end %>
   </div>
 <% end %>

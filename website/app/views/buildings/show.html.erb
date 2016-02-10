@@ -32,6 +32,31 @@
   </tr>
 </table>
 
+<h3>Datapoints</h3>
+<% if @building.datapoints.count == 0 %>
+  <p> There are no datapoints for this building.</p>
+<% else %>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Analysis ID</th>
+        <th>Date Created</th>  
+      </tr>
+    </thead>
+    <tbody>
+      <% @building.datapoints.each do |dp| %>
+        <tr>
+          <td><%= link_to dp.id, dp %></td>
+          <td><%= dp.analysis_id %></td>
+          <td><%= dp.created_at %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>
+<%= link_to 'Add a Datapoint', new_datapoint_path(building: @building), class: "btn btn-primary" %>  
+
 <script type="text/javascript">
 
   // get JSON

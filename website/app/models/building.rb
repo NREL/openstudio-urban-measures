@@ -11,7 +11,7 @@ class Building
   # Validation
 
   # Relations
-  belongs_to :geometry
+  has_one :geometry, autosave: true, dependent: :destroy
   has_many :datapoints
   belongs_to :user
 

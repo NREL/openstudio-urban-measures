@@ -11,7 +11,7 @@ class Region
   # Validation
 
   # Relations
-  belongs_to :geometry
+  has_one :geometry, autosave: true, dependent: :destroy
   belongs_to :user
 
 end

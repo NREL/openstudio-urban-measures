@@ -16,6 +16,10 @@ class DatapointsController < ApplicationController
   # GET /datapoints/new
   def new
     @datapoint = Datapoint.new
+
+    @datapoint.building = params[:building]
+    @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
+
   end
 
   # GET /datapoints/1/edit
@@ -25,7 +29,9 @@ class DatapointsController < ApplicationController
   # POST /datapoints
   # POST /datapoints.json
   def create
+
     @datapoint = Datapoint.new(datapoint_params)
+    # TODO: generate instance workflow
 
     respond_to do |format|
       if @datapoint.save
@@ -41,6 +47,9 @@ class DatapointsController < ApplicationController
   # PATCH/PUT /datapoints/1
   # PATCH/PUT /datapoints/1.json
   def update
+
+    # TODO: generate instance workflow
+
     respond_to do |format|
       if @datapoint.update(datapoint_params)
         format.html { redirect_to @datapoint, notice: 'Datapoint was successfully updated.' }
@@ -70,6 +79,8 @@ class DatapointsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def datapoint_params
-      params[:datapoint]
+   
+      params.require(:datapoint).permit(:building_id, :dencity_id, :template_workflow, :instance_workflow, :dencity_url, :analysis_id, :timestamp_started,
+    :timestamp_completed, variable_values: [], results: [])
     end
 end

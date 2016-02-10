@@ -90,19 +90,48 @@ class ApiController < ApplicationController
 
       if params[:commit] == 'Proximity Search'
         @bldg_fid = params[:bldg_fid]
-        @distance = params[:distance].empty? ? '500' : params[:distance]
-        @prox_type = params[:prox_type].empty? ? @prox_types : params[:prox_type]
+        @distance = params[:distance].empty? ? 500 : params[:distance].to_i
+        @prox_types = params[:prox_types].empty? ? @prox_types : params[:prox_types]
 
-        bldg = Building.find_by(bldg_fid: @bldg_fid)
-        coords = bldg.geometry.coordinates
-        # TODO: This doesn't work
-        # TODO: include prox_type & refactor
-        @results = Building.geo_near(coords).max_distance(@distance)
-        logger("RESULTS: #{@results.count}")
+        @types = Array.new
+    
+        @prox_types.each do |type|
+          if @possible_types.include? type.capitalize
+            @types << type.capitalize
+          end
+        end
+
+        if @types.include? 'All'
+          @possible_types.delete('All')
+          @types = @possible_types
+        end
+
+        bldgs = Building.where(bldg_fid: @bldg_fid)
+        unless bldgs.count == 0
+          bldg = bldgs.first
+          centroid = bldg.geometry.centroid
+
+          @geo_results = Geometry.includes(:building, :region, :district_system, :taxlot).geo_near(centroid).max_distance(@distance)
+          logger.info("HEY!! #{@geo_results.count}")
+
+          @geo_results.each do |res|
+            if res.building
+              @results << res.building
+            elsif res.taxlot
+              @results << res.taxlot
+            elsif res.region
+              @results << res.region
+            elsif res.district_system
+              @results << res.district_system
+            end
+          end
+          
+        end
 
       elsif params[:commit] == 'Region Search'
+
         @region_id = params[:region_id].empty? ? '1' : params[:region_id]
-        @region_types = params[:region_type].empty? ? @region_types : params[:region_type]
+        @region_types = params[:region_types].empty? ? @region_types : params[:region_types]
 
         # figure out what types
         @types = Array.new
@@ -123,9 +152,22 @@ class ApiController < ApplicationController
           # remove spaces (for district system)
           type = type.gsub(" ", "")
 
-          model = type.constantize
+          #model = type.constantize
+          #@results = @results + model.where(region_id: @region_id)
 
-          @results = @results + model.where(region_id: @region_id)
+          # TODO: this doesn't work yet
+          # retrieve region and get geometry
+          region = Region.where(region_id: @region_id).first
+
+          #@results = Geometry.where(centroid: {
+          #  $geoWithin: {
+          #    $geometry: {
+          #      type:  region.geometry.type,
+          #      coordinates: region.geometry.coordinates
+          #    }
+          #  }
+          #})
+          @results = nil
         end
 
       end
