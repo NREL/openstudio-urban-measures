@@ -50,28 +50,29 @@ class DencityDatapointUpload < OpenStudio::Ruleset::ReportingUserScript
 
   def run(runner, user_arguments)
     super(runner, user_arguments)
-
+    
     # Use the built-in error checking
     unless runner.validateUserArguments(arguments, user_arguments)
       false
     end
-
+    
     # Unpack DEnCity hostname, user_id, and auth_code
     hostname = runner.getStringArgumentValue('hostname', user_arguments)
     user_id = runner.getStringArgumentValue('user_id', user_arguments)
     auth_code = runner.getStringArgumentValue('auth_code', user_arguments)
 
     # Check connection to hostname and authenticate connection
+    runner.registerInfo("Trying to connect to dencity")
     conn = Dencity.connect({host_name: hostname})
-    runner.registerError "Could not connect to DEnCity server at #{hostname}." unless conn.connected?
+    runner.registerError("Could not connect to DEnCity server at #{hostname}.") unless conn.connected?
     r = nil
     begin
       runner.registerInfo("Attempting to log into #{hostname} with user ID #{user_id}")
       r = conn.login(user_id, auth_code)
     rescue Faraday::ParsingError => user_id_failure
-      runner.registerError "Error in user_id field: #{user_id_failure.message}"
+      runner.registerError("Error in user_id field: #{user_id_failure.message}")
     rescue MultiJson::ParseError => authentication_failure
-      runner.registerError "Error in attempted authentication: #{authentication_failure.message}"
+      runner.registerError("Error in attempted authentication: #{authentication_failure.message}")
     end
     user_uuid = r.id
 
@@ -101,6 +102,7 @@ class DencityDatapointUpload < OpenStudio::Ruleset::ReportingUserScript
       end
     end
 
+    puts "Got to here in dencity_datapoint_upload"
     # Error if the analysis json cannot be found
     runner.registerError('Unable to find the analysis uuid in the DEnCity database.') unless found_analysis_uuid
 

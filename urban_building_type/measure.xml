@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>5a182c5a-159b-4365-8f6c-d3774343c180</version_id>
+  <version_id>c3bc4eb4-91b7-4c98-bf28-5be1f8e4ce16</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -76,12 +76,6 @@
       <checksum>736CDAA1</checksum>
     </file>
     <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>D0A24B30</checksum>
-    </file>
-    <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
@@ -92,6 +86,12 @@
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
       <checksum>99560C39</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>97324A0D</checksum>
     </file>
   </files>
 </measure>

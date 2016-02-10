@@ -1,0 +1,802 @@
+{
+  "analysis": {
+    "display_name": "URBANopt Testing 1",
+    "name": "urbanopt_testing_1",
+    "output_variables": [
+      {
+        "units": "MJ/m2",
+        "objective_function": true,
+        "objective_function_index": 0,
+        "objective_function_target": null,
+        "objective_function_group": 1,
+        "scaling_factor": null,
+        "display_name": "Total Site Energy Intensity",
+        "display_name_short": "Site EUI",
+        "metadata_id": "total_site_energy_intensity",
+        "name": "standard_report_legacy.total_energy",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": true,
+        "objective_function_index": 1,
+        "objective_function_target": null,
+        "objective_function_group": 2,
+        "scaling_factor": null,
+        "display_name": "Total Source Energy Intensity",
+        "display_name_short": "Source EUI",
+        "metadata_id": "total_source_energy_intensity",
+        "name": "standard_report_legacy.total_source_energy",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Natural Gas Intensity",
+        "display_name_short": "NG EUI",
+        "metadata_id": "total_natural_gas_intensity",
+        "name": "standard_report_legacy.total_natural_gas",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Electricity Intensity",
+        "display_name_short": "Elec EUI",
+        "metadata_id": "total_electricity_intensity",
+        "name": "standard_report_legacy.total_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Natural Gas Heating Intensity",
+        "display_name_short": "Natural Gas Heating Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.heating_natural_gas",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Cooling Electricity Intensity",
+        "display_name_short": "Cooling Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.cooling_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Interior Lighting Electricity Intensity",
+        "display_name_short": "Interior Lighting Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.interior_lighting_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Exterior Lighting Electricity Intensity",
+        "display_name_short": "Exterior Lighting Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.exterior_lighting_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Equipment Electricity Intensity",
+        "display_name_short": "Equipment Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.interior_equipment_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Equipment Natural Gas Intensity",
+        "display_name_short": "Equipment Natural Gas Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.interior_equipment_natural_gas",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Experior Equipment Electricity Intensity",
+        "display_name_short": "Experior Equipment Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.exterior_equipment_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Fans Electricity Intensity",
+        "display_name_short": "Fans Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.fans_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Pumps Electricity Intensity",
+        "display_name_short": "Pumps Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.pumps_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Heat Rejection Electricity Intensity",
+        "display_name_short": "Heat Rejection Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.heat_rejection_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Humidification Electricity Intensity",
+        "display_name_short": "Humidification Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.humidification_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Water Systems Electricity Intensity",
+        "display_name_short": "Water Systems Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.water_systems_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Water Systems Natural Gas Intensity",
+        "display_name_short": "Water Systems Natural Gas Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.water_systems_natural_gas",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Refrigeration Electricity Intensity",
+        "display_name_short": "Refrigeration Electricity Intensity",
+        "metadata_id": null,
+        "name": "standard_report_legacy.refrigeration_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "hrs",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Unmet Cooling Hours",
+        "display_name_short": "Unmet Cooling Hours",
+        "metadata_id": null,
+        "name": "standard_reports.time_setpoint_not_met_during_occupied_cooling",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "hrs",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Unmet Heating Hours",
+        "display_name_short": "Unmet Heating Hours",
+        "metadata_id": null,
+        "name": "standard_reports.time_setpoint_not_met_during_occupied_heating",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "hrs",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Unmet Hours",
+        "display_name_short": "Total Unmet Hours",
+        "metadata_id": null,
+        "name": "standard_reports.time_setpoint_not_met_during_occupied_hours",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Building Area",
+        "display_name_short": "Building Area",
+        "metadata_id": null,
+        "name": "standard_reports.total_building_area",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Cooling",
+        "display_name_short": "Electricity Cooling",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_cooling_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Fans",
+        "display_name_short": "Electricity Fans",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_fans_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Heating",
+        "display_name_short": "Electricity Heating",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_heating_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity",
+        "display_name_short": "Electricity",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Pumps",
+        "display_name_short": "Electricity Pumps",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_pumps_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Natural Gas Heating",
+        "display_name_short": "Natural Gas Heating",
+        "metadata_id": null,
+        "name": "standard_reports.natural_gas_heating_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Natural Gas",
+        "display_name_short": "Natural Gas",
+        "metadata_id": null,
+        "name": "standard_reports.natural_gas_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "$",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Life Cycle Cost",
+        "display_name_short": "Total Life Cycle Cost",
+        "metadata_id": null,
+        "name": "standard_report.total_life_cycle_cost",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      }
+    ],
+    "problem": {
+      "analysis_type": "lhs",
+      "algorithm": {
+        "sample_method": "individual_variables",
+        "number_of_samples": 1921,
+        "objective_functions": [
+          "standard_report_legacy.total_energy",
+          "standard_report_legacy.total_source_energy"
+        ]
+      },
+      "workflow": [
+        {
+          "name": "urbangeometrycreation",
+          "display_name": "UrbanGeometryCreation",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "UrbanGeometryCreation",
+          "measure_definition_directory": "./measures/urban_geometry_creation",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_geometry_creation",
+          "measure_definition_display_name": "UrbanGeometryCreation",
+          "measure_definition_name": "urbangeometrycreation",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "27c02ff8-0872-4b56-a7e3-563807e0fec3",
+          "measure_definition_version_uuid": "4cb0a0d2-3ab5-44c6-ab10-6c23f6f18a0a",
+          "arguments": [
+            {
+              "display_name": "City JSON Path",
+              "display_name_short": "City JSON Path",
+              "name": "city_json_path",
+              "value_type": "string",
+              "default_value": "../../../lib/city_data/city.json",
+              "value": "../../../lib/city_data/city.json"
+            }
+          ],
+          "variables": [
+            {
+              "argument": {
+                "display_name": "Building ID",
+                "display_name_short": "Building ID",
+                "name": "building_id",
+                "value_type": "string",
+                "default_value": "178897'",
+                "value": "178897'"
+              },
+              "display_name": "Building ID",
+              "display_name_short": "Building ID",
+              "variable_type": "variable",
+              "units": null,
+              "minimum": "0.0",
+              "maximum": "0.0",
+              "relation_to_output": null,
+              "static_value": "178897'",
+              "uuid": "ed181550-c05f-4ddc-9d3a-e92b6859ca4c",
+              "version_uuid": "37e3971f-bc20-4c6e-806c-918a551e860e",
+              "variable": true,
+              "uncertainty_description": {
+                "type": "discrete_uncertain",
+                "attributes": [
+                  {
+                    "name": "discrete",
+                    "values_and_weights": [
+                      {
+                        "value": "178897",
+                        "weight": 0.2
+                      },
+                      {
+                        "value": "222412",
+                        "weight": 0.2
+                      },
+                      {
+                        "value": "236646",
+                        "weight": 0.2
+                      },
+                      {
+                        "value": "231874",
+                        "weight": 0.2
+                      },
+                      {
+                        "value": "127676",
+                        "weight": 0.2
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lower_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "upper_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "modes",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "delta_x",
+                    "value": 0.0
+                  },
+                  {
+                    "name": "stddev",
+                    "value": "0.0"
+                  }
+                ]
+              },
+              "workflow_index": 0
+            }
+          ],
+          "workflow_index": 0
+        },
+        {
+          "name": "setresidentialepwfile",
+          "display_name": "SetResidentialEPWFile",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "SetResidentialEPWFile",
+          "measure_definition_directory": "./measures/SetResidentialEPWFile",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/SetResidentialEPWFile",
+          "measure_definition_display_name": "SetResidentialEPWFile",
+          "measure_definition_name": "setresidentialepwfile",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "dd52303b-45a5-4629-9b7a-6e22994a240c",
+          "measure_definition_version_uuid": "a8c4226f-d215-4071-8cee-30bb119814ce",
+          "arguments": [
+            {
+              "display_name": "Weather Directory",
+              "display_name_short": "Weather Directory",
+              "name": "weather_directory",
+              "value_type": "string",
+              "default_value": "../../weather",
+              "value": "../../weather"
+            },
+            {
+              "display_name": "Weather File Name",
+              "display_name_short": "Weather File Name",
+              "name": "weather_file_name",
+              "value_type": "string",
+              "default_value": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+              "value": "USA_CO_Denver.Intl.AP.725650_TMY3.epw"
+            }
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 1
+        },
+        {
+          "name": "urbanbuildingtype",
+          "display_name": "UrbanBuildingType",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "UrbanBuildingType",
+          "measure_definition_directory": "./measures/urban_building_type",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_building_type",
+          "measure_definition_display_name": "UrbanBuildingType",
+          "measure_definition_name": "urbanbuildingtype",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "b29b8b9b-b206-41af-94ba-bf7f559a1a96",
+          "measure_definition_version_uuid": "b081271c-0ecb-417a-8b3c-46aadd387bf9",
+          "arguments": [
+
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 2
+        },
+        {
+          "name": "urbanbuildingtypeeplus",
+          "display_name": "UrbanBuildingTypeEPlus",
+          "measure_type": "EnergyPlusMeasure",
+          "measure_definition_class_name": "UrbanBuildingTypeEPlus",
+          "measure_definition_directory": "./measures/urban_building_type_e_plus",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_building_type_e_plus",
+          "measure_definition_display_name": "UrbanBuildingTypeEPlus",
+          "measure_definition_name": "urbanbuildingtypeeplus",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "7f972c6d-44c7-45cc-9743-c6a0168fef00",
+          "measure_definition_version_uuid": "09272159-2925-4ecb-89c1-eda2fe417eac",
+          "arguments": [
+
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 3
+        },
+        {
+          "name": "add_dencity_meters",
+          "display_name": "Add Dencity Meters",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "AddDencityMeters",
+          "measure_definition_directory": "./measures/AddDencityMeters",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/AddDencityMeters",
+          "measure_definition_display_name": "Add Dencity Meters",
+          "measure_definition_name": "add_dencity_meters",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "5fea1a36-888d-43d6-8dc7-729ad5013f87",
+          "measure_definition_version_uuid": "8ba6ac44-b4e3-4aa3-a91b-cad062f38164",
+          "arguments": [
+
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 4
+        },
+        {
+          "name": "dencity_reports",
+          "display_name": "DEnCity Reports",
+          "measure_type": "ReportingMeasure",
+          "measure_definition_class_name": "DencityReports",
+          "measure_definition_directory": "./measures/DencityReports",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/DencityReports",
+          "measure_definition_display_name": "DEnCity Reports",
+          "measure_definition_name": "dencity_reports",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "9954be99-dae1-4202-87ef-418f8669df5d",
+          "measure_definition_version_uuid": "83b6acca-edbd-431e-95fc-49344041def1",
+          "arguments": [
+            {
+              "display_name": "Output Format",
+              "display_name_short": "Output Format",
+              "name": "output_format",
+              "value_type": "string",
+              "default_value": "CSV",
+              "value": "CSV"
+            }
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 5
+        },
+        {
+          "name": "dencity_datapoint_upload",
+          "display_name": "DEnCity Datapoint Upload",
+          "measure_type": "ReportingMeasure",
+          "measure_definition_class_name": "DencityDatapointUpload",
+          "measure_definition_directory": "./measures/dencity_datapoint_upload",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/dencity_datapoint_upload",
+          "measure_definition_display_name": "DEnCity Datapoint Upload",
+          "measure_definition_name": "dencity_datapoint_upload",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "e0086109-ee86-43ee-80d2-8750b2f125e1",
+          "measure_definition_version_uuid": "47e46a54-5ffa-4e1d-b49e-17aee1036b3b",
+          "arguments": [
+            {
+              "display_name": "URL of the DEnCity Server",
+              "display_name_short": "URL of the DEnCity Server",
+              "name": "hostname",
+              "value_type": "string",
+              "default_value": "http://insight4.hpc.nrel.gov:8080/",
+              "value": "http://insight4.hpc.nrel.gov:8080/"
+            },
+            {
+              "display_name": "User ID for DEnCity Server",
+              "display_name_short": "User ID for DEnCity Server",
+              "name": "user_id",
+              "value_type": "string",
+              "default_value": "test@nrel.gov",
+              "value": "test@nrel.gov"
+            },
+            {
+              "display_name": "Authentication code for User ID on DEnCity server",
+              "display_name_short": "Authentication code for User ID on DEnCity server",
+              "name": "auth_code",
+              "value_type": "string",
+              "default_value": "testing123",
+              "value": "testing123"
+            }
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 6
+        },
+        {
+          "name": "dencity_file_upload",
+          "display_name": "DEnCity File Upload",
+          "measure_type": "ReportingMeasure",
+          "measure_definition_class_name": "DencityFileUpload",
+          "measure_definition_directory": "./measures/dencity_file_upload",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/dencity_file_upload",
+          "measure_definition_display_name": "DEnCity File Upload",
+          "measure_definition_name": "dencity_file_upload",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "836292fa-3cc4-4f29-a976-ee2b931632c4",
+          "measure_definition_version_uuid": "e37e6048-442e-42cf-bb47-26d5cc105f9e",
+          "arguments": [
+            {
+              "display_name": "URL of the DEnCity Server",
+              "display_name_short": "URL of the DEnCity Server",
+              "name": "hostname",
+              "value_type": "string",
+              "default_value": "http://insight4.hpc.nrel.gov:8080/",
+              "value": "http://insight4.hpc.nrel.gov:8080/"
+            },
+            {
+              "display_name": "User ID for DEnCity Server",
+              "display_name_short": "User ID for DEnCity Server",
+              "name": "user_id",
+              "value_type": "string",
+              "default_value": "test@nrel.gov",
+              "value": "test@nrel.gov"
+            },
+            {
+              "display_name": "Authentication code for User ID on DEnCity server",
+              "display_name_short": "Authentication code for User ID on DEnCity server",
+              "name": "auth_code",
+              "value_type": "string",
+              "default_value": "testing123",
+              "value": "testing123"
+            },
+            {
+              "display_name": "Metadata File Path",
+              "display_name_short": "Metadata File Path",
+              "name": "file_path_metadata",
+              "value_type": "string",
+              "default_value": "../DencityReports/report_metadata.csv",
+              "value": "../DencityReports/report_metadata.csv"
+            },
+            {
+              "display_name": "Timeseries File Path",
+              "display_name_short": "Timeseries File Path",
+              "name": "file_path_timeseries",
+              "value_type": "string",
+              "default_value": "../DencityReports/report_timeseries.csv",
+              "value": "../DencityReports/report_timeseries.csv"
+            }
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 7
+        }
+      ]
+    },
+    "seed": {
+      "file_type": "OSM",
+      "path": "./seed/EmptySeedModel.osm"
+    },
+    "weather_file": {
+      "file_type": "EPW",
+      "path": "./weather/USA_CO_Denver.Intl.AP.725650_TMY3.epw"
+    },
+    "file_format_version": 1
+  }
+}

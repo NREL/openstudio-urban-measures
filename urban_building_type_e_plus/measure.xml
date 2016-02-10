@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>c481255a-fe3b-4026-81e7-8900ecda5104</version_id>
+  <version_id>c25bca67-80d6-439e-afc0-d1a5b6970267</version_id>
   <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
@@ -49,16 +49,16 @@
       <checksum>429335C8</checksum>
     </file>
     <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>D0A24B30</checksum>
-    </file>
-    <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
       <checksum>77EA5C55</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>97324A0D</checksum>
     </file>
   </files>
 </measure>
