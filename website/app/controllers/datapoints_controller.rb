@@ -1,6 +1,7 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
   before_action :set_datapoint, only: [:show, :edit, :update, :destroy]
+  before_action :get_workflows, only: [:new, :edit]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -18,7 +19,6 @@ class DatapointsController < ApplicationController
     @datapoint = Datapoint.new
 
     @datapoint.building = params[:building]
-    @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
 
   end
 
@@ -75,6 +75,11 @@ class DatapointsController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_datapoint
       @datapoint = Datapoint.find(params[:id])
+    end
+
+    # Get Workflows
+    def get_workflows
+        @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.

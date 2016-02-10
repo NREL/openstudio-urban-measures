@@ -25,7 +25,7 @@
     <%= f.text_field :analysis_id, label: 'Analysis ID' %>
   </fieldset>
   <fieldset>
-    <%= f.select :template_workflow, options_for_select(@workflows), { label: 'Template Workflow', include_blank: true} %>
+    <%= f.select :template_workflow, options_for_select(@workflows, @datapoint.template_workflow_id), { label: 'Template Workflow', include_blank: true} %>
   </fieldset>
 
   <%= f.form_group do %>
