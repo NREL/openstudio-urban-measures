@@ -4,7 +4,7 @@ class WorkflowFile
   include Mongoid::Timestamps
 
   field :file_name, type: String
-  field :file_size, type: Integer # kb
+  field :file_size, type: Integer #KB
   field :uri, type: String
 
   embedded_in :workflow

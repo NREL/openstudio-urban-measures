@@ -38,10 +38,15 @@ class Ability
     elsif !user.new_record?
       can :manage, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
       can :home, AdminController
+      can :batch_upload, :api
+      can :export, :api
+      can :workflow, :api
+      can :workflow_file, :api
     # unauthenticated
     else 
       can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry] 
       can :home, AdminController
+      can :search, :api
       # any API actions?
     end
   end

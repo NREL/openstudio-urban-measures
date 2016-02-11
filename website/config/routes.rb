@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   # apipie
   root 'admin#home'
+  match 'search' => 'api#search', :via => [:get, :post]
 
   devise_for :users
   resources :users
@@ -24,10 +25,10 @@ Rails.application.routes.draw do
 
   scope "/api" do
     post 'batch_upload' => 'api#batch_upload'
-    match 'search' => 'api#search', :via => [:get, :post]
-    post 'export' => 'api#export'
     post 'workflow' => 'api#workflow'
     post 'workflow_file' => 'api#workflow_file'
+    match 'search' => 'api#search', :via => [:get, :post]
+    post 'export' => 'api#export'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

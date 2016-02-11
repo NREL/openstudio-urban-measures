@@ -47,7 +47,7 @@ class WorkflowsController < ApplicationController
     unless error
       if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
         zip_file = params[:zip_file]
-        @workflow, error, error_message = Workflow.add_workflow_file(zip_file, @workflow)
+        @workflow, error, error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
       end
     end
 
@@ -85,7 +85,7 @@ class WorkflowsController < ApplicationController
     # TODO zipfile
     if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
       zip_file = params[:zip_file]
-      @workflow, error, error_message = Workflow.add_workflow_file(zip_file, @workflow)
+      @workflow, error, error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
     end
 
     respond_to do |format|

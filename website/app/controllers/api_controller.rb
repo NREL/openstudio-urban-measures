@@ -1,6 +1,8 @@
 # API controller
 class ApiController < ApplicationController
 
+  before_filter :check_auth, except: [:search]
+
   # import
   # POST api/batch_upload (New and Update)
   def batch_upload
@@ -217,7 +219,7 @@ class ApiController < ApplicationController
 
     respond_to do |format|
         if error
-          format.json { render json: { error: error_messages, workflow: @workflow }, status: :unprocessable_entity }
+          format.json { render json: { error: error_message, workflow: @workflow }, status: :unprocessable_entity }
         else
           if created_flag
             status = :created
@@ -242,27 +244,14 @@ class ApiController < ApplicationController
     if !@workflow
       error = true
       error_messages << "Workflow #{@workflow.id} could not be found."
-    else
-      basic_path = WORKFLOW_FILES_BASIC_PATH
+    else     
       # save to file_path:
       if clean_params[:file_data] && clean_params[:file_data][:file_name]
-        file_name = clean_params[:file_data][:file_name]
-        file = @workflow.workflow_files.find_by_file_name(file_name)
-        if file
-          error = true
-          error_messages << "File #{file_name} already exists. Delete the file first and reupload."
-        else
-          file_uri = "#{basic_path}#{@workflow.id}/#{file_name}"
-          FileUtils.mkpath("#{Rails.root}#{basic_path}") unless Dir.exist?("#{Rails.root}#{basic_path}")
-          Dir.mkdir("#{Rails.root}#{basic_path}#{@workflow.id}/") unless Dir.exist?("#{Rails.root}#{basic_path}#{@workflow.id}/")
+        filename = clean_params[:file_data][:file_name]
+        zip_file = clean_params[:file_data][:file]
 
-          the_file = File.open("#{Rails.root}/#{file_uri}", 'wb') do |f|
-            f.write(Base64.strict_decode64(clean_params[:file_data][:file]))
-          end
-          @wf = WorkflowFile.add_from_path(file_uri)
-          @workflow.workflow_files << @wf
-          @workflow.save
-        end
+        @workflow, error, error_message = Workflow.add_workflow_file(zip_file, filename, @workflow, true)
+
       else
         error = true
         error_messages << 'No file data to save.'
@@ -270,7 +259,7 @@ class ApiController < ApplicationController
     end
     respond_to do |format|
       if error
-        format.json { render json: { error: error_messages, related_file: @wf }, status: :unprocessable_entity }
+        format.json { render json: { error: error_messages, workflow: @workflow }, status: :unprocessable_entity }
       else
         format.json { render 'workflow_file', status: :created, location: workflow_url(@workflow) }
       end
@@ -278,6 +267,21 @@ class ApiController < ApplicationController
   end
 
   private
+
+  def check_auth
+    authenticate_or_request_with_http_basic do |username, password|
+      begin
+        resource = User.find_by(email: username)
+       rescue
+         respond_to do |format|
+           format.json { render json: "No user matching username #{username}", status: :unauthorized }
+         end
+      else
+        sign_in :user, resource if resource.valid_password?(password)
+      end
+    end
+  end
+
 
   def file_params
     params.require(:workflow_id)

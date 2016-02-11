@@ -21,37 +21,49 @@ class Workflow
 
   	data.each do |key, value|
 
-      # TODO: hopefully this is temporary and id will be removed?  For now, ignore "id".
-      unless key == 'id'
+      if key == 'id'
+        # in case there's an ID in the file, and an id already defined on workflow
+        if workflow.id.to_s != value
+          error = true
+          error_message = "ID in JSON file does not match ID of workflow to update; canceling update."
+          break
+        end
+      else
         workflow[key] = value
       end
     end
 
-    # uploaded workflows are always templates
-    workflow.type = 'template'
+    unless error
+      # uploaded workflows are always templates
+      workflow.type = 'template'
 
-    unless workflow.save!
-      error = true
-      error_message += "Could not process: #{workflow.errors}."
+      unless workflow.save!
+        error = true
+        error_message += "Could not process: #{workflow.errors}."
+      end
     end
 
     return workflow, error, error_message
 
   end
 
-  def self.add_workflow_file(zip_file, workflow)
+  def self.add_workflow_file(zip_file, filename, workflow, is_api=false)
     error = false
     error_message = ''
 
-    # TODO: overwrite existing file automatically or fail?  Right now, overwrite.
-    file_uri = "#{WORKFLOW_FILES_BASIC_PATH}#{workflow.id}/#{zip_file.original_filename}"
+    # Overwrite file if one already exists
+    file_uri = "#{WORKFLOW_FILES_BASIC_PATH}#{workflow.id}/#{filename}"
     FileUtils.mkpath("#{Rails.root}#{WORKFLOW_FILES_BASIC_PATH}") unless Dir.exist?("#{Rails.root}#{WORKFLOW_FILES_BASIC_PATH}")
     Dir.mkdir("#{Rails.root}#{WORKFLOW_FILES_BASIC_PATH}#{workflow.id}/") unless Dir.exist?("#{Rails.root}#{WORKFLOW_FILES_BASIC_PATH}#{workflow.id}/")
 
     the_file = File.open("#{Rails.root}/#{file_uri}", 'wb') do |f|
-      f.write(zip_file.read)
+      if is_api
+        f.write(Base64.strict_decode64(zip_file))
+      else
+        f.write(zip_file.read)
+      end
     end
-    
+   
     wf, error, error_message = WorkflowFile.add_from_path(file_uri)
     
     unless error
@@ -67,6 +79,5 @@ class Workflow
     return workflow, error, error_message
 
   end
-
 
 end
