@@ -96,6 +96,10 @@ class Geometry
               object = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
             end
             object.type = 'taxlot'
+          else
+            error = true
+            message += 'No structure indicator (Building, Region...) in properties.'
+            break
           end
           # TODO: regions and district systems
         else
@@ -103,7 +107,7 @@ class Geometry
           object.type = object.class.name.underscore  
         end
 
-        unless properties.nil?
+        if !error && !properties.nil?
          
           properties.each do |key, value|
             if value != 'null'
@@ -131,6 +135,7 @@ class Geometry
             else
               error = true
               message += "Could not process: #{object.errors}."
+              break
             end
           end
         end
