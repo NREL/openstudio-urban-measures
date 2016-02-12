@@ -53,6 +53,7 @@ class Geometry
     else
       features = data[:features] ? data[:features] : []
       total_count = features.count
+      logger.info("#{total_count} features in file")
       
       # if no object, API bulk processing
       # otherwise, only process first item in features array
@@ -74,37 +75,52 @@ class Geometry
         end
 
         # instantiate object 
-        # TODO: temporary
         if is_bulk
-          # TODO: make this better.  Will there be a "type" variable?
-          if properties[:bldg_fid] && properties[:bldg_fid] != 'null'
-            # ID provided?
-            if properties[:id] && properties[:id] != 'null'
-              object = Building.find_or_create_by(id: properties[:id])
+          # check type parameter
+          if properties[:type] && properties[:type] != 'null'
+            case properties[:type]
+            when 'Building'
+              # ID provided?
+              if properties[:id] && properties[:id] != 'null'
+                object = Building.find_or_create_by(id: properties[:id])
+              else
+                # TODO: find_or_create by source_id & source_name
+                #object = Building.find_or_create_by(bldg_fid: properties[:bldg_fid])
+                object = Building.new
+              end   
+            when 'Taxlot'
+              # ID provided?
+              if properties[:id] && properties[:id] != 'null'
+                object = Taxlot.find_or_create_by(id: properties[:id])
+              else
+                # TODO: find_or_create by source_id & source_name 
+                #object = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
+                object = Taxlot.new
+              end
+            when 'Region'
+              # ID provided
+              if properties[:id] && properties[:id] != 'null'
+                object = Region.find_or_create_by(id: properties[:id])
+              else
+                # TODO: find_or_create by source_id & source_name 
+                #object = Region.find_or_create_by(lot_fid: properties[:lot_fid])
+                object = Region.new
+              end
+            when 'District System'
+              # ID provided
+              if properties[:id] && properties[:id] != 'null'
+                object = DistrictSystem.find_or_create_by(id: properties[:id])
+              else
+                # TODO: find_or_create by source_id & source_name 
+                #object = DistrictSystem.find_or_create_by(lot_fid: properties[:lot_fid])
+                object = DistrictSystem.new
+              end
             else
-              # TODO: find_or_create by source_id & source_name ?
-              object = Building.find_or_create_by(bldg_fid: properties[:bldg_fid])
-            end   
-            object.type = 'building'
-          # TAXLOT
-          elsif properties[:lot_fid] && properties[:lot_fid] != 'null'
-            # ID provided?
-            if properties[:id] && properties[:id] != 'null'
-              object = Taxlot.find_or_create_by(id: properties[:id])
-            else
-              # TODO: find_or_create by source_id & source_name 
-              object = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
+              # don't process
+              error = true
+              message += 'No structure indicator (Building, Region...) in properties.'
             end
-            object.type = 'taxlot'
-          else
-            error = true
-            message += 'No structure indicator (Building, Region...) in properties.'
-            break
           end
-          # TODO: regions and district systems
-        else
-          # set object type anyway
-          object.type = object.class.name.underscore  
         end
 
         if !error && !properties.nil?

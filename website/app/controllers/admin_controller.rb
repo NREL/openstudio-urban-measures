@@ -14,11 +14,9 @@ class AdminController < ApplicationController
 
     # POST
     if params[:commit]
-      logger.info("COMMIT -- POST")
       if params[:geojson_file]
         data = Geometry.read_geojson_file(params[:geojson_file])
         result, error, message = Geometry.create_update_feature(data)
-        logger.info("MESSAGE: #{message}")
       else
         # data parameter provided
         error = true
@@ -27,18 +25,13 @@ class AdminController < ApplicationController
   
       respond_to do |format|
         if !error
-          logger.info("HI NO ERROR")
           format.html { redirect_to batch_upload_features_admin_index_path, notice: "Import success! #{message}" }
           format.json { head :no_content }
         else
-           logger.info("HI ERROR")
           format.html { redirect_to batch_upload_features_admin_index_path, :flash => { :error => "Error: #{message}" } }
           format.json { render json: { error: message }, status: :unprocessable_entity }
         end
       end
-
-    else
-      logger.info("NO COMMIT -- GET")
     end
 
   end

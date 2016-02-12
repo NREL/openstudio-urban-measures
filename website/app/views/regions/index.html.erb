@@ -4,8 +4,8 @@
   <thead>
   <tr>
     <th>ID</th>
-    <th>Type</th>
-    <th>Region ID</th>  
+    <th>State</th>
+    <th>Sub Region</th>
    <% if can? :update, Region %> <th>Actions</th><% end %>
 
   </tr>
@@ -14,8 +14,8 @@
   <% @regions.each do |region| %>
     <tr>
       <td><%= link_to region.id, region %></td>
-      <td><%= region.type %></td>
-      <td><%= region.region_id %></td>
+      <td><%= region['state_abbr'] %></td>
+      <td><%= region['sub_region'] %></td>
       <% if can? :update, Region %><td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
