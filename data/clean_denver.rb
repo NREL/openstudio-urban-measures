@@ -106,3 +106,4 @@ end
 
 
 clean_buildings('denver')
+clean_taxlots('denver')
