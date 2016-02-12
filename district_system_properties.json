@@ -30,6 +30,16 @@
 			"description": "Id of the geojson for this feature, managed by database.",
 			"type": "string"
 		},
+		"type": {
+			"description": "Type of feature.",
+			"type": "string",
+			"enum": [
+				"Building",
+				"Taxlot",
+				"Region",
+				"District System"
+			]
+		},
 		"source_name": {
 			"description": "Name of the original data source.",
 			"type": "string"

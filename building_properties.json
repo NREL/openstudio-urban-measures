@@ -41,6 +41,16 @@
 			"description": "Id of the datapoint representing current state of this building, managed by the database.",
 			"type": "string"
 		},
+		"type": {
+			"description": "Type of feature.",
+			"type": "string",
+			"enum": [
+				"Building",
+				"Taxlot",
+				"Region",
+				"District System"
+			]
+		},
 		"source_name": {
 			"description": "Name of the original data source.",
 			"type": "string"
@@ -60,6 +70,10 @@
 		"taxlot_source_id": {
 			"description": "Source id of the taxlot this feature is located on.",
 			"type": "string"
+		},
+		"taxlot_index": {
+			"description": "Index of building on taxlot if there are multiple buildings on taxlot. ",
+			"type": "integer"
 		},
 		"region_source_name": {
 			"description": "Name of the original taxlot data source.",
@@ -119,10 +133,6 @@
 		},
 		"zoning_source": {
 			"$ref": "#/definitions/source"
-		},
-		"building_taxlot_index": {
-			"description": "Index of building on taxlot if there are multiple buildings on taxlot. ",
-			"type": "integer"
 		},
 		"building_status": {
 			"description": "Building status",
@@ -314,7 +324,14 @@
 		"source_id",
 		"intersecting_building_source_ids",
 		"region_source_name",
-		"region_source_ids"
+		"region_source_ids",
+		"space_type",
+		"number_of_stories",
+		"number_of_stories_above_ground",
+		"number_of_stories_below_ground",
+		"surface_elevation",
+		"roof_elevation",
+		"floor_area"
 	],
 	"definitions": {
 		"source": {
