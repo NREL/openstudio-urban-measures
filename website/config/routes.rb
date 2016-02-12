@@ -39,7 +39,11 @@ Rails.application.routes.draw do
     get :backup_database
     post :restore_database
     get :clear_database
-    get :home
+    
+    collection do
+      get :home
+      match 'batch_upload_features' => 'admin#batch_upload_features', :via => [:get, :post]
+    end
   end
   
 

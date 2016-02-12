@@ -88,6 +88,8 @@ class ApiController < ApplicationController
     @region_types = ['Building']
 
     # Process POST
+    # TODO: for API, will need to check method (post/get)
+    # TODO: this won't work as is via JSON api resource
     if params[:commit]
 
       if params[:commit] == 'Proximity Search'
