@@ -16,6 +16,9 @@ gem 'leaflet-rails'
 # HTTP requests testing
 gem 'rest-client'
 
+# pagination
+gem 'kaminari'
+
 # user auth, roles, & permissions
 gem 'devise'
 gem 'cancancan', '~> 1.9'

@@ -5,7 +5,8 @@ class WorkflowsController < ApplicationController
   # GET /workflows
   # GET /workflows.json
   def index
-    @workflows = Workflow.all
+    page = params[:page] ? params[:page] : 1
+    @workflows = Workflow.all.page(page)
   end
 
   # GET /workflows/1

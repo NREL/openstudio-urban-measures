@@ -5,7 +5,8 @@ class BuildingsController < ApplicationController
   # GET /buildings
   # GET /buildings.json
   def index
-    @buildings = Building.all.includes(:geometry)
+    page = params[:page] ? params[:page] : 1
+    @buildings = Building.all.page(page)
 
     respond_to do |format|
       format.html {}

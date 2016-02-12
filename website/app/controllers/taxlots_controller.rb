@@ -5,7 +5,8 @@ class TaxlotsController < ApplicationController
   # GET /taxlots
   # GET /taxlots.json
   def index
-    @taxlots = Taxlot.all.includes(:geometry)
+    page = params[:page] ? params[:page] : 1
+    @taxlots = Taxlot.all.page(page)
 
     respond_to do |format|
       format.html {}

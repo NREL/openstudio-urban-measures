@@ -5,8 +5,8 @@ class DistrictSystemsController < ApplicationController
   # GET /district_systems
   # GET /district_systems.json
   def index
-    @district_systems = DistrictSystem.all.includes(:geometry)
-
+    page = params[:page] ? params[:page] : 1
+    @district_systems = DistrictSystem.all.page(page)
     respond_to do |format|
       format.html {}
       format.json{ render json: Geometry.build_geojson(@district_systems)}

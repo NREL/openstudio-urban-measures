@@ -5,8 +5,8 @@ class RegionsController < ApplicationController
   # GET /regions
   # GET /regions.json
   def index
-    @regions = Region.all.includes(:geometry)
-
+    page = params[:page] ? params[:page] : 1
+    @regions = Region.all.page(page)
     respond_to do |format|
       format.html {}
       format.json{ render json: Geometry.build_geojson(@regions)}

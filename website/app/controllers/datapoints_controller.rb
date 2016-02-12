@@ -6,7 +6,8 @@ class DatapointsController < ApplicationController
   # GET /datapoints
   # GET /datapoints.json
   def index
-    @datapoints = Datapoint.all
+    page = params[:page] ? params[:page] : 1
+    @datapoints = Datapoint.all.page(page)
   end
 
   # GET /datapoints/1
