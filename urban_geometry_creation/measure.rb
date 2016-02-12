@@ -2,6 +2,7 @@
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
 require 'json'
+require 'net/http'
 
 # start the measure
 class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
@@ -25,18 +26,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
     
-    # path to the city.json file
-    city_json_path = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_json_path", true)
-    city_json_path.setDisplayName("City JSON Path")
-    city_json_path.setDescription("Path to city.json.")
-	city_json_path.setDefaultValue("../../../../openstudio-urban-measures/city.json")
-    args << city_json_path
+    # url of the city database
+    city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
+    city_db_url.setDisplayName("City Database Url")
+    city_db_url.setDescription("Url of the City Database")
+	  city_db_url.setDefaultValue("http://localhost:3000")
+    args << city_db_url
     
-    # the id of the building to create
-    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
+    # id of the building to create
+    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("id", true)
     building_id.setDisplayName("Building ID")
-    building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
-	building_id.setDefaultValue("142484")
+    building_id.setDescription("Building ID to generate geometry for.")
     args << building_id
 
     return args
@@ -92,38 +92,58 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return floor_print
   end
 
-  def create_building(building, is_primary, create_method, model)
+  def create_building(building_json, is_primary, create_method, model)
     
-    surface_elevation	= building[:surface_elevation]
-    roof_elevation	= building[:roof_elevation]
-    number_of_stories = building[:number_of_stories]
-    number_of_stories_above_ground = building[:number_of_stories_above_ground]
-    number_of_stories_below_ground = building[:number_of_stories_below_ground]
-    number_of_residential_units = building[:number_of_residential_units]
+    properties = building_json[:properties]
+    surface_elevation	= properties[:surface_elevation]
+    roof_elevation	= properties[:roof_elevation]
+    number_of_stories = properties[:number_of_stories]
+    number_of_stories_above_ground = properties[:number_of_stories_above_ground]
+    number_of_stories_below_ground = properties[:number_of_stories_below_ground]
+    number_of_residential_units = properties[:number_of_residential_units]
+    floor_to_floor_height = story[:floor_to_floor_height]
+    space_type = properties[:space_type]
     
-    if is_primary
+    if floor_to_floor_height.nil?
+      floor_to_floor_height = 3.5
+    end
+    
+    if number_of_stories.nil?
+      number_of_stories = 1
+      number_of_stories_above_ground = 1
+      number_of_stories_below_ground = 0
+    end
+    
+    if number_of_stories_above_ground.nil?
+      if number_of_stories_below_ground.nil?
+        number_of_stories_above_ground = number_of_stories
+        number_of_stories_below_ground = 0
+      else
+        number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+      end
+    end
+    
+    if is_primary && space_type
       # get the building use and fix any issues
-      bldg_use = building[:space_type]
-      building_space_type = create_space_type(bldg_use, bldg_use, model)
+      building_space_type = create_space_type(space_type, space_type, model)
       model.getBuilding.setSpaceType(building_space_type)
-      #model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
-      model.getBuilding.setStandardsNumberOfStories(number_of_stories)
-
-      if number_of_stories_above_ground
-        model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
-      end
-      if number_of_residential_units
-        model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
-      end
-      #model.getBuilding.setNominalFloortoCeilingHeight
-      model.getBuilding.setStandardsBuildingType(bldg_use)
+      model.getBuilding.setStandardsBuildingType(space_type)
       model.getBuilding.setRelocatable(false)
     end
     
+    if number_of_residential_units
+      model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+    end
+    
+    model.getBuilding.setStandardsNumberOfStories(number_of_stories)
+    model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+    model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
+    #model.getBuilding.setNominalFloortoCeilingHeight
+      
     spaces = []
     if create_method == :space_per_floor
-      building[:stories].each do |story|
-        new_spaces = create_space_per_floor(building, story, model)
+      (-number_of_stories_below_ground+1..number_of_stories_above_ground).each do |story|
+        new_spaces = create_space_per_floor(building_json, story, floor_to_floor_height, model)
         spaces.concat(new_spaces)
       end
     elsif create_method == :space_per_building
@@ -133,8 +153,25 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return spaces
   end
 
-  def create_space_per_floor(building, story, model)
+  def create_space_per_floor(building_json, story, floor_to_floor_height, model)
   
+    geometry = building_json[:geometry] 
+    geometry_type = geometry[:type]
+    
+    result = []
+    
+    if geometry_type == "MultiPolygon"
+      geometry[:coordinates].each do |multi_polygon|
+        multi_polygon.each do |polygon|
+        
+          elevation = (story-1)*floor_to_floor_height
+          floor_print = floor_print_from_polygon(building, polygon, elevation)
+          next if !floor_print
+      
+        end
+      end
+    end
+    
     result = []
     story[:footprint][:polygons].each do |polygon|
       next if polygon[:coordinate_system] != "Local Cartesian"
@@ -289,107 +326,93 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
-    # assign the user inputs to variables
-    city_json_path = runner.getStringArgumentValue("city_json_path", user_arguments)
-    building_id = runner.getStringArgumentValue("building_id", user_arguments)
     
     # instance variables
     @runner = runner
     @min_x = Float::MAX 
     @min_y = Float::MAX 
+
+    # assign the user inputs to variables
+    city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
+    building_id = runner.getStringArgumentValue("id", user_arguments)
     
-    # read json
-    city = {}
-    File.open(city_json_path, 'r') do |file|
-      city = JSON.parse(file.read, {:symbolize_names => true})
+    port = 80
+    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
+      city_db_url = md[1]
+      port = md[2]
+    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
+      city_db_url = md[1]
     end
     
-    buildings = city[:buildings]
-    if buildings.length == 0
-      runner.registerError("No buildings found in #{city_json_path}")
+    http = Net::HTTP.new(city_db_url, port)
+    request = Net::HTTP::Get.new("/buildings/#{building_id}.json")
+    request.basic_auth("testing@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      runner.registerError("Bad response #{response.code}")
+      runner.registerError(response.body)
       return false
     end
-    runner.registerInfo("#{buildings.length} buildings found")
     
+    building_json = JSON.parse(response.body, :symbolize_names => true)
+    
+    if building_json[:geometry].nil?
+      runner.registerError("No geometry found in #{building_json}")
+      return false
+    end
+    
+    geometry_type = building_json[:geometry][:type]
+    if geometry_type != "MultiPolygon"
+      runner.registerError("Unknown geometry type #{geometry_type}")
+      return false
+    end
+
     # find min and max x coordinate
-    buildings.each do |building|
-      building[:footprint][:polygons].each do |polygon|
-        next if polygon[:coordinate_system] != "Local Cartesian"
-        polygon[:points].each do |point|
-          @min_x = point[:x] if point[:x] < @min_x
-          @min_y = point[:y] if point[:y] < @min_y
+    if geometry_type == "MultiPolygon"
+      building_json[:geometry][:coordinates].each do |multi_polygon|
+        multi_polygon.each do |polygon|
+          polygon.each do |point|
+            @min_x = point[0] if point[0] < @min_x
+            @min_y = point[1] if point[1] < @min_y
+          end
         end
       end
     end
     runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
    
-    # buildings to convert to shading surfaces later
-    convert_to_shades = []
-    
-    # creating buildings
-    if (building_id == "*All*")
-    
-      num_bldgs = 0
-      max_bldgs = Float::INFINITY
-      #max_bldgs = 10
-      
-      # make all buildings
-      buildings.each do |building|
-        if num_bldgs >= max_bldgs 
-          next
-        end
-        #if !/Commercial/.match(building[:bldg_use])
-        #  next
-        #end
-        
-        is_primary = false
-        spaces = create_building(building, is_primary, :space_per_building, model)
-        if !spaces.nil? && !spaces.empty?
-          num_bldgs += 1
-        end
-        
-        GC.start
-      end
-      
-      runner.registerInfo("Created #{num_bldgs} buildings")
-      
-    else
-      # make requested building
-      building = buildings.find{|b| b[:id] == building_id}
-      if building.nil?
-        runner.registerError("Cannot find building #{building_id}")
-        return false
-      end
-      
-      is_primary = true
-      spaces = create_building(building, is_primary, :space_per_floor, model)
-      if spaces.nil? || spaces.empty?
-        runner.registerError("Failed to create spaces for building #{building_id}")
-        return false
-      end
-      
-      other_building_ids = building[:intersecting_building_ids].concat(building[:surrounding_building_ids]).uniq
-      other_building_ids.each do |other_building_id|
-        other_building = buildings.find{|b| b[:id] == other_building_id}
-              
-        if other_building.nil?
-          runner.registerError("Cannot find other building #{other_building_id}")
-          return false
-        end
-        
-        is_primary = false
-        spaces = create_building(other_building, is_primary, :space_per_building, model)
-        if spaces.nil? || spaces.empty?
-          runner.registerError("Failed to create spaces for other building #{other_building_id}")
-          return false
-        end
-        
-        convert_to_shades.concat(spaces)
-      end
-      
+    # make requested building
+    is_primary = true
+    spaces = create_building(building_json, is_primary, :space_per_floor, model)
+    if spaces.nil? || spaces.empty?
+      runner.registerError("Failed to create spaces for building #{building_id}")
+      return false
     end
-
+      
+    # convert_to_shades = []
+    #
+    # get intersecting buildings
+    # other_building_ids = building[:intersecting_building_ids].concat(building[:surrounding_building_ids]).uniq
+    # other_building_ids.each do |other_building_id|
+      # other_building = buildings.find{|b| b[:id] == other_building_id}
+            
+      # if other_building.nil?
+        # runner.registerError("Cannot find other building #{other_building_id}")
+        # return false
+      # end
+      
+      # is_primary = false
+      # spaces = create_building(other_building, is_primary, :space_per_building, model)
+      # if spaces.nil? || spaces.empty?
+        # runner.registerError("Failed to create spaces for other building #{other_building_id}")
+        # return false
+      # end
+      
+      # convert_to_shades.concat(spaces)
+    # end
+    
+    # get surrounding buildings
+  
     # match surfaces
     runner.registerInfo("matching surfaces")
     spaces = OpenStudio::Model::SpaceVector.new
