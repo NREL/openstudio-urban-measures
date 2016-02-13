@@ -30,6 +30,7 @@ class ApiController < ApplicationController
   end
 
   # POST /api/export
+  # TODO: this isn't super useful anymore...deprecate?
   def export
 
   	# params:
@@ -74,48 +75,46 @@ class ApiController < ApplicationController
 
   # POST search
   def search
-  	# TODO: finish this
-    page = params[:page] ? params[:page] : 1
 
+    error = false
+    message = ''
+
+    page = params[:page] ? params[:page] : 1
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id] }    
-    @bldg_id = nil
+    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id.to_s] }    
+    @building_id = nil
     @distance = nil
-    @prox_types = ['Building']
+    @proximity_feature_types = ['Building']
     @region_id = nil
-    @region_types = ['Building']
+    @region_feature_types = ['Building']
     @results = []
     @is_get = true
     @search_type = 'proximity'
 
     # Process POST
-    # TODO: for API, will need to check method (post/get)
-    # TODO: this won't work as is via JSON api resource
     if params[:commit]
 
       @is_get = false
       # GEO NEAR SEARCH
       if params[:commit] == 'Proximity Search'
-        @bldg_id = params[:bldg_id]
-        @distance = params[:distance].empty? ? 500 : params[:distance].to_i
-        @prox_types = params[:prox_types].empty? ? @prox_types : params[:prox_types]
+        @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
+        @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
+        @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] :  @proximity_feature_types 
 
         @types = Array.new
     
-        @prox_types.each do |type|
+        @proximity_feature_types.each do |type|
           if @possible_types.include? type.capitalize
             @types << type.capitalize
           end
         end
-        logger.info("TYPES: #{@types}")
 
         if @types.include? 'All'
           @types = @possible_types.dup
           @types.delete('All')
         end
-        logger.info("TYPES: #{@types}")
 
-        bldgs = Building.where(id: @bldg_id)
+        bldgs = Building.where(id: @building_id)
         unless bldgs.count == 0
           bldg = bldgs.first
           centroid = bldg.geometry.centroid
@@ -131,21 +130,24 @@ class ApiController < ApplicationController
           query = query.geo_near(centroid).max_distance(@distance)
           @results = query
           @total_count = @results.count
-          @results = Kaminari.paginate_array(@results.to_a).page(page)
 
+          if request.format != 'application/json'
+            # pagination
+            @results = Kaminari.paginate_array(@results.to_a).page(page)
+          end
         end
 
       # GEO WITHIN SEARCH
       elsif params[:commit] == 'Region Search'
         @search_type = 'region'
 
-        @region_id = params[:region_id].empty? ? @regions.first : params[:region_id]
-        @region_types = params[:region_types].empty? ? @region_types : params[:region_types]
+        @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[1]
+        @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ?  params[:region_feature_types] : @region_feature_types
 
         # figure out what types
         @types = Array.new
     
-        @region_types.each do |type|
+        @region_feature_types.each do |type|
           if @possible_types.include? type.titleize
             @types << type.capitalize
           end
@@ -178,15 +180,23 @@ class ApiController < ApplicationController
           end
         end
 
-        #paginate
-        query = query.page(page)
-        @results = query 
+        @results = query
         @total_count = @results.count
+        if request.format != 'application/json'
+          # pagination
+          @results = @results.page(page)
+        end
       end
     end
 
+    # process results into geoJSON for API
+    if request.format == 'application/json'
+      @new_results = process_search_results
+      json_data = Geometry.build_geojson(@new_results)
+    end
+
     respond_to do |format|
-      format.json { render json: { results: @results } }
+      format.json { render json: json_data }
     	format.html { render 'api/search' }  
     end
   end
@@ -278,6 +288,7 @@ class ApiController < ApplicationController
 
   private
 
+  # check authorization
   def check_auth
     authenticate_or_request_with_http_basic do |username, password|
       begin
@@ -292,7 +303,26 @@ class ApiController < ApplicationController
     end
   end
 
+  # process search results
+  def process_search_results
+    # turn geometry results into feature results
+    @new_results = []
 
+    @results.each do |res|
+      if res.building_id 
+        @new_results << res.building
+      elsif res.taxlot_id
+        @new_results << res.taxlot
+      elsif res.region_id
+        @new_results << res.region
+      elsif res.district_system_id
+        @new_results << res.district_system
+      end
+    end
+    @new_results
+  end
+
+  # file params
   def file_params
     params.require(:workflow_id)
     params.permit(:workflow_id, file_data: [:file_name, :file])

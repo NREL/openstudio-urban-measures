@@ -4,13 +4,13 @@
 	<h3>Proximity Search</h3>
   <p>Find all items near a building.</p>
   <fieldset>
-  	<%= f.text_field :bldg_id, value: @bldg_id, label: 'Building ID' %>
+  	<%= f.text_field :building_id, value: @building_id, label: 'Building ID' %>
   </fieldset>
   <fieldset>
   	<%= f.text_field :distance, value: @distance, append: 'm', label: 'Max Distance' %>
   </fieldset>
   <fieldset>
-    <%= f.select :prox_types, options_for_select(@possible_types, @prox_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
+    <%= f.select :proximity_feature_types, options_for_select(@possible_types, @proximity_feature_types), { label: 'Feature type(s) to return' }, { multiple: true, size: 5 } %>
   </fieldset>
   <%= f.form_group do %>
   	<%= f.primary 'Proximity Search' %>
@@ -22,7 +22,7 @@
   	<%= f.select :region_id, options_for_select(@regions, @region_id), label: 'Region ID' %>
   </fieldset>
   <fieldset>
-    <%= f.select :region_types, options_for_select(@possible_types, @region_types), { label: 'Item type to return' }, { multiple: true, size: 5 } %>
+    <%= f.select :region_feature_types, options_for_select(@possible_types, @region_feature_types), { label: 'Feature type(s) to return' }, { multiple: true, size: 5 } %>
   </fieldset>
   <%= f.form_group do %>
   	<%= f.primary 'Region Search' %>

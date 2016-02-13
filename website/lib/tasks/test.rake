@@ -104,7 +104,74 @@ namespace :testing do
       puts "ERROR: #{e.response}"
       puts e.inspect
     end
-
   end
 
+  desc 'POST Region Search'
+  task region_search: :environment do
+
+    # params:  
+    # commit (Proximity Search or Region Search)
+    # region_id 
+    # region_feature_types 
+
+    # possible feature types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
+
+    params = {}
+    params[:commit] = 'Region Search'
+    params[:region_id] = '56be0287b02c308c03000b67'
+    params[:region_feature_types] = ['Building']
+
+    json_request = JSON.generate(params)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/search', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      if response.code == 200
+        puts "SUCCESS: #{response.body}"
+      else
+        fail response.body
+      end
+    rescue => e
+      puts "ERROR: #{e.response}"
+      puts e.inspect
+    end
+    
+  end
+
+  desc 'POST Proximity Search'
+  task proximity_search: :environment do
+
+    # params:  
+    # commit (Proximity Search or Region Search)
+    # building_id
+    # distance
+    # proximity_feature_types
+
+    # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
+
+    params = {}
+    params[:commit] = 'Proximity Search'
+    params[:building_id] = '56be0207b02c308c03000001'
+    params[:distance] = 100
+    params[:proximity_feature_types] = ['Taxlot']
+
+    json_request = JSON.generate(params)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/search', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "RESPONSE: #{response.inspect}"
+      if response.code == 200
+        puts "SUCCESS: #{response.body}"
+      else
+        fail response.body
+      end
+    rescue => e
+      puts "ERROR: #{e.response}"
+      puts e.inspect
+    end
+    
+  end
 end
