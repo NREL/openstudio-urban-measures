@@ -10,7 +10,7 @@ class TaxlotsController < ApplicationController
 
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson(@taxlots)}
+      format.json { render json: Geometry.build_geojson(@taxlots) }
     end
   end
 
@@ -19,7 +19,7 @@ class TaxlotsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_feature(@taxlot)}
+      format.json { render json: Geometry.build_feature(@taxlot) }
     end
   end
 
@@ -99,13 +99,14 @@ class TaxlotsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_taxlot
-      @taxlot = Taxlot.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def taxlot_params
-      params[:taxlot]
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_taxlot
+    @taxlot = Taxlot.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def taxlot_params
+    params[:taxlot]
+  end
 end

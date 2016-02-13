@@ -13,5 +13,4 @@ class Taxlot
   # Relations
   has_one :geometry, autosave: true, dependent: :destroy
   belongs_to :user
-
 end

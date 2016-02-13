@@ -1,14 +1,12 @@
 class AdminController < ApplicationController
-  load_and_authorize_resource :class => AdminController
+  load_and_authorize_resource class: AdminController
   def index
   end
 
   def home
-
   end
 
   def batch_upload_features
-    
     error = false
     message = ''
 
@@ -20,20 +18,19 @@ class AdminController < ApplicationController
       else
         # data parameter provided
         error = true
-        message += "No data parameter provided."
-      end  
-  
+        message += 'No data parameter provided.'
+      end
+
       respond_to do |format|
         if !error
           format.html { redirect_to batch_upload_features_admin_index_path, notice: "Import success! #{message}" }
           format.json { head :no_content }
         else
-          format.html { redirect_to batch_upload_features_admin_index_path, :flash => { :error => "Error: #{message}" } }
+          format.html { redirect_to batch_upload_features_admin_index_path, flash: { error: "Error: #{message}" } }
           format.json { render json: { error: message }, status: :unprocessable_entity }
         end
       end
     end
-
   end
 
   def backup_database
@@ -58,9 +55,7 @@ class AdminController < ApplicationController
     logger.info "Working directory is #{Dir.pwd} and I am #{`whoami`}"
 
     `mongo openstudio_urban_modeling_dev --eval "db.dropDatabase();"`
-    if $?.exitstatus == 0
-      success_1 = true
-    end
+    success_1 = true if $CHILD_STATUS.exitstatus == 0
 
     # call_rake 'routes' #'db:mongoid:create_indexes'
     # if $?.exitstatus == 0
@@ -84,13 +79,13 @@ class AdminController < ApplicationController
     FileUtils.mkdir_p(extract_dir)
 
     resp = `tar xvzf #{database_file.tempfile.path} -C #{extract_dir}`
-    if $?.exitstatus == 0
+    if $CHILD_STATUS.exitstatus == 0
       logger.info 'Successfully extracted uploaded database dump'
 
       `mongo openstudio_urban_modeling_dev --eval "db.dropDatabase();"`
-      if $?.exitstatus == 0
+      if $CHILD_STATUS.exitstatus == 0
         `mongorestore -d openstudio_urban_modeling_dev #{extract_dir}/openstudio_urban_modeling_dev`
-        if $?.exitstatus == 0
+        if $CHILD_STATUS.exitstatus == 0
           logger.info 'Restored mongo database'
           success = true
         else
@@ -111,22 +106,19 @@ class AdminController < ApplicationController
 
     resp = `mongodump --db openstudio_urban_modeling_dev --out #{dump_dir}`
 
-    if $?.exitstatus == 0
+    if $CHILD_STATUS.exitstatus == 0
       output_file = "/tmp/#{file_prefix}_#{time_stamp}.tar.gz"
       resp_2 = `tar czf #{output_file} -C #{dump_dir} openstudio_urban_modeling_dev`
-      if $?.exitstatus == 0
-        success = true
-      end
+      success = true if $CHILD_STATUS.exitstatus == 0
     end
 
     if File.exist?(output_file)
       send_data File.open(output_file).read, filename: File.basename(output_file), type: 'application/targz; header=present', disposition: 'attachment'
       success = true
     else
-      fail 'could not create dump'
+      raise 'could not create dump'
     end
 
     success
   end
-
 end

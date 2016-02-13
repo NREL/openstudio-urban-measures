@@ -3,7 +3,7 @@ class Workflow
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  field :type, type: String  # template, instance
+  field :type, type: String # template, instance
 
   # Relations
   embeds_one :workflow_file do
@@ -15,17 +15,15 @@ class Workflow
   belongs_to :user
 
   def self.create_update_workflow(data, workflow)
-  	
-  	error = false
+    error = false
     error_message = ''
 
-  	data.each do |key, value|
-
+    data.each do |key, value|
       if key == 'id'
         # in case there's an ID in the file, and an id already defined on workflow
         if workflow.id.to_s != value
           error = true
-          error_message = "ID in JSON file does not match ID of workflow to update; canceling update."
+          error_message = 'ID in JSON file does not match ID of workflow to update; canceling update.'
           break
         end
       else
@@ -43,11 +41,10 @@ class Workflow
       end
     end
 
-    return workflow, error, error_message
-
+    [workflow, error, error_message]
   end
 
-  def self.add_workflow_file(zip_file, filename, workflow, is_api=false)
+  def self.add_workflow_file(zip_file, filename, workflow, is_api = false)
     error = false
     error_message = ''
 
@@ -63,11 +60,11 @@ class Workflow
         f.write(zip_file.read)
       end
     end
-   
+
     wf, error, error_message = WorkflowFile.add_from_path(file_uri)
-    
+
     unless error
-      
+
       workflow.workflow_file = wf
 
       unless workflow.save!
@@ -76,8 +73,6 @@ class Workflow
       end
     end
 
-    return workflow, error, error_message
-
+    [workflow, error, error_message]
   end
-
 end

@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-
   # apipie
   root 'admin#home'
   match 'search' => 'api#search', :via => [:get, :post]
@@ -23,7 +22,7 @@ Rails.application.routes.draw do
     end
   end
 
-  scope "/api" do
+  scope '/api' do
     post 'batch_upload' => 'api#batch_upload'
     post 'workflow' => 'api#workflow'
     post 'workflow_file' => 'api#workflow_file'
@@ -39,13 +38,12 @@ Rails.application.routes.draw do
     get :backup_database
     post :restore_database
     get :clear_database
-    
+
     collection do
       get :home
       match 'batch_upload_features' => 'admin#batch_upload_features', :via => [:get, :post]
     end
   end
-  
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

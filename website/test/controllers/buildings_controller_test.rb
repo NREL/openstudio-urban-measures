@@ -5,41 +5,41 @@ class BuildingsControllerTest < ActionController::TestCase
     @building = buildings(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get :index
     assert_response :success
     assert_not_nil assigns(:buildings)
   end
 
-  test "should get new" do
+  test 'should get new' do
     get :new
     assert_response :success
   end
 
-  test "should create building" do
+  test 'should create building' do
     assert_difference('Building.count') do
-      post :create, building: {  }
+      post :create, building: {}
     end
 
     assert_redirected_to building_path(assigns(:building))
   end
 
-  test "should show building" do
+  test 'should show building' do
     get :show, id: @building
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get :edit, id: @building
     assert_response :success
   end
 
-  test "should update building" do
-    patch :update, id: @building, building: {  }
+  test 'should update building' do
+    patch :update, id: @building, building: {}
     assert_redirected_to building_path(assigns(:building))
   end
 
-  test "should destroy building" do
+  test 'should destroy building' do
     assert_difference('Building.count', -1) do
       delete :destroy, id: @building
     end

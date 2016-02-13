@@ -5,41 +5,41 @@ class WorkflowsControllerTest < ActionController::TestCase
     @workflow = workflows(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get :index
     assert_response :success
     assert_not_nil assigns(:workflows)
   end
 
-  test "should get new" do
+  test 'should get new' do
     get :new
     assert_response :success
   end
 
-  test "should create workflow" do
+  test 'should create workflow' do
     assert_difference('Workflow.count') do
-      post :create, workflow: {  }
+      post :create, workflow: {}
     end
 
     assert_redirected_to workflow_path(assigns(:workflow))
   end
 
-  test "should show workflow" do
+  test 'should show workflow' do
     get :show, id: @workflow
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get :edit, id: @workflow
     assert_response :success
   end
 
-  test "should update workflow" do
-    patch :update, id: @workflow, workflow: {  }
+  test 'should update workflow' do
+    patch :update, id: @workflow, workflow: {}
     assert_redirected_to workflow_path(assigns(:workflow))
   end
 
-  test "should destroy workflow" do
+  test 'should destroy workflow' do
     assert_difference('Workflow.count', -1) do
       delete :destroy, id: @workflow
     end

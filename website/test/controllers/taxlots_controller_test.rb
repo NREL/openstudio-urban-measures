@@ -5,41 +5,41 @@ class TaxlotsControllerTest < ActionController::TestCase
     @taxlot = taxlots(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get :index
     assert_response :success
     assert_not_nil assigns(:taxlots)
   end
 
-  test "should get new" do
+  test 'should get new' do
     get :new
     assert_response :success
   end
 
-  test "should create taxlot" do
+  test 'should create taxlot' do
     assert_difference('Taxlot.count') do
-      post :create, taxlot: {  }
+      post :create, taxlot: {}
     end
 
     assert_redirected_to taxlot_path(assigns(:taxlot))
   end
 
-  test "should show taxlot" do
+  test 'should show taxlot' do
     get :show, id: @taxlot
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get :edit, id: @taxlot
     assert_response :success
   end
 
-  test "should update taxlot" do
-    patch :update, id: @taxlot, taxlot: {  }
+  test 'should update taxlot' do
+    patch :update, id: @taxlot, taxlot: {}
     assert_redirected_to taxlot_path(assigns(:taxlot))
   end
 
-  test "should destroy taxlot" do
+  test 'should destroy taxlot' do
     assert_difference('Taxlot.count', -1) do
       delete :destroy, id: @taxlot
     end

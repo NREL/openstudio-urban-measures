@@ -10,4 +10,3 @@ json.set! :datapoint do
     end
   end
 end
-

@@ -16,5 +16,4 @@ class Datapoint
   belongs_to :template_workflow, class_name: 'Workflow'
   belongs_to :instance_workflow, class_name: 'Workflow'
   belongs_to :user
-
 end

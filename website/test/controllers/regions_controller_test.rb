@@ -5,41 +5,41 @@ class RegionsControllerTest < ActionController::TestCase
     @region = regions(:one)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get :index
     assert_response :success
     assert_not_nil assigns(:regions)
   end
 
-  test "should get new" do
+  test 'should get new' do
     get :new
     assert_response :success
   end
 
-  test "should create region" do
+  test 'should create region' do
     assert_difference('Region.count') do
-      post :create, region: {  }
+      post :create, region: {}
     end
 
     assert_redirected_to region_path(assigns(:region))
   end
 
-  test "should show region" do
+  test 'should show region' do
     get :show, id: @region
     assert_response :success
   end
 
-  test "should get edit" do
+  test 'should get edit' do
     get :edit, id: @region
     assert_response :success
   end
 
-  test "should update region" do
-    patch :update, id: @region, region: {  }
+  test 'should update region' do
+    patch :update, id: @region, region: {}
     assert_redirected_to region_path(assigns(:region))
   end
 
-  test "should destroy region" do
+  test 'should destroy region' do
     assert_difference('Region.count', -1) do
       delete :destroy, id: @region
     end

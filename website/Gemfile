@@ -48,8 +48,6 @@ gem 'apipie-rails'
 gem 'tzinfo'
 gem 'tzinfo-data', platforms: [:x64_mingw, :mingw, :mswin]
 
-#group :development, :test do
+# group :development, :test do
 #  gem 'capistrano'
-#end
-
-
+# end

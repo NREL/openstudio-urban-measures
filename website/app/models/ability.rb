@@ -43,8 +43,8 @@ class Ability
       can :workflow, :api
       can :workflow_file, :api
     # unauthenticated
-    else 
-      can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry] 
+    else
+      can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
       can :home, AdminController
       can :search, :api
       # any API actions?

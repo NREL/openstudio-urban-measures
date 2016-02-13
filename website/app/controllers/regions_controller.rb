@@ -9,7 +9,7 @@ class RegionsController < ApplicationController
     @regions = Region.all.page(page)
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson(@regions)}
+      format.json { render json: Geometry.build_geojson(@regions) }
     end
   end
 
@@ -18,7 +18,7 @@ class RegionsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_feature(@region)}
+      format.json { render json: Geometry.build_feature(@region) }
     end
   end
 
@@ -98,13 +98,14 @@ class RegionsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_region
-      @region = Region.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def region_params
-      params[:region]
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_region
+    @region = Region.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def region_params
+    params[:region]
+  end
 end

@@ -9,7 +9,7 @@ class DistrictSystemsController < ApplicationController
     @district_systems = DistrictSystem.all.page(page)
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson(@district_systems)}
+      format.json { render json: Geometry.build_geojson(@district_systems) }
     end
   end
 
@@ -18,7 +18,7 @@ class DistrictSystemsController < ApplicationController
   def show
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_feature(@district_system)}
+      format.json { render json: Geometry.build_feature(@district_system) }
     end
   end
 
@@ -63,7 +63,6 @@ class DistrictSystemsController < ApplicationController
   # PATCH/PUT /district_systems/1
   # PATCH/PUT /district_systems/1.json
   def update
-    
     if params[:geojson_file]
       data = Geometry.read_geojson_file(params[:geojson_file])
       if data.nil?
@@ -99,13 +98,14 @@ class DistrictSystemsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_district_system
-      @district_system = DistrictSystem.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def district_system_params
-      params[:district_system]
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_district_system
+    @district_system = DistrictSystem.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def district_system_params
+    params[:district_system]
+  end
 end

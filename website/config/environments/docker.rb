@@ -75,7 +75,7 @@ Rails.application.configure do
   config.log_formatter = ::Logger::Formatter.new
 
   # Do not dump schema after migrations.
-  #config.active_record.dump_schema_after_migration = false
+  # config.active_record.dump_schema_after_migration = false
 
   Rails.application.routes.default_url_options[:host] = ENV['CITYDB_HOST_URL']
 end

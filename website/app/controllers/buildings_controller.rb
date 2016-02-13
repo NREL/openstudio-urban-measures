@@ -10,17 +10,16 @@ class BuildingsController < ApplicationController
 
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_geojson(@buildings)}
+      format.json { render json: Geometry.build_geojson(@buildings) }
     end
   end
 
   # GET /buildings/1
   # GET /buildings/1.json
   def show
-
     respond_to do |format|
       format.html {}
-      format.json{ render json: Geometry.build_feature(@building)}
+      format.json { render json: Geometry.build_feature(@building) }
     end
   end
 
@@ -65,7 +64,6 @@ class BuildingsController < ApplicationController
   # PATCH/PUT /buildings/1
   # PATCH/PUT /buildings/1.json
   def update
-
     if params[:geojson_file]
       data = Geometry.read_geojson_file(params[:geojson_file])
       if data.nil?
@@ -101,14 +99,14 @@ class BuildingsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_building
-      @building = Building.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def building_params
-      params[:building]
-    end
-   
+  # Use callbacks to share common setup or constraints between actions.
+  def set_building
+    @building = Building.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def building_params
+    params[:building]
+  end
 end

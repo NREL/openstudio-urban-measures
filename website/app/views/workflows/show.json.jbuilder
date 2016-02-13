@@ -8,20 +8,17 @@ json.set! :workflow do
     end
   end
   if @workflow.workflow_file
-	  json.set! :workflow_file do
-
-	  	@workflow.workflow_file.attributes.each do |k, v|
-	      if k == '_id'
-	        json.set! :id, v.to_s
-	        @file_id = v.to_s
-	      elsif k == 'uri'
-	        json.set! :uri, download_zipfile_workflow_url(@workflow.id)
-	      else
-	        json.set! k, v
-	      end
-	    end
-	  end
-	end
+    json.set! :workflow_file do
+      @workflow.workflow_file.attributes.each do |k, v|
+        if k == '_id'
+          json.set! :id, v.to_s
+          @file_id = v.to_s
+        elsif k == 'uri'
+          json.set! :uri, download_zipfile_workflow_url(@workflow.id)
+        else
+          json.set! k, v
+        end
+      end
+    end
+  end
 end
-
-

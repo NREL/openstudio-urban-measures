@@ -7,9 +7,9 @@ require 'sprockets/railtie'
 require 'rails/test_unit/railtie'
 
 # items for solr and rails 4/mongoid 4
-#require 'bson'
-#require 'moped'
-#Moped::BSON = BSON
+# require 'bson'
+# require 'moped'
+# Moped::BSON = BSON
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -30,6 +30,6 @@ module UrbanModeling
     # config.i18n.default_locale = :de
 
     # Do not swallow errors in after_commit/after_rollback callbacks.
-    #config.active_record.raise_in_transactional_callbacks = true
+    # config.active_record.raise_in_transactional_callbacks = true
   end
 end

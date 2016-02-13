@@ -20,7 +20,6 @@ class DatapointsController < ApplicationController
     @datapoint = Datapoint.new
 
     @datapoint.building = params[:building]
-
   end
 
   # GET /datapoints/1/edit
@@ -30,7 +29,6 @@ class DatapointsController < ApplicationController
   # POST /datapoints
   # POST /datapoints.json
   def create
-
     @datapoint = Datapoint.new(datapoint_params)
     # TODO: generate instance workflow
 
@@ -48,7 +46,6 @@ class DatapointsController < ApplicationController
   # PATCH/PUT /datapoints/1
   # PATCH/PUT /datapoints/1.json
   def update
-
     # TODO: generate instance workflow
 
     respond_to do |format|
@@ -73,20 +70,20 @@ class DatapointsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_datapoint
-      @datapoint = Datapoint.find(params[:id])
-    end
 
-    # Get Workflows
-    def get_workflows
-        @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_datapoint
+    @datapoint = Datapoint.find(params[:id])
+  end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def datapoint_params
-   
-      params.require(:datapoint).permit(:building_id, :dencity_id, :template_workflow, :instance_workflow, :dencity_url, :analysis_id, :timestamp_started,
-    :timestamp_completed, variable_values: [], results: [])
-    end
+  # Get Workflows
+  def get_workflows
+    @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def datapoint_params
+    params.require(:datapoint).permit(:building_id, :dencity_id, :template_workflow, :instance_workflow, :dencity_url, :analysis_id, :timestamp_started,
+                                      :timestamp_completed, variable_values: [], results: [])
+  end
 end

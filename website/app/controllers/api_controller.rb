@@ -1,12 +1,10 @@
 # API controller
 class ApiController < ApplicationController
-
   before_filter :check_auth, except: [:search]
 
   # import
   # POST api/batch_upload (New and Update)
   def batch_upload
-
     error = false
     message = ''
 
@@ -17,9 +15,9 @@ class ApiController < ApplicationController
     else
       # data parameter provided
       error = true
-      message += "No data parameter provided."
-    end  
-  
+      message += 'No data parameter provided.'
+    end
+
     respond_to do |format|
       if !error
         format.json { render json: message, status: :created, location: buildings_url }
@@ -32,56 +30,51 @@ class ApiController < ApplicationController
   # POST /api/export
   # TODO: this isn't super useful anymore...deprecate?
   def export
+    # params:
+    # types: array of types to export
 
-  	# params:
-  	# types: array of types to export
+    # for now, choose what types to export only
+    @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
-  	# for now, choose what types to export only
-  	@possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
+    # TODO: allow query (same as on search page) to export data
 
-  	# TODO: allow query (same as on search page) to export data
-
-  	@types = Array.new
-  	if params[:types] 
-  		params[:types].each do |type|
-  			if @possible_types.include? type.capitalize
-  				@types << type.capitalize
-  			end
-  		end
-  	else
-  		@types << 'All'
-  	end
-
-  	if @types.include? 'All'
-  		@possible_types.delete('All')
-  		@types = @possible_types
-  	end
-
-  	# retrieve each type
-  	@results = []
-    @types.each do |type|
-      type = type.gsub(" ", "")
-      model = type.constantize
-      @results = @results + model.all.includes(:geometry)
+    @types = []
+    if params[:types]
+      params[:types].each do |type|
+        @types << type.capitalize if @possible_types.include? type.capitalize
+      end
+    else
+      @types << 'All'
     end
 
-  	json_data = Geometry.build_geojson(@results)
+    if @types.include? 'All'
+      @possible_types.delete('All')
+      @types = @possible_types
+    end
 
-  	respond_to do |format|
-  		format.json { render json: json_data }
-  	end
+    # retrieve each type
+    @results = []
+    @types.each do |type|
+      type = type.delete(' ')
+      model = type.constantize
+      @results += model.all.includes(:geometry)
+    end
 
+    json_data = Geometry.build_geojson(@results)
+
+    respond_to do |format|
+      format.json { render json: json_data }
+    end
   end
 
   # POST search
   def search
-
     error = false
     message = ''
 
     page = params[:page] ? params[:page] : 1
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id.to_s] }    
+    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id.to_s] }
     @building_id = nil
     @distance = nil
     @proximity_feature_types = ['Building']
@@ -99,14 +92,12 @@ class ApiController < ApplicationController
       if params[:commit] == 'Proximity Search'
         @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
         @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
-        @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] :  @proximity_feature_types 
+        @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] : @proximity_feature_types
 
-        @types = Array.new
-    
+        @types = []
+
         @proximity_feature_types.each do |type|
-          if @possible_types.include? type.capitalize
-            @types << type.capitalize
-          end
+          @types << type.capitalize if @possible_types.include? type.capitalize
         end
 
         if @types.include? 'All'
@@ -123,7 +114,7 @@ class ApiController < ApplicationController
           unless @types.count == 4
             # add the feature types to the query
             @types.each do |type|
-              field = type.downcase.gsub(" ", "_") + "_id"
+              field = type.downcase.tr(' ', '_') + '_id'
               query = query.exists(field.to_sym => true)
             end
           end
@@ -142,15 +133,13 @@ class ApiController < ApplicationController
         @search_type = 'region'
 
         @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[1]
-        @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ?  params[:region_feature_types] : @region_feature_types
+        @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ? params[:region_feature_types] : @region_feature_types
 
         # figure out what types
-        @types = Array.new
-    
+        @types = []
+
         @region_feature_types.each do |type|
-          if @possible_types.include? type.titleize
-            @types << type.capitalize
-          end
+          @types << type.capitalize if @possible_types.include? type.titleize
         end
 
         if @types.include? 'All'
@@ -160,22 +149,21 @@ class ApiController < ApplicationController
 
         the_region = Region.find(@region_id)
 
-        #test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
+        # test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
 
-        query = Geometry.where({"centroid" => 
-                                 { "$geoWithin" => 
-                                    { "$geometry" => 
-                                      { "type" => the_region.geometry.type, 
-                                        "coordinates" => the_region.geometry.coordinates
+        query = Geometry.where('centroid' =>
+                                 { '$geoWithin' =>
+                                    { '$geometry' =>
+                                      { 'type' => the_region.geometry.type,
+                                        'coordinates' => the_region.geometry.coordinates
                                       }
                                     }
-                                  }
-                                })
+                                  })
 
         unless @types.count == 4
           # add the feature types to the query
           @types.each do |type|
-            field = type.downcase.gsub(" ", "_") + "_id"
+            field = type.downcase.tr(' ', '_') + '_id'
             query = query.exists(field.to_sym => true)
           end
         end
@@ -197,18 +185,17 @@ class ApiController < ApplicationController
 
     respond_to do |format|
       format.json { render json: json_data }
-    	format.html { render 'api/search' }  
+      format.html { render 'api/search' }
     end
   end
 
   # POST /api/workflow.json
   def workflow
-
     error = false
     error_message = ''
     created_flag = false
     @workflow = nil
-    
+
     if params[:workflow]
 
       data = params[:workflow]
@@ -218,42 +205,41 @@ class ApiController < ApplicationController
         workflows = Workflow.where(id: data[:id])
         if workflows.count > 0
           @workflow = workflows.first
-          logger.info("WORKFLOW FOUND: UPDATING")
+          logger.info('WORKFLOW FOUND: UPDATING')
         else
           error = true
           error_message = "No workflows match ID #{data[:id]}.  Cannot update."
-          logger.info("WORKFLOW NOT FOUND!")
+          logger.info('WORKFLOW NOT FOUND!')
         end
       else
         @workflow = Workflow.new
         created_flag = true
-        logger.info("NEW WORKFLOW: CREATING")
+        logger.info('NEW WORKFLOW: CREATING')
       end
       unless error
         @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow)
       end
     else
       error = true
-      error_message += "No workflow parameter provided."
+      error_message += 'No workflow parameter provided.'
     end
 
     respond_to do |format|
-        if error
-          format.json { render json: { error: error_message, workflow: @workflow }, status: :unprocessable_entity }
-        else
-          if created_flag
-            status = :created
-          else
-            status = :ok
-          end
-          format.json { render 'workflows/show', status: status, location: workflows_url(@workflow) }
-        end
+      if error
+        format.json { render json: { error: error_message, workflow: @workflow }, status: :unprocessable_entity }
+      else
+        status = if created_flag
+                   :created
+                 else
+                   :ok
+                 end
+        format.json { render 'workflows/show', status: status, location: workflows_url(@workflow) }
       end
+    end
   end
 
   # POST /api/workflow_file.json
   def workflow_file
-    
     # expects workflow_id and file params
     error = false
     error_messages = []
@@ -264,7 +250,7 @@ class ApiController < ApplicationController
     if !@workflow
       error = true
       error_messages << "Workflow #{@workflow.id} could not be found."
-    else     
+    else
       # save to file_path:
       if clean_params[:file_data] && clean_params[:file_data][:file_name]
         filename = clean_params[:file_data][:file_name]
@@ -293,10 +279,10 @@ class ApiController < ApplicationController
     authenticate_or_request_with_http_basic do |username, password|
       begin
         resource = User.find_by(email: username)
-       rescue
-         respond_to do |format|
-           format.json { render json: "No user matching username #{username}", status: :unauthorized }
-         end
+      rescue
+        respond_to do |format|
+          format.json { render json: "No user matching username #{username}", status: :unauthorized }
+        end
       else
         sign_in :user, resource if resource.valid_password?(password)
       end
@@ -309,7 +295,7 @@ class ApiController < ApplicationController
     @new_results = []
 
     @results.each do |res|
-      if res.building_id 
+      if res.building_id
         @new_results << res.building
       elsif res.taxlot_id
         @new_results << res.taxlot
@@ -327,5 +313,4 @@ class ApiController < ApplicationController
     params.require(:workflow_id)
     params.permit(:workflow_id, file_data: [:file_name, :file])
   end
-
 end

@@ -4,7 +4,7 @@ class WorkflowFile
   include Mongoid::Timestamps
 
   field :file_name, type: String
-  field :file_size, type: Integer #KB
+  field :file_size, type: Integer # KB
   field :uri, type: String
 
   embedded_in :workflow
@@ -21,12 +21,11 @@ class WorkflowFile
       rf.file_size = (File.size(new_path) / 1024).to_i
 
     else
-       error = true
-       error_message = "Could not find file path: #{file_path} to add to WorkflowFile"
-       rf = nil
+      error = true
+      error_message = "Could not find file path: #{file_path} to add to WorkflowFile"
+      rf = nil
     end
 
-    return rf, error, error_message
-
+    [rf, error, error_message]
   end
 end
