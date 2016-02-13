@@ -7,6 +7,8 @@ class Region
   # TODO: add ID field
   field :type, type: String
   field :region_id, type: String
+  field :state_abbr, type: String
+  field :state_name, type: String
 
   # Validation
 

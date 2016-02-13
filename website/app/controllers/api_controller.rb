@@ -75,25 +75,28 @@ class ApiController < ApplicationController
   # POST search
   def search
   	# TODO: finish this
-  	# TODO: allow picking multiple types
+    page = params[:page] ? params[:page] : 1
 
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-   
-    @results = []
-
-    @bldg_fid = nil
+    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id] }    
+    @bldg_id = nil
     @distance = nil
     @prox_types = ['Building']
     @region_id = nil
     @region_types = ['Building']
+    @results = []
+    @is_get = true
+    @search_type = 'proximity'
 
     # Process POST
     # TODO: for API, will need to check method (post/get)
     # TODO: this won't work as is via JSON api resource
     if params[:commit]
 
+      @is_get = false
+      # GEO NEAR SEARCH
       if params[:commit] == 'Proximity Search'
-        @bldg_fid = params[:bldg_fid]
+        @bldg_id = params[:bldg_id]
         @distance = params[:distance].empty? ? 500 : params[:distance].to_i
         @prox_types = params[:prox_types].empty? ? @prox_types : params[:prox_types]
 
@@ -104,76 +107,81 @@ class ApiController < ApplicationController
             @types << type.capitalize
           end
         end
+        logger.info("TYPES: #{@types}")
 
         if @types.include? 'All'
-          @possible_types.delete('All')
-          @types = @possible_types
+          @types = @possible_types.dup
+          @types.delete('All')
         end
+        logger.info("TYPES: #{@types}")
 
-        bldgs = Building.where(bldg_fid: @bldg_fid)
+        bldgs = Building.where(id: @bldg_id)
         unless bldgs.count == 0
           bldg = bldgs.first
           centroid = bldg.geometry.centroid
 
-          @geo_results = Geometry.includes(:building, :region, :district_system, :taxlot).geo_near(centroid).max_distance(@distance)
-          logger.info("HEY!! #{@geo_results.count}")
-
-          @geo_results.each do |res|
-            if res.building
-              @results << res.building
-            elsif res.taxlot
-              @results << res.taxlot
-            elsif res.region
-              @results << res.region
-            elsif res.district_system
-              @results << res.district_system
+          query = Mongoid::Criteria.new(Geometry)
+          unless @types.count == 4
+            # add the feature types to the query
+            @types.each do |type|
+              field = type.downcase.gsub(" ", "_") + "_id"
+              query = query.exists(field.to_sym => true)
             end
           end
-          
+          query = query.geo_near(centroid).max_distance(@distance)
+          @results = query
+          @total_count = @results.count
+          @results = Kaminari.paginate_array(@results.to_a).page(page)
+
         end
 
+      # GEO WITHIN SEARCH
       elsif params[:commit] == 'Region Search'
+        @search_type = 'region'
 
-        @region_id = params[:region_id].empty? ? '1' : params[:region_id]
+        @region_id = params[:region_id].empty? ? @regions.first : params[:region_id]
         @region_types = params[:region_types].empty? ? @region_types : params[:region_types]
 
         # figure out what types
         @types = Array.new
     
         @region_types.each do |type|
-          if @possible_types.include? type.capitalize
+          if @possible_types.include? type.titleize
             @types << type.capitalize
           end
         end
 
         if @types.include? 'All'
-          @possible_types.delete('All')
-          @types = @possible_types
+          @types = @possible_types.dup
+          @types.delete('All')
         end
 
-        # Iterate through array and get all results
-        @types.each do |type|
-          # remove spaces (for district system)
-          type = type.gsub(" ", "")
+        the_region = Region.find(@region_id)
 
-          #model = type.constantize
-          #@results = @results + model.where(region_id: @region_id)
+        #test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
 
-          # TODO: this doesn't work yet
-          # retrieve region and get geometry
-          region = Region.where(region_id: @region_id).first
+        query = Geometry.where({"centroid" => 
+                                 { "$geoWithin" => 
+                                    { "$geometry" => 
+                                      { "type" => the_region.geometry.type, 
+                                        "coordinates" => the_region.geometry.coordinates
+                                      }
+                                    }
+                                  }
+                                })
 
-          #@results = Geometry.where(centroid: {
-          #  $geoWithin: {
-          #    $geometry: {
-          #      type:  region.geometry.type,
-          #      coordinates: region.geometry.coordinates
-          #    }
-          #  }
-          #})
-          @results = nil
+        unless @types.count == 4
+          # add the feature types to the query
+          @types.each do |type|
+            field = type.downcase.gsub(" ", "_") + "_id"
+            query = query.exists(field.to_sym => true)
+          end
         end
 
+        #paginate
+        query = query.page(page)
+        @results = query 
+        @total_count = @results.count
       end
     end
 
