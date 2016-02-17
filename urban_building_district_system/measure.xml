@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_district_system</name>
   <uid>1907ef7b-9d65-4795-b360-1805be70d431</uid>
-  <version_id>9111cd41-39b6-42a1-9fe6-4ed0e7b56abb</version_id>
+  <version_id>461dae25-c2a5-4236-bea3-cdd073b5b2aa</version_id>
   <xml_checksum>C49A7DAB</xml_checksum>
   <class_name>UrbanBuildingDistrictSystem</class_name>
   <display_name>UrbanBuildingDistrictSystem</display_name>
@@ -68,6 +68,18 @@
       <checksum>C4F35230</checksum>
     </file>
     <file>
+      <filename>OsLib_Schedules.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C53CDDCD</checksum>
+    </file>
+    <file>
+      <filename>HVAC.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>5D3431F2</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -76,7 +88,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>EE571F02</checksum>
+      <checksum>D27F1566</checksum>
     </file>
   </files>
 </measure>

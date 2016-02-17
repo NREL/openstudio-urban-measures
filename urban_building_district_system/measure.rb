@@ -1,6 +1,9 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
+require "#{File.dirname(__FILE__)}/resources/HVAC"
+require "#{File.dirname(__FILE__)}/resources/OsLib_Schedules"
+
 # start the measure
 class UrbanBuildingDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
@@ -45,175 +48,70 @@ class UrbanBuildingDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     end
 
     district_system_type = runner.getStringArgumentValue("district_system_type", user_arguments)
+    chiller_type = "AirCooled" # WaterCooled, AirCooled
+    zone_hvac = "GSHP" # GSHP, WSHP, FanCoil, ASHP, Baseboard, Radiant, DualDuct
     
     unless district_system_type == "Conventional"
         return false
     end
 
-    return true
+    # SCHEDULES
+    hot_water_setpoint_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "HW-Loop-Temp-Schedule", "default_day" => ["All Days", [24,67.0]]})
+    radiant_hot_water_setpoint_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HW-Radiant-Loop-Temp-Schedule", "default_day" => ["All Days", [24,45.0]]})
+    chilled_water_setpoint_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "CW-Loop-Temp-Schedule", "default_day" => ["All Days", [24,6.7]]})                                                                                 
+    radiant_chilled_water_setpoint_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New CW-Radiant-Loop-Temp-Schedule", "default_day" => ["All Days", [24,15.0]]})
+    primary_sat_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "Cold Deck Temperature Setpoint Schedule", "default_day" => ["All Days",[24,12.8]]})
     
-    runner.registerInfo("Removing existing HVAC.")
-    
-    airloops = model.getAirLoopHVACs
-    plantLoops = model.getPlantLoops
-    zones = model.getThermalZones
-
-	# remove all zone equipment except zone exhaust fans
-    zones.each do |zone|
-		zone.equipment.each do |equip|
-			if equip.to_FanZoneExhaust.is_initialized #or (equip.to_ZoneHVACUnitHeater.is_initialized and zone.get.equipment.size == 1)
-			else  
-                equip.remove
-                runner.registerInfo("Removed #{equip.name} from #{zone.name}.")
-			end
-		end
-	end
-    	
-    # remove an air loop if it's empty
-    airloops.each do |air_loop|
-		air_loop.thermalZones.each do |airZone|
-			air_loop.removeBranchForZone(airZone)
-            runner.registerInfo("Removed branch for zone #{airZone.name} from #{air_loop.name}.")
-		end
-		if air_loop.thermalZones.empty?
-			air_loop.remove
-            runner.registerInfo("Removed air loop #{air_loop.name}.")
-		end
+    hp_loop_schedule = nil
+    hp_loop_cooling_schedule = nil
+    hp_loop_heating_schedule = nil
+    if zone_hvac == "GSHP"
+        hp_loop_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Temp-Schedule", "default_day" => ["All Days",[24,21]]})
+        hp_loop_cooling_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Clg-Temp-Schedule", "default_day" => ["All Days",[24,21]]})
+        hp_loop_heating_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Htg-Temp-Schedule", "default_day" => ["All Days",[24,5]]})                                                                               
+    elsif zone_hvac == "WSHP"
+        hp_loop_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Temp-Schedule", "default_day" => ["All Days",[24,30]]}) #PNNL
+        hp_loop_cooling_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Clg-Temp-Schedule", "default_day" => ["All Days",[24,30]]}) #PNNL
+        hp_loop_heating_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New HP-Loop-Htg-Temp-Schedule", "default_day" => ["All Days",[24,20]]}) #PNNL
     end
-   
-    # remove plant loops
-    plantLoops.each do |plantLoop|
-		plantLoop.remove
-		runner.registerInfo("Removed plant loop #{plantLoop.name}.")
-	end
+
+    mean_radiant_heating_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New Office Mean Radiant Heating Setpoint Schedule", "winter_design_day" => [[24,18.8]], "summer_design_day" => [[6,18.3],[22,18.8],[24,18.3]], "default_day" => ["Weekday",[6,18.3],[22,18.8],[24,18.3]], "rules" => [["Saturday","1/1-12/31","Sat",[6,18.3],[18,18.8],[24,18.3]], ["Sunday","1/1-12/31","Sun",[24,18.3]]]})
+    mean_radiant_cooling_schedule = OsLib_Schedules.createComplexSchedule(model, {"name" => "New Office Mean Radiant Cooling Setpoint Schedule", "winter_design_day" => [[6,26.7],[22,24.0],[24,26.7]], "summer_design_day" => [[24,24.0]], "default_day" => ["Weekday",[6,26.7],[22,24.0],[24,26.7]], "rules" => [["Saturday","1/1-12/31","Sat",[6,26.7],[18,24.0],[24,26.7]], ["Sunday","1/1-12/31","Sun",[24,26.7]]]})
+
+    runner.registerInfo("Removing existing HVAC.")
+    HelperMethods.remove_existing_hvac_equipment(model, runner)
     
-    runner.registerInfo("Adding district system.")
+    # PLANT LOOPS
     
-    # HOT WATER LOOP
-    hot_water_plant = OpenStudio::Model::PlantLoop.new(model)
-    hot_water_plant.setName("New Hot Water Loop")
-    hot_water_plant.setMaximumLoopTemperature(100)
-    hot_water_plant.setMinimumLoopTemperature(10)
-    loop_sizing = hot_water_plant.sizingPlant
-    loop_sizing.setLoopType("Heating")
-    loop_sizing.setDesignLoopExitTemperature(82)
-    loop_sizing.setLoopDesignTemperatureDifference(11)
-    # create a pump
-    pump = OpenStudio::Model::PumpVariableSpeed.new(model)
-    pump.setRatedPumpHead(119563) #Pa
-    pump.setMotorEfficiency(0.9)
-    pump.setCoefficient1ofthePartLoadPerformanceCurve(0)
-    pump.setCoefficient2ofthePartLoadPerformanceCurve(0.0216)
-    pump.setCoefficient3ofthePartLoadPerformanceCurve(-0.0325)
-    pump.setCoefficient4ofthePartLoadPerformanceCurve(1.0095)
-    # create a boiler
-    boiler = OpenStudio::Model::BoilerHotWater.new(model)
-    boiler.setNominalThermalEfficiency(0.9)
-    # create a scheduled setpoint manager
-    # setpoint_manager_scheduled = OpenStudio::Model::SetpointManagerScheduled.new(model,hot_water_setpoint_schedule)
-    # create a supply bypass pipe
-    pipe_supply_bypass = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a supply outlet pipe
-    pipe_supply_outlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand bypass pipe
-    pipe_demand_bypass = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand inlet pipe
-    pipe_demand_inlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand outlet pipe
-    pipe_demand_outlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # connect components to plant loop
-    # supply side components
-    hot_water_plant.addSupplyBranchForComponent(boiler)
-    hot_water_plant.addSupplyBranchForComponent(pipe_supply_bypass)
-    pump.addToNode(hot_water_plant.supplyInletNode)
-    pipe_supply_outlet.addToNode(hot_water_plant.supplyOutletNode)
-    # setpoint_manager_scheduled.addToNode(hot_water_plant.supplyOutletNode)
-    # demand side components (water coils are added as they are added to airloops and zoneHVAC)
-    hot_water_plant.addDemandBranchForComponent(pipe_demand_bypass)
-    pipe_demand_inlet.addToNode(hot_water_plant.demandInletNode)
-    pipe_demand_outlet.addToNode(hot_water_plant.demandOutletNode)    
+    hot_water_plant = nil
+    radiant_hot_water_plant = nil
+    chilled_water_plant = nil
+    radiant_chilled_water_plant = nil
     
-    # CHILLED WATER LOOP
-    chilled_water_plant = OpenStudio::Model::PlantLoop.new(model)
-    chilled_water_plant.setName("New Chilled Water Loop")
-    chilled_water_plant.setMaximumLoopTemperature(98)
-    chilled_water_plant.setMinimumLoopTemperature(1)
-    loop_sizing = chilled_water_plant.sizingPlant
-    loop_sizing.setLoopType("Cooling")
-    loop_sizing.setDesignLoopExitTemperature(6.7)
-    loop_sizing.setLoopDesignTemperatureDifference(6.7)
-    # create a pump
-    pump = OpenStudio::Model::PumpVariableSpeed.new(model)
-    pump.setRatedPumpHead(149453) #Pa
-    pump.setMotorEfficiency(0.9)
-    pump.setCoefficient1ofthePartLoadPerformanceCurve(0)
-    pump.setCoefficient2ofthePartLoadPerformanceCurve(0.0216)
-    pump.setCoefficient3ofthePartLoadPerformanceCurve(-0.0325)
-    pump.setCoefficient4ofthePartLoadPerformanceCurve(1.0095)
-    # create a chiller
-      # create clgCapFuncTempCurve
-      clgCapFuncTempCurve = OpenStudio::Model::CurveBiquadratic.new(model)
-      clgCapFuncTempCurve.setCoefficient1Constant(1.05E+00)
-      clgCapFuncTempCurve.setCoefficient2x(3.36E-02)
-      clgCapFuncTempCurve.setCoefficient3xPOW2(2.15E-04)
-      clgCapFuncTempCurve.setCoefficient4y(-5.18E-03)
-      clgCapFuncTempCurve.setCoefficient5yPOW2(-4.42E-05)
-      clgCapFuncTempCurve.setCoefficient6xTIMESY(-2.15E-04)
-      clgCapFuncTempCurve.setMinimumValueofx(0)
-      clgCapFuncTempCurve.setMaximumValueofx(20)
-      clgCapFuncTempCurve.setMinimumValueofy(0)
-      clgCapFuncTempCurve.setMaximumValueofy(50)
-      # create eirFuncTempCurve
-      eirFuncTempCurve = OpenStudio::Model::CurveBiquadratic.new(model)
-      eirFuncTempCurve.setCoefficient1Constant(5.83E-01)
-      eirFuncTempCurve.setCoefficient2x(-4.04E-03)
-      eirFuncTempCurve.setCoefficient3xPOW2(4.68E-04)
-      eirFuncTempCurve.setCoefficient4y(-2.24E-04)
-      eirFuncTempCurve.setCoefficient5yPOW2(4.81E-04)
-      eirFuncTempCurve.setCoefficient6xTIMESY(-6.82E-04)
-      eirFuncTempCurve.setMinimumValueofx(0)
-      eirFuncTempCurve.setMaximumValueofx(20)
-      eirFuncTempCurve.setMinimumValueofy(0)
-      eirFuncTempCurve.setMaximumValueofy(50)
-      # create eirFuncPlrCurve
-      eirFuncPlrCurve = OpenStudio::Model::CurveQuadratic.new(model)
-      eirFuncPlrCurve.setCoefficient1Constant(4.19E-02)
-      eirFuncPlrCurve.setCoefficient2x(6.25E-01)
-      eirFuncPlrCurve.setCoefficient3xPOW2(3.23E-01)
-      eirFuncPlrCurve.setMinimumValueofx(0)
-      eirFuncPlrCurve.setMaximumValueofx(1.2)
-      # construct chiller
-      chiller = OpenStudio::Model::ChillerElectricEIR.new(model,clgCapFuncTempCurve,eirFuncTempCurve,eirFuncPlrCurve)
-      chiller.setReferenceCOP(2.93)
-      chiller.setCondenserType("AirCooled")
-      chiller.setChillerFlowMode("ConstantFlow")
-    # create a scheduled setpoint manager
-    # setpoint_manager_scheduled = OpenStudio::Model::SetpointManagerScheduled.new(model,chilled_water_setpoint_schedule)
-    # create a supply bypass pipe
-    pipe_supply_bypass = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a supply outlet pipe
-    pipe_supply_outlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand bypass pipe
-    pipe_demand_bypass = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand inlet pipe
-    pipe_demand_inlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # create a demand outlet pipe
-    pipe_demand_outlet = OpenStudio::Model::PipeAdiabatic.new(model)
-    # connect components to plant loop
-    # supply side components
-    chilled_water_plant.addSupplyBranchForComponent(chiller)
-    chilled_water_plant.addSupplyBranchForComponent(pipe_supply_bypass)
-    pump.addToNode(chilled_water_plant.supplyInletNode)
-    pipe_supply_outlet.addToNode(chilled_water_plant.supplyOutletNode)
-    # setpoint_manager_scheduled.addToNode(chilled_water_plant.supplyOutletNode)
-    # demand side components (water coils are added as they are added to airloops and ZoneHVAC)
-    chilled_water_plant.addDemandBranchForComponent(pipe_demand_bypass)
-    pipe_demand_inlet.addToNode(chilled_water_plant.demandInletNode)
-    pipe_demand_outlet.addToNode(chilled_water_plant.demandOutletNode)    
+    runner.registerInfo("Creating hot water plant.")    
+    hot_water_plant = HelperMethods.create_hot_water_plant(model, runner, hot_water_setpoint_schedule)
     
-    # CONDENSER WATER LOOP
+    runner.registerInfo("Creating radiant hot water plant.")
+    # radiant_hot_water_plant = HelperMethods.create_radiant_hot_water_plant(model, runner, radiant_hot_water_setpoint_schedule)
     
-    # AIR LOOP
+    runner.registerInfo("Creating chilled water plant.")
+    chilled_water_plant = HelperMethods.create_chilled_water_plant(model, runner, chilled_water_setpoint_schedule, chiller_type)     
+    
+    runner.registerInfo("Creating radiant chilled water plant.")
+    # radiant_chilled_water_plant = HelperMethods.create_radiant_chilled_water_plant(model, runner, radiant_chilled_water_setpoint_schedule, chiller_type)    
+    
+    # CONDENSER LOOPS
+    
+    runner.registerInfo("Creating condenser loop.")
+    condenser_loop, heat_pump_loop = HelperMethods.create_condenser_loop(model, runner, zone_hvac, hp_loop_schedule, hp_loop_cooling_schedule, hp_loop_heating_schedule)
+    
+    # AIR LOOPS
+    
+    primary_airloops = HelperMethods.create_primary_air_loop(model, runner, hot_water_plant, chilled_water_plant, primary_sat_schedule)
+    
+    # EQUIPMENT
+    
+    HelperMethods.create_primary_zone_equipment(model, runner, hot_water_plant, radiant_hot_water_plant, chilled_water_plant, radiant_chilled_water_plant, heat_pump_loop, mean_radiant_heating_schedule, mean_radiant_cooling_schedule, zone_hvac)
     
     return true
 

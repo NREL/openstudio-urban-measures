@@ -590,7 +590,7 @@ def get_thermal_zones(model)
 	  thermal_zone = space.thermalZone.get # Make a "living" thermal zone
 	  living_thermal_zone_name = "#{thermal_zone.name.to_s}:Living"
 	  living_thermal_zone = thermal_zone.clone.to_ThermalZone.get
-	  living_thermal_zone.setName(living_thermal_zone_name)	
+	  living_thermal_zone.setName(living_thermal_zone_name)
 	end
   end
   
