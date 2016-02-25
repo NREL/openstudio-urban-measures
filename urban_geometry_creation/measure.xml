@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>6f4b994f-047b-43c9-9327-747e68bb3b23</version_id>
+  <version_id>7570caae-7591-45d9-920d-8dcfe2203e28</version_id>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -10,22 +10,21 @@
   <modeler_description></modeler_description>
   <arguments>
     <argument>
-      <name>city_json_path</name>
-      <display_name>City JSON Path</display_name>
-      <description>Path to city.json.</description>
+      <name>city_db_url</name>
+      <display_name>City Database Url</display_name>
+      <description>Url of the City Database</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>../../../../openstudio-urban-measures/city.json</default_value>
+      <default_value>http://localhost:3000</default_value>
     </argument>
     <argument>
-      <name>building_id</name>
+      <name>id</name>
       <display_name>Building ID</display_name>
-      <description>Building ID to generate, use '*All*' to generate all.</description>
+      <description>Building ID to generate geometry for.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>142484</default_value>
     </argument>
   </arguments>
   <provenances/>
@@ -69,13 +68,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>FC66A79C</checksum>
-    </file>
-    <file>
-      <filename>city.json</filename>
-      <filetype>json</filetype>
-      <usage_type>test</usage_type>
-      <checksum>BAC54F8C</checksum>
+      <checksum>73672CCB</checksum>
     </file>
     <file>
       <version>
@@ -86,7 +79,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>CA867A90</checksum>
+      <checksum>556D24B9</checksum>
     </file>
   </files>
 </measure>
