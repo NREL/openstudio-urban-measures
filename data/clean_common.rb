@@ -90,7 +90,97 @@ class Cleaner
     return errors
   end
   
-  def clean
+  def clean_originals
+    pattern = file_pattern
+    
+    Dir.glob(pattern).each do |p|
+      
+      # enforce .geojson extension
+      next unless /\.geojson$/.match(p)
+      
+      # skip already cleaned
+      next if /\.clean\.geojson$/.match(p)
+      
+      puts "Cleaning #{p}"
+      
+      geojson = nil
+      File.open(p, 'r') do |f|
+        geojson = JSON.parse(f.read)
+      end
+    
+      # loop over features in original and sort keys
+      geojson['features'].each do |feature|
+        data = feature['properties']
+        feature['properties'] = Hash[data.sort]
+      end
+
+      File.open(p, 'w') do |f|
+        #f << JSON.generate(geojson)
+        f << JSON.pretty_generate(geojson)
+      end
+ 
+    end
+    
+  end
+  
+  def gather_stats
+    pattern = file_pattern
+    
+    stats = {}
+    Dir.glob(pattern).each do |p|
+      
+      # enforce .geojson extension
+      next unless /\.geojson$/.match(p)
+      
+      # skip already cleaned
+      next if /\.clean\.geojson$/.match(p)
+      
+      puts "Gathering Stats #{p}"
+      
+      geojson = nil
+      File.open(p, 'r') do |f|
+        geojson = JSON.parse(f.read)
+      end
+    
+      # loop over features in original and sort keys
+      geojson['features'].each do |feature|
+        data = feature['properties']
+        type = data['type']
+        
+        if stats[type].nil?
+          stats[type] = {'count' => 0} 
+        end
+        stats[type]['count'] = stats[type]['count'] + 1
+          
+        data.each do |k, v|
+          if stats[type][k].nil?
+            stats[type][k] = {'count' => 0, 'values' => []} 
+          end
+          stats[type][k]['count'] = stats[type][k]['count'] + 1
+          stats[type][k]['values'] << v
+        end
+      end
+    end
+    
+    stats.each do |type, type_stats|
+      type_count = type_stats['count']
+      
+      type_stats.each do |key, key_stats|
+        next if key == 'count'
+        
+        key_count = key_stats['count']
+        key_stats['percent'] = (100 * key_count.to_f / type_count.to_f).round(2)
+        key_stats['values'].uniq!
+      end
+    end
+    
+    File.open("#{name}_stats.json", 'w') do |f|
+      #f << JSON.generate(geojson)
+      f << JSON.pretty_generate(stats)
+    end
+  end
+  
+  def clean()
     all_errors = {}
     
     building_schema = get_building_schema
@@ -115,17 +205,6 @@ class Cleaner
         geojson = JSON.parse(f.read)
       end
       
-      # loop over features in original and sort keys
-      geojson['features'].each do |feature|
-        data = feature['properties']
-        feature['properties'] = Hash[data.sort]
-      end
-
-      File.open(p, 'w') do |f|
-        #f << JSON.generate(geojson)
-        f << JSON.pretty_generate(geojson)
-      end
-      
       all_errors[p] = []
       
       # loop over features
@@ -148,7 +227,6 @@ class Cleaner
           end
           
           if !errors.empty?
-            all_errors[p][-1] << "Validation failed"
             all_errors[p][-1].concat(errors)
             all_errors[p][-1] << "Removing feature: "
             all_errors[p][-1] << data.clone

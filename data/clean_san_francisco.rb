@@ -315,4 +315,6 @@ class SanFranciscoCleaner < Cleaner
 end
 
 cleaner = SanFranciscoCleaner.new 
-cleaner.clean
+#cleaner.clean_originals
+cleaner.gather_stats
+#cleaner.clean

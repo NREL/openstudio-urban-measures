@@ -19,8 +19,11 @@
 			"type": "string"
 		},
 		"region_ids": {
-			"description": "Id of the regions containing this feature, managed by database.",
-			"type": "array"
+			"description": "Ids of the regions containing this feature, managed by database.",
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
 		},
 		"geojson_id": {
 			"description": "Id of the geojson for this feature, managed by database.",
@@ -50,7 +53,10 @@
 		},
 		"region_source_ids": {
 			"description": "Source id of the regions this feature is located in. ",
-			"type": "array"
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
 		},
 		"name": {
 			"description": "Feature name",
@@ -107,9 +113,7 @@
 	"required": [
 		"type",
 		"source_name",
-		"source_id",
-		"region_source_name",
-		"region_source_ids"
+		"source_id"
 	],
 	"definitions": {
 		"source": {
