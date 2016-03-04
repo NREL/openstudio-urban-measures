@@ -6,6 +6,7 @@ require 'fileutils'
 
 require_relative 'resources/apply_residential'
 require_relative 'resources/apply_commercial'
+require_relative 'resources/util'
 
 module OpenStudio
   module Model
@@ -41,6 +42,27 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
 
+    # cooling source
+    cooling_sources = OpenStudio::StringVector.new
+    cooling_sources << "Electric"
+    cooling_sources << "District Chilled Water"
+    cooling_sources << "District Ambient Water"
+    cooling_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("cooling_source", cooling_sources, true)
+    cooling_source.setDisplayName("Cooling source to model")
+    cooling_source.setDefaultValue("Electric")
+    args << cooling_source
+    
+    # heating source
+    heating_sources = OpenStudio::StringVector.new
+    heating_sources << "Gas"
+    heating_sources << "Electric"
+    heating_sources << "District Hot Water"
+    heating_sources << "District Ambient Water"
+    heating_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("heating_source", heating_sources, true)
+    heating_source.setDisplayName("Heating source to model")
+    heating_source.setDefaultValue("Gas")
+    args << heating_source    
+    
     return args
   end
 
@@ -52,6 +74,9 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
+    
+    cooling_source = runner.getStringArgumentValue("cooling_source", user_arguments)
+    heating_source = runner.getStringArgumentValue("heating_source", user_arguments)    
     
     # check building space type to see if we are doing residential or commercial path
     building = model.getBuilding
@@ -86,7 +111,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
 	  unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
-      result = apply_residential(model, runner)
+      result = apply_residential(model, runner, heating_source, cooling_source)
     else
       result = apply_commercial(model, runner)
     end

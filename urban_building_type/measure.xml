@@ -2,13 +2,62 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>98dbe70e-19cc-4798-b14d-0bcc766f03af</version_id>
+  <version_id>afa53e55-6f8b-4351-8299-637d564e62a9</version_id>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
   <description>This measure addings space type, constructions, and schedules as well as HVAC systems based on building type.</description>
   <modeler_description></modeler_description>
-  <arguments/>
+  <arguments>
+    <argument>
+      <name>cooling_source</name>
+      <display_name>Cooling source to model</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>Electric</default_value>
+      <choices>
+        <choice>
+          <value>Electric</value>
+          <display_name>Electric</display_name>
+        </choice>
+        <choice>
+          <value>District Chilled Water</value>
+          <display_name>District Chilled Water</display_name>
+        </choice>
+        <choice>
+          <value>District Ambient Water</value>
+          <display_name>District Ambient Water</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>heating_source</name>
+      <display_name>Heating source to model</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>Gas</default_value>
+      <choices>
+        <choice>
+          <value>Gas</value>
+          <display_name>Gas</display_name>
+        </choice>
+        <choice>
+          <value>Electric</value>
+          <display_name>Electric</display_name>
+        </choice>
+        <choice>
+          <value>District Hot Water</value>
+          <display_name>District Hot Water</display_name>
+        </choice>
+        <choice>
+          <value>District Ambient Water</value>
+          <display_name>District Ambient Water</display_name>
+        </choice>
+      </choices>
+    </argument>
+  </arguments>
   <provenances/>
   <tags>
     <tag>Whole Building.Space Types</tag>
@@ -65,17 +114,6 @@
       <checksum>C48B2E8F</checksum>
     </file>
     <file>
-      <version>
-        <software_program>OpenStudio</software_program>
-        <identifier>1.9.0</identifier>
-        <min_compatible>1.9.0</min_compatible>
-      </version>
-      <filename>measure.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>script</usage_type>
-      <checksum>736CDAA1</checksum>
-    </file>
-    <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
@@ -85,13 +123,30 @@
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>97324A0D</checksum>
+      <checksum>F0945BA2</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.9.0</identifier>
+        <min_compatible>1.9.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>BA200BD3</checksum>
+    </file>
+    <file>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>BD6A9FD1</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>2EE4A1C6</checksum>
+      <checksum>373A2A34</checksum>
     </file>
   </files>
 </measure>
