@@ -4,6 +4,12 @@ u = User.find_or_create_by(email: 'test@nrel.gov')
 u.roles = [:admin]
 # Remove this if we share the code. This is very dangerous giving the admin a simple password for testing sake!
 # only set password if it doesn't already exist
-u.password = 'testing123' unless u.encrypted_password
+if u.encrypted_password && !u.encrypted_password.empty?
+  # use encrypted_password
+  puts "using existing password"
+else
+  puts "setting temp password"
+  u.password = 'testing123'
+end
 
 u.save!

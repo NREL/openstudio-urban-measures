@@ -1,14 +1,14 @@
 require 'rest-client'
 
 namespace :testing do
+
   # Test batch_upload
   desc 'Batch upload features  (api/batch_upload)'
   task batch_upload_features: :environment do
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
 
-    # filename = "#{Rails.root}/data/san_francisco_bldg_footprints_4326.geojson"
-    filename = "#{Rails.root}/lib/test.geojson"
+    filename = "#{Rails.root}/data/US_CA_Tract_06075010300.clean.geojson"
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file)
