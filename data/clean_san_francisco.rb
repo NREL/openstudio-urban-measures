@@ -14,8 +14,7 @@ class SanFranciscoCleaner < Cleaner
   end
   
   def infer_geometry(data)
-    errors = []  
-      
+
     total_height = nil
     assumed_floor_to_floor_height = 3.65 # 12 ft
 
@@ -37,6 +36,8 @@ class SanFranciscoCleaner < Cleaner
     number_of_stories_below_ground_source = data['number_of_stories_below_ground_source']
     roof_elevation = data['roof_elevation']
     roof_elevation_source = data['roof_elevation_source']
+    roof_type = data['roof_type']
+    roof_type_source = data['roof_type_source']
     surface_elevation = data['surface_elevation']
     surface_elevation_source = data['surface_elevation_source']
     
@@ -46,12 +47,20 @@ class SanFranciscoCleaner < Cleaner
     
     if surface_elevation && roof_elevation
       total_height = roof_elevation.to_f - surface_elevation.to_f
-    elsif average_roof_height
-      total_height = average_roof_height.to_f
-    elsif minimum_roof_height && maximum_roof_height
-      total_height = (minimum_roof_height.to_f + maximum_roof_height.to_f) / 2.0
+    elsif maximum_roof_height
+      total_height = maximum_roof_height.to_f
     end
     
+    if roof_type.nil? && maximum_roof_height && minimum_roof_height
+      if maximum_roof_height < minimum_roof_height + 0.5
+        roof_type = "Flat"
+        roof_type_source = "Inferred"
+      else
+        roof_type = "Pitched"
+        roof_type_source = "Inferred"
+      end
+    end  
+        
     if number_of_stories.nil?
 
       num_floors_height = nil
@@ -148,15 +157,15 @@ class SanFranciscoCleaner < Cleaner
      data['number_of_stories_below_ground_source'] = number_of_stories_below_ground_source
      data['roof_elevation'] = roof_elevation
      data['roof_elevation_source'] = roof_elevation_source
+     data['roof_type'] = roof_type
+     data['roof_type_source'] = roof_type_source
      data['surface_elevation'] = surface_elevation
      data['surface_elevation_source'] = surface_elevation_source
 
-    return errors
   end
 
   def infer_space_type(data)
-    errors = []
-    
+
     zoning = data['zoning']
     zoning_source = data['zoning_source']
     floor_area = data['floor_area']
@@ -211,12 +220,10 @@ class SanFranciscoCleaner < Cleaner
     data['space_type'] = space_type
     data['space_type_source'] = space_type_source
     
-    return errors
   end
   
   def clean_building(data, schema)
-    errors = []
-    
+
     if data['type'] == 'building'
       data['type'] = 'Building'
     end
@@ -245,15 +252,24 @@ class SanFranciscoCleaner < Cleaner
       data['zoning'] = "Mixed"      
     end
     
-    errors.concat( infer_geometry(data) )
-    errors.concat( infer_space_type(data) )
+    data.each do |k,v|
+      if v == 'Assesor'
+        data[k] = 'Assessor'
+      end
+      if /_source$/.match(k)
+        if data[k.gsub('_source','')].nil?
+          data.delete(k)
+        end
+      end
+    end
     
-    errors.concat( super(data, schema) )
-    return errors
+    infer_geometry(data)
+    infer_space_type(data) 
+    
+    super(data, schema)
   end
 
   def clean_taxlot(data, schema)
-    errors = []
 
     if data['type'] == 'taxlot'
       data['type'] = 'Taxlot'
@@ -291,13 +307,11 @@ class SanFranciscoCleaner < Cleaner
       data['zoning_source'] = nil
     end  
     
-    errors.concat( super(data, schema) )
-    return errors
+    super(data, schema)
   end
   
   def clean_region(data, schema)
-    errors = []
-
+  
     if data['type'] == 'region'
       data['type'] = 'Region'
     end
@@ -306,15 +320,12 @@ class SanFranciscoCleaner < Cleaner
       data['source_id'] = data['source_id'].to_s
     end
     
-    errors.concat( super(data, schema) )
-    return errors
+    super(data, schema)
   end
 
-
-  
 end
 
 cleaner = SanFranciscoCleaner.new 
 #cleaner.clean_originals
-cleaner.gather_stats
-#cleaner.clean
+#cleaner.gather_stats
+cleaner.clean

@@ -292,6 +292,52 @@
 		"maximum_occupancy_source": {
 			"$ref": "#/definitions/source"
 		},
+		"envelope_performance": {
+			"type": "string",
+			"enum": [
+				"Standard",
+				"High Performance"
+			]
+		},
+		"hvac_performance": {
+			"type": "string",
+			"enum": [
+				"Standard",
+				"High Performance"
+			]
+		},
+		"internal_gains_performance": {
+			"type": "string",
+			"enum": [
+				"Standard",
+				"High Performance"
+			]
+		},
+		"cooling_source ": {
+			"type": "string",
+			"enum": [
+				"Electric",
+				"Chilled Water",
+				"Ambient Water Loop"
+			]
+		},
+		"heating_source ": {
+			"type": "string",
+			"enum": [
+				"Gas",
+				"Electric",
+				"Hot Water",
+				"Ambient Water Loop"
+			]
+		},
+		"photovoltaic_system_size": {
+			"description": "Size of the photovoltaic system in kW",
+			"type": "number"
+		},
+		"solar_cell_efficiency": {
+			"description": "Efficiency of the solar cells",
+			"type": "number"
+		},
 		"stories": {
 			"description": "Information about each story in the building",
 			"type": "array",

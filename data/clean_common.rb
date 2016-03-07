@@ -1,5 +1,7 @@
 class Cleaner
 
+  attr_accessor :current_warnings, :current_errors
+  
   def get_building_schema
     result = nil
     File.open(File.dirname(__FILE__) + "/../building_properties.json") do |f|
@@ -67,7 +69,7 @@ class Cleaner
   
     # validate
     errors = JSON::Validator.fully_validate(schema, data, :errors_as_objects => true)
-    return errors
+    @current_errors.concat(errors)
   end
 
   def clean_taxlot(data, schema)
@@ -77,7 +79,7 @@ class Cleaner
   
     # validate
     errors = JSON::Validator.fully_validate(schema, data, :errors_as_objects => true)
-    return errors
+    @current_errors.concat(errors)
   end
   
   def clean_region(data, schema)
@@ -87,7 +89,7 @@ class Cleaner
   
     # validate
     errors = JSON::Validator.fully_validate(schema, data, :errors_as_objects => true)
-    return errors
+    @current_errors.concat(errors)
   end
   
   def clean_originals
@@ -210,24 +212,27 @@ class Cleaner
       # loop over features
       geojson['features'].each do |feature|
         all_errors[p] << []
+        @current_warnings = []
+        @current_errors = []   
         
         begin
           data = feature['properties']
           type = data['type']
           
-          errors = []
           if /building/i.match(type)
-            errors = clean_building(data, building_schema)
+            clean_building(data, building_schema)
           elsif /taxlot/i.match(type)
-            errors = clean_taxlot(data, taxlot_schema)
+            clean_taxlot(data, taxlot_schema)
           elsif /region/i.match(type)
-            errors = clean_region(data, region_schema)
+            clean_region(data, region_schema)
           else 
             raise("Unknown type: '#{type}'")
           end
           
-          if !errors.empty?
-            all_errors[p][-1].concat(errors)
+          all_errors[p][-1].concat(@current_warnings)
+          all_errors[p][-1].concat(@current_errors)
+          
+          if !@current_errors.empty?
             all_errors[p][-1] << "Removing feature: "
             all_errors[p][-1] << data.clone
             feature.clear
