@@ -117,6 +117,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
       #model.getBuilding.setNominalFloortoCeilingHeight
       model.getBuilding.setStandardsBuildingType(bldg_use)
+      @runner.registerValue("bldg_use", bldg_use)
       model.getBuilding.setRelocatable(false)
     end
     

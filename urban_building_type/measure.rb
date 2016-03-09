@@ -2,6 +2,7 @@
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
 require 'openstudio-standards'
+# require_relative 'resources/Prototype.hvac_systems'
 require 'fileutils'
 
 require_relative 'resources/apply_residential'
@@ -42,18 +43,9 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
 
-    # cooling source
-    cooling_sources = OpenStudio::StringVector.new
-    cooling_sources << "Electric"
-    cooling_sources << "District Chilled Water"
-    cooling_sources << "District Ambient Water"
-    cooling_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("cooling_source", cooling_sources, true)
-    cooling_source.setDisplayName("Cooling source to model")
-    cooling_source.setDefaultValue("Electric")
-    args << cooling_source
-    
     # heating source
     heating_sources = OpenStudio::StringVector.new
+    heating_sources << "NA"
     heating_sources << "Gas"
     heating_sources << "Electric"
     heating_sources << "District Hot Water"
@@ -62,6 +54,17 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     heating_source.setDisplayName("Heating source to model")
     heating_source.setDefaultValue("Gas")
     args << heating_source    
+    
+    # cooling source
+    cooling_sources = OpenStudio::StringVector.new
+    cooling_sources << "NA"
+    cooling_sources << "Electric"
+    cooling_sources << "District Chilled Water"
+    cooling_sources << "District Ambient Water"
+    cooling_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("cooling_source", cooling_sources, true)
+    cooling_source.setDisplayName("Cooling source to model")
+    cooling_source.setDefaultValue("Electric")
+    args << cooling_source
     
     return args
   end
@@ -76,7 +79,11 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     end
     
     cooling_source = runner.getStringArgumentValue("cooling_source", user_arguments)
-    heating_source = runner.getStringArgumentValue("heating_source", user_arguments)    
+    heating_source = runner.getStringArgumentValue("heating_source", user_arguments)
+    if cooling_source == "NA" or heating_source == "NA"
+      cooling_source = "NA"
+      heating_source = "NA"
+    end
     
     # check building space type to see if we are doing residential or commercial path
     building = model.getBuilding
@@ -113,7 +120,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 	  unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
       result = apply_residential(model, runner, heating_source, cooling_source)
     else
-      result = apply_commercial(model, runner)
+      result = apply_commercial(model, runner, heating_source, cooling_source)
     end
     
     return result
