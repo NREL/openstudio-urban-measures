@@ -5,7 +5,7 @@
   <tr>
     <th>ID</th>
     <th>Type</th>
-    <th>Bldg fid</th>  
+    <th>Source Name & ID</th>  
     <% if can? :update, Building %><th>Actions</th><% end %>
 
   </tr>
@@ -15,7 +15,7 @@
     <tr>
       <td><%= link_to building.id, building %></td>
       <td><%= building.type %></td>
-      <td><%= building.bldg_fid %></td>
+      <td><%= building.source_name %> <%= building.source_id %></td>
       <% if can? :update, Building %><td><%= link_to 'Edit', edit_building_path(building) %> | <%= link_to 'Destroy', building, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>

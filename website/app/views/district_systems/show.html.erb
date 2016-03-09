@@ -5,7 +5,7 @@
 <table class="table table-striped">
   <% @district_system.attributes.keys.sort.each do |key| %>
     <tr>
-      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
+      <th> <%= key == "_id" ? "ID" : key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
       <td><%= @district_system[key] %></td>
     </tr>
    <% end %>

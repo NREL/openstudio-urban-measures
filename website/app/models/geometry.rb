@@ -84,7 +84,7 @@ class Geometry
               else
                 # TODO: find_or_create by source_id & source_name
                 # object = Building.find_or_create_by(bldg_fid: properties[:bldg_fid])
-                object = Building.new
+                object = Building.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
               end
             when 'Taxlot'
               # ID provided?
@@ -93,7 +93,7 @@ class Geometry
               else
                 # TODO: find_or_create by source_id & source_name
                 # object = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = Taxlot.new
+                object = Taxlot.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
               end
             when 'Region'
               # ID provided
@@ -102,7 +102,7 @@ class Geometry
               else
                 # TODO: find_or_create by source_id & source_name
                 # object = Region.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = Region.new
+                object = Region.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
               end
             when 'District System'
               # ID provided
@@ -111,7 +111,7 @@ class Geometry
               else
                 # TODO: find_or_create by source_id & source_name
                 # object = DistrictSystem.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = DistrictSystem.new
+                object = DistrictSystem.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
               end
             else
               # don't process

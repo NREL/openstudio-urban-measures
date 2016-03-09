@@ -5,7 +5,8 @@
   <tr>
     <th>ID</th>
     <th>Type</th>
-    <th>Lot fid</th>  
+    <th>Census Tract</th>
+    <th>Source Name & ID</th>  
     <% if can? :update, Taxlot %><th>Actions</th><% end %>
 
   </tr>
@@ -15,7 +16,8 @@
     <tr>
       <td><%= link_to taxlot.id, taxlot %></td>
       <td><%= taxlot.type %></td>
-      <td><%= taxlot.lot_fid %></td>
+      <td><%= taxlot['census_tract'] %></td>
+      <td><%= taxlot.source_name %> <%= taxlot.source_id %></td>
       <% if can? :update, Taxlot %><td><%= link_to 'Edit', edit_taxlot_path(taxlot) %> | <%= link_to 'Destroy', taxlot, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
