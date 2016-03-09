@@ -2,6 +2,12 @@ require 'rubygems'
 require 'json-schema'
 require_relative 'clean_common.rb'
 
+#  Data from:
+#    https://data.sfgov.org/data?search=building+footprints
+#
+#  Need to look at joining with:
+#    https://data.sfgov.org/Energy-and-Environment/Existing-Commercial-Buildings-Energy-Performance-O/j2j3-acqj
+
 class SanFranciscoCleaner < Cleaner
 
   def name()
@@ -16,7 +22,6 @@ class SanFranciscoCleaner < Cleaner
   def infer_geometry(data)
 
     total_height = nil
-    assumed_floor_to_floor_height = 3.65 # 12 ft
 
     average_roof_height = data['average_roof_height']
     average_roof_height_source = data['average_roof_height_source']
@@ -40,6 +45,14 @@ class SanFranciscoCleaner < Cleaner
     roof_type_source = data['roof_type_source']
     surface_elevation = data['surface_elevation']
     surface_elevation_source = data['surface_elevation_source']
+    zoning = data['zoning']
+    
+    # todo: different assumed height for first floor of mixed use?
+    
+    assumed_floor_to_floor_height = 3.65 # 12 ft
+    if zoning == 'Residential'
+      assumed_floor_to_floor_height = 3.048 # 10 ft
+    end
     
     if number_of_stories == 0
       number_of_stories = nil
@@ -51,15 +64,16 @@ class SanFranciscoCleaner < Cleaner
       total_height = maximum_roof_height.to_f
     end
     
-    if roof_type.nil? && maximum_roof_height && minimum_roof_height
-      if maximum_roof_height < minimum_roof_height + 0.5
-        roof_type = "Flat"
-        roof_type_source = "Inferred"
-      else
-        roof_type = "Pitched"
-        roof_type_source = "Inferred"
-      end
-    end  
+    # DLM: maximum and minimum roof height do not appear to be reliable 
+    #if roof_type.nil? && maximum_roof_height && minimum_roof_height
+    #  if maximum_roof_height < minimum_roof_height + 0.5
+    #    roof_type = "Flat"
+    #    roof_type_source = "Inferred"
+    #  else
+    #    roof_type = "Pitched"
+    #    roof_type_source = "Inferred"
+    #  end
+    #end  
         
     if number_of_stories.nil?
 
@@ -263,6 +277,20 @@ class SanFranciscoCleaner < Cleaner
       end
     end
     
+    # convert from feet to meters
+    ft_to_m = 0.3048
+    data['average_roof_height'] = ft_to_m*data['average_roof_height'] if data['average_roof_height']
+    data['footprint_perimeter'] = ft_to_m*data['footprint_perimeter'] if data['footprint_perimeter']
+    data['maximum_roof_height'] = ft_to_m*data['maximum_roof_height'] if data['maximum_roof_height']
+    data['minimum_roof_height'] = ft_to_m*data['minimum_roof_height'] if data['minimum_roof_height']
+    data['roof_elevation'] = ft_to_m*data['roof_elevation'] if data['roof_elevation']
+    data['surface_elevation'] = ft_to_m*data['surface_elevation'] if data['surface_elevation']
+    
+    # convert from square feet to square meters
+    ft2_to_m2 = 0.092903
+    data['floor_area'] = ft_to_m*data['floor_area'] if data['floor_area']
+    data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
+
     infer_geometry(data)
     infer_space_type(data) 
     

@@ -1,6 +1,7 @@
 require 'rest-client'
 
 namespace :testing do
+
   # Test batch_upload
   desc 'Batch upload features  (api/batch_upload)'
   task batch_upload_features: :environment do

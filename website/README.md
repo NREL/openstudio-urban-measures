@@ -2,21 +2,21 @@
 
 ## Local Development
 
-Install ruby 2.2.2 using rbenv or your preferred method.
+Install ruby 2.2.2 using rbenv or your preferred method.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).
 
-Make sure MongoDB is installed and running on your machine
+Download and install [MongoDB](https://www.mongodb.org).  Open a command propmpt and go to the MongoDB bin directory (on Windows this is 'C:\Program Files\MongoDB\Server\3.0\bin').  Start Mongo with the following command 
 
 ```
-# start with the following command 
 mongod
 ```
 
-In a separate console, install the gem dependencies
+Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and install the gem dependencies:
 
 ```
 bundle install
 ```
-Then start the Rails server
+
+then start the Rails server
 
 ```
 rails s
@@ -24,7 +24,24 @@ rails s
 
 View the app in your browser at http://localhost:3000
 
+Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and initialize the database:
 
-## Deployment with Docker and Docker-Compose
+```
+rake db:setup
+```
+
+then add default data:
+
+```
+rake testing:batch_upload_features
+```
+
+To reset the database at any time use:
+
+```
+rake db:reset
+```
 
 ---coming soon---
+
+## Deployment with Docker and Docker-Compose
