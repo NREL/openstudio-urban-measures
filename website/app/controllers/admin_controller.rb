@@ -33,6 +33,17 @@ class AdminController < ApplicationController
     end
   end
 
+  def clear_data
+    Building.delete_all
+    Taxlot.delete_all
+    DistrictSystem.delete_all
+    Region.delete_all
+    Datapoint.delete_all
+    Workflow.delete_all
+    Geometry.delete_all
+    redirect_to admin_index_path, notice: 'Database cleared successfully.'
+  end
+
   def backup_database
     logger.info params
     write_and_send_data
@@ -48,7 +59,7 @@ class AdminController < ApplicationController
     end
   end
 
-  def clear_database
+  def purge_database
     success_1 = false
     success_2 = false
 

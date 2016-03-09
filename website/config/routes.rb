@@ -32,12 +32,14 @@ Rails.application.routes.draw do
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get
   match 'admin/restore_database' => 'admin#restore_database', :via => :post
-  match 'admin/clear_database' => 'admin#clear_database', :via => :get
+  match 'admin/purge_database' => 'admin#purge_database', :via => :get
+  match 'admin/clear_data' => 'admin#clear_data', :via => :get
 
   resources :admin, only: [:index] do
     get :backup_database
     post :restore_database
-    get :clear_database
+    get :purge_database
+    get :clear_data
 
     collection do
       get :home

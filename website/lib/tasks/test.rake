@@ -8,7 +8,8 @@ namespace :testing do
     @user_pwd = 'testing123'
 
     # filename = "#{Rails.root}/data/san_francisco_bldg_footprints_4326.geojson"
-    filename = "#{Rails.root}/lib/test.geojson"
+    filename = "#{Rails.root}/data/US_CA_Tract_06075010300.clean.geojson"
+    #filename = "#{Rails.root}/lib/test.geojson"
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file)
