@@ -113,7 +113,7 @@ namespace :testing do
 
     params = {}
     params[:commit] = 'Region Search'
-    params[:region_id] = '56be0287b02c308c03000b67'
+    params[:region_id] = Region.first.id.to_s # region ID
     params[:region_feature_types] = ['Building']
 
     json_request = JSON.generate(params)
@@ -145,9 +145,44 @@ namespace :testing do
 
     params = {}
     params[:commit] = 'Proximity Search'
-    params[:building_id] = '56be0207b02c308c03000001'
+    params[:building_id] = Building.first.id.to_s
     params[:distance] = 100
     params[:proximity_feature_types] = ['Taxlot']
+
+    json_request = JSON.generate(params)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/search', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "RESPONSE: #{response.inspect}"
+      if response.code == 200
+        puts "SUCCESS: #{response.body}"
+      else
+        raise response.body
+      end
+    rescue => e
+      puts "ERROR: #{e.response}"
+      puts e.inspect
+    end
+  end
+
+  desc 'POST Search by ID'
+  task search_by_id: :environment do
+    # params:
+    # commit (Search)
+    # source_id
+    # source_name
+    # feature_types
+
+    # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
+    bldg = Building.first
+
+    params = {}
+    params[:commit] = 'Search'
+    params[:source_id] = bldg.source_id.to_s
+    params[:source_name] = bldg.source_name
+    params[:feature_types] = ['Building']
 
     json_request = JSON.generate(params)
 

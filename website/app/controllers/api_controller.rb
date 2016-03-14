@@ -74,22 +74,58 @@ class ApiController < ApplicationController
 
     page = params[:page] ? params[:page] : 1
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    @regions = Region.all.only(:id, :state_abbr).asc(:state_abbr).map { |x| [x.state_abbr, x.id.to_s] }
+    @regions = Region.all.only(:id).asc(:id).map { |x| [x.id.to_s] }
     @building_id = nil
     @distance = nil
     @proximity_feature_types = ['Building']
     @region_id = nil
     @region_feature_types = ['Building']
+    @source_id = nil
+    @source_name = nil
+    @feature_types = ['Building']
     @results = []
     @is_get = true
-    @search_type = 'proximity'
+    @search_type = 'Proximity'
 
     # Process POST
     if params[:commit]
 
       @is_get = false
+      if params[:commit] ==  'Search'
+        @search_type = 'ID'
+        @source_id = (params[:source_id] && !params[:source_id].empty?) ? params[:source_id] : ''
+        @source_name = (params[:source_name] && !params[:source_name].empty?) ? params[:source_name] : ''
+        @feature_types = (params[:feature_types] && !params[:feature_types].empty?) ? params[:feature_types] : @feature_types
+
+        @types = []
+
+        @feature_types.each do |type|
+          @types << type.capitalize if @possible_types.include? type.capitalize
+        end
+
+        if @types.include? 'All'
+          @types = @possible_types.dup
+          @types.delete('All')
+        end
+
+        @results = []
+        @types.each do |type|
+          model = type.tr(' ', '').constantize
+          res = model.where(source_id: @source_id, source_name: @source_name)
+          # this is weird but it needs to match the other searches
+          res.each do |r|
+            @results << r.geometry
+          end
+        end
+
+        @total_count = @results.count
+        if request.format != 'application/json'
+          # pagination
+          @results = Kaminari.paginate_array(@results.to_a).page(page)
+        end
+
       # GEO NEAR SEARCH
-      if params[:commit] == 'Proximity Search'
+      elsif params[:commit] == 'Proximity Search'
         @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
         @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
         @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] : @proximity_feature_types
@@ -130,9 +166,9 @@ class ApiController < ApplicationController
 
       # GEO WITHIN SEARCH
       elsif params[:commit] == 'Region Search'
-        @search_type = 'region'
+        @search_type = 'Region'
 
-        @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[1]
+        @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[0]
         @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ? params[:region_feature_types] : @region_feature_types
 
         # figure out what types
