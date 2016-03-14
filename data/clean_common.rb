@@ -125,6 +125,15 @@ class Cleaner
     
   end
   
+  def make_stats(values)
+    if values.empty?
+      stats = "No data"
+    else
+      stats = "Min = #{values.min}, Max = #{values.max}"
+    end
+    return stats
+  end
+  
   def gather_stats
     pattern = file_pattern
     
@@ -158,8 +167,10 @@ class Cleaner
           if stats[type][k].nil?
             stats[type][k] = {'count' => 0, 'values' => []} 
           end
-          stats[type][k]['count'] = stats[type][k]['count'] + 1
-          stats[type][k]['values'] << v
+          if !v.nil?
+            stats[type][k]['count'] = stats[type][k]['count'] + 1
+            stats[type][k]['values'] << v
+          end
         end
       end
     end
@@ -173,6 +184,46 @@ class Cleaner
         key_count = key_stats['count']
         key_stats['percent'] = (100 * key_count.to_f / type_count.to_f).round(2)
         key_stats['values'].uniq!
+        
+        if key == 'address' ||
+           key == 'census_block' ||
+           key == 'census_block_group' ||
+           key == 'census_tract' ||
+           key == 'county_code' ||
+           key == 'fips_code' ||
+           key == 'intersecting_building_source_ids' ||
+           key == 'legal_name' ||
+           key == 'name' ||
+           key == 'parent_region_source_id' ||
+           key == 'region_ids' ||
+           key == 'region_source_ids' ||
+           key == 'source_id' ||
+           key == 'taxlot_id' ||
+           key == 'taxlot_source_id' ||
+           key == 'zip_code'
+
+          key_stats.delete('values')
+           
+        elsif key == 'average_roof_height' ||
+            key == 'floor_area' ||
+            key == 'footprint_area' || 
+            key == 'footprint_perimeter' ||
+            key == 'maximum_occupancy' ||
+            key == 'maximum_roof_height' ||
+            key == 'minimum_roof_height' ||
+            key == 'number_of_residential_units' ||
+            key == 'number_of_stories' ||
+            key == 'roof_elevation' ||
+            key == 'surface_elevation' ||
+            key == 'year_built'
+            
+          key_stats['values'] = make_stats(key_stats['values'])
+         
+        else
+        
+          key_stats['values'].uniq!
+        end
+        
       end
     end
     

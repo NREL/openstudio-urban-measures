@@ -100,7 +100,9 @@ class SanFranciscoCleaner < Cleaner
         number_of_stories = 1
         number_of_stories_source = "Inferred"
       end
-      
+    end
+    
+    if total_height.nil?
       total_height = number_of_stories * assumed_floor_to_floor_height
     end
     
@@ -355,5 +357,5 @@ end
 
 cleaner = SanFranciscoCleaner.new 
 #cleaner.clean_originals
-#cleaner.gather_stats
+cleaner.gather_stats
 cleaner.clean
