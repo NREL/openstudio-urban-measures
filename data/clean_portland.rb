@@ -9,7 +9,7 @@ require_relative 'clean_common.rb'
 #    https://www.portlandoregon.gov/bps/article/64609
 
 class PortlandCleaner < Cleaner
-
+  
   def name()
     return "Portland"
   end
@@ -322,24 +322,35 @@ class PortlandCleaner < Cleaner
       data.delete('roof_type')
     end
     
+    # DLM: Portland has the best height data
+    
+    # "minimum_roof_height": { "count": 297, "values": "Min = 2.112263945136, Max = 36.36264092964", "percent": 15.46 }
+    # "average_roof_height": { "count": 1836, "values": "Min = 1.532491487208, Max = 74.9808", "percent": 95.58 }
+    # "maximum_roof_height": { "count": 297, "values": "Min = 3.172967951232, Max = 42.99508725324", "percent": 15.46 }
+    # "roof_elevation": { "count": 1836, "values": "Min = 11.8872, Max = 113.035079530608", "percent": 95.58 }
+    # "surface_elevation": { "count": 1921, "values": "Min = 2.1336, Max = 91.326453441216", "percent": 100.0 }
+    # "number_of_stories": {  "count": 1907, "values": "Min = 1, Max = 42", "percent": 99.27 }
+    # "floor_area": { "count": 1921, "values": "Min = 3.7161216, Max = 118232.1248256", "percent": 100.0 }
+    
     # convert from feet to meters
-    ft_to_m = 0.3048
-    data['average_roof_height'] = ft_to_m*data['average_roof_height'] if data['average_roof_height']
-    data['footprint_perimeter'] = ft_to_m*data['footprint_perimeter'] if data['footprint_perimeter']
-    data['maximum_roof_height'] = ft_to_m*data['maximum_roof_height'] if data['maximum_roof_height']
-    data['minimum_roof_height'] = ft_to_m*data['minimum_roof_height'] if data['minimum_roof_height']
-    data['roof_elevation'] = ft_to_m*data['roof_elevation'] if data['roof_elevation']
-    data['surface_elevation'] = ft_to_m*data['surface_elevation'] if data['surface_elevation']
+    #ft_to_m = 0.3048
+    #data['average_roof_height'] = ft_to_m*data['average_roof_height'] if data['average_roof_height']
+    #data['footprint_perimeter'] = ft_to_m*data['footprint_perimeter'] if data['footprint_perimeter']
+    #data['maximum_roof_height'] = ft_to_m*data['maximum_roof_height'] if data['maximum_roof_height']
+    #data['minimum_roof_height'] = ft_to_m*data['minimum_roof_height'] if data['minimum_roof_height']
+    #data['roof_elevation'] = ft_to_m*data['roof_elevation'] if data['roof_elevation']
+    #data['surface_elevation'] = ft_to_m*data['surface_elevation'] if data['surface_elevation']
     
     # convert from square feet to square meters
-    ft2_to_m2 = 0.092903
-    data['floor_area'] = ft_to_m*data['floor_area'] if data['floor_area']
-    data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
+    #ft2_to_m2 = 0.092903
+    #data['floor_area'] = ft_to_m*data['floor_area'] if data['floor_area']
+    #data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
 
     infer_geometry(data)
     infer_space_type(data) 
     
     super(data, schema)
+   
   end
 
   def clean_taxlot(data, schema)
@@ -427,6 +438,8 @@ class PortlandCleaner < Cleaner
     
     super(data, schema)
   end
+  
+
 
 end
 
@@ -434,3 +447,4 @@ cleaner = PortlandCleaner.new
 #cleaner.clean_originals
 cleaner.gather_stats
 cleaner.clean
+cleaner.write_csvs

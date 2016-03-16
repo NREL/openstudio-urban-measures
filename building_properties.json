@@ -163,7 +163,7 @@
 			"$ref": "#/definitions/source"
 		},
 		"number_of_stories": {
-			"description": "The maximum number of building stories",
+			"description": "The maximum number of building stories, sum of number of above and below ground stories",
 			"type": "integer"
 		},
 		"number_of_stories_source": {
@@ -243,14 +243,14 @@
 			"$ref": "#/definitions/source"
 		},
 		"surface_elevation": {
-			"description": "The surface elevation (above NAVD88 datum) of the building (m)",
+			"description": "The surface elevation (above NAVD88 datum) of the building (m).  This is the elevation of the ground at the building location, any below ground stories will be lower than this.",
 			"type": "number"
 		},
 		"surface_elevation_source": {
 			"$ref": "#/definitions/source"
 		},
 		"roof_elevation": {
-			"description": "The maximum roof elevation (above NAVD88 datum) of the building (m)",
+			"description": "The maximum elevation (above NAVD88 datum) of the building's roof (m)",
 			"type": "number"
 		},
 		"roof_elevation_source": {

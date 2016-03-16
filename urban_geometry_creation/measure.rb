@@ -33,11 +33,18 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 	  city_db_url.setDefaultValue("http://localhost:3000")
     args << city_db_url
     
-    # id of the building to create
-    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("id", true)
-    building_id.setDisplayName("Building ID")
-    building_id.setDescription("Building ID to generate geometry for.")
-    args << building_id
+    # source id of the building to create
+    source_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_id", true)
+    source_id.setDisplayName("Building Source ID")
+    source_id.setDescription("Building Source ID to generate geometry for.")
+    args << source_id
+    
+    # source name of the building to create
+    source_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_name", true)
+    source_name.setDisplayName("Building Source Name")
+    source_name.setDescription("Building Source Name to generate geometry for.")
+    source_name.setDefaultValue("NREL_GDS")
+    args << source_name
 
     return args
   end
@@ -361,7 +368,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     # assign the user inputs to variables
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
-    building_id = runner.getStringArgumentValue("id", user_arguments)
+    source_id = runner.getStringArgumentValue("source_id", user_arguments)
+    source_name = runner.getStringArgumentValue("source_name", user_arguments)
     
     port = 80
     if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
@@ -371,9 +379,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       city_db_url = md[1]
     end
     
-    http = Net::HTTP.new(city_db_url, port)
-    request = Net::HTTP::Get.new("/buildings/#{building_id}.json")
+    params = {}
+    params[:commit] = 'Search'
+    params[:source_id] = source_id
+    params[:source_name] = source_name
+    params[:feature_types] = ['Building']
     
+    http = Net::HTTP.new(city_db_url, port)
+    request = Net::HTTP::Post.new("/api/search.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.body = JSON.generate(params)
     # DLM: todo, get these from environment variables or as measure inputs?
     request.basic_auth("testing@nrel.gov", "testing123")
   
@@ -383,8 +399,20 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       runner.registerError(response.body)
       return false
     end
+
+    feature_collection = JSON.parse(response.body, :symbolize_names => true)
+    if feature_collection[:features].nil?
+      runner.registerError("No features found in #{feature_collection}")
+      return false
+    elsif feature_collection[:features].empty?
+      runner.registerError("No features found in #{feature_collection}")
+      return false
+    elsif feature_collection[:features].size > 1
+      runner.registerError("Multiple features found in #{feature_collection}")
+      return false
+    end
     
-    building_json = JSON.parse(response.body, :symbolize_names => true)
+    building_json = feature_collection[:features][0]
     
     if building_json[:geometry].nil?
       runner.registerError("No geometry found in #{building_json}")
@@ -427,34 +455,52 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     # make requested building
     spaces = create_building(building_json, :space_per_floor, model)
     if spaces.nil? || spaces.empty?
-      runner.registerError("Failed to create spaces for building #{building_id}")
+      runner.registerError("Failed to create spaces for building #{source_id}")
       return false
     end
       
+    # get nearby buildings
     convert_to_shades = []
-    #
-    # get intersecting buildings
-    # other_building_ids = building[:intersecting_building_ids].concat(building[:surrounding_building_ids]).uniq
-    # other_building_ids.each do |other_building_id|
-      # other_building = buildings.find{|b| b[:id] == other_building_id}
-            
-      # if other_building.nil?
-        # runner.registerError("Cannot find other building #{other_building_id}")
-        # return false
-      # end
-      
-      # is_primary = false
-      # spaces = create_building(other_building, is_primary, :space_per_building, model)
+    
+    # params = {}
+    # params[:commit] = 'Proximity Search'
+    # params[:building_id] = building_json[:properties][:id]
+    # params[:distance] = 100
+    # params[:proximity_feature_types] = ['Building']
+    
+    # http = Net::HTTP.new(city_db_url, port)
+    # request = Net::HTTP::Post.new("/api/search.json")
+    # request.add_field('Content-Type', 'application/json')
+    # request.add_field('Accept', 'application/json')
+    # request.body = JSON.generate(params)
+    # # DLM: todo, get these from environment variables or as measure inputs?
+    # request.basic_auth("testing@nrel.gov", "testing123")
+    
+    # response = http.request(request)
+    # if  response.code != '200' # success
+      # runner.registerError("Bad response #{response.code}")
+      # runner.registerError(response.body)
+      # return false
+    # end
+
+    # feature_collection = JSON.parse(response.body, :symbolize_names => true)
+    # if feature_collection[:features].nil?
+      # runner.registerError("No features found in #{feature_collection}")
+      # return false
+    # end
+    
+    # feature_collection[:features].each do |other_building|
+    
+      # other_source_id = other_building[:properties][:source_id]
+      # spaces = create_building(other_building, :space_per_building, model)
       # if spaces.nil? || spaces.empty?
-        # runner.registerError("Failed to create spaces for other building #{other_building_id}")
+        # runner.registerError("Failed to create spaces for other building #{other_source_id}")
         # return false
       # end
       
       # convert_to_shades.concat(spaces)
     # end
     
-    # get surrounding buildings
-  
     # match surfaces
     runner.registerInfo("Matching surfaces")
     spaces = OpenStudio::Model::SpaceVector.new

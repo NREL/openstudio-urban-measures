@@ -264,6 +264,8 @@ class SanFranciscoCleaner < Cleaner
       data['zoning'] = "Commercial"          
     elsif data['zoning'] == "MIXRES"      
       data['zoning'] = "Mixed"
+    elsif data['zoning'] == "PDR"      
+      data['zoning'] = "Commercial"      
     elsif data['zoning'] == "MIPS"      
       data['zoning'] = "Mixed"      
     end
@@ -279,19 +281,30 @@ class SanFranciscoCleaner < Cleaner
       end
     end
     
+    # DLM: I do not have a lot of confidence in the San Francisco height data or the footprints (multiple buildings are merged)
+    # I do not know the meanings of the three roof_height fields, they are related to Pictometry's data, they come form merged buildings
+    
+    # "minimum_roof_height": { "count": 2235, "values": "Min = -25.67702166, Max = 96.94717284", "percent": 100.0 }
+    # "average_roof_height": { "count": 2235, "values": "Min = -4.209025955, Max = 111.547550235", "percent": 100.0 }
+    # "maximum_roof_height": { "count": 2235, "values": "Min = 6.72346099, Max = 141.68153865", "percent": 100.0 }
+    # "roof_elevation": { "count": 0, "values": "No data", "percent": 0.0 }
+    # "surface_elevation": { "count": 0, "values": "No data", "percent": 0.0 }
+    # "number_of_stories": { "count": 0, "values": "No data", "percent": 0.0 }
+    # "floor_area": { "count": 0, "values": "No data", "percent": 0.0 }
+    
     # convert from feet to meters
     ft_to_m = 0.3048
     data['average_roof_height'] = ft_to_m*data['average_roof_height'] if data['average_roof_height']
-    data['footprint_perimeter'] = ft_to_m*data['footprint_perimeter'] if data['footprint_perimeter']
+    #data['footprint_perimeter'] = ft_to_m*data['footprint_perimeter'] if data['footprint_perimeter']
     data['maximum_roof_height'] = ft_to_m*data['maximum_roof_height'] if data['maximum_roof_height']
     data['minimum_roof_height'] = ft_to_m*data['minimum_roof_height'] if data['minimum_roof_height']
-    data['roof_elevation'] = ft_to_m*data['roof_elevation'] if data['roof_elevation']
-    data['surface_elevation'] = ft_to_m*data['surface_elevation'] if data['surface_elevation']
+    #data['roof_elevation'] = ft_to_m*data['roof_elevation'] if data['roof_elevation']
+    #data['surface_elevation'] = ft_to_m*data['surface_elevation'] if data['surface_elevation']
     
     # convert from square feet to square meters
-    ft2_to_m2 = 0.092903
-    data['floor_area'] = ft_to_m*data['floor_area'] if data['floor_area']
-    data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
+    #ft2_to_m2 = 0.092903
+    #data['floor_area'] = ft_to_m*data['floor_area'] if data['floor_area']
+    #data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
 
     infer_geometry(data)
     infer_space_type(data) 
@@ -328,7 +341,9 @@ class SanFranciscoCleaner < Cleaner
     elsif data['zoning'] == "CIE"      
       data['zoning'] = "Commercial" 
     elsif data['zoning'] == "MIXRES"      
-      data['zoning'] = "Mixed"      
+      data['zoning'] = "Mixed"     
+    elsif data['zoning'] == "PDR"      
+      data['zoning'] = "Commercial"       
     elsif data['zoning'] == "MIPS"      
       data['zoning'] = "Mixed"      
     end   
@@ -357,5 +372,6 @@ end
 
 cleaner = SanFranciscoCleaner.new 
 #cleaner.clean_originals
-cleaner.gather_stats
+#cleaner.gather_stats
 cleaner.clean
+cleaner.write_csvs

@@ -24,13 +24,9 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
 
     # load the test model
     city_db_url = "http://localhost:3000"
-    building_id = "56ddda0fc44c8d327000069e"
-    
-    # "source_id": "74"
-    # 8th building in list
-    # 649 Bay St, San Francisco, CA
-    # http://localhost:3000/buildings/56ddda0fc44c8d327000069e
-
+    source_id = "98628"
+    source_name = "NREL_GDS"
+   
     # get arguments
     arguments = measure.arguments(model)
     argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
@@ -39,7 +35,8 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # If the argument has a default that you want to use, you don't need it in the hash
     args_hash = {}
     args_hash["city_db_url"] = city_db_url
-    args_hash["id"] = building_id
+    args_hash["source_id"] = source_id
+    args_hash["source_name"] = source_name
 
     # populate argument with specified hash value if specified
     arguments.each do |arg|
@@ -55,7 +52,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     result = runner.result
     
     # save the model to test output directory
-    output_file_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/output/#{building_id}.osm")
+    output_file_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/output/#{source_id}.osm")
     model.save(output_file_path,true)
     
     # show the output

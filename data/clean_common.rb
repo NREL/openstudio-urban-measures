@@ -1,6 +1,7 @@
 class Cleaner
 
   attr_accessor :current_warnings, :current_errors
+  attr_accessor :raw_building_data, :clean_building_data
   
   def get_building_schema
     result = nil
@@ -235,6 +236,8 @@ class Cleaner
   
   def clean()
     all_errors = {}
+    @raw_building_data = []
+    @clean_building_data = []
     
     building_schema = get_building_schema
     taxlot_schema = get_taxlot_schema
@@ -271,7 +274,9 @@ class Cleaner
           type = data['type']
           
           if /building/i.match(type)
+            @raw_building_data << data.clone
             clean_building(data, building_schema)
+            @clean_building_data << data.clone
           elsif /taxlot/i.match(type)
             clean_taxlot(data, taxlot_schema)
           elsif /region/i.match(type)
@@ -318,4 +323,43 @@ class Cleaner
     end
   end
   
+  def write_csvs
+  
+    headers = Hash.new
+    @raw_building_data.each do |data|
+      data.keys.each do |key|
+        headers[key] = 1
+      end
+    end
+    @clean_building_data.each do |data|
+      data.keys.each do |key|
+        headers[key] = 1
+      end
+    end
+    
+    headers = headers.keys.sort
+  
+    File.open("#{name}_buildings_raw.csv", 'w') do |file|
+      file.puts headers.join(',')
+      @raw_building_data.each do |data|
+        line = []
+        headers.each do |key| 
+          line << data[key].to_s.gsub(',',';')
+        end
+        file.puts line.join(',')
+      end
+    end
+    
+    File.open("#{name}_buildings_clean.csv", 'w') do |file|
+      file.puts headers.join(',')
+      @clean_building_data.each do |data|
+        line = []
+        headers.each do |key| 
+          line << data[key].to_s.gsub(',',';')
+        end
+        file.puts line.join(',')
+      end
+    end
+   end
+   
 end
