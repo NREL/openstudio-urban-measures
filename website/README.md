@@ -30,6 +30,11 @@ Open a separate console, change directories to the '\openstudio-urban-measures\w
 rake db:setup
 ```
 
+Create the mongo indexes:
+```
+rake db:mongoid:create_indexes
+```
+
 then add default data:
 
 ```
@@ -42,6 +47,62 @@ To reset the database at any time use:
 rake db:reset
 ```
 
----coming soon---
+## Deployment with Docker, Docker Machine, and Docker Compose
 
-## Deployment with Docker and Docker-Compose
+Docker deployment should be tested locally before deploying in a production environment.
+
+### Docker Installation
+
+* [Install Docker](https://docs.docker.com/installation/)
+* [Install Docker-Machine](https://docs.docker.com/machine/install-machine/)
+* [Install Docker-Compose](https://docs.docker.com/compose/install/)
+
+### Create Docker-Machine Image
+The command below will create a 100GB volume for development. This is a very large volume and can be adjusted. Make sure to create a volume greater than 30GB.
+
+```
+docker-machine create --virtualbox-disk-size 100000 --virtualbox-cpu-count 4 --virtualbox-memory 4096 -d virtualbox dev
+```
+
+### Start Docker-Machine Image
+```
+docker-machine start dev  # if not already running
+eval $(docker-machine env dev) # this sets up environment variables
+```
+
+### Create the data volumes
+If you have data volumes (i.e., for mongo and solr), create them:
+```
+docker run -v /data/db --name <VOLUME NAME> busybox true
+```
+
+### Export environment variables
+If you have rails environment variables (such as HOST_URL or SECRET_KEY_BASE), don't forget to export them. Example:
+```
+export HOST_URL=localhost
+```
+
+### Run Docker Compose 
+```
+docker-compose build
+```
+Be patient.  If the containers build successfully, then start the containers:
+``` 
+docker-compose up
+```
+
+**Note that you may need to build the containers a couple times for everything to converge**
+
+#### You're done!!! ####
+Get the Docker IP address (`docker-machine ip dev`) and point your browser at [http://`ip-address`:8000](http://`ip-address`:8000)
+
+To log in to the container:
+```
+docker-compose run <CONTAINER NAME> bash
+```
+### Configuration on Production Server
+1. Copy supervisor script (from docker/supervisor-citydb.sh) to: /etc/supervisor.d/citydb.conf on the server.
+
+2. Add environment variables (HOST_URL, SECRET_KEY_BASE, etc) to your bash profile on the server.
+
+

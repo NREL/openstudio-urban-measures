@@ -1,0 +1,17 @@
+web:
+  build: .
+  command: /usr/bin/start-server
+  links:
+    - db
+  ports:
+    - "8081:80"
+  environment:
+    - RAILS_ENV=docker
+    - CITYDB_HOST_URL
+    - CITYDB_SECRET_KEY_BASE
+db:
+  image: mongo
+  volumes_from:
+    - citydb_mongodata
+
+

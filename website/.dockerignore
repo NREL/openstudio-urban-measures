@@ -1,0 +1,8 @@
+.git
+spec
+test
+solr
+.elasticbeanstalk/*
+.gitignore
+docker/docker-start-citydb.sh
+docker/supervisor-citydb.sh
