@@ -54,17 +54,17 @@ Docker deployment should be tested locally before deploying in a production envi
 ### Docker Installation
 
 * [Install Docker](https://docs.docker.com/installation/)
-* [Install Docker-Machine](https://docs.docker.com/machine/install-machine/)
+* [Install Docker-Machine](https://docs.docker.com/machine/install-machine/) (Only if you are not on a Linux machine.)
 * [Install Docker-Compose](https://docs.docker.com/compose/install/)
 
-### Create Docker-Machine Image
+### Create Docker-Machine Image (only on non-linux machines)
 The command below will create a 100GB volume for development. This is a very large volume and can be adjusted. Make sure to create a volume greater than 30GB.
 
 ```
 docker-machine create --virtualbox-disk-size 100000 --virtualbox-cpu-count 4 --virtualbox-memory 4096 -d virtualbox dev
 ```
 
-### Start Docker-Machine Image
+### Start Docker-Machine Image (only on non-linux machines)
 ```
 docker-machine start dev  # if not already running
 eval $(docker-machine env dev) # this sets up environment variables
