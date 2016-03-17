@@ -2,7 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>7570caae-7591-45d9-920d-8dcfe2203e28</version_id>
+  <version_id>dbbc555e-602b-490d-9db9-4aef71cb9ae1</version_id>
+  <version_modified>20160316T153009Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -19,12 +20,21 @@
       <default_value>http://localhost:3000</default_value>
     </argument>
     <argument>
-      <name>id</name>
-      <display_name>Building ID</display_name>
-      <description>Building ID to generate geometry for.</description>
+      <name>source_id</name>
+      <display_name>Building Source ID</display_name>
+      <description>Building Source ID to generate geometry for.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>source_name</name>
+      <display_name>Building Source Name</display_name>
+      <description>Building Source Name to generate geometry for.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>NREL_GDS</default_value>
     </argument>
   </arguments>
   <provenances/>
@@ -68,7 +78,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>73672CCB</checksum>
+      <checksum>31B8E3DD</checksum>
     </file>
     <file>
       <version>
@@ -79,7 +89,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>556D24B9</checksum>
+      <checksum>A2C6DAAE</checksum>
     </file>
   </files>
 </measure>
