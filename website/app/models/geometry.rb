@@ -180,6 +180,7 @@ class Geometry
     res_hash = {}
     res_hash[:geometry] = { type: result.geometry.type, coordinates: result.geometry.coordinates }
     res_hash[:type] = 'Feature'
+    res_hash[:centroid] = result.geometry.centroid
     res_hash[:properties] = {}
     result.attributes.each do |key, value|
       # convert _id to id
