@@ -105,4 +105,14 @@ docker-compose run <CONTAINER NAME> bash
 
 2. Add environment variables (HOST_URL, SECRET_KEY_BASE, etc) to your bash profile on the server.
 
+## Redeployment
 
+These instructions are specific to deployment on the insight center server.
+
+1.  Kill the docker-compose processes (only those related to openstudio-urban-measures)
+2.  Update the repo in /dockshare/openstudio-urban-measures
+3.  Double check that permissions were maintained (group = dockshare on all updated files)
+4.  If there were changes, run 'docker-compose build' from /dockshare/openstudio-urban-measures/website
+5.  Run 'nohup docker-compose up &' so that the processes don't terminate when the session ends.
+6.  Logs will be in website/nohup.out
+        
