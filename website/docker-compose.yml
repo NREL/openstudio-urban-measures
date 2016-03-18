@@ -13,5 +13,7 @@ db:
   image: mongo
   volumes_from:
     - citydb_mongodata
+  ports:
+    - "27018:27017"
 
 
