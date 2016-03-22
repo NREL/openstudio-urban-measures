@@ -1,0 +1,50 @@
+{
+  "classname": "DencityFileUpload",
+  "name": "dencity_file_upload",
+  "display_name": "DEnCity File Upload",
+  "measure_type": "RubyMeasure",
+  "description": "",
+  "modeler_description": "",
+  "arguments": [
+    {
+      "name": "hostname",
+      "display_name": "URL of the DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "hostname",
+      "units": null,
+      "default_value": "http://www.dencity.org"
+    },
+    {
+      "name": "user_id",
+      "display_name": "User ID for DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "user_id",
+      "units": null
+    },
+    {
+      "name": "auth_code",
+      "display_name": "Authentication code for User ID on DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "auth_code",
+      "units": null
+    },
+    {
+      "name": "file_path",
+      "display_name": "File Path",
+      "variable_type": "String",
+      "local_variable": "file_path",
+      "units": null
+    },
+    {
+      "name": "dencity_file_name",
+      "display_name": "Name for File in DEnCity",
+      "variable_type": "String",
+      "local_variable": "dencity_file_name",
+      "units": null
+    }
+  ],
+  "name_xml": "dencity_file_upload",
+  "uid": "958d570c-2ae1-4440-b36b-e9e385f6a8f4",
+  "version_id": "b604f43c-118b-4246-9131-addc460a0186",
+  "tags": []
+}

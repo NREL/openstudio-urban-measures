@@ -1,0 +1,505 @@
+{
+  "analysis": {
+    "display_name": "URBANopt Testing 1",
+    "name": "urbanopt_testing_1",
+    "output_variables": [
+      {
+        "units": "MJ/m2",
+        "objective_function": true,
+        "objective_function_index": 0,
+        "objective_function_target": null,
+        "objective_function_group": 1,
+        "scaling_factor": null,
+        "display_name": "Total Site Energy Intensity",
+        "display_name_short": "Site EUI",
+        "metadata_id": "total_site_energy_intensity",
+        "name": "standard_report_legacy.total_energy",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Natural Gas Intensity",
+        "display_name_short": "NG EUI",
+        "metadata_id": "total_natural_gas_intensity",
+        "name": "standard_report_legacy.total_natural_gas",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MJ/m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Total Electricity Intensity",
+        "display_name_short": "Elec EUI",
+        "metadata_id": "total_electricity_intensity",
+        "name": "standard_report_legacy.total_electricity",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "m2",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Building Area",
+        "display_name_short": "Building Area",
+        "metadata_id": null,
+        "name": "standard_reports.total_building_area",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Cooling",
+        "display_name_short": "Electricity Cooling",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_cooling_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity Heating",
+        "display_name_short": "Electricity Heating",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_heating_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "kWh",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Electricity",
+        "display_name_short": "Electricity",
+        "metadata_id": null,
+        "name": "standard_reports.electricity_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Natural Gas Heating",
+        "display_name_short": "Natural Gas Heating",
+        "metadata_id": null,
+        "name": "standard_reports.natural_gas_heating_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Natural Gas",
+        "display_name_short": "Natural Gas",
+        "metadata_id": null,
+        "name": "standard_reports.natural_gas_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "District Cooling",
+        "display_name_short": "District Cooling",
+        "metadata_id": null,
+        "name": "standard_reports.district_cooling_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "MBtu",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "District Heating",
+        "display_name_short": "District Heating",
+        "metadata_id": null,
+        "name": "standard_reports.district_heating_ip",
+        "visualize": false,
+        "export": true,
+        "variable_type": "double"
+      },
+      {
+        "units": "Type",
+        "objective_function": false,
+        "objective_function_index": null,
+        "objective_function_target": null,
+        "objective_function_group": null,
+        "scaling_factor": null,
+        "display_name": "Bldg Use",
+        "display_name_short": "Bldg Use",
+        "metadata_id": null,
+        "name": "urbangeometrycreation.bldg_use",
+        "visualize": false,
+        "export": true,
+        "variable_type": "string"
+      }
+    ],
+    "problem": {
+      "analysis_type": "lhs",
+      "algorithm": {
+        "sample_method": "all_variables",
+        "number_of_samples": 1921,
+        "objective_functions": [
+          "standard_report_legacy.total_energy"
+        ]
+      },
+      "workflow": [
+        {
+          "name": "urbangeometrycreation",
+          "display_name": "UrbanGeometryCreation",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "UrbanGeometryCreation",
+          "measure_definition_directory": "./measures/urban_geometry_creation",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_geometry_creation",
+          "measure_definition_display_name": "UrbanGeometryCreation",
+          "measure_definition_name": "urbangeometrycreation",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "2d340d60-891f-458b-8e17-99daa4c6cf75",
+          "measure_definition_version_uuid": "0785f2c1-6154-4bd5-84db-dd665f9719b6",
+          "arguments": [
+            {
+              "display_name": "City JSON Path",
+              "display_name_short": "City JSON Path",
+              "name": "city_json_path",
+              "value_type": "string",
+              "default_value": "../../../lib/city_data/city.json",
+              "value": "../../../lib/city_data/city.json"
+            }
+          ],
+          "variables": [
+            {
+              "argument": {
+                "display_name": "Building ID",
+                "display_name_short": "Building ID",
+                "name": "building_id",
+                "value_type": "string",
+                "default_value": "142484'",
+                "value": "142484'"
+              },
+              "display_name": "Building ID",
+              "display_name_short": "Building ID",
+              "variable_type": "variable",
+              "units": null,
+              "minimum": "0.0",
+              "maximum": "0.0",
+              "relation_to_output": null,
+              "static_value": "142484'",
+              "uuid": "e31ce439-5a32-497a-a0b9-8e23b85f1d20",
+              "version_uuid": "97ed1a92-958b-4042-bfc1-bd765ed62527",
+              "variable": true,
+              "uncertainty_description": {
+                "type": "discrete_uncertain",
+                "attributes": [
+                  {
+                    "name": "discrete",
+                    "values_and_weights": [
+                      {
+                        "value": "142484",
+                        "weight": 0.3333333333333333
+                      },
+                      {
+                        "value": "116245",
+                        "weight": 0.3333333333333333
+                      },
+                      {
+                        "value": "113178",
+                        "weight": 0.3333333333333333
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lower_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "upper_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "modes",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "delta_x",
+                    "value": 0.0
+                  },
+                  {
+                    "name": "stddev",
+                    "value": "0.0"
+                  }
+                ]
+              },
+              "workflow_index": 0
+            }
+          ],
+          "workflow_index": 0
+        },
+        {
+          "name": "setresidentialepwfile",
+          "display_name": "SetResidentialEPWFile",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "SetResidentialEPWFile",
+          "measure_definition_directory": "./measures/SetResidentialEPWFile",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/SetResidentialEPWFile",
+          "measure_definition_display_name": "SetResidentialEPWFile",
+          "measure_definition_name": "setresidentialepwfile",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "849bbb6f-9b5a-457d-89b9-0d9851b6a102",
+          "measure_definition_version_uuid": "6d3a6f6f-3931-4fc7-bee5-c7d55424638c",
+          "arguments": [
+            {
+              "display_name": "Weather Directory",
+              "display_name_short": "Weather Directory",
+              "name": "weather_directory",
+              "value_type": "string",
+              "default_value": "../../weather",
+              "value": "../../weather"
+            },
+            {
+              "display_name": "Weather File Name",
+              "display_name_short": "Weather File Name",
+              "name": "weather_file_name",
+              "value_type": "string",
+              "default_value": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+              "value": "USA_CO_Denver.Intl.AP.725650_TMY3.epw"
+            }
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 1
+        },
+        {
+          "name": "urbanbuildingtype",
+          "display_name": "UrbanBuildingType",
+          "measure_type": "RubyMeasure",
+          "measure_definition_class_name": "UrbanBuildingType",
+          "measure_definition_directory": "./measures/urban_building_type",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_building_type",
+          "measure_definition_display_name": "UrbanBuildingType",
+          "measure_definition_name": "urbanbuildingtype",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "7cf00636-7981-4c87-93fa-0c88394fb367",
+          "measure_definition_version_uuid": "877f8e17-46c6-4e1e-bdaf-fdf202c8322d",
+          "arguments": [
+
+          ],
+          "variables": [
+            {
+              "argument": {
+                "display_name": "Cooling source to model",
+                "display_name_short": "Cooling source to model",
+                "name": "cooling_source",
+                "value_type": "string",
+                "default_value": "Electric",
+                "value": "Electric"
+              },
+              "display_name": "Cooling source to model",
+              "display_name_short": "Cooling source to model",
+              "variable_type": "variable",
+              "units": null,
+              "minimum": "0.0",
+              "maximum": "0.0",
+              "relation_to_output": null,
+              "static_value": "Electric",
+              "uuid": "f42983c5-c15a-4bf5-a727-d1574403d546",
+              "version_uuid": "8d5308be-20c4-480e-b5b9-b629806c2adf",
+              "variable": true,
+              "uncertainty_description": {
+                "type": "discrete_uncertain",
+                "attributes": [
+                  {
+                    "name": "discrete",
+                    "values_and_weights": [
+                      {
+                        "value": "Electric",
+                        "weight": 0.3333333333333333
+                      },
+                      {
+                        "value": "District Chilled Water",
+                        "weight": 0.3333333333333333
+                      },
+                      {
+                        "value": "District Ambient Water",
+                        "weight": 0.3333333333333333
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lower_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "upper_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "modes",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "delta_x",
+                    "value": 0.0
+                  },
+                  {
+                    "name": "stddev",
+                    "value": "0.0"
+                  }
+                ]
+              },
+              "workflow_index": 0
+            },
+            {
+              "argument": {
+                "display_name": "Heating source to model",
+                "display_name_short": "Heating source to model",
+                "name": "heating_source",
+                "value_type": "string",
+                "default_value": "Gas",
+                "value": "Gas"
+              },
+              "display_name": "Heating source to model",
+              "display_name_short": "Heating source to model",
+              "variable_type": "variable",
+              "units": null,
+              "minimum": "0.0",
+              "maximum": "0.0",
+              "relation_to_output": null,
+              "static_value": "Gas",
+              "uuid": "f01f8430-6c53-4339-8e24-543c1b1691a9",
+              "version_uuid": "2102f041-112b-481c-88d0-eddb80b8bf87",
+              "variable": true,
+              "uncertainty_description": {
+                "type": "discrete_uncertain",
+                "attributes": [
+                  {
+                    "name": "discrete",
+                    "values_and_weights": [
+                      {
+                        "value": "Gas",
+                        "weight": 0.25
+                      },
+                      {
+                        "value": "Electric",
+                        "weight": 0.25
+                      },
+                      {
+                        "value": "District Hot Water",
+                        "weight": 0.25
+                      },
+                      {
+                        "value": "District Ambient Water",
+                        "weight": 0.25
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lower_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "upper_bounds",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "modes",
+                    "value": "0.0"
+                  },
+                  {
+                    "name": "delta_x",
+                    "value": 0.0
+                  },
+                  {
+                    "name": "stddev",
+                    "value": "0.0"
+                  }
+                ]
+              },
+              "workflow_index": 1
+            }
+          ],
+          "workflow_index": 2
+        },
+        {
+          "name": "urbanbuildingtypeeplus",
+          "display_name": "UrbanBuildingTypeEPlus",
+          "measure_type": "EnergyPlusMeasure",
+          "measure_definition_class_name": "UrbanBuildingTypeEPlus",
+          "measure_definition_directory": "./measures/urban_building_type_e_plus",
+          "measure_definition_directory_local": "c:/URBANopt/openstudio-urban-measures/urban_building_type_e_plus",
+          "measure_definition_display_name": "UrbanBuildingTypeEPlus",
+          "measure_definition_name": "urbanbuildingtypeeplus",
+          "measure_definition_name_xml": null,
+          "measure_definition_uuid": "41afaed9-ed3a-4c4c-8819-d2bce23079ca",
+          "measure_definition_version_uuid": "04a394b8-348b-4e17-98df-900117efb67d",
+          "arguments": [
+
+          ],
+          "variables": [
+
+          ],
+          "workflow_index": 3
+        }
+      ]
+    },
+    "seed": {
+      "file_type": "OSM",
+      "path": "./seed/EmptySeedModel.osm"
+    },
+    "weather_file": {
+      "file_type": "EPW",
+      "path": "./weather/USA_CO_Denver.Intl.AP.725650_TMY3.epw"
+    },
+    "file_format_version": 1
+  }
+}

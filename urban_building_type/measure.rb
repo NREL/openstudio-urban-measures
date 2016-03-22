@@ -2,10 +2,12 @@
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
 require 'openstudio-standards'
+# require_relative 'resources/Prototype.hvac_systems'
 require 'fileutils'
 
 require_relative 'resources/apply_residential'
 require_relative 'resources/apply_commercial'
+require_relative 'resources/util'
 
 module OpenStudio
   module Model
@@ -41,6 +43,29 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
 
+    # heating source
+    heating_sources = OpenStudio::StringVector.new
+    heating_sources << "NA"
+    heating_sources << "Gas"
+    heating_sources << "Electric"
+    heating_sources << "District Hot Water"
+    heating_sources << "District Ambient Water"
+    heating_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("heating_source", heating_sources, true)
+    heating_source.setDisplayName("Heating source to model")
+    heating_source.setDefaultValue("Gas")
+    args << heating_source    
+    
+    # cooling source
+    cooling_sources = OpenStudio::StringVector.new
+    cooling_sources << "NA"
+    cooling_sources << "Electric"
+    cooling_sources << "District Chilled Water"
+    cooling_sources << "District Ambient Water"
+    cooling_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("cooling_source", cooling_sources, true)
+    cooling_source.setDisplayName("Cooling source to model")
+    cooling_source.setDefaultValue("Electric")
+    args << cooling_source
+    
     return args
   end
 
@@ -48,11 +73,16 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
     
-    @runner = runner
-
     # use the built-in error checking
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
+    end
+    
+    cooling_source = runner.getStringArgumentValue("cooling_source", user_arguments)
+    heating_source = runner.getStringArgumentValue("heating_source", user_arguments)
+    if cooling_source == "NA" or heating_source == "NA"
+      cooling_source = "NA"
+      heating_source = "NA"
     end
     
     # check building space type to see if we are doing residential or commercial path
@@ -71,33 +101,26 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 
 	residential = false
     if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
-      runner.registerInfo("Processing Residential Building")
+      runner.registerInfo("Processing Residential Building, #{standards_building_type}")
       residential = true
     else
-      runner.registerInfo("Processing Commercial Building")
+      runner.registerInfo("Processing Commercial Building, #{standards_building_type}")
       residential = false
     end
     
-    beopt_measures_dir = File.dirname(__FILE__) + "/resources/beopt-measures/"
+    beopt_measures_dir = "./resources/measures/"
     if File.exists?(beopt_measures_dir)
       FileUtils.rm_rf(beopt_measures_dir)
     end
-    
-    if residential
-      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/beopt-measures.zip");
-      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
-    end
-    
+
     result = nil
     if residential
-      result = apply_residential(model, runner)
+      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
+      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
+	  unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
+      result = apply_residential(model, runner, heating_source, cooling_source)
     else
-      result = apply_commercial(model, runner)
-    end
-    
-    if File.exists?(beopt_measures_dir)
-      FileUtils.rm_rf(beopt_measures_dir)
+      result = apply_commercial(model, runner, heating_source, cooling_source)
     end
     
     return result

@@ -1,0 +1,50 @@
+{
+  "classname": "DencityDatapointUpload",
+  "name": "dencity_datapoint_upload",
+  "display_name": "DEnCity Datapoint Upload",
+  "measure_type": "RubyMeasure",
+  "description": "",
+  "modeler_description": "",
+  "arguments": [
+    {
+      "name": "hostname",
+      "display_name": "URL of the DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "hostname",
+      "units": null,
+      "default_value": "http://www.dencity.org"
+    },
+    {
+      "name": "user_id",
+      "display_name": "User ID for DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "user_id",
+      "units": null
+    },
+    {
+      "name": "auth_code",
+      "display_name": "Authentication code for User ID on DEnCity Server",
+      "variable_type": "String",
+      "local_variable": "auth_code",
+      "units": null
+    },
+    {
+      "name": "building_type",
+      "display_name": "Building Type",
+      "variable_type": "String",
+      "local_variable": "building_type",
+      "units": null
+    },
+    {
+      "name": "primary_hvac",
+      "display_name": "Primary HVAC System in Building",
+      "variable_type": "String",
+      "local_variable": "primary_hvac",
+      "units": null
+    }
+  ],
+  "name_xml": "dencity_datapoint_upload",
+  "uid": "328c40b8-c48e-4cf3-be7c-a15e47953419",
+  "version_id": "6d854cda-2b70-4eef-8ea8-05260f71c4e9",
+  "tags": []
+}
