@@ -194,16 +194,19 @@ DEPENDENCIES
   bootstrap_form
   cancancan (~> 1.9)
   devise
+  execjs
   jbuilder (~> 1.2)
   jquery-rails
   kaminari
   leaflet-rails
+  libv8
   mongoid (~> 4.0.2)
   multi_json
   rails (= 4.2.5)
   rest-client
   role_model
   sass-rails (~> 4.0.0)
+  therubyracer
   turbolinks
   tzinfo
   tzinfo-data
