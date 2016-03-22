@@ -7,6 +7,8 @@ require 'net/http'
 # start the measure
 class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
+  attr_accessor :origin_lat_lon
+  
   # human readable name
   def name
     return "UrbanGeometryCreation"
@@ -45,6 +47,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     source_name.setDescription("Building Source Name to generate geometry for.")
     source_name.setDefaultValue("NREL_GDS")
     args << source_name
+    
+    # which surrounding buildings to include
+    chs = OpenStudio::StringVector.new
+    chs << "None"
+    chs << "ShadingOnly"
+    chs << "All"
+    surrounding_buildings = OpenStudio::Ruleset::OSArgument.makeChoiceArgument("surrounding_buildings", chs, true)
+    surrounding_buildings.setDisplayName("Surrounding Buildings")
+    surrounding_buildings.setDescription("Select which surrounding buildings to include.")
+    surrounding_buildings.setDefaultValue("ShadingOnly")
+    args << surrounding_buildings    
 
     return args
   end
@@ -366,7 +379,67 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     return [min_lon, min_lat]
   end
+  
+  def is_shadowed(building_points, other_building_points)
+    all_pairs = []
+    building_points.each do |building_point|
+      other_building_points.each do |other_building_point|
+        vector = other_building_point - building_point
+        all_pairs << {:building_point => building_point, :other_building_point => other_building_point, :vector => vector, :distance => vector.length}
+      end
+    end
+    
+    all_pairs.sort! {|x, y| x[:distance] <=> y[:distance]}
+    
+    all_pairs.each do |pair|
+      if point_is_shadowed(pair[:building_point], pair[:other_building_point])
+        return true
+      end
+    end
+    
+    return false
+  end
+  
+  
+  def point_is_shadowed(building_point, other_building_point)
+  
+    vector = other_building_point - building_point
 
+    height = vector.z
+    distance = Math.sqrt(vector.x*vector.x + vector.y*vector.y)
+    
+    if distance < 1
+      return true
+    end
+    
+    hour_angle_rad = Math.atan2(-vector.x, -vector.y)
+    hour_angle = OpenStudio::radToDeg(hour_angle_rad)
+    lattitude_rad = OpenStudio::degToRad(@origin_lat_lon.lat)
+    
+    result = false
+    (-24..24).each do |declination|
+      
+      declination_rad = OpenStudio::degToRad(declination)
+      zenith_angle_rad = Math.acos(Math.sin(lattitude_rad)*Math.sin(declination_rad) + Math.cos(lattitude_rad)*Math.cos(declination_rad)*Math.cos(hour_angle_rad))
+      zenith_angle = OpenStudio::radToDeg(zenith_angle_rad)
+      elevation_angle = 90-zenith_angle
+        
+      apparent_angle_rad = Math.atan2(height, distance)
+      apparent_angle = OpenStudio::radToDeg(apparent_angle_rad)
+    
+      #puts "declination is #{declination}.  Other building is #{distance} m away and #{height} m high, hour_angle is #{hour_angle}, apparent angle is #{apparent_angle}, zenith_angle is #{zenith_angle}, elevation_angle is #{elevation_angle}"
+      
+      if (elevation_angle > 0 && elevation_angle < apparent_angle)
+        result = true
+        break
+      end
+    end
+    
+    #puts "lattitude = #{@origin_lat_lon.lat}, vector = #{vector}, distance = #{distance}, height = #{height}, shadowed = #{result}"
+    
+    return result
+  end
+  
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
@@ -378,13 +451,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     # instance variables
     @runner = runner
-    @min_lon = Float::MAX 
-    @min_lat = Float::MAX 
+    @origin_lat_lon = nil
 
     # assign the user inputs to variables
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
     source_id = runner.getStringArgumentValue("source_id", user_arguments)
     source_name = runner.getStringArgumentValue("source_name", user_arguments)
+    surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
     
     port = 80
     if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
@@ -446,28 +519,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     # find min and max x coordinate
     min_lon_lat = get_min_lon_lat(building_json)
-    @min_lon = min_lon_lat[0]
-    @min_lat = min_lon_lat[1]
+    min_lon = min_lon_lat[0]
+    min_lat = min_lon_lat[1]
 
-    if @min_lon == Float::MAX || @min_lat == Float::MAX 
+    if min_lon == Float::MAX || min_lat == Float::MAX 
       runner.registerError("Could not determine min_lat and min_lon")
       return false
     else
-      runner.registerInfo("Min_lat = #{@min_lat}, min_lon = #{@min_lon}")
+      runner.registerInfo("Min_lat = #{min_lat}, min_lon = #{min_lon}")
     end
 
-    @origin_lat_lon = OpenStudio::PointLatLon.new(@min_lat, @min_lon, 0)
-    
-    centroid_lon_lat = get_min_lon_lat(building_json)
-    #centroid_lon_lat = building_json[:geometry][:centroid]
-    if centroid_lon_lat.nil?
-      puts building_json[:geometry]
-      puts building_json[:properties]
-      runner.registerError("Building centroid not set for building #{source_id}")
-      return false
-    end
-    
-    centroid = @origin_lat_lon.toLocalCartesian(OpenStudio::PointLatLon.new(centroid_lon_lat[1], centroid_lon_lat[0], 0))
+    @origin_lat_lon = OpenStudio::PointLatLon.new(min_lat, min_lon, 0)
     
     # make requested building
     spaces = create_building(building_json, :space_per_floor, model)
@@ -475,91 +537,119 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       runner.registerError("Failed to create spaces for building #{source_id}")
       return false
     end
+    
+    # get first floor footprint points
+    building_points = []
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      multi_polygon.each do |polygon|
+        elevation = 0
+        floor_print = floor_print_from_polygon(polygon, elevation)
+        floor_print.each do |point|
+          building_points << point
+        end
+        
+        # subsequent polygons are holes, we do not support them
+        break
+      end
+    end
       
-    # get nearby buildings
+    # nearby buildings to conver to shading
     convert_to_shades = []
     
-    params = {}
-    params[:commit] = 'Proximity Search'
-    params[:building_id] = building_json[:properties][:id]
-    params[:distance] = 100
-    params[:proximity_feature_types] = ['Building']
-    
-    http = Net::HTTP.new(city_db_url, port)
-    request = Net::HTTP::Post.new("/api/search.json")
-    request.add_field('Content-Type', 'application/json')
-    request.add_field('Accept', 'application/json')
-    request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("testing@nrel.gov", "testing123")
-    
-    response = http.request(request)
-    if  response.code != '200' # success
-      runner.registerError("Bad response #{response.code}")
-      runner.registerError(response.body)
-      return false
-    end
+    if surrounding_buildings == "None"
+      # no-op
+    else
 
-    feature_collection = JSON.parse(response.body, :symbolize_names => true)
-    if feature_collection[:features].nil?
-      runner.registerError("No features found in #{feature_collection}")
-      return false
-    end
-
-    runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
-    
-    count = 0
-    feature_collection[:features].each do |other_building|
-    
-      other_source_id = other_building[:properties][:source_id]
-      next if other_source_id == source_id
+      # query database for nearby buildings
+      params = {}
+      params[:commit] = 'Proximity Search'
+      params[:building_id] = building_json[:properties][:id]
+      params[:distance] = 100
+      params[:proximity_feature_types] = ['Building']
       
-      other_centroid_lon_lat = get_min_lon_lat(other_building)
-      #other_centroid_lon_lat = other_building[:geometry][:centroid]
-      if other_centroid_lon_lat.nil?
-        runner.registerError("Building centroid not set for other building #{other_source_id}")
+      http = Net::HTTP.new(city_db_url, port)
+      request = Net::HTTP::Post.new("/api/search.json")
+      request.add_field('Content-Type', 'application/json')
+      request.add_field('Accept', 'application/json')
+      request.body = JSON.generate(params)
+      # DLM: todo, get these from environment variables or as measure inputs?
+      request.basic_auth("testing@nrel.gov", "testing123")
+      
+      response = http.request(request)
+      if  response.code != '200' # success
+        runner.registerError("Bad response #{response.code}")
+        runner.registerError(response.body)
         return false
       end
-    
-      other_centroid = @origin_lat_lon.toLocalCartesian(OpenStudio::PointLatLon.new(other_centroid_lon_lat[1], other_centroid_lon_lat[0], 0))
+
+      feature_collection = JSON.parse(response.body, :symbolize_names => true)
+      if feature_collection[:features].nil?
+        runner.registerError("No features found in #{feature_collection}")
+        return false
+      end
+
+      runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
       
-      surface_elevation	= other_building[:properties][:surface_elevation]
-      roof_elevation	= other_building[:properties][:roof_elevation]
-      number_of_stories = other_building[:properties][:number_of_stories]
-      number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
-      floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+      count = 0
+      feature_collection[:features].each do |other_building|
       
-      if number_of_stories_above_ground.nil?
-        if number_of_stories_below_ground.nil?
-          number_of_stories_above_ground = number_of_stories
-          number_of_stories_below_ground = 0
-        else
-          number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+        other_source_id = other_building[:properties][:source_id]
+        next if other_source_id == source_id
+      
+        if surrounding_buildings == "ShadingOnly"
+        
+          # check if any building point is shaded by any other building point
+          surface_elevation	= other_building[:properties][:surface_elevation]
+          roof_elevation	= other_building[:properties][:roof_elevation]
+          number_of_stories = other_building[:properties][:number_of_stories]
+          number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
+          floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+          
+          if number_of_stories_above_ground.nil?
+            if number_of_stories_below_ground.nil?
+              number_of_stories_above_ground = number_of_stories
+              number_of_stories_below_ground = 0
+            else
+              number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+            end
+          end
+          
+          if floor_to_floor_height.nil?
+            floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
+          end
+          
+          other_height = number_of_stories_above_ground * floor_to_floor_height
+          
+          # get first floor footprint points
+          other_building_points = []
+          multi_polygons = get_multi_polygons(other_building)
+          multi_polygons.each do |multi_polygon|
+            multi_polygon.each do |polygon|
+              floor_print = floor_print_from_polygon(polygon, other_height)
+              floor_print.each do |point|
+                other_building_points << point
+              end
+              
+              # subsequent polygons are holes, we do not support them
+              break
+            end
+          end
+        
+          shadowed = is_shadowed(building_points, other_building_points)
+          if !shadowed
+            next
+          end
         end
+       
+        other_spaces = create_building(other_building, :space_per_building, model)
+        if other_spaces.nil? || other_spaces.empty?
+          runner.registerError("Failed to create spaces for other building #{other_source_id}")
+          return false
+        end
+        
+        convert_to_shades.concat(other_spaces)
       end
-    
-      if floor_to_floor_height.nil?
-        floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
-      end
-      
-      distance_x = OpenStudio::getDistance(centroid, other_centroid)
-      distance_y = number_of_stories_above_ground * floor_to_floor_height
-      apparent_angle_rad = Math.atan2(distance_y, distance_x)
-      apparent_angle_deg = OpenStudio::radToDeg(apparent_angle_rad)
-      
-      runner.registerInfo("Other building #{other_source_id} is #{distance_x} m away and #{distance_y} high, apparent angle is #{apparent_angle_deg}")
-      
-      if apparent_angle_deg < 10
-        next
-      end
-
-      other_spaces = create_building(other_building, :space_per_building, model)
-      if other_spaces.nil? || other_spaces.empty?
-        runner.registerError("Failed to create spaces for other building #{other_source_id}")
-        return false
-      end
-      
-      convert_to_shades.concat(other_spaces)
     end
     
     # intersect surfaces in this building with others

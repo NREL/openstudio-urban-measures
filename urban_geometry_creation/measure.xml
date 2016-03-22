@@ -2,12 +2,12 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>dbbc555e-602b-490d-9db9-4aef71cb9ae1</version_id>
-  <version_modified>20160316T153009Z</version_modified>
+  <version_id>a5b371cd-8e67-4408-b767-558a9e5952c1</version_id>
+  <version_modified>20160322T054940Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
-  <description>This measure reads a city.json file and creates geometry for either 1 building in the dataset or all of them.</description>
+  <description>This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures.</description>
   <modeler_description></modeler_description>
   <arguments>
     <argument>
@@ -35,6 +35,29 @@
       <required>true</required>
       <model_dependent>false</model_dependent>
       <default_value>NREL_GDS</default_value>
+    </argument>
+    <argument>
+      <name>surrounding_buildings</name>
+      <display_name>Surrounding Buildings</display_name>
+      <description>Select which surrounding buildings to include.</description>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>ShadingOnly</default_value>
+      <choices>
+        <choice>
+          <value>None</value>
+          <display_name>None</display_name>
+        </choice>
+        <choice>
+          <value>ShadingOnly</value>
+          <display_name>ShadingOnly</display_name>
+        </choice>
+        <choice>
+          <value>All</value>
+          <display_name>All</display_name>
+        </choice>
+      </choices>
     </argument>
   </arguments>
   <provenances/>
@@ -78,7 +101,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>31B8E3DD</checksum>
+      <checksum>DC08256E</checksum>
     </file>
     <file>
       <version>
@@ -89,7 +112,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>A2C6DAAE</checksum>
+      <checksum>72F2DFD5</checksum>
     </file>
   </files>
 </measure>

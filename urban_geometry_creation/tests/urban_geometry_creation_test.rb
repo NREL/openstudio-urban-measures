@@ -11,6 +11,35 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
 
   # def teardown
   # end
+  
+  def test_is_shadowed
+  
+    meas = UrbanGeometryCreation.new
+    meas.origin_lat_lon = OpenStudio::PointLatLon.new(40, -120, 0)
+
+    # y is north, x is east, z is up
+    
+    # points on ground
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(10, 0, 0))) # West
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(Math.sqrt(50), -Math.sqrt(50), 0)))  # South West
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(0, -10, 0))) # South
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-Math.sqrt(50), -Math.sqrt(50), 0))) # South East
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-10, 0, 0))) # East
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-Math.sqrt(50), Math.sqrt(50), 0))) # North East
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(0, 10, 0))) # North
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(Math.sqrt(50), Math.sqrt(50), 0))) # North West
+    
+    # points 10 m up
+    assert(meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(10, 0, 10))) # West
+    assert(meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(Math.sqrt(50), -Math.sqrt(50), 10)))  # South West
+    assert(meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(0, -10, 10))) # South
+    assert(meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-Math.sqrt(50), -Math.sqrt(50), 10))) # South East
+    assert(meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-10, 0, 10))) # East
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(-Math.sqrt(50), Math.sqrt(50), 10))) # North East
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(0, 10, 10))) # North
+    assert(!meas.point_is_shadowed(OpenStudio::Point3d.new(0, 0, 0), OpenStudio::Point3d.new(Math.sqrt(50), Math.sqrt(50), 10))) # North West
+
+  end
 
   def test_one_building
     # create an instance of the measure
@@ -26,6 +55,9 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     city_db_url = "http://localhost:3000"
     source_id = "98628"
     source_name = "NREL_GDS"
+    #surrounding_buildings = "None"
+    surrounding_buildings = "ShadingOnly"
+    #surrounding_buildings = "All"
    
     # get arguments
     arguments = measure.arguments(model)
@@ -37,6 +69,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     args_hash["city_db_url"] = city_db_url
     args_hash["source_id"] = source_id
     args_hash["source_name"] = source_name
+    args_hash["surrounding_buildings"] = surrounding_buildings
 
     # populate argument with specified hash value if specified
     arguments.each do |arg|
