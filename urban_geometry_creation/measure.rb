@@ -32,7 +32,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
     city_db_url.setDisplayName("City Database Url")
     city_db_url.setDescription("Url of the City Database")
-	  city_db_url.setDefaultValue("http://localhost:3000")
+	  #city_db_url.setDefaultValue("http://localhost:3000")
+    city_db_url.setDefaultValue("http://insight4.hpc.nrel.gov:8081/")
     args << city_db_url
     
     # source id of the building to create

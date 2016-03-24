@@ -52,8 +52,10 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     runner = OpenStudio::Ruleset::OSRunner.new
 
     # load the test model
-    city_db_url = "http://localhost:3000"
-    source_id = "98628"
+    #city_db_url = "http://localhost:3000"
+    city_db_url = "http://insight4.hpc.nrel.gov:8081/"
+    #source_id = "98628"
+    source_id = "445" 	
     source_name = "NREL_GDS"
     #surrounding_buildings = "None"
     surrounding_buildings = "ShadingOnly"
