@@ -2,7 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>697c266c-2257-4fce-ad7e-566d048ef44d</version_id>
+  <version_id>308ed1ad-ebdf-4b2e-8d61-6a547c3375b0</version_id>
+  <version_modified>20160322T055926Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -126,18 +127,6 @@
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
       <checksum>F0945BA2</checksum>
-    </file>
-    <file>
-      <filename>Prototype.AirTerminalSingleDuctVAVReheat.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>76FF23E2</checksum>
-    </file>
-    <file>
-      <filename>Prototype.hvac_systems.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>802B1E6C</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>

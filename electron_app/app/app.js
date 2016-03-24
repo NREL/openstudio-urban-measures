@@ -12,7 +12,8 @@ import env from './env';
 
 var app = remote.app;
 var appDir = jetpack.cwd(app.getAppPath());
-var city = appDir.read('city.json', 'json');
+var city = appDir.read('city.geojson', 'json');
+var taxlots = appDir.read('taxlots.geojson', 'json');
 
 function imageryError(arg1) {
   console.log('imageryError');
@@ -72,23 +73,27 @@ document.addEventListener('DOMContentLoaded', function() {
   var imageryErrorEvent = new Cesium.Event();
   imageryErrorEvent.addEventListener(imageryError);
 
-  var imageryProvider = new Cesium.BingMapsImageryProvider({
-          url : "http://dev.virtualearth.net/",
-          //tileProtocol: "http",
-          tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
-          errorEvent: imageryErrorEvent,
-          //proxy : new Cesium.DefaultProxy('/proxy/'),
-          key: bingKey
-      });
+  //var imageryProvider = new Cesium.BingMapsImageryProvider({
+  //        url : "http://dev.virtualearth.net/",
+  //        //tileProtocol: "http",
+  //        tileDiscardPolicy: new Cesium.NeverTileDiscardPolicy(),
+  //        errorEvent: imageryErrorEvent,
+  //        //proxy : new Cesium.DefaultProxy('/proxy/'),
+  //        key: bingKey
+  //    });
       
   //var imageryProvider = new Cesium.ArcGisMapServerImageryProvider({
   //  url: 'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
   //});
   
   //var imageryProvider = new Cesium.OpenStreetMapImageryProvider({
-  //        url : "//a.tile.openstreetmap.org/"
+  //        url : "http://a.tile.openstreetmap.org/"
   //    });
 
+  var imageryProvider = Cesium.createOpenStreetMapImageryProvider({
+          url : "http://a.tile.openstreetmap.org/"
+      });
+      
   var viewer;
   try {
     viewer = new Cesium.Viewer('cesiumContainer', {            
@@ -133,18 +138,18 @@ document.addEventListener('DOMContentLoaded', function() {
   
   loadingIndicator.style.display = 'none';
   
-  var region_points = city['region']['polygon']['points'];
-  
+  var bbox = city['bbox'];
+
   var ellipsoid = Cesium.Ellipsoid.WGS84;
-  var west = Cesium.Math.toRadians(region_points[0]['x']);
-  var south = Cesium.Math.toRadians(region_points[0]['y']);
-  var east = Cesium.Math.toRadians(region_points[2]['x']);
-  var north = Cesium.Math.toRadians(region_points[2]['y']);
+  var west = Cesium.Math.toRadians(bbox[0]);
+  var south = Cesium.Math.toRadians(bbox[1]);
+  var east = Cesium.Math.toRadians(bbox[2]);
+  var north = Cesium.Math.toRadians(bbox[3]);
 
   var extent = new Cesium.Rectangle(west, south, east, north);
   
-  scene.mode = Cesium.SceneMode.SCENE2D;
-  //scene.mode = Cesium.SceneMode.SCENE3D;
+  //scene.mode = Cesium.SceneMode.SCENE2D;
+  scene.mode = Cesium.SceneMode.SCENE3D;
   
   // Show the rectangle.  Not required; just for show.
   viewer.entities.add({
@@ -156,10 +161,51 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  var building;
-  for (building of city['buildings']){
-    drawBuilding(viewer, building);
-  }
+  var city_datasource = new Cesium.GeoJsonDataSource();
+  viewer.dataSources.add(city_datasource);
+  
+  city_datasource.load(city, {
+    stroke: Cesium.Color.RED,
+    fill: Cesium.Color.PINK,
+    strokeWidth: 3,
+    markerSymbol: '?'
+  }).then( function() {
+    var values = city_datasource.entities.values;
+    for (var i = 0; i < values.length; i++) {
+      var value = values[i];
+      
+      var surface_elevation = value.properties["surface_elevation"];
+      var roof_elevation = value.properties["roof_elevation"];
+      var height = roof_elevation - surface_elevation;
+      
+      //var average_roof_height = value.properties["average_roof_height"];
+      values[i].polygon.extrudedHeight = height;
+      
+      var floor_area = value.properties["floor_area"];
+      if (floor_area < 0.09290304*100000){
+        var zoning = value.properties["zoning"];
+        if (zoning == "Commercial"){
+          values[i].polygon.material = Cesium.Color.BLUE;
+          values[i].polygon.outlineColor = Cesium.Color.BLACK;
+          console.log(values[i].polygon);
+        }
+      }
+    } 
+  })
+  
+  
+  
+  viewer.dataSources.add(Cesium.GeoJsonDataSource.load(taxlots, {
+    stroke: Cesium.Color.GREEN,
+    fill: Cesium.Color.GREEN,
+    strokeWidth: 3,
+    markerSymbol: '?'
+  }));
+
+  //var building;
+  //for (feature of city['features']){
+  //  drawBuilding(viewer, building);
+  //}
   
   scene.camera.flyTo({destination : extent});
   viewer.render();

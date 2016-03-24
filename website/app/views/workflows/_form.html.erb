@@ -1,0 +1,14 @@
+<%= bootstrap_form_tag url: (@workflow.new_record? ? '/workflows' : "/workflows/#{@workflow.id}"),  method: (@workflow.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4' do |f| %>
+
+  <fieldset class="pad-top-30">
+    <%= f.file_field :json_file, label: 'OSW file' %>
+  </fieldset>
+  <fieldset class="pad-top-30 pad-bot-30">
+  	<%= f.file_field :zip_file, label: 'Related Zip file' %>
+  </fieldset>
+
+  <%= f.form_group do %>
+    <%= f.primary @workflow.new_record? ? 'Create' : 'Update' %>
+  <% end %>
+<% end %>
+

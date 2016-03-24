@@ -1,0 +1,80 @@
+<h2>Search Options</h2>
+
+<%= bootstrap_form_tag url: '/search', layout: :horizontal do |f| %>
+<div class="row">
+  <div class="col-sm-4">
+  	<h3>Search by ID</h3>
+    <p>Find all items with matching source name and ID.</p>
+    <fieldset>
+      <%= f.text_field :source_name, value: @source_name, label: 'Source Name' %>
+    </fieldset>
+    <fieldset>
+      <%= f.text_field :source_id, value: @source_id, label: 'Source ID' %>
+    </fieldset>
+    <fieldset>
+      <%= f.select :source_feature_types, options_for_select(@possible_types, @feature_types), { label: 'Feature type(s) to return' }, { multiple: true, size: 5 } %>
+    </fieldset>
+    <%= f.form_group do %>
+      <%= f.primary 'Search' %>
+    <% end %>
+  </div>
+  <div class="col-sm-4">
+    <h3>Proximity Search</h3>
+    <p>Find all items near a building.</p>
+    <fieldset>
+    	<%= f.text_field :building_id, value: @building_id, label: 'Building ID' %>
+    </fieldset>
+    <fieldset>
+    	<%= f.text_field :distance, value: @distance, append: 'm', label: 'Max Distance' %>
+    </fieldset>
+    <fieldset>
+      <%= f.select :proximity_feature_types, options_for_select(@possible_types, @proximity_feature_types), { label: 'Feature type(s) to return' }, { multiple: true, size: 5 } %>
+    </fieldset>
+    <%= f.form_group do %>
+    	<%= f.primary 'Proximity Search' %>
+    <% end %>
+  </div>
+  <div class="col-sm-4">
+  	<h3>Region Search</h3>
+    <p>Find all items within a specified region.</p>
+    <fieldset>
+    	<%= f.select :region_id, options_for_select(@regions, @region_id), label: 'Region ID' %>
+    </fieldset>
+    <fieldset>
+      <%= f.select :region_feature_types, options_for_select(@possible_types, @region_feature_types), { label: 'Feature type(s) to return' }, { multiple: true, size: 5 } %>
+    </fieldset>
+    <%= f.form_group do %>
+    	<%= f.primary 'Region Search' %>
+    <% end %>
+  </div>
+</div>
+<% end %>
+
+<% unless @is_get %>
+	<h2 class="pad-top-30"><%= @search_type %> Search Results (<%= @total_count %>)</h2>
+
+	<% if @results.count < 1 %>
+		<p>There are no results for this <%= @search_type %> search.</p>
+	<% else %>
+		<table class="tablesorter table table-striped">
+		  <thead>
+		  <tr>
+		    <th>ID</th>
+        <th>Source Name & ID</th>
+		    <th>Type</th>
+		  </tr>
+		  </thead>
+		  <tbody>
+		  <% @results.each do |object| %>
+		    <tr>
+		      <td><% if object.building %><%= link_to object.building_id, object.building %><% elsif object.taxlot %><%= link_to object.taxlot_id, object.taxlot %><% elsif object.region %><%= link_to object.region_id, object.region %><% elsif object.district_system %><%= link_to object.district_system_id, object.district_system %><% end %></td>
+          <td><% if object.building %><%= object.building.source_name %> <%= object.building.source_id %><% elsif object.taxlot_id %>%= object.taxlot.source_name %> <%= object.taxlot.source_id %><% elsif object.region_id %>%= object.region.source_name %> <%= object.region.source_id %><% elsif object.district_system_id %>%= object.district_system.source_name %> <%= object.district_system.source_id %><% end %></td>
+		      <td><% if object.building %><%= object.building.type %><% elsif object.taxlot %><%= object.taxlot.type %><% elsif object.region %><%= object.region.type %><% elsif object.district_system %><%= object.district_system.type %><% end %></td>
+
+		    </tr>
+		  <% end %>
+		  </tbody>
+		</table>
+		<%= paginate @results %>
+  <% end %>
+<% end %>

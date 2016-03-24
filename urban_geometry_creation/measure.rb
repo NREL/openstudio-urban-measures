@@ -2,10 +2,13 @@
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
 require 'json'
+require 'net/http'
 
 # start the measure
 class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
+  attr_accessor :origin_lat_lon
+  
   # human readable name
   def name
     return "UrbanGeometryCreation"
@@ -13,7 +16,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
   # human readable description
   def description
-    return "This measure reads a city.json file and creates geometry for either 1 building in the dataset or all of them."
+    return "This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures."
   end
 
   # human readable description of modeling approach
@@ -25,19 +28,37 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
     
-    # path to the city.json file
-    city_json_path = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_json_path", true)
-    city_json_path.setDisplayName("City JSON Path")
-    city_json_path.setDescription("Path to city.json.")
-	city_json_path.setDefaultValue("../../../../openstudio-urban-measures/city.json")
-    args << city_json_path
+    # url of the city database
+    city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
+    city_db_url.setDisplayName("City Database Url")
+    city_db_url.setDescription("Url of the City Database")
+	  #city_db_url.setDefaultValue("http://localhost:3000")
+    city_db_url.setDefaultValue("http://insight4.hpc.nrel.gov:8081/")
+    args << city_db_url
     
-    # the id of the building to create
-    building_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_id", true)
-    building_id.setDisplayName("Building ID")
-    building_id.setDescription("Building ID to generate, use '*All*' to generate all.")
-	building_id.setDefaultValue("142484")
-    args << building_id
+    # source id of the building to create
+    source_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_id", true)
+    source_id.setDisplayName("Building Source ID")
+    source_id.setDescription("Building Source ID to generate geometry for.")
+    args << source_id
+    
+    # source name of the building to create
+    source_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_name", true)
+    source_name.setDisplayName("Building Source Name")
+    source_name.setDescription("Building Source Name to generate geometry for.")
+    source_name.setDefaultValue("NREL_GDS")
+    args << source_name
+    
+    # which surrounding buildings to include
+    chs = OpenStudio::StringVector.new
+    chs << "None"
+    chs << "ShadingOnly"
+    chs << "All"
+    surrounding_buildings = OpenStudio::Ruleset::OSArgument.makeChoiceArgument("surrounding_buildings", chs, true)
+    surrounding_buildings.setDisplayName("Surrounding Buildings")
+    surrounding_buildings.setDescription("Select which surrounding buildings to include.")
+    surrounding_buildings.setDefaultValue("ShadingOnly")
+    args << surrounding_buildings    
 
     return args
   end
@@ -61,129 +82,170 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return space_type
   end
   
-  def floor_print_from_polygon(building, polygon, elevation)
-    if !polygon[:holes].empty?
-      #@runner.registerWarning("Cannot create footprint for building #{building[:id]}, contains inner polygon")
-      #return []
-      @runner.registerWarning("Ignoring inner polygon for footprint for building #{building[:id]}")
-      return nil
+  def get_multi_polygons(building_json)
+    geometry_type = building_json[:geometry][:type]
+    
+    multi_polygons = nil
+    if geometry_type == "Polygon"
+      polygons = building_json[:geometry][:coordinates]
+      multi_polygons = [polygons]
+    elsif geometry_type == "MultiPolygon"
+      multi_polygons = building_json[:geometry][:coordinates]
     end
     
+    return multi_polygons
+  end
+  
+  def floor_print_from_polygon(polygon, elevation)
+  
     floor_print = OpenStudio::Point3dVector.new
-    polygon[:points].each do |p|
-      floor_print << OpenStudio::Point3d.new(p[:x] - @min_x, p[:y] - @min_y, elevation)
+    polygon.each do |p|
+      lon = p[0]
+      lat = p[1]
+      point_3d = @origin_lat_lon.toLocalCartesian(OpenStudio::PointLatLon.new(lat, lon, 0))
+      point_3d = OpenStudio::Point3d.new(point_3d.x, point_3d.y, elevation)
+      floor_print << point_3d
     end
   
     if floor_print.size < 3
-      @runner.registerWarning("Cannot create footprint for building #{building[:id]}, fewer than 3 points")
+      @runner.registerWarning("Cannot create floor print, fewer than 3 points")
       return nil
     end
-  
+   
     floor_print = OpenStudio::removeCollinear(floor_print)
     normal = OpenStudio::getOutwardNormal(floor_print)
     if normal.empty?
-      @runner.registerWarning("Cannot create footprint for building #{building[:id]}, cannot compute outward normal")
+      @runner.registerWarning("Cannot create floor print, cannot compute outward normal")
       return nil
     elsif normal.get.z > 0
       floor_print = OpenStudio::reverse(floor_print)
-      @runner.registerWarning("Reversing floor print for building #{building[:id]}")
+      @runner.registerWarning("Reversing floor print")
     end
     
     return floor_print
   end
 
-  def create_building(building, is_primary, create_method, model)
+  def create_building(building_json, create_method, model)
     
-    surface_elevation	= building[:surface_elevation]
-    roof_elevation	= building[:roof_elevation]
-    number_of_stories = building[:number_of_stories]
-    number_of_stories_above_ground = building[:number_of_stories_above_ground]
-    number_of_stories_below_ground = building[:number_of_stories_below_ground]
-    number_of_residential_units = building[:number_of_residential_units]
+    properties = building_json[:properties]
+    surface_elevation	= properties[:surface_elevation]
+    roof_elevation	= properties[:roof_elevation]
+    number_of_stories = properties[:number_of_stories]
+    number_of_stories_above_ground = properties[:number_of_stories_above_ground]
+    number_of_stories_below_ground = properties[:number_of_stories_below_ground]
+    number_of_residential_units = properties[:number_of_residential_units]
+    floor_to_floor_height = properties[:floor_to_floor_height]
+    space_type = properties[:space_type]
     
-    if is_primary
+    if number_of_stories_above_ground.nil?
+      if number_of_stories_below_ground.nil?
+        number_of_stories_above_ground = number_of_stories
+        number_of_stories_below_ground = 0
+      else
+        number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+      end
+    end
+    
+    if floor_to_floor_height.nil?
+      floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
+    end
+    
+    if space_type
       # get the building use and fix any issues
-      bldg_use = building[:space_type]
-      building_space_type = create_space_type(bldg_use, bldg_use, model)
+      building_space_type = create_space_type(space_type, space_type, model)
       model.getBuilding.setSpaceType(building_space_type)
-      #model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
-      model.getBuilding.setStandardsNumberOfStories(number_of_stories)
-
-      if number_of_stories_above_ground
-        model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
-      end
-      if number_of_residential_units
-        model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
-      end
-      #model.getBuilding.setNominalFloortoCeilingHeight
-      model.getBuilding.setStandardsBuildingType(bldg_use)
-      @runner.registerValue("bldg_use", bldg_use)
+      model.getBuilding.setStandardsBuildingType(space_type)
       model.getBuilding.setRelocatable(false)
     end
     
+    if number_of_residential_units
+      model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+    end
+    
+    model.getBuilding.setStandardsNumberOfStories(number_of_stories)
+    model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+    model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
+    #model.getBuilding.setNominalFloortoCeilingHeight
+      
     spaces = []
     if create_method == :space_per_floor
-      building[:stories].each do |story|
-        new_spaces = create_space_per_floor(building, story, model)
+      (-number_of_stories_below_ground+1..number_of_stories_above_ground).each do |story_number|
+        new_spaces = create_space_per_floor(building_json, story_number, floor_to_floor_height, model)
         spaces.concat(new_spaces)
       end
     elsif create_method == :space_per_building
-      spaces = create_space_per_building(building, model)
+      spaces = create_space_per_building(building_json, -number_of_stories_below_ground*floor_to_floor_height, number_of_stories_above_ground*floor_to_floor_height, model)
     end
 
     return spaces
   end
 
-  def create_space_per_floor(building, story, model)
+  def create_space_per_floor(building_json, story_number, floor_to_floor_height, model)
   
+    geometry = building_json[:geometry] 
+    properties = building_json[:properties]
+
+    floor_prints = []
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      
+      if story_number == 1 && multi_polygon.size > 1
+        @runner.registerWarning("Ignoring holes in polygon")
+      end
+      
+      multi_polygon.each do |polygon|
+        elevation = (story_number-1)*floor_to_floor_height
+        floor_print = floor_print_from_polygon(polygon, elevation)
+        if floor_print
+          floor_prints << floor_print
+        else 
+          @runner.registerWarning("Cannot create story #{story_number}")
+        end
+          
+        # subsequent polygons are holes, we do not support them
+        break
+      end
+    end
+    
     result = []
-    story[:footprint][:polygons].each do |polygon|
-      next if polygon[:coordinate_system] != "Local Cartesian"
-      
-      floor_print = floor_print_from_polygon(building, polygon, story[:elevation])
-      next if !floor_print
-      
-      floor_to_floor_height = story[:floor_to_floor_height]
-      
+    floor_prints.each do |floor_print|
+
       space = OpenStudio::Model::Space.fromFloorPrint(floor_print, floor_to_floor_height, model)
       if space.empty?
-        @runner.registerWarning("Cannot create story #{story[:name]} for building #{building[:id]}")
+        @runner.registerWarning("Cannot create space for story #{story_number}")
         next
       end
       space = space.get
+      space.setName("Building Story #{story_number} Space")
       
-      story_space_type = create_space_type(building[:space_type], story[:space_type], model)
+      #story_space_type = create_space_type(building[:space_type], story[:space_type], model)
+      #space.setSpaceType(story_space_type)
       
-      space.setName(story[:name] + " Space")
-      space.setSpaceType(story_space_type)
-      
-      bounding_box = space.boundingBox
-      m = OpenStudio::Matrix.new(4,4,0)
-      m[0,0] = 1
-      m[1,1] = 1
-      m[2,2] = 1
-      m[3,3] = 1
-      m[0,3] = bounding_box.minX.get
-      m[1,3] = bounding_box.minY.get
-      m[2,3] = bounding_box.minZ.get
-      space.changeTransformation(OpenStudio::Transformation.new(m))
+      #bounding_box = space.boundingBox
+      #m = OpenStudio::Matrix.new(4,4,0)
+      #m[0,0] = 1
+      #m[1,1] = 1
+      #m[2,2] = 1
+      #m[3,3] = 1
+      #m[0,3] = bounding_box.minX.get
+      #m[1,3] = bounding_box.minY.get
+      #m[2,3] = bounding_box.minZ.get
+      #space.changeTransformation(OpenStudio::Transformation.new(m))
       
       space.surfaces.each do |surface|
         if surface.surfaceType == "Wall"
-          if story[:story_number] < 1
+          if story_number < 1
             surface.setOutsideBoundaryCondition("Ground")
-          else
-            surface.setWindowToWallRatio(story[:window_to_wall_ratio])
           end
         end
       end
         
       building_story = OpenStudio::Model::BuildingStory.new(model)
-      building_story.setName(story[:name])
+      building_story.setName("Building Story #{story_number}")
       space.setBuildingStory(building_story)
       
       thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-      thermal_zone.setName(story[:name] + " ThermalZone")
+      thermal_zone.setName("Building Story #{story_number} ThermalZone")
       space.setThermalZone(thermal_zone)
       
       result << space 
@@ -192,51 +254,74 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
-  def create_space_per_building(building, model)
+  def create_space_per_building(building_json, min_elevation, max_elevation, model)
   
-    min_elevation = nil
-    total_height = 0
-    building[:stories].each do |story|
-      if min_elevation
-        min_elevation = [min_elevation, story[:elevation]].min
-      else
-        min_elevation = story[:elevation]
+    geometry = building_json[:geometry] 
+    properties = building_json[:properties]
+    source_id = properties[:source_id]
+    
+    floor_prints = []
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      
+      if multi_polygon.size > 1
+        @runner.registerWarning("Ignoring holes in polygon")
       end
-      total_height += story[:floor_to_floor_height]
+      
+      multi_polygon.each do |polygon|
+        floor_print = floor_print_from_polygon(polygon, min_elevation)
+        if floor_print
+          floor_prints << floor_print
+        else 
+          @runner.registerWarning("Cannot building #{source_id}")
+        end
+          
+        # subsequent polygons are holes, we do not support them
+        break
+      end
     end
     
     result = []
-    building[:footprint][:polygons].each do |polygon|
-      next if polygon[:coordinate_system] != "Local Cartesian"
-    
-      floor_print = floor_print_from_polygon(building, polygon, min_elevation)
-      next if !floor_print
+    floor_prints.each do |floor_print|
 
-      space = OpenStudio::Model::Space.fromFloorPrint(floor_print, total_height, model)
+      space = OpenStudio::Model::Space.fromFloorPrint(floor_print, max_elevation-min_elevation, model)
       if space.empty?
-        @runner.registerWarning("Cannot create geometry for building #{building[:id]}")
+        @runner.registerWarning("Cannot create building space")
         next
       end
       space = space.get
+      space.setName("Building Story #{source_id} Space")
       
-      building_space_type = create_space_type(building[:space_type], building[:space_type], model)
+      #story_space_type = create_space_type(building[:space_type], story[:space_type], model)
+      #space.setSpaceType(story_space_type)
       
-      space.setName("Building #{building[:id]} Space")
-      space.setSpaceType(building_space_type)
+      #bounding_box = space.boundingBox
+      #m = OpenStudio::Matrix.new(4,4,0)
+      #m[0,0] = 1
+      #m[1,1] = 1
+      #m[2,2] = 1
+      #m[3,3] = 1
+      #m[0,3] = bounding_box.minX.get
+      #m[1,3] = bounding_box.minY.get
+      #m[2,3] = bounding_box.minZ.get
+      #space.changeTransformation(OpenStudio::Transformation.new(m))
       
-      bounding_box = space.boundingBox
-      m = OpenStudio::Matrix.new(4,4,0)
-      m[0,0] = 1
-      m[1,1] = 1
-      m[2,2] = 1
-      m[3,3] = 1
-      m[0,3] = bounding_box.minX.get
-      m[1,3] = bounding_box.minY.get
-      m[2,3] = bounding_box.minZ.get
-      space.changeTransformation(OpenStudio::Transformation.new(m))
+      #space.surfaces.each do |surface|
+      #  if surface.surfaceType == "Wall"
+      #    if story_number < 1
+      #      surface.setOutsideBoundaryCondition("Ground")
+      #    else
+      #      surface.setWindowToWallRatio(window_to_wall_ratio)
+      #    end
+      #  end
+      #end
+        
+      #building_story = OpenStudio::Model::BuildingStory.new(model)
+      #building_story.setName("Building Story #{story_number}")
+      #space.setBuildingStory(building_story)
       
       thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-      thermal_zone.setName("Building #{building[:id]} ThermalZone")
+      thermal_zone.setName("Building #{source_id} ThermalZone")
       space.setThermalZone(thermal_zone)
       
       result << space 
@@ -273,15 +358,89 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     return [shading_group]
   end  
-
-  def add_windows(model)
-    model.getSurfaces.each do |surface|
-      if surface.surfaceType == 'Wall' and surface.outsideBoundaryCondition == 'Outdoors'
-        surface.setWindowToWallRatio(0.3)
+  
+  
+  def get_min_lon_lat(building_json)
+    min_lon = Float::MAX
+    min_lat = Float::MAX
+    
+    # find min and max x coordinate
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      multi_polygon.each do |polygon|
+        polygon.each do |point|
+          min_lon = point[0] if point[0] < min_lon
+          min_lat = point[1] if point[1] < min_lat
+        end
+          
+        # subsequent polygons are holes, we do not support them
+        break
       end
     end
+    
+    return [min_lon, min_lat]
   end
+  
+  def is_shadowed(building_points, other_building_points)
+    all_pairs = []
+    building_points.each do |building_point|
+      other_building_points.each do |other_building_point|
+        vector = other_building_point - building_point
+        all_pairs << {:building_point => building_point, :other_building_point => other_building_point, :vector => vector, :distance => vector.length}
+      end
+    end
+    
+    all_pairs.sort! {|x, y| x[:distance] <=> y[:distance]}
+    
+    all_pairs.each do |pair|
+      if point_is_shadowed(pair[:building_point], pair[:other_building_point])
+        return true
+      end
+    end
+    
+    return false
+  end
+  
+  
+  def point_is_shadowed(building_point, other_building_point)
+  
+    vector = other_building_point - building_point
 
+    height = vector.z
+    distance = Math.sqrt(vector.x*vector.x + vector.y*vector.y)
+    
+    if distance < 1
+      return true
+    end
+    
+    hour_angle_rad = Math.atan2(-vector.x, -vector.y)
+    hour_angle = OpenStudio::radToDeg(hour_angle_rad)
+    lattitude_rad = OpenStudio::degToRad(@origin_lat_lon.lat)
+    
+    result = false
+    (-24..24).each do |declination|
+      
+      declination_rad = OpenStudio::degToRad(declination)
+      zenith_angle_rad = Math.acos(Math.sin(lattitude_rad)*Math.sin(declination_rad) + Math.cos(lattitude_rad)*Math.cos(declination_rad)*Math.cos(hour_angle_rad))
+      zenith_angle = OpenStudio::radToDeg(zenith_angle_rad)
+      elevation_angle = 90-zenith_angle
+        
+      apparent_angle_rad = Math.atan2(height, distance)
+      apparent_angle = OpenStudio::radToDeg(apparent_angle_rad)
+    
+      #puts "declination is #{declination}.  Other building is #{distance} m away and #{height} m high, hour_angle is #{hour_angle}, apparent angle is #{apparent_angle}, zenith_angle is #{zenith_angle}, elevation_angle is #{elevation_angle}"
+      
+      if (elevation_angle > 0 && elevation_angle < apparent_angle)
+        result = true
+        break
+      end
+    end
+    
+    #puts "lattitude = #{@origin_lat_lon.lat}, vector = #{vector}, distance = #{distance}, height = #{height}, shadowed = #{result}"
+    
+    return result
+  end
+  
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
@@ -290,117 +449,243 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
-    # assign the user inputs to variables
-    city_json_path = runner.getStringArgumentValue("city_json_path", user_arguments)
-    building_id = runner.getStringArgumentValue("building_id", user_arguments)
     
     # instance variables
     @runner = runner
-    @min_x = Float::MAX 
-    @min_y = Float::MAX 
+    @origin_lat_lon = nil
+
+    # assign the user inputs to variables
+    city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
+    source_id = runner.getStringArgumentValue("source_id", user_arguments)
+    source_name = runner.getStringArgumentValue("source_name", user_arguments)
+    surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
     
-    # read json
-    city = {}
-    File.open(city_json_path, 'r') do |file|
-      city = JSON.parse(file.read, {:symbolize_names => true})
+    port = 80
+    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
+      city_db_url = md[1]
+      port = md[2]
+    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
+      city_db_url = md[1]
     end
     
-    buildings = city[:buildings]
-    if buildings.length == 0
-      runner.registerError("No buildings found in #{city_json_path}")
+    params = {}
+    params[:commit] = 'Search'
+    params[:source_id] = source_id
+    params[:source_name] = source_name
+    params[:feature_types] = ['Building']
+    
+    http = Net::HTTP.new(city_db_url, port)
+    request = Net::HTTP::Post.new("/api/search.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.body = JSON.generate(params)
+    # DLM: todo, get these from environment variables or as measure inputs?
+    request.basic_auth("testing@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      runner.registerError("Bad response #{response.code}")
+      runner.registerError(response.body)
       return false
     end
-    runner.registerInfo("#{buildings.length} buildings found")
+
+    feature_collection = JSON.parse(response.body, :symbolize_names => true)
+    if feature_collection[:features].nil?
+      runner.registerError("No features found in #{feature_collection}")
+      return false
+    elsif feature_collection[:features].empty?
+      runner.registerError("No features found in #{feature_collection}")
+      return false
+    elsif feature_collection[:features].size > 1
+      runner.registerError("Multiple features found in #{feature_collection}")
+      return false
+    end
     
+    building_json = feature_collection[:features][0]
+    
+    if building_json[:geometry].nil?
+      runner.registerError("No geometry found in #{building_json}")
+      return false
+    end
+    
+    geometry_type = building_json[:geometry][:type]
+    if geometry_type == "Polygon"
+      # ok
+    elsif geometry_type == "MultiPolygon"
+      # ok
+    else
+      runner.registerError("Unknown geometry type #{geometry_type}")
+      return false
+    end
+
     # find min and max x coordinate
-    buildings.each do |building|
-      building[:footprint][:polygons].each do |polygon|
-        next if polygon[:coordinate_system] != "Local Cartesian"
-        polygon[:points].each do |point|
-          @min_x = point[:x] if point[:x] < @min_x
-          @min_y = point[:y] if point[:y] < @min_y
+    min_lon_lat = get_min_lon_lat(building_json)
+    min_lon = min_lon_lat[0]
+    min_lat = min_lon_lat[1]
+
+    if min_lon == Float::MAX || min_lat == Float::MAX 
+      runner.registerError("Could not determine min_lat and min_lon")
+      return false
+    else
+      runner.registerInfo("Min_lat = #{min_lat}, min_lon = #{min_lon}")
+    end
+
+    @origin_lat_lon = OpenStudio::PointLatLon.new(min_lat, min_lon, 0)
+    
+    # make requested building
+    spaces = create_building(building_json, :space_per_floor, model)
+    if spaces.nil? || spaces.empty?
+      runner.registerError("Failed to create spaces for building #{source_id}")
+      return false
+    end
+    
+    # get first floor footprint points
+    building_points = []
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      multi_polygon.each do |polygon|
+        elevation = 0
+        floor_print = floor_print_from_polygon(polygon, elevation)
+        floor_print.each do |point|
+          building_points << point
         end
+        
+        # subsequent polygons are holes, we do not support them
+        break
       end
     end
-    runner.registerInfo("min_x = #{@min_x}, min_y = #{@min_y}")
-   
-    # buildings to convert to shading surfaces later
+      
+    # nearby buildings to conver to shading
     convert_to_shades = []
     
-    # creating buildings
-    if (building_id == "*All*")
-    
-      num_bldgs = 0
-      max_bldgs = Float::INFINITY
-      #max_bldgs = 10
-      
-      # make all buildings
-      buildings.each do |building|
-        if num_bldgs >= max_bldgs 
-          next
-        end
-        #if !/Commercial/.match(building[:bldg_use])
-        #  next
-        #end
-        
-        is_primary = false
-        spaces = create_building(building, is_primary, :space_per_building, model)
-        if !spaces.nil? && !spaces.empty?
-          num_bldgs += 1
-        end
-        
-        GC.start
-      end
-      
-      runner.registerInfo("Created #{num_bldgs} buildings")
-      
+    if surrounding_buildings == "None"
+      # no-op
     else
-      # make requested building
-      building = buildings.find{|b| b[:id] == building_id}
-      if building.nil?
-        runner.registerError("Cannot find building #{building_id}")
+
+      # query database for nearby buildings
+      params = {}
+      params[:commit] = 'Proximity Search'
+      params[:building_id] = building_json[:properties][:id]
+      params[:distance] = 100
+      params[:proximity_feature_types] = ['Building']
+      
+      http = Net::HTTP.new(city_db_url, port)
+      request = Net::HTTP::Post.new("/api/search.json")
+      request.add_field('Content-Type', 'application/json')
+      request.add_field('Accept', 'application/json')
+      request.body = JSON.generate(params)
+      # DLM: todo, get these from environment variables or as measure inputs?
+      request.basic_auth("testing@nrel.gov", "testing123")
+      
+      response = http.request(request)
+      if  response.code != '200' # success
+        runner.registerError("Bad response #{response.code}")
+        runner.registerError(response.body)
         return false
       end
-      
-      is_primary = true
-      spaces = create_building(building, is_primary, :space_per_floor, model)
-      if spaces.nil? || spaces.empty?
-        runner.registerError("Failed to create spaces for building #{building_id}")
+
+      feature_collection = JSON.parse(response.body, :symbolize_names => true)
+      if feature_collection[:features].nil?
+        runner.registerError("No features found in #{feature_collection}")
         return false
       end
+
+      runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
       
-      other_building_ids = building[:intersecting_building_ids].concat(building[:surrounding_building_ids]).uniq
-      other_building_ids.each do |other_building_id|
-        other_building = buildings.find{|b| b[:id] == other_building_id}
+      count = 0
+      feature_collection[:features].each do |other_building|
+      
+        other_source_id = other_building[:properties][:source_id]
+        next if other_source_id == source_id
+      
+        if surrounding_buildings == "ShadingOnly"
+        
+          # check if any building point is shaded by any other building point
+          surface_elevation	= other_building[:properties][:surface_elevation]
+          roof_elevation	= other_building[:properties][:roof_elevation]
+          number_of_stories = other_building[:properties][:number_of_stories]
+          number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
+          floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+          
+          if number_of_stories_above_ground.nil?
+            if number_of_stories_below_ground.nil?
+              number_of_stories_above_ground = number_of_stories
+              number_of_stories_below_ground = 0
+            else
+              number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+            end
+          end
+          
+          if floor_to_floor_height.nil?
+            floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
+          end
+          
+          other_height = number_of_stories_above_ground * floor_to_floor_height
+          
+          # get first floor footprint points
+          other_building_points = []
+          multi_polygons = get_multi_polygons(other_building)
+          multi_polygons.each do |multi_polygon|
+            multi_polygon.each do |polygon|
+              floor_print = floor_print_from_polygon(polygon, other_height)
+              floor_print.each do |point|
+                other_building_points << point
+              end
               
-        if other_building.nil?
-          runner.registerError("Cannot find other building #{other_building_id}")
+              # subsequent polygons are holes, we do not support them
+              break
+            end
+          end
+        
+          shadowed = is_shadowed(building_points, other_building_points)
+          if !shadowed
+            next
+          end
+        end
+       
+        other_spaces = create_building(other_building, :space_per_building, model)
+        if other_spaces.nil? || other_spaces.empty?
+          runner.registerError("Failed to create spaces for other building #{other_source_id}")
           return false
         end
         
-        is_primary = false
-        spaces = create_building(other_building, is_primary, :space_per_building, model)
-        if spaces.nil? || spaces.empty?
-          runner.registerError("Failed to create spaces for other building #{other_building_id}")
-          return false
-        end
-        
-        convert_to_shades.concat(spaces)
+        convert_to_shades.concat(other_spaces)
       end
-      
+    end
+    
+    # intersect surfaces in this building with others
+    runner.registerInfo("Intersecting surfaces")
+    spaces.each do |space|
+      convert_to_shades.each do |other_space|
+        space.intersectSurfaces(other_space)
+      end
     end
 
     # match surfaces
-    runner.registerInfo("matching surfaces")
-    spaces = OpenStudio::Model::SpaceVector.new
+    runner.registerInfo("Matching surfaces")
+    all_spaces = OpenStudio::Model::SpaceVector.new
     model.getSpaces.each do |space|
-      spaces << space
+      all_spaces << space
     end
-    OpenStudio::Model.intersectSurfaces(spaces)
-    OpenStudio::Model.matchSurfaces(spaces)
+    OpenStudio::Model.matchSurfaces(all_spaces)
+    
+    # make windows
+    window_to_wall_ratio = building_json[:properties][:window_to_wall_ratio]
+    
+    if window_to_wall_ratio.nil?
+      window_to_wall_ratio = 0.3
+    end
 
-    runner.registerInfo("changing adjacent surfaces to adiabatic")
+    spaces.each do |space|
+      space.surfaces.each do |surface|
+        if surface.surfaceType == "Wall" && surface.outsideBoundaryCondition == "Outdoors"
+          surface.setWindowToWallRatio(window_to_wall_ratio)
+        end
+      end
+    end
+    
+    # change adjacent surfaces to adiabatic
+    runner.registerInfo("Changing adjacent surfaces to adiabatic")
     model.getSurfaces.each do |surface|
       adjacent_surface = surface.adjacentSurface
       if !adjacent_surface.empty?
@@ -418,6 +703,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
+    # convert other buildings to shading surfaces
     convert_to_shades.each do |space|
       convert_to_shading_surface_group(space)
     end

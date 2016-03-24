@@ -1,0 +1,18 @@
+# Ignore specific files
+.ruby-version
+.idea
+.DS_STORE
+
+#Ignore precompiled assets (for now at least)
+/public/assets
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore all logfiles and tempfiles.
+/log
+/log/*.log
+/tmp/
+public/tmp
+
+nohup.out

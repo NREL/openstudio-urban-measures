@@ -1,0 +1,29 @@
+<h2>Regions</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>State</th>
+    <th>City</th>
+    <th>Region Type</th>
+    <th>Source Name & ID</th>
+   <% if can? :update, Region %> <th>Actions</th><% end %>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @regions.each do |region| %>
+    <tr>
+      <td><%= link_to region.id, region %></td>
+      <td><%= region['state_name'] %></td>
+      <td><%= region['city_name'] %></td>
+      <td><%= region['region_type'] %></td>
+      <td><%= region.source_name %> <%= region.source_id %></td>
+      <% if can? :update, Region %><td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= paginate @regions %>

@@ -1,0 +1,25 @@
+<h2>District Systems</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th> 
+    <th>Source Name & ID</th>
+    <% if can? :update, DistrictSystem %><th>Actions</th><% end %>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @district_systems.each do |system| %>
+    <tr>
+      <td><%= link_to system.id, district_system %></td>
+      <td><%= system.type %></td>
+      <td><%= system.source_name %> <%= system.source_id %></td>
+      <% if can? :update, DistrictSystem %><td><%= link_to 'Edit', edit_district_system_path(system) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= paginate @district_systems %>

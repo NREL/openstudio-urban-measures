@@ -1,0 +1,11 @@
+<%= bootstrap_form_tag url: (@taxlot.new_record? ? '/taxlots' : "/taxlots/#{@taxlot.id}"),  method: (@taxlot.new_record? ? :post : :put), layout: :horizontal do |f| %>
+
+  <fieldset>
+    <%= f.file_field :geojson_file, control_col: 'col-sm-4' %>
+  </fieldset>
+
+  <%= f.form_group do %>
+    <%= f.primary @taxlot.new_record? ? 'Create' : 'Update' %>
+  <% end %>
+<% end %>
+
