@@ -273,6 +273,17 @@ class Cleaner
           data = feature['properties']
           type = data['type']
           
+          if type.nil?
+            if data['CODE']
+              if data['CODE'] == 'Building'
+                type = 'Building'
+                data['type'] = type
+              elsif data['CODE'] == 'Courtyard'
+                next
+              end
+            end
+          end
+          
           if /building/i.match(type)
             @raw_building_data << data.clone
             clean_building(data, building_schema)

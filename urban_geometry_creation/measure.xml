@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>a5b371cd-8e67-4408-b767-558a9e5952c1</version_id>
-  <version_modified>20160322T054940Z</version_modified>
+  <version_id>bea6006f-4b7f-42f8-96db-c3ad27c47996</version_id>
+  <version_modified>20160324T171044Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -17,7 +17,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>http://localhost:3000</default_value>
+      <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
     </argument>
     <argument>
       <name>source_id</name>
@@ -101,7 +101,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>DC08256E</checksum>
+      <checksum>8373D08C</checksum>
     </file>
     <file>
       <version>
@@ -112,7 +112,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>72F2DFD5</checksum>
+      <checksum>8539CBE4</checksum>
     </file>
   </files>
 </measure>
