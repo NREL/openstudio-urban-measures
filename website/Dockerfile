@@ -6,7 +6,7 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
 		autoconf \
 		bison \
-	    build-essential \
+  	    	build-essential \
 		bzip2 \
 		ca-certificates \
 		curl \
@@ -23,10 +23,11 @@ RUN apt-get update \
 		libreadline-dev \
 		libxml2-dev \
 		libxslt-dev \
-        libffi-dev \
-        libssl-dev \
-        libyaml-dev \
-        procps \
+        	libffi-dev \
+        	libssl-dev \
+        	libyaml-dev \
+		nodejs \
+        	procps \
 		ruby \
 		tar \
 		unzip \
@@ -112,7 +113,8 @@ RUN chmod +x /usr/bin/start-server
 ADD /app/models/user.rb /srv/app/models/user.rb
 # Now call precompile
 ENV RAILS_ENV docker
-RUN rake assets:precompile
+
+RUN bundle exec rake assets:precompile
 
 # Bundle app source
 ADD / /srv
