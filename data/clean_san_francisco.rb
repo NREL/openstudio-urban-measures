@@ -190,6 +190,12 @@ class SanFranciscoCleaner < Cleaner
     number_of_stories_source = data['number_of_stories_source']
     space_type = data['space_type']
     space_type_source = data['space_type_source']
+    number_of_residential_units = data['number_of_residential_units']
+    number_of_residential_units_source = data['number_of_residential_units_source']
+    
+    if floor_area.nil?
+      fail "Floor area cannot be nil"
+    end
     
     if zoning.nil?
       zoning = "Vacant"
@@ -231,10 +237,33 @@ class SanFranciscoCleaner < Cleaner
       end
     end
     
+    if number_of_residential_units.nil?
+      if space_type == "Single-Family"
+        number_of_residential_units = 1
+        number_of_residential_units_source = "Inferred"
+      elsif space_type == "Multifamily (2 to 4 units)"
+        number_of_residential_units = (floor_area / (2000*ft2_to_m2)).to_i
+        if number_of_residential_units < 2
+          number_of_residential_units = 2
+        elsif number_of_residential_units > 4
+          number_of_residential_units = 4
+        end
+        number_of_residential_units_source = "Inferred"
+      elsif space_type == "Multifamily (5 or more units)"
+        number_of_residential_units = (floor_area / (1500*ft2_to_m2)).to_i
+        if number_of_residential_units < 5
+          number_of_residential_units = 5
+        end
+        number_of_residential_units_source = "Inferred"
+      end
+    end
+    
     data['zoning'] = zoning
     data['zoning_source'] = zoning_source
     data['space_type'] = space_type
     data['space_type_source'] = space_type_source
+    data['number_of_residential_units'] = number_of_residential_units
+    data['number_of_residential_units_source'] = number_of_residential_units_source
     
   end
   

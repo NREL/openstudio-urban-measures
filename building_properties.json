@@ -184,7 +184,7 @@
 			"$ref": "#/definitions/source"
 		},
 		"number_of_residential_units": {
-			"description": "Total number of residential units in the building. ",
+			"description": "Total number of residential units in the building. Require for residential buildings.",
 			"type": "integer"
 		},
 		"number_of_residential_units_source": {
