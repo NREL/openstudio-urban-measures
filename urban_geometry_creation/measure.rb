@@ -150,14 +150,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
     end
     
-    if space_type
-      # get the building use and fix any issues
-      building_space_type = create_space_type(space_type, space_type, model)
-      model.getBuilding.setSpaceType(building_space_type)
-      model.getBuilding.setStandardsBuildingType(space_type)
-      model.getBuilding.setRelocatable(false)
+    if create_method == :space_per_floor
+      if space_type
+        # get the building use and fix any issues
+        building_space_type = create_space_type(space_type, space_type, model)
+        model.getBuilding.setSpaceType(building_space_type)
+        model.getBuilding.setStandardsBuildingType(space_type)
+        model.getBuilding.setRelocatable(false)
+      end
     end
-    
+      
     if number_of_residential_units
       model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
     end
