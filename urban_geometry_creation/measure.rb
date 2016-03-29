@@ -532,6 +532,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     @origin_lat_lon = OpenStudio::PointLatLon.new(min_lat, min_lon, 0)
     
+    site = model.getSite
+    site.setLatitude(@origin_lat_lon.lat)
+    site.setLongitude(@origin_lat_lon.lon)
+    
+    if building_json[:properties][:surface_elevation]
+      surface_elevation = building_json[:properties][:surface_elevation].to_f
+      site.setElevation(surface_elevation)
+    end
+    
     # make requested building
     spaces = create_building(building_json, :space_per_floor, model)
     if spaces.nil? || spaces.empty?

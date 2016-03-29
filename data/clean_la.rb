@@ -260,10 +260,12 @@ class LACleaner < Cleaner
       data['source_name'] = data['SOURCE'].to_s
     end
     
+    ft_to_m = 0.3048
+    
     if data['ELEV']
-      data['surface_elevation'] = data['ELEV'].to_f
+      data['surface_elevation'] = ft_to_m*data['ELEV'].to_f
       if data['HEIGHT']
-        data['roof_elevation'] = data['surface_elevation'] + data['HEIGHT'].to_f
+        data['roof_elevation'] = data['surface_elevation'] + ft_to_m*data['HEIGHT'].to_f
       end
     end
     
