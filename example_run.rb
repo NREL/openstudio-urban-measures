@@ -6,10 +6,7 @@ city_db_url = "http://insight4.hpc.nrel.gov:8081/"
 source_id = "445"
 source_name = "NREL_GDS"
 
-# configure a workflow with building data
-def configure(workflow, building)
-  properties = building[:properties]
-  workflow[:run_directory] = "./#{properties[:id]}"
+def merge(workflow, properties)
   workflow[:steps].each do |step|
     step[:arguments].each do |argument|
       name = argument[:name]
@@ -20,6 +17,24 @@ def configure(workflow, building)
       end
     end
   end
+  return workflow
+end
+
+# configure a workflow with building data
+def configure(workflow, datapoint, building, region)
+
+  # configure with region first
+  workflow = merge(workflow, region[:properties])
+
+  # configure with building next
+  workflow = merge(workflow, building[:properties])
+  
+  # configure with datapoint last
+  workflow = merge(workflow, datapoint)
+  
+  # run dir is datapoint id
+  workflow[:run_directory] = "./#{datapoint[:id]}"
+  
   return workflow
 end
  	
@@ -69,8 +84,12 @@ end
 building_json = feature_collection[:features][0]
 id = building_json[:properties][:id]
 
+# these are made up for now
+datapoint_json = {:id=>id}
+region_json = {:properties=>{:weather_file_name=>"USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
+
 # configure the osw with building_json
-baseline_osw = configure(baseline_osw, building_json)
+baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json)
 
 # save the configured osw
 baseline_osw_path = File.join(File.dirname(__FILE__), "/run/#{id}_baseline.osw")
@@ -85,4 +104,4 @@ cli = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/opens
 
 command = "#{ruby} -I #{include} #{cli} #{baseline_osw_path}"
 puts command
-system(command)
+#system(command)

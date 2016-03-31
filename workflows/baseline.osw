@@ -10,7 +10,7 @@
 			"arguments": [
         {
           "name": "weather_directory",
-          "value": ""
+          "value": "./../weather"
         },
         {
           "name": "weather_file_name",
