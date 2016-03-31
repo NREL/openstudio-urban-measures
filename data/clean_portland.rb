@@ -465,6 +465,8 @@ class PortlandCleaner < Cleaner
       data['source_id'] = data['source_id'].to_s
     end
     
+    data['weather_file_name'] = 'USA_OR_Portland.726980_TMY2.epw'
+    
     super(data, schema)
   end
   

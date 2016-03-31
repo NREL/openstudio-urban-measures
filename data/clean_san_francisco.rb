@@ -394,6 +394,8 @@ class SanFranciscoCleaner < Cleaner
       data['source_id'] = data['source_id'].to_s
     end
     
+    data['weather_file_name'] = 'USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw'
+    
     super(data, schema)
   end
 

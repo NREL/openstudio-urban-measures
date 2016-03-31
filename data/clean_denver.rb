@@ -602,6 +602,8 @@ class DenverCleaner < Cleaner
       data['source_id'] = data['source_id'].to_s
     end
     
+    data['weather_file_name'] = 'USA_CO_Denver.Intl.AP.725650_TMY3.epw'
+    
     super(data, schema)
   end
 

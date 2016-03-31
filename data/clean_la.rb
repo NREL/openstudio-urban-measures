@@ -310,6 +310,8 @@ class LACleaner < Cleaner
       data['source_id'] = data['source_id'].to_s
     end
     
+    data['weather_file_name'] = 'USA_CA_Los.Angeles.Intl.AP.722950_TMY3.epw'
+    
     super(data, schema)
   end
 
