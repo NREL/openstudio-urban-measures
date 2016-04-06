@@ -202,6 +202,8 @@ class PortlandCleaner < Cleaner
       zoning_source = "Inferred"
     end
     
+    ft2_to_m2 = 0.092903
+    
     if space_type.nil?
       if zoning == "Vacant"
         space_type = "Vacant"

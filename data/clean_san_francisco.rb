@@ -237,6 +237,8 @@ class SanFranciscoCleaner < Cleaner
       end
     end
     
+    ft2_to_m2 = 0.092903
+    
     if number_of_residential_units.nil?
       if space_type == "Single-Family"
         number_of_residential_units = 1
