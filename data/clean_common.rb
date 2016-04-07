@@ -62,7 +62,33 @@ class Cleaner
   def file_pattern()
     return ""
   end
-
+  
+  def clean_polygon(polygon)
+    polygon.each_index do |i|
+      point = polygon[i]
+      if point.size == 3
+        polygon[i] = [point[0], point[1]]
+      end
+    end
+  end
+  
+  def clean_geometry(geometry)
+    geometry_type = geometry['type']
+    if geometry_type == "Polygon"
+      polygons = geometry['coordinates']
+      polygons.each do |polygon|
+        clean_polygon(polygon)
+      end
+    elsif geometry_type == "MultiPolygon"
+      multi_polygons = geometry['coordinates']
+      multi_polygons.each do |multi_polygon|
+        multi_polygon.each do |polygon|
+          clean_polygon(polygon)
+        end
+      end
+    end
+  end
+  
   def clean_building(data, schema)
     # clean
     remove_nil_values(data)
@@ -270,6 +296,9 @@ class Cleaner
         @current_errors = []   
         
         begin
+          geometry = feature['geometry']
+          clean_geometry(geometry)
+          
           data = feature['properties']
           type = data['type']
           
