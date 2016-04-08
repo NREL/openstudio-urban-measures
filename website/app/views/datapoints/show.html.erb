@@ -11,15 +11,11 @@
   	<td><%= link_to @datapoint.building.id, @datapoint.building %></td>
   </tr>
   <tr>
-  	<th>Template Workflow</th>
-  	<td><% if @datapoint.template_workflow %><%= link_to @datapoint.template_workflow.id, @datapoint.template_workflow %><% end %></td>
-  </tr> 
-  <tr>
-  	<th>Instance Workflow</th>
-  	<td><% if @datapoint.instance_workflow %><%= link_to @datapoint.instance_workflow.id, @datapoint.instance_workflow %><% end %></td>
+  	<th>Workflow</th>
+  	<td><% if @datapoint.workflow %><%= link_to @datapoint.workflow.id, @datapoint.workflow %><% end %></td>
   </tr> 
   <% @datapoint.attributes.keys.sort.each do |key| %>
-    <% unless %w(_id template_workflow_id building_id instance_workflow_id).include? key %>
+    <% unless %w(_id workflow_id building_id).include? key %>
 	    <tr>
 	      <th><%= key.humanize %></th>
 	      <td><%= @datapoint[key] %></td>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :scenarios
   # apipie
   root 'admin#home'
   match 'search' => 'api#search', :via => [:get, :post]
