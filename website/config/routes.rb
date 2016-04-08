@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   resources :workflows do
     member do
       get 'download_zipfile'
+      get 'create_datapoints'
+      get 'delete_datapoints'
     end
   end
 

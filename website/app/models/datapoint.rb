@@ -13,7 +13,6 @@ class Datapoint
 
   # Relations
   belongs_to :building
-  belongs_to :template_workflow, class_name: 'Workflow'
-  belongs_to :instance_workflow, class_name: 'Workflow'
+  belongs_to :workflow
   belongs_to :user
 end

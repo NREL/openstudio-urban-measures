@@ -13,6 +13,7 @@ class DatapointsController < ApplicationController
   # GET /datapoints/1
   # GET /datapoints/1.json
   def show
+
   end
 
   # GET /datapoints/new

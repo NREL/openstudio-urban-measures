@@ -13,6 +13,7 @@ class Workflow
   end
 
   belongs_to :user
+  has_many :datapoints, dependent: :destroy
 
   def self.create_update_workflow(data, workflow)
     error = false

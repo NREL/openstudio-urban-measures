@@ -14,7 +14,7 @@ class Building
 
   # Relations
   has_one :geometry, autosave: true, dependent: :destroy
-  has_many :datapoints
+  has_many :datapoints, dependent: :destroy
   belongs_to :user
 
   # Indexes
