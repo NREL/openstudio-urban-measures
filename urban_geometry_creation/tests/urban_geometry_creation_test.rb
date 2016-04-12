@@ -52,17 +52,20 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     runner = OpenStudio::Ruleset::OSRunner.new
 
     # load the test model
-    city_db_url = "http://localhost:3000"
-    #city_db_url = "http://insight4.hpc.nrel.gov:8081/"
+    #city_db_url = "http://localhost:3000"
+    city_db_url = "http://insight4.hpc.nrel.gov:8081/"
     
-    #source_id = "98628"
-    #source_name = "NREL_GDS"
+    source_id = "98628"
+    source_name = "NREL_GDS"
     
     #source_id = "445" 	
     #source_name = "NREL_GDS"
     
-    source_id = "502349736897" 	
-    source_name = "LARIAC2"
+    #source_id = "15251" 	
+    #source_name = "NREL_GDS"
+    
+    #source_id = "502349736897" 	
+    #source_name = "LARIAC2"
     
     #surrounding_buildings = "None"
     #surrounding_buildings = "ShadingOnly"
