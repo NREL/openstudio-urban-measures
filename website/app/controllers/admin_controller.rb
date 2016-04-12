@@ -11,6 +11,8 @@ class AdminController < ApplicationController
     Datapoint.delete_all
     Workflow.delete_all
     Geometry.delete_all
+    Scenario.delete_all
+    Project.delete_all
     redirect_to admin_index_path, notice: 'Database cleared successfully.'
   end
 
