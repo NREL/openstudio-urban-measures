@@ -13,8 +13,8 @@ namespace :testing do
     #filename = "#{Rails.root}/lib/test.geojson"
 
     # set this for testing
-    project_id = Project.first.id.to_s
-
+    project_id = Project.first_or_create.id.to_s
+    
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file, 'project_id' => project_id)
 
@@ -37,8 +37,9 @@ namespace :testing do
 
     # set array of types to return. Choices:  All, Building, Region, Taxlot, District System
     types = ['all']
+    
     # set this for testing
-    project_id = Project.first.id.to_s
+    project_id = Project.first_or_create.id.to_s
 
     json_request = JSON.generate('types' => types, 'project_id' => project_id)
 
@@ -61,7 +62,7 @@ namespace :testing do
     filename = "#{Rails.root}/data/test.osw"
 
     # set this for testing
-    project_id = Project.first.id.to_s
+    project_id = Project.first_or_create.id.to_s
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('workflow' => json_file, 'project_id' => project_id)
@@ -96,6 +97,9 @@ namespace :testing do
 
     json_request = JSON.generate('workflow_id' => workflow_id, 'file_data' => file_data)
     # puts "POST http://<user>:<pwd>@<base_url>/api/v1/related_file, parameters: #{json_request}"
+    
+    # DLM: Kat, shouldn't we have to post the workflow to a project?
+    project_id = Project.first_or_create.id.to_s
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/workflow_file', user: @user_name, password: @user_pwd)
@@ -121,11 +125,14 @@ namespace :testing do
 
     # possible feature types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
+    # DLM: Kat, shouldn't we have to get the region from the project?
+    project_id = Project.first_or_create.id.to_s
+    
     params = {}
     params[:commit] = 'Region Search'
-    params[:region_id] = Region.first.id.to_s # region ID
+    params[:region_id] = Region.first.id.to_s # region ID # DLM: Kat, shouldn't this have to get the region from the project?
     params[:region_feature_types] = ['Building']
-    params[:project_id] = Project.first.id.to_s
+    params[:project_id] = project_id
 
     json_request = JSON.generate(params)
 
@@ -153,13 +160,16 @@ namespace :testing do
     # proximity_feature_types
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-
+    
+    # DLM: Kat, shouldn't we have to get the building from the project?
+    project_id = Project.first_or_create.id.to_s
+    
     params = {}
     params[:commit] = 'Proximity Search'
     params[:building_id] = Building.first.id.to_s
     params[:distance] = 100
     params[:proximity_feature_types] = ['Taxlot']
-    params[:project_id] = Project.first.id.to_s
+    params[:project_id] = project_id
 
     json_request = JSON.generate(params)
 
@@ -186,6 +196,9 @@ namespace :testing do
     # source_id
     # source_name
     # feature_types
+    
+    # DLM: Kat, shouldn't we have to get the building from the project?
+    project_id = Project.first_or_create.id.to_s
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
     bldg = Building.first
@@ -195,7 +208,7 @@ namespace :testing do
     params[:source_id] = bldg.source_id.to_s
     params[:source_name] = bldg.source_name
     params[:feature_types] = ['Building']
-    params[:project_id] = Project.first.id.to_s
+    params[:project_id] = project_id
 
     json_request = JSON.generate(params)
 
