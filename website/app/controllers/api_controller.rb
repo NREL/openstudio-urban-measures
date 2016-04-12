@@ -103,7 +103,24 @@ class ApiController < ApplicationController
           end
 
           @total_count = @results.count
-          if request.format != 'application/json'
+          if request.format == 'application/json'
+            json_results = []
+            @results.each do |result|
+              json_result = {}
+              result.attributes.each do |key, value|
+                # convert object ids to strings
+                if key == '_id' 
+                  json_result[:id] = value.to_s
+                elsif key == 'user_id'
+                  json_result[:user_id] = value.to_s
+                else
+                  json_result[key] = value
+                end
+              end
+              json_results << json_result
+            end
+            @results = json_results
+          else
             # pagination
             @results = Kaminari.paginate_array(@results.to_a).page(page)
           end

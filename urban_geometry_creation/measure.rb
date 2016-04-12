@@ -36,6 +36,12 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     city_db_url.setDefaultValue("http://insight4.hpc.nrel.gov:8081/")
     args << city_db_url
     
+    # project name of the building to create
+    project_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_name", true)
+    project_name.setDisplayName("Project Name")
+    project_name.setDescription("Project Name.")
+    args << project_name
+    
     # source id of the building to create
     source_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_id", true)
     source_id.setDisplayName("Building Source ID")
@@ -443,6 +449,54 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
+  # get the project from the database
+  def get_project(project_name)
+
+    params = {}
+    params[:commit] = 'Search'
+    params[:name] = project_name
+    
+    http = Net::HTTP.new(@city_db_url, @port)
+    request = Net::HTTP::Post.new("/api/project_search.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.body = JSON.generate(params)
+    
+    # DLM: todo, get these from environment variables or as measure inputs?
+    request.basic_auth("test@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      @runner.registerError("Bad response #{response.code}")
+      @runner.registerError(response.body)
+      return {}
+    end
+    
+    return JSON.parse(response.body, :symbolize_names => true)
+  end
+  
+  # get the feature collection from the database
+  def get_feature_collection(params)
+    
+    http = Net::HTTP.new(@city_db_url, @port)
+    request = Net::HTTP::Post.new("/api/search.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.body = JSON.generate(params)
+    
+    # DLM: todo, get these from environment variables or as measure inputs?
+    request.basic_auth("test@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      @runner.registerError("Bad response #{response.code}")
+      @runner.registerError(response.body)
+      return {}
+    end
+    
+    return JSON.parse(response.body, :symbolize_names => true)
+  end
+  
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
@@ -451,47 +505,44 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
+     
+    # assign the user inputs to variables
+    city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
+    project_name = runner.getStringArgumentValue("project_name", user_arguments)
+    source_id = runner.getStringArgumentValue("source_id", user_arguments)
+    source_name = runner.getStringArgumentValue("source_name", user_arguments)
+    surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
+    
     
     # instance variables
     @runner = runner
     @origin_lat_lon = nil
 
-    # assign the user inputs to variables
-    city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
-    source_id = runner.getStringArgumentValue("source_id", user_arguments)
-    source_name = runner.getStringArgumentValue("source_name", user_arguments)
-    surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
-    
-    port = 80
+    @port = 80
     if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-      city_db_url = md[1]
-      port = md[2]
+      @city_db_url = md[1]
+      @port = md[2]
     elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-      city_db_url = md[1]
+      @city_db_url = md[1]
     end
+
+    project = get_project(project_name)
+    
+    if project.nil? || project.empty?
+      runner.registerError("Could not find project '#{project_name}")
+      return false
+    end
+    project_id = project.first[:id]
     
     params = {}
     params[:commit] = 'Search'
+    params[:project_id] = project_id
     params[:source_id] = source_id
     params[:source_name] = source_name
     params[:feature_types] = ['Building']
     
-    http = Net::HTTP.new(city_db_url, port)
-    request = Net::HTTP::Post.new("/api/search.json")
-    request.add_field('Content-Type', 'application/json')
-    request.add_field('Accept', 'application/json')
-    request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("testing@nrel.gov", "testing123")
-  
-    response = http.request(request)
-    if  response.code != '200' # success
-      runner.registerError("Bad response #{response.code}")
-      runner.registerError(response.body)
-      return false
-    end
+    feature_collection = get_feature_collection(params)
 
-    feature_collection = JSON.parse(response.body, :symbolize_names => true)
     if feature_collection[:features].nil?
       runner.registerError("No features found in #{feature_collection}")
       return false
@@ -576,26 +627,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       # query database for nearby buildings
       params = {}
       params[:commit] = 'Proximity Search'
+      params[:project_id] = project_id
       params[:building_id] = building_json[:properties][:id]
       params[:distance] = 100
       params[:proximity_feature_types] = ['Building']
-      
-      http = Net::HTTP.new(city_db_url, port)
-      request = Net::HTTP::Post.new("/api/search.json")
-      request.add_field('Content-Type', 'application/json')
-      request.add_field('Accept', 'application/json')
-      request.body = JSON.generate(params)
-      # DLM: todo, get these from environment variables or as measure inputs?
-      request.basic_auth("testing@nrel.gov", "testing123")
-      
-      response = http.request(request)
-      if  response.code != '200' # success
-        runner.registerError("Bad response #{response.code}")
-        runner.registerError(response.body)
-        return false
-      end
 
-      feature_collection = JSON.parse(response.body, :symbolize_names => true)
+      feature_collection = get_feature_collection(params)
+      
       if feature_collection[:features].nil?
         runner.registerError("No features found in #{feature_collection}")
         return false
