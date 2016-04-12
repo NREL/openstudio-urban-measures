@@ -18,6 +18,7 @@ class WorkflowsController < ApplicationController
   # GET /workflows/new
   def new
     @workflow = Workflow.new
+    @project_id = params[:project_id] ? params[:project_id] : nil
   end
 
   # GET /workflows/1/edit
@@ -30,26 +31,35 @@ class WorkflowsController < ApplicationController
     @workflow = Workflow.new
 
     error = false
-    error_message = ''
+    @error_message = ''
 
-    if params[:json_file] && params[:json_file].class.name == 'ActionDispatch::Http::UploadedFile'
-      # TODO: move this into create_update function?
-      data = read_json_file(params[:json_file])
-      if data.nil?
-        error = true
-        error_message += 'No data to process'
-      else
-        @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow)
-      end
+    if params[:project_id] && !params[:project_id].nil?
+      @project_id = params[:project_id]
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No project ID provided.'
+    end
+
+    unless error
+      if params[:json_file] && params[:json_file].class.name == 'ActionDispatch::Http::UploadedFile'
+        # TODO: move this into create_update function?
+        data = read_json_file(params[:json_file])
+        if data.nil?
+          error = true
+          @error_message += 'No data to process'
+        else
+          @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @project_id)
+        end
+      else
+        error = true
+        error_message += 'No file was uploaded'
+      end
     end
 
     unless error
       if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
         zip_file = params[:zip_file]
-        @workflow, error, error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
+        @workflow, error, @error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
       end
     end
 
@@ -58,6 +68,7 @@ class WorkflowsController < ApplicationController
         format.html { redirect_to @workflow, notice: 'Workflow was successfully created.' }
         format.json { render action: 'show', status: :created, location: @workflow }
       else
+        flash[:error] = @error_message
         format.html { render action: 'new' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
@@ -68,26 +79,26 @@ class WorkflowsController < ApplicationController
   # PATCH/PUT /workflows/1.json
   def update
     error = false
-    error_message = ''
+    @error_message = ''
 
     if params[:json_file] && params[:json_file].class.name == 'ActionDispatch::Http::UploadedFile'
       # TODO: move this into create_update function?
       data = read_json_file(params[:json_file])
       if data.nil?
         error = true
-        error += 'No data to process'
+        @error_message += 'No data to process'
       else
-        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow)
+        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @workflow.project.id.to_s)
       end
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No file was uploaded'
     end
 
     # TODO: zipfile
     if params[:zip_file] && params[:zip_file].class.name == 'ActionDispatch::Http::UploadedFile'
       zip_file = params[:zip_file]
-      @workflow, error, error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
+      @workflow, error, @error_message = Workflow.add_workflow_file(zip_file, zip_file.original_filename, @workflow)
     end
 
     respond_to do |format|
@@ -95,6 +106,7 @@ class WorkflowsController < ApplicationController
         format.html { redirect_to @workflow, notice: 'Workflow was successfully updated.' }
         format.json { head :no_content }
       else
+        flash[:error] = @error_message
         format.html { render action: 'edit' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
@@ -115,7 +127,9 @@ class WorkflowsController < ApplicationController
   def create_datapoints
     @error_message = ''
     error = false
-    buildings = Building.all
+
+    @project = @workflow.project
+    buildings = @project.buildings.all
 
     buildings.each do |bld|
       d = Datapoint.find_or_create_by(building_id: bld.id, workflow_id: @workflow.id)

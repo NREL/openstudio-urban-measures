@@ -26,6 +26,7 @@ class BuildingsController < ApplicationController
   # GET /buildings/new
   def new
     @building = Building.new
+    @project_id = params[:project_id] ? params[:project_id] : nil
   end
 
   # GET /buildings/1/edit
@@ -37,17 +38,29 @@ class BuildingsController < ApplicationController
   def create
     @building = Building.new
 
-    if params[:geojson_file]
-      data = Geometry.read_geojson_file(params[:geojson_file])
-      if data.nil?
-        error = true
-        error_message += 'No data to process'
-      else
-        @building, error, @error_message = Geometry.create_update_feature(data, @building)
-      end
+    error = false
+    @error_message = ''
+
+    if params[:project_id] && !params[:project_id].nil?
+      @project_id = params[:project_id]
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No project ID provided.'
+    end
+
+    unless error 
+      if params[:geojson_file]
+        data = Geometry.read_geojson_file(params[:geojson_file])
+        if data.nil?
+          error = true
+          @error_message += 'No data to process'
+        else
+          @building, error, @error_message = Geometry.create_update_feature(data, @project_id, @building)
+        end
+      else
+        error = true
+        @error_message += 'No file was uploaded'
+      end
     end
 
     respond_to do |format|
@@ -55,6 +68,7 @@ class BuildingsController < ApplicationController
         format.html { redirect_to @building, notice: 'Building was successfully created.' }
         format.json { render action: 'show', status: :created, location: @building }
       else
+        flash[:error] = @error_message
         format.html { render action: 'new' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
@@ -64,17 +78,19 @@ class BuildingsController < ApplicationController
   # PATCH/PUT /buildings/1
   # PATCH/PUT /buildings/1.json
   def update
+    error = false
+    @error_message = ''
     if params[:geojson_file]
       data = Geometry.read_geojson_file(params[:geojson_file])
       if data.nil?
         error = true
-        error += 'No data to process'
+        @error_message += 'No data to process'
       else
-        @building, error, @error_message = Geometry.create_update_feature(data, @building)
+        @building, error, @error_message = Geometry.create_update_feature(data, @building.project.id.to_s, @building)
       end
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No file was uploaded'
     end
 
     respond_to do |format|
@@ -82,6 +98,7 @@ class BuildingsController < ApplicationController
         format.html { redirect_to @building, notice: 'Building was successfully updated.' }
         format.json { head :no_content }
       else
+        flash[:error] = @error_message
         format.html { render action: 'edit' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end

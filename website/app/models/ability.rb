@@ -36,7 +36,7 @@ class Ability
       can :manage, :all
     # authenticated user
     elsif !user.new_record?
-      can :manage, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
+      can :manage, [Project, Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
       can :home, AdminController
       can :batch_upload, :api
       can :export, :api

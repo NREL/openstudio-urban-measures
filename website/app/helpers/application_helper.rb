@@ -6,8 +6,8 @@ module ApplicationHelper
 
     if path == '/'
       active if page == 'Home'
-    elsif path == '/buildings'
-      active if page == 'Buildings'
+    elsif path == '/projects'
+      active if page == 'Projects'
     elsif path == '/taxlots'
       active if page == 'Taxlots'
     elsif path == '/regions'

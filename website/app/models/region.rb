@@ -15,9 +15,10 @@ class Region
 
   # Relations
   has_one :geometry, autosave: true, dependent: :destroy
-  belongs_to :user
+  belongs_to :project
   
   # Indexes
   # TODO: add project_id to this index too
   index({ source_id: 1, source_name: 1 }, { unique: true })
+  index({project_id: 1})
 end

@@ -12,10 +12,10 @@ class Workflow
     end
   end
 
-  belongs_to :user
+  belongs_to :project
   has_many :datapoints, dependent: :destroy
 
-  def self.create_update_workflow(data, workflow)
+  def self.create_update_workflow(data, workflow, project_id)
     error = false
     error_message = ''
 
@@ -31,6 +31,7 @@ class Workflow
         workflow[key] = value
       end
     end
+    workflow.project_id = project_id
 
     unless error
       # uploaded workflows are always templates

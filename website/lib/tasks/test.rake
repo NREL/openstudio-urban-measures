@@ -12,8 +12,11 @@ namespace :testing do
     filename = "#{Rails.root}/data/US_CA_Tract_06075010300.clean.geojson"
     #filename = "#{Rails.root}/lib/test.geojson"
 
+    # set this for testing
+    project_id = Project.first.id.to_s
+
     json_file = MultiJson.load(File.read(filename))
-    json_request = JSON.generate('data' => json_file)
+    json_request = JSON.generate('data' => json_file, 'project_id' => project_id)
 
     # puts "POST http://localhost:3000/api/structures/batch_upload, parameters: #{json_request}"
     begin
@@ -34,7 +37,10 @@ namespace :testing do
 
     # set array of types to return. Choices:  All, Building, Region, Taxlot, District System
     types = ['all']
-    json_request = JSON.generate('types' => types)
+    # set this for testing
+    project_id = Project.first.id.to_s
+
+    json_request = JSON.generate('types' => types, 'project_id' => project_id)
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/export', user: @user_name, password: @user_pwd)
@@ -53,8 +59,12 @@ namespace :testing do
     @user_pwd = 'testing123'
 
     filename = "#{Rails.root}/data/test.osw"
+
+    # set this for testing
+    project_id = Project.first.id.to_s
+
     json_file = MultiJson.load(File.read(filename))
-    json_request = JSON.generate('workflow' => json_file)
+    json_request = JSON.generate('workflow' => json_file, 'project_id' => project_id)
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/workflow', user: @user_name, password: @user_pwd)
@@ -115,6 +125,7 @@ namespace :testing do
     params[:commit] = 'Region Search'
     params[:region_id] = Region.first.id.to_s # region ID
     params[:region_feature_types] = ['Building']
+    params[:project_id] = Project.first.id.to_s
 
     json_request = JSON.generate(params)
 
@@ -148,6 +159,7 @@ namespace :testing do
     params[:building_id] = Building.first.id.to_s
     params[:distance] = 100
     params[:proximity_feature_types] = ['Taxlot']
+    params[:project_id] = Project.first.id.to_s
 
     json_request = JSON.generate(params)
 
@@ -183,6 +195,7 @@ namespace :testing do
     params[:source_id] = bldg.source_id.to_s
     params[:source_name] = bldg.source_name
     params[:feature_types] = ['Building']
+    params[:project_id] = Project.first.id.to_s
 
     json_request = JSON.generate(params)
 

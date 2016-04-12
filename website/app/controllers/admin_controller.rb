@@ -3,36 +3,6 @@ class AdminController < ApplicationController
   def index
   end
 
-  def home
-  end
-
-  def batch_upload_features
-    error = false
-    message = ''
-
-    # POST
-    if params[:commit]
-      if params[:geojson_file]
-        data = Geometry.read_geojson_file(params[:geojson_file])
-        result, error, message = Geometry.create_update_feature(data)
-      else
-        # data parameter provided
-        error = true
-        message += 'No data parameter provided.'
-      end
-
-      respond_to do |format|
-        if !error
-          format.html { redirect_to batch_upload_features_admin_index_path, notice: "Import success! #{message}" }
-          format.json { head :no_content }
-        else
-          format.html { redirect_to batch_upload_features_admin_index_path, flash: { error: "Error: #{message}" } }
-          format.json { render json: { error: message }, status: :unprocessable_entity }
-        end
-      end
-    end
-  end
-
   def clear_data
     Building.delete_all
     Taxlot.delete_all

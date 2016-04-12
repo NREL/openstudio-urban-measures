@@ -3,16 +3,26 @@
 <h3 class="edit-name"><%= @workflow.id %> <% if can? :update, Workflow %><%= link_to "[ edit ]", edit_workflow_path(@workflow), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
+  <tr>
+    <th>ID</th>
+    <td>@workflow.id</td>
+  </tr>
+  <tr>
+    <th>Project</th>
+    <td><%= link_to @workflow.project.display_name, @workflow.project %></td>
+  </tr>
   <% @workflow.attributes.keys.sort.each do |key| %>
-    <tr>
-    	<% if key == 'workflow_file' %>
-    		<th>Related Zip File</th>
-    		<td> <%= link_to @workflow.workflow_file.file_name, download_zipfile_workflow_path(@workflow) %><br/></td>
-	    <% else %>
-	      <th> <%= key == "_id" ? "ID" : key.humanize%></th>
-      	<td><%= @workflow[key] %></td>
-      <% end %>
-    </tr>
+    <% unless key == '_id' || key == 'project_id' %>
+      <tr>
+      	<% if key == 'workflow_file' %>
+      		<th>Related Zip File</th>
+      		<td> <%= link_to @workflow.workflow_file.file_name, download_zipfile_workflow_path(@workflow) %><br/></td>
+  	    <% else %>
+  	      <th> <%= key.humanize%></th>
+        	<td><%= @workflow[key] %></td>
+        <% end %>
+      </tr>
+    <% end %>
    <% end %>
 </table>
 

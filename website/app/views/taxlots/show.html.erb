@@ -3,11 +3,21 @@
 <h3 class="edit-name"><%= @taxlot.id %> <% if can? :update, Taxlot %><%= link_to "[ edit ]", edit_taxlot_path(@taxlot), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
+  <tr>
+    <th>ID</th>
+    <td><%= @taxlot.id.to_s %></td>
+  </tr>
+  <tr>
+    <th>Project ID</th>
+    <td><%= link_to @taxlot.project_id, @taxlot.project %></td>
+  </tr>
   <% @taxlot.attributes.keys.sort.each do |key| %>
-    <tr>
-      <th><%= key == "_id" ? "ID" : key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
-      <td><%= @taxlot[key] %></td>
-    </tr>
+    <% unless key == '_id' || key == 'project_id' %>
+      <tr>
+        <th><%= key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
+        <td><%= @taxlot[key] %></td>
+      </tr>
+    <% end %>
    <% end %>
 </table>
 <h3>Geometry (GeoJson)</h3>

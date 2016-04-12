@@ -8,19 +8,27 @@ class ApiController < ApplicationController
     error = false
     message = ''
 
-    # get json data (data param)
-    if params[:data]
-      # sent last result, doesn't mean anything here
-      result, error, message = Geometry.create_update_feature(params[:data])
+    # need project_id
+    if params[:project_id]
+      project_id = params[:project_id]
+      @project = Project.find(project_id)
+      # get json data (data param)
+      if params[:data]
+        # sent last result, doesn't mean anything here
+        result, error, message = Geometry.create_update_feature(params[:data], project_id)
+      else
+        # data parameter provided
+        error = true
+        message += 'No data parameter provided.'
+      end
     else
-      # data parameter provided
       error = true
-      message += 'No data parameter provided.'
+      message += 'No project_id parameter provided.'
     end
 
     respond_to do |format|
       if !error
-        format.json { render json: message, status: :created, location: buildings_url }
+        format.json { render json: message, status: :created, location: project_url(@project) }
       else
         format.json { render json: { error: message }, status: :unprocessable_entity }
       end
@@ -52,12 +60,15 @@ class ApiController < ApplicationController
       @types = @possible_types
     end
 
+    # TODO: error handling if project_id is missing
+    project_id = params[:project_id]
+
     # retrieve each type
     @results = []
     @types.each do |type|
       type = type.delete(' ')
       model = type.constantize
-      @results += model.all.includes(:geometry)
+      @results += model.where(project_id: project_id).includes(:geometry)
     end
 
     json_data = Geometry.build_geojson(@results)
@@ -72,81 +83,141 @@ class ApiController < ApplicationController
     error = false
     message = ''
 
-    page = params[:page] ? params[:page] : 1
-    @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    @regions = Region.all.only(:id).asc(:id).map { |x| [x.id.to_s] }
-    @building_id = nil
-    @distance = nil
-    @proximity_feature_types = ['Building']
-    @region_id = nil
-    @region_feature_types = ['Building']
-    @source_id = nil
-    @source_name = nil
-    @feature_types = ['Building']
-    @results = []
-    @is_get = true
-    @search_type = 'Proximity'
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+    else
+      error = true
+      message += 'Project ID was not provided.'
+    end
 
-    # Process POST
-    if params[:commit]
+    unless error
 
-      @is_get = false
-      if params[:commit] ==  'Search'
-        @search_type = 'ID'
-        @source_id = (params[:source_id] && !params[:source_id].empty?) ? params[:source_id] : ''
-        @source_name = (params[:source_name] && !params[:source_name].empty?) ? params[:source_name] : ''
-        @feature_types = (params[:feature_types] && !params[:feature_types].empty?) ? params[:feature_types] : @feature_types
+      page = params[:page] ? params[:page] : 1
+      @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
+      @regions = @project.regions.all.only(:id).asc(:id).map { |x| [x.id.to_s] }
+      @building_id = nil
+      @distance = nil
+      @proximity_feature_types = ['Building']
+      @region_id = nil
+      @region_feature_types = ['Building']
+      @source_id = nil
+      @source_name = nil
+      @feature_types = ['Building']
+      @results = []
+      @is_get = true
+      @search_type = 'Proximity'
 
-        @types = []
+      # Process POST
+      if params[:commit]
 
-        @feature_types.each do |type|
-          @types << type.capitalize if @possible_types.include? type.capitalize
-        end
+        @is_get = false
+        if params[:commit] ==  'Search'
+          @search_type = 'ID'
+          @source_id = (params[:source_id] && !params[:source_id].empty?) ? params[:source_id] : ''
+          @source_name = (params[:source_name] && !params[:source_name].empty?) ? params[:source_name] : ''
+          @feature_types = (params[:feature_types] && !params[:feature_types].empty?) ? params[:feature_types] : @feature_types
 
-        if @types.include? 'All'
-          @types = @possible_types.dup
-          @types.delete('All')
-        end
+          @types = []
 
-        @results = []
-        @types.each do |type|
-          model = type.tr(' ', '').constantize
-          res = model.where(source_id: @source_id, source_name: @source_name)
-          # this is weird but it needs to match the other searches
-          res.each do |r|
-            @results << r.geometry
+          @feature_types.each do |type|
+            @types << type.capitalize if @possible_types.include? type.capitalize
           end
-        end
 
-        @total_count = @results.count
-        if request.format != 'application/json'
-          # pagination
-          @results = Kaminari.paginate_array(@results.to_a).page(page)
-        end
+          if @types.include? 'All'
+            @types = @possible_types.dup
+            @types.delete('All')
+          end
 
-      # GEO NEAR SEARCH
-      elsif params[:commit] == 'Proximity Search'
-        @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
-        @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
-        @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] : @proximity_feature_types
+          @results = []
+          @types.each do |type|
+            model = type.tr(' ', '').constantize
+            res = model.where(project_id: @project.id, source_id: @source_id, source_name: @source_name)
+            # this is weird but it needs to match the other searches
+            res.each do |r|
+              @results << r.geometry
+            end
+          end
 
-        @types = []
+          @total_count = @results.count
+          if request.format != 'application/json'
+            # pagination
+            @results = Kaminari.paginate_array(@results.to_a).page(page)
+          end
 
-        @proximity_feature_types.each do |type|
-          @types << type.capitalize if @possible_types.include? type.capitalize
-        end
+        # GEO NEAR SEARCH
+        elsif params[:commit] == 'Proximity Search'
+          @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
+          @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
+          @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] : @proximity_feature_types
 
-        if @types.include? 'All'
-          @types = @possible_types.dup
-          @types.delete('All')
-        end
+          @types = []
 
-        bldgs = Building.where(id: @building_id)
-        unless bldgs.count == 0
-          bldg = bldgs.first
-          centroid = bldg.geometry.centroid
+          @proximity_feature_types.each do |type|
+            @types << type.capitalize if @possible_types.include? type.capitalize
+          end
 
-          query = Mongoid::Criteria.new(Geometry)
+          if @types.include? 'All'
+            @types = @possible_types.dup
+            @types.delete('All')
+          end
+
+          bldgs = @project.buildings.where(id: @building_id)
+          unless bldgs.count == 0
+            bldg = bldgs.first
+            centroid = bldg.geometry.centroid
+
+            query = Mongoid::Criteria.new(Geometry)
+            query = query.where(project_id: @project.id)
+            unless @types.count == 4
+              # add the feature types to the query 
+              # TODO: this is an 'and' but should work like an 'or'... FIX IT
+              @types.each do |type|
+                field = type.downcase.tr(' ', '_') + '_id'
+                query = query.exists(field.to_sym => true)
+              end
+            end
+            query = query.geo_near(centroid).max_distance(@distance)
+            @results = query
+            @total_count = @results.count
+
+            if request.format != 'application/json'
+              # pagination
+              @results = Kaminari.paginate_array(@results.to_a).page(page)
+            end
+          end
+
+        # GEO WITHIN SEARCH
+        elsif params[:commit] == 'Region Search'
+          @search_type = 'Region'
+
+          @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[0]
+          @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ? params[:region_feature_types] : @region_feature_types
+
+          # figure out what types
+          @types = []
+
+          @region_feature_types.each do |type|
+            @types << type.capitalize if @possible_types.include? type.titleize
+          end
+
+          if @types.include? 'All'
+            @types = @possible_types.dup
+            @types.delete('All')
+          end
+
+          the_region = Region.find(@region_id)
+
+          # test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
+
+          query = @project.geometries.where('centroid' =>
+                                   { '$geoWithin' =>
+                                      { '$geometry' =>
+                                        { 'type' => the_region.geometry.type,
+                                          'coordinates' => the_region.geometry.coordinates
+                                        }
+                                      }
+                                    })
+
           unless @types.count == 4
             # add the feature types to the query
             @types.each do |type|
@@ -154,69 +225,21 @@ class ApiController < ApplicationController
               query = query.exists(field.to_sym => true)
             end
           end
-          query = query.geo_near(centroid).max_distance(@distance)
+
           @results = query
           @total_count = @results.count
-
           if request.format != 'application/json'
             # pagination
-            @results = Kaminari.paginate_array(@results.to_a).page(page)
+            @results = @results.page(page)
           end
-        end
-
-      # GEO WITHIN SEARCH
-      elsif params[:commit] == 'Region Search'
-        @search_type = 'Region'
-
-        @region_id = (params[:region_id] && params[:region_id].empty?) ? params[:region_id] : @regions.first[0]
-        @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ? params[:region_feature_types] : @region_feature_types
-
-        # figure out what types
-        @types = []
-
-        @region_feature_types.each do |type|
-          @types << type.capitalize if @possible_types.include? type.titleize
-        end
-
-        if @types.include? 'All'
-          @types = @possible_types.dup
-          @types.delete('All')
-        end
-
-        the_region = Region.find(@region_id)
-
-        # test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
-
-        query = Geometry.where('centroid' =>
-                                 { '$geoWithin' =>
-                                    { '$geometry' =>
-                                      { 'type' => the_region.geometry.type,
-                                        'coordinates' => the_region.geometry.coordinates
-                                      }
-                                    }
-                                  })
-
-        unless @types.count == 4
-          # add the feature types to the query
-          @types.each do |type|
-            field = type.downcase.tr(' ', '_') + '_id'
-            query = query.exists(field.to_sym => true)
-          end
-        end
-
-        @results = query
-        @total_count = @results.count
-        if request.format != 'application/json'
-          # pagination
-          @results = @results.page(page)
         end
       end
-    end
 
-    # process results into geoJSON for API
-    if request.format == 'application/json'
-      @new_results = process_search_results
-      json_data = Geometry.build_geojson(@new_results)
+      # process results into geoJSON for API
+      if request.format == 'application/json'
+        @new_results = process_search_results
+        json_data = Geometry.build_geojson(@new_results)
+      end
     end
 
     respond_to do |format|
@@ -232,32 +255,42 @@ class ApiController < ApplicationController
     created_flag = false
     @workflow = nil
 
-    if params[:workflow]
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+    else
+      error = false
+      error_message = 'Project ID is not provided.'
+    end
 
-      data = params[:workflow]
+    unless error
 
-      # update or create
-      if data[:id]
-        workflows = Workflow.where(id: data[:id])
-        if workflows.count > 0
-          @workflow = workflows.first
-          logger.info('WORKFLOW FOUND: UPDATING')
+      if params[:workflow]
+
+        data = params[:workflow]
+
+        # update or create
+        if data[:id]
+          workflows = @project.workflows.where(id: data[:id])
+          if workflows.count > 0
+            @workflow = workflows.first
+            logger.info('WORKFLOW FOUND: UPDATING')
+          else
+            error = true
+            error_message = "No workflows match ID #{data[:id]}.  Cannot update."
+            logger.info('WORKFLOW NOT FOUND!')
+          end
         else
-          error = true
-          error_message = "No workflows match ID #{data[:id]}.  Cannot update."
-          logger.info('WORKFLOW NOT FOUND!')
+          @workflow = Workflow.new
+          created_flag = true
+          logger.info('NEW WORKFLOW: CREATING')
+        end
+        unless error
+          @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow, @project.id)
         end
       else
-        @workflow = Workflow.new
-        created_flag = true
-        logger.info('NEW WORKFLOW: CREATING')
+        error = true
+        error_message += 'No workflow parameter provided.'
       end
-      unless error
-        @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow)
-      end
-    else
-      error = true
-      error_message += 'No workflow parameter provided.'
     end
 
     respond_to do |format|

@@ -3,11 +3,21 @@
 <h3 class="edit-name"><%= @region.id %> <% if can? :update, Region %><%= link_to "[ edit ]", edit_region_path(@region), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
+  <tr>
+    <th>ID</th>
+    <td><%= @region.id.to_s %></td>
+  </tr>
+  <tr>
+    <th>Project ID</th>
+    <td><%= link_to @region.project_id, @region.project %></td>
+  </tr>
   <% @region.attributes.keys.sort.each do |key| %>
-    <tr>
-      <th> <%= key == "_id" ? "ID" : key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
-      <td><%= @region[key] %></td>
-    </tr>
+    <% unless key == '_id' || key == 'project_id' %>
+      <tr>
+        <th> <%= key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
+        <td><%= @region[key] %></td>
+      </tr>
+    <% end %>
    <% end %>
 </table>
 <h3>Geometry (GeoJson)</h3>

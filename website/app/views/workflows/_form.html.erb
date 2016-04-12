@@ -1,5 +1,6 @@
 <%= bootstrap_form_tag url: (@workflow.new_record? ? '/workflows' : "/workflows/#{@workflow.id}"),  method: (@workflow.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4' do |f| %>
 
+	<%= f.hidden_field :project_id, value: @project_id %>
   <fieldset class="pad-top-30">
     <%= f.file_field :json_file, label: 'OSW file' %>
   </fieldset>

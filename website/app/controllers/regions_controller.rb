@@ -25,6 +25,7 @@ class RegionsController < ApplicationController
   # GET /regions/new
   def new
     @region = Region.new
+    @project_id = params[:project_id] ? params[:project_id] : nil
   end
 
   # GET /regions/1/edit
@@ -35,18 +36,28 @@ class RegionsController < ApplicationController
   # POST /regions.json
   def create
     @region = Region.new
+    error = false
+    @error_message = ''
 
-    if params[:geojson_file]
-      data = Geometry.read_geojson_file(params[:geojson_file])
-      if data.nil?
-        error = true
-        error_message += 'No data to process'
-      else
-        @region, error, @error_message = Geometry.create_update_feature(data, @region)
-      end
+    if params[:project_id] && !params[:project_id].nil?
+      @project_id = params[:project_id]
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No project ID provided.'
+    end
+    unless error
+      if params[:geojson_file]
+        data = Geometry.read_geojson_file(params[:geojson_file])
+        if data.nil?
+          error = true
+          error_message += 'No data to process'
+        else
+          @region, error, @error_message = Geometry.create_update_feature(data, @project_id, @region)
+        end
+      else
+        error = true
+        @error_message += 'No file was uploaded'
+      end
     end
 
     respond_to do |format|
@@ -54,6 +65,7 @@ class RegionsController < ApplicationController
         format.html { redirect_to @region, notice: 'Region was successfully created.' }
         format.json { render action: 'show', status: :created, location: @region }
       else
+        flash[:error] = @error_message
         format.html { render action: 'new' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
@@ -63,17 +75,19 @@ class RegionsController < ApplicationController
   # PATCH/PUT /regions/1
   # PATCH/PUT /regions/1.json
   def update
+    error = false
+    @error_message = ''
     if params[:geojson_file]
       data = Geometry.read_geojson_file(params[:geojson_file])
       if data.nil?
         error = true
-        error += 'No data to process'
+        @error_message += 'No data to process'
       else
-        @region, error, @error_message = Geometry.create_update_feature(data, @region)
+        @region, error, @error_message = Geometry.create_update_feature(data, @region.project.id.to_s, @region)
       end
     else
       error = true
-      error_message += 'No file was uploaded'
+      @error_message += 'No file was uploaded'
     end
 
     respond_to do |format|
@@ -81,6 +95,7 @@ class RegionsController < ApplicationController
         format.html { redirect_to @region, notice: 'Region was successfully updated.' }
         format.json { head :no_content }
       else
+        flash[:error] = @error_message
         format.html { render action: 'edit' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end

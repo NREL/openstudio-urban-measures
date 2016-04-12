@@ -1,0 +1,199 @@
+<h2>Project</h2>
+
+<h3 class="edit-name"><%= @project.id %> <% if can? :update, Project %><%= link_to "[ edit ]", edit_project_path(@project), class: "edit-link" %><% end %></h3>
+
+<table class="table table-striped">
+	</tr>
+    <tr>
+  	<th>ID</th>
+  	<td><%= @project.id %></td>
+  </tr>
+  <tr>
+  	<th>Display Name </th>
+  	<td><%= @project.display_name %></td>
+  <tr>
+  	<th>Name</th>
+  	<td><%= @project.name %></td>
+  </tr>
+    <tr>
+  	<th>User</th>
+  	<td><%= @project.user.email %></td>
+  </tr>
+  </tr>
+    <tr>
+  	<th>Date Created</th>
+  	<td><%= @project.created_at %></td>
+  </tr>
+  </tr>
+    <tr>
+  	<th>Last Edited</th>
+  	<td><%= @project.updated_at %></td>
+  </tr>
+
+  <% @project.attributes.keys.sort.each do |key| %>
+    <% unless %w(_id name display_name user_id created_at updated_at).include? key %>
+	    <tr>
+	      <th><%= key.humanize %></th>
+	      <td><%= @project[key] %></td>
+	    </tr>
+	  <% end %>
+  <% end %>
+</table>
+
+<div class="pad-bot-20">
+  <%= link_to 'Batch Add/Update Features', batch_upload_features_project_path(@project), class: "btn btn-primary" %>
+  <%= link_to 'Search Features', search_path(project_id: @project), class: "btn btn-primary" %>
+
+</div>
+
+<h3>Workflows (<%= @project.workflows.count %>)</h3>
+<% if @project.workflows.count <= 0 %>
+  <p>There are no workflows associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Date Created</th>
+      <th>Last Edited</th>  
+      <% if can? :update, Workflow %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.workflows.each do |workflow| %>
+      <tr>
+        <td><%= link_to workflow.id, workflow %></td>
+        <td><%= workflow.created_at.strftime('%_m/%-d/%Y') %></td>
+        <td><%= workflow.updated_at.strftime('%_m/%-d/%Y') %></td>
+        <% if can? :update, Workflow %><td><%= link_to 'Edit', edit_workflow_path(workflow) %> | <%= link_to 'Destroy', workflow, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<div class="pad-bot-20">
+  <%= link_to 'New Workflow', new_workflow_path(project_id: @project), class: "btn btn-primary" %>
+</div>
+
+
+<h3>Regions (<%= @project.regions.count %>)</h3>
+<% if @project.regions.count <= 0 %>
+  <p>There are no regions associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Source Name & ID</th>  
+      <% if can? :update, Region %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.regions.each do |region| %>
+      <tr>
+        <td><%= link_to region.id, region %></td>
+        <td><%= region.type %></td>
+        <td><%= region.source_name %> <%= region.source_id %></td>
+        <% if can? :update, Region %><td><%= link_to 'Edit', edit_region_path(region) %> | <%= link_to 'Destroy', region, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<div class="pad-bot-20">
+  <%= link_to 'New Region', new_region_path(project_id: @project), class: "btn btn-primary" %>
+</div>
+
+<h3>Buildings (<%= @project.buildings.count %>)</h3>
+<% if @project.buildings.count <= 0 %>
+  <p>There are no buildings associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Source Name & ID</th>  
+      <% if can? :update, Building %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.buildings.each do |building| %>
+      <tr>
+        <td><%= link_to building.id, building %></td>
+        <td><%= building.type %></td>
+        <td><%= building.source_name %> <%= building.source_id %></td>
+        <% if can? :update, Building %><td><%= link_to 'Edit', edit_building_path(building) %> | <%= link_to 'Destroy', building, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<div class="pad-bot-20">
+  <%= link_to 'New Building', new_building_path(project_id: @project), class: "btn btn-primary" %>
+</div>
+
+<h3>Taxlots (<%= @project.taxlots.count %>)</h3>
+<% if @project.taxlots.count <= 0 %>
+  <p>There are no taxlots associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Source Name & ID</th>  
+      <% if can? :update, Taxlot %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.taxlots.each do |taxlot| %>
+      <tr>
+        <td><%= link_to taxlot.id, taxlot %></td>
+        <td><%= taxlot.type %></td>
+        <td><%= taxlot.source_name %> <%= taxlot.source_id %></td>
+        <% if can? :update, Taxlot %><td><%= link_to 'Edit', edit_taxlot_path(taxlot) %> | <%= link_to 'Destroy', taxlot, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<div class="pad-bot-20">
+  <%= link_to 'New Taxlot', new_taxlot_path(project_id: @project), class: "btn btn-primary" %>
+</div>
+
+<h3>District Systems (<%= @project.district_systems.count %>)</h3>
+<% if @project.district_systems.count <= 0 %>
+  <p>There are no district systems associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Type</th>
+      <th>Source Name & ID</th>  
+      <% if can? :update, DistrictSystem %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.district_systems.each do |district_system| %>
+      <tr>
+        <td><%= link_to district_system.id, district_system %></td>
+        <td><%= district_system.type %></td>
+        <td><%= district_system.source_name %> <%= district_system.source_id %></td>
+        <% if can? :update, DistrictSystem %><td><%= link_to 'Edit', edit_district_system_path(building) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
+<div class="pad-bot-20">
+  <%= link_to 'New District System', new_district_system_path(project_id: @project), class: "btn btn-primary" %>
+</div>
+

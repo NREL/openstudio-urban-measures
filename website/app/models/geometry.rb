@@ -15,9 +15,11 @@ class Geometry
   belongs_to :taxlot
   belongs_to :district_system
   belongs_to :region
+  belongs_to :project
 
   # Indexes
   index({ centroid: '2d' }, min: -200, max: 200)
+  index({project_id: 1})
 
   # read in geojson file from file upload
   def self.read_geojson_file(file_data)
@@ -39,13 +41,19 @@ class Geometry
   # this method is to be used to create/update a single feature (building, taxlot, region, or district system)
   # expects only 1 item in the file if an object is passed in
   # expects a feature collection if no object is passed in
-  def self.create_update_feature(data, object = nil)
+  # needs a project_id to add to
+  def self.create_update_feature(data, project_id, object = nil)
     error = false
     message = ''
     is_bulk = false
     saved_objects = 0
 
-    if data[:crs][:properties][:name] != 'EPSG:4326'
+    if project_id.nil?
+      error = true
+      message += 'No project ID provided.'
+    end
+
+    if !error && data[:crs][:properties][:name] != 'EPSG:4326'
       error = true
       message += 'Cannot upload coordinate systems other than EPSG:4326.'
 
@@ -127,7 +135,11 @@ class Geometry
           object[key] = value if value != 'null'
         end
 
+        # set project_id
+        object.project_id = project_id
+
         # geojson fields are under geometry
+        # TODO: add project_id to geometry for indexing?
         next unless item[:geometry]
         geometry = item[:geometry]
 
@@ -141,6 +153,8 @@ class Geometry
         @geometry.type = geometry[:type]
         @geometry.coordinates = geometry[:coordinates]
         @geometry.centroid = calculate_centroid(@geometry.coordinates, @geometry.type)
+        # for queries
+        @geometry.project_id = project_id
 
         if object.save!
           saved_objects += 1
@@ -187,6 +201,8 @@ class Geometry
       # remove geometry_id
       if key == '_id'
         res_hash[:properties][:id] = value.to_s
+      elsif key == 'project_id'
+        res_hash[:properties][:project_id] = value.to_s
       elsif key != 'geometry_id'
         res_hash[:properties][key] = value
       end

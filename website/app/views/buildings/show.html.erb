@@ -3,11 +3,21 @@
 <h3 class="edit-name"><%= @building.id %><% if can? :update, Building %> <%= link_to "[ edit ]", edit_building_path(@building), class: "edit-link" %><% end %></h3>
 
 <table class="table table-striped">
+  <tr>
+    <th>ID</th>
+    <td><%= @building.id.to_s %></td>
+  </tr>
+  <tr>
+    <th>Project ID</th>
+    <td><%= link_to @building.project_id, @building.project %></td>
+  </tr>
   <% @building.attributes.keys.sort.each do |key| %>
-    <tr>
-      <th> <%= key == "_id" ? "ID" : key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
-      <td><%= @building[key] %></td>
-    </tr>
+    <% unless key == 'project_id' || key == '_id' %>
+      <tr>
+        <th> <%= key.gsub('_', ' ').titleize.gsub('Id', 'ID') %></th>
+        <td><%= @building[key] %></td>
+      </tr>
+    <% end %>
    <% end %>
 </table>
 <h3>Geometry (GeoJson)</h3>
@@ -42,6 +52,7 @@
         <th>ID</th>
         <th>Analysis ID</th>
         <th>Date Created</th>  
+        <% if can? :update, Datapoint %><th>Actions</th><% end %>
       </tr>
     </thead>
     <tbody>
@@ -50,6 +61,7 @@
           <td><%= link_to dp.id, dp %></td>
           <td><%= dp.analysis_id %></td>
           <td><%= dp.created_at %></td>
+          <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(dp) %> | <%= link_to 'Destroy', dp, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
         </tr>
       <% end %>
     </tbody>

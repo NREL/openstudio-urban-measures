@@ -1,8 +1,8 @@
-<h2>Batch Upload Features</h2>
+<h2>Batch Upload Features for Project: <%= link_to @project.display_name, @project %></h2>
 
 <p>Upload a GeoJSON file containing a feature collection.</p>
 
-<%= bootstrap_form_tag url: '/admin/batch_upload_features',  method: :post, layout: :horizontal do |f| %>
+<%= bootstrap_form_tag url: "/projects/#{@project.id}/batch_upload_features",  method: :post, layout: :horizontal do |f| %>
 
   <fieldset class="pad-top-30">
     <%= f.file_field :geojson_file, control_col: 'col-sm-4' %>
