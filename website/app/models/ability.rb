@@ -44,7 +44,7 @@ class Ability
       can :workflow_file, :api
     # unauthenticated
     else
-      can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
+      can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry, Project]
       can :home, AdminController
       can :search, :api
       # any API actions?

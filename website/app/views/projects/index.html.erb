@@ -28,4 +28,4 @@
 
 <%= paginate @projects %>
 
-<%= link_to 'New Project', new_project_path, class: "btn btn-primary" %>
+<% if can? :update, Project %><%= link_to 'New Project', new_project_path, class: "btn btn-primary" %><% end %>
