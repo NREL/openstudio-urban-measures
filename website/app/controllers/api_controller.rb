@@ -78,6 +78,46 @@ class ApiController < ApplicationController
     end
   end
 
+  # POST project_search
+  def project_search
+    error = false
+    message = ''
+
+    # DLM: can I make this so it will match anything if params[:name] is empty?
+    name = (params[:name] && !params[:name].empty?) ? params[:name] : /./
+    unless error
+
+      page = params[:page] ? params[:page] : 1
+
+      # Process POST
+      if params[:commit]
+
+        @is_get = false
+        if params[:commit] ==  'Search'
+
+          @results = []
+          res = Project.where(name: name)
+  
+          res.each do |r|
+            @results << r
+          end
+
+          @total_count = @results.count
+          if request.format != 'application/json'
+            # pagination
+            @results = Kaminari.paginate_array(@results.to_a).page(page)
+          end
+          
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.json { render json: @results }
+      format.html { render 'api/search' }
+    end
+  end
+  
   # POST search
   def search
     error = false

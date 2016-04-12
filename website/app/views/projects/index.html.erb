@@ -5,8 +5,11 @@
   <tr>
     <th>Name</th>
     <th>ID</th>
-    <th>Date Created</th>
-    <th>Last Edited</th>
+    <th>Regions</th>
+    <th>Buildings</th>
+    <th>District<br>Systems</th>
+    <th>Date<br>Created</th>
+    <th>Last<br>Edited</th>
     <th>User</th>
     <% if can? :update, Project %><th>Actions</th><% end %>
 
@@ -17,6 +20,9 @@
     <tr>
       <td><%= link_to p.display_name, p %></td>
       <td><%= p.id %></td>
+      <td><%= p.regions.count %></td>
+      <td><%= p.buildings.count %></td>
+      <td><%= p.district_systems.count %></td>
       <td><%= p.created_at.strftime('%_m/%-d/%Y') %></td>
       <td><%= p.updated_at.strftime('%_m/%-d/%Y') %></td>
       <td><%= p.user.email %></td>

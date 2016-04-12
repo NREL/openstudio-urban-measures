@@ -2,6 +2,19 @@ require 'rest-client'
 
 namespace :testing do
 
+  def get_or_create_project(name = 'test_project')
+    project = Project.where(name: name).first
+    if project.nil?
+      user = User.first
+      # DLM you could make a new user here?
+      fail if user.nil?
+      
+      project = Project.new(name: name, display_name: name, user: user)
+      project.save
+    end
+    return project
+  end
+
   # Test batch_upload
   desc 'Batch upload features  (api/batch_upload)'
   task batch_upload_features: :environment do
@@ -13,7 +26,8 @@ namespace :testing do
     #filename = "#{Rails.root}/lib/test.geojson"
 
     # set this for testing
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
     
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('data' => json_file, 'project_id' => project_id)
@@ -39,7 +53,8 @@ namespace :testing do
     types = ['all']
     
     # set this for testing
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
 
     json_request = JSON.generate('types' => types, 'project_id' => project_id)
 
@@ -52,7 +67,35 @@ namespace :testing do
       puts "ERROR: #{e.response}"
     end
   end
+  
+  # Test project_search
+  desc 'Search for project (api/project_search)'
+  task project_search: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+    
+    #Project.destroy_all
+    
+    project_name = 'test_project'
+    project = get_or_create_project(project_name)
 
+    # search for a project by name
+    json_request = JSON.generate('name' => project_name, 'commit' => 'Search')
+    
+    # search across all projects
+    #json_request = JSON.generate('commit' => 'Search')
+
+    # puts "POST http://localhost:3000/api/project_search, parameters: #{json_request}"
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/project_search', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}" 
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+  
   # Test import workflow
   desc 'POST workflow'
   task post_workflow: :environment do
@@ -62,7 +105,8 @@ namespace :testing do
     filename = "#{Rails.root}/data/test.osw"
 
     # set this for testing
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
 
     json_file = MultiJson.load(File.read(filename))
     json_request = JSON.generate('workflow' => json_file, 'project_id' => project_id)
@@ -99,7 +143,8 @@ namespace :testing do
     # puts "POST http://<user>:<pwd>@<base_url>/api/v1/related_file, parameters: #{json_request}"
     
     # DLM: Kat, shouldn't we have to post the workflow to a project?
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/workflow_file', user: @user_name, password: @user_pwd)
@@ -126,7 +171,8 @@ namespace :testing do
     # possible feature types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
     # DLM: Kat, shouldn't we have to get the region from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
     
     params = {}
     params[:commit] = 'Region Search'
@@ -162,7 +208,8 @@ namespace :testing do
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
     
     # DLM: Kat, shouldn't we have to get the building from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
     
     params = {}
     params[:commit] = 'Proximity Search'
@@ -198,7 +245,8 @@ namespace :testing do
     # feature_types
     
     # DLM: Kat, shouldn't we have to get the building from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = get_or_create_project
+    project_id = project.id.to_s
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
     bldg = Building.first
