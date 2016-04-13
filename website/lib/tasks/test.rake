@@ -80,10 +80,10 @@ namespace :testing do
     project = get_or_create_project(project_name)
 
     # search for a project by name
-    json_request = JSON.generate('name' => project_name, 'commit' => 'Search')
+    json_request = JSON.generate({'name' => project_name})
     
     # search across all projects
-    #json_request = JSON.generate('commit' => 'Search')
+    #json_request = JSON.generate({})
 
     # puts "POST http://localhost:3000/api/project_search, parameters: #{json_request}"
     begin

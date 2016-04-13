@@ -453,7 +453,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_project(project_name)
 
     params = {}
-    params[:commit] = 'Search'
     params[:name] = project_name
     
     http = Net::HTTP.new(@city_db_url, @port)
