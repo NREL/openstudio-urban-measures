@@ -1,0 +1,56 @@
+{
+  "seed_file": null,
+  "root_directory": null,
+  "run_directory": null,
+  "file_paths": ["./../"],
+  "measure_paths": ["./../"],
+	"steps": [
+		{
+			"measure_dir_name": "ChangeBuildingLocation",
+			"arguments": [
+        {
+          "name": "weather_directory",
+          "value": "./../weather"
+        },
+        {
+          "name": "weather_file_name",
+          "value": null
+        }
+      ]
+		},
+		{
+			"measure_dir_name": "urban_geometry_creation",
+			"arguments": [
+        {
+          "name": "city_db_url",
+          "value": "http://insight4.hpc.nrel.gov:8081/"
+        },
+        {
+          "name": "source_id",
+          "value": null
+        },
+        {
+          "name": "source_name",
+          "value": null
+        },
+        {
+          "name": "surrounding_buildings",
+          "value": "ShadingOnly"
+        }
+			]
+		},
+		{
+			"measure_dir_name": "urban_building_type",
+			"arguments": [
+        {
+          "name": "heating_source",
+          "value": "Gas"
+        },
+        {
+          "name": "cooling_source",
+          "value": "Electric"
+        }
+			]
+		}
+	]
+}

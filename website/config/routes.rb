@@ -23,7 +23,11 @@ Rails.application.routes.draw do
   resources :district_systems
   resources :taxlots
   resources :buildings
-  resources :datapoints
+  resources :datapoints do
+    member do
+      get 'instance_workflow'
+    end
+  end
   resources :workflows do
     member do
       get 'download_zipfile'
