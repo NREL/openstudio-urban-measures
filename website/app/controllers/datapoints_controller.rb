@@ -69,9 +69,7 @@ class DatapointsController < ApplicationController
       format.json { head :no_content }
     end
   end
-  
-  
-  
+
   # create datapoints for workflow
   def instance_workflow
     @error_message = ''
@@ -124,8 +122,8 @@ class DatapointsController < ApplicationController
     
     respond_to do |format|
       if !error
-        format.html { redirect_to @datapoint, notice: "Instance workflow successfully created. #{result}" }
-        format.json { head :no_content }
+        format.html { render json: result }
+        format.json { render json: result }
       else
         format.html { render action: 'show' }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
