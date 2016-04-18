@@ -16,6 +16,7 @@ class Project
   has_many :scenarios, dependent: :destroy
   belongs_to :user
   has_many :geometries
+  has_many :datapoints
 
   # Indexes
   index({user_id: 1})

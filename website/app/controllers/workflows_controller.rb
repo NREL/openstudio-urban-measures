@@ -69,7 +69,7 @@ class WorkflowsController < ApplicationController
         format.json { render action: 'show', status: :created, location: @workflow }
       else
         flash[:error] = @error_message
-        format.html { render action: 'new' }
+        format.html { render action: 'new'}
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end

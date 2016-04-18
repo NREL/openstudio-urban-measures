@@ -38,6 +38,8 @@ Rails.application.routes.draw do
     post 'workflow_file' => 'api#workflow_file'
     match 'search' => 'api#search', :via => [:get, :post]
     post 'export' => 'api#export'
+    post 'datapoint' => 'api#datapoint'
+    post 'retrieve_datapoint' => 'api#retrieve_datapoint'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

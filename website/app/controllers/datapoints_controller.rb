@@ -1,7 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
   before_action :set_datapoint, only: [:show, :edit, :update, :destroy]
-  before_action :get_workflows, only: [:new, :edit]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -19,27 +18,52 @@ class DatapointsController < ApplicationController
   # GET /datapoints/new
   def new
     @datapoint = Datapoint.new
-
+    logger.info("PARAMS: #{params}")
     @datapoint.building = params[:building]
+    logger.info("hey! #{@datapoint.building}")
+    @datapoint.project = @datapoint.building.project
+    logger.info("hey2! #{@datapoint.project}")
+    @workflows = get_workflows
+
   end
 
   # GET /datapoints/1/edit
   def edit
+    @workflows = get_workflows
+
   end
 
   # POST /datapoints
   # POST /datapoints.json
   def create
-    @datapoint = Datapoint.new(datapoint_params)
-    # TODO: generate instance workflow
+
+    @datapoint = Datapoint.new
+
+    logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
+
+    error = false
+    @error_message = ''
+
+    if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
+      @project_id = params[:datapoint][:project_id]
+    else
+      error = true
+      @error_message += 'No project ID provided.'
+    end
+
+    unless error
+      # TODO: eventually check datapoint param
+      @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
 
     respond_to do |format|
-      if @datapoint.save
+      if !error
         format.html { redirect_to @datapoint, notice: 'Datapoint was successfully created.' }
         format.json { render action: 'show', status: :created, location: @datapoint }
       else
-        format.html { render action: 'new' }
-        format.json { render json: @datapoint.errors, status: :unprocessable_entity }
+        flash[:error] = @error_message
+        format.html { render action: 'new', :locals => { building: params[:datapoint][:building_id]}  }
+        format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end
   end
@@ -47,15 +71,31 @@ class DatapointsController < ApplicationController
   # PATCH/PUT /datapoints/1
   # PATCH/PUT /datapoints/1.json
   def update
-    # TODO: generate instance workflow
+
+    logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
+
+    error = false
+    @error_message = ''
+
+    if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
+      @project_id = params[:datapoint][:project_id]
+    else
+      error = true
+      @error_message += 'No project ID provided.'
+    end
+
+    unless error
+      @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
 
     respond_to do |format|
-      if @datapoint.update(datapoint_params)
+      if !error
         format.html { redirect_to @datapoint, notice: 'Datapoint was successfully updated.' }
         format.json { head :no_content }
       else
+        flash[:error] = @error_message
         format.html { render action: 'edit' }
-        format.json { render json: @datapoint.errors, status: :unprocessable_entity }
+        format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end
   end
@@ -79,12 +119,17 @@ class DatapointsController < ApplicationController
 
   # Get Workflows
   def get_workflows
-    @workflows = Workflow.where(type: 'template').only(:id).map(&:id)
+    @workflows = @datapoint.project.workflows.only(:id)
+    if @workflows.empty?
+      @workflows = []
+    else
+      @workflows = @workflows.map(&:id)
+    end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def datapoint_params
-    params.require(:datapoint).permit(:building_id, :dencity_id, :template_workflow, :instance_workflow, :dencity_url, :analysis_id, :timestamp_started,
-                                      :timestamp_completed, variable_values: [], results: [])
+    params.require(:datapoint).permit(:project_id, :building_id, :dencity_id, :workflow, :status, :dencity_url, :analysis_id, :timestamp_started,
+                                      :timestamp_completed, variable_values: [], results: [], )
   end
 end

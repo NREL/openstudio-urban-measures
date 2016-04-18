@@ -116,6 +116,59 @@ namespace :testing do
     end
   end
 
+# Test import datapoint
+  desc 'POST datapoint'
+  task post_datapoint: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    # set this for testing
+    project = Project.first_or_create
+    workflow = project.workflows.first_or_create
+    building = project.buildings.first_or_create
+
+    datapoint = {}
+    datapoint[:workflow_id] = workflow.id.to_s
+    datapoint[:building_id] = building.id.to_s
+    datapoint[:status] = 'test api'
+
+    json_request = JSON.generate('datapoint' => datapoint, 'project_id' => project.id.to_s)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/datapoint', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+  # Test retrieve (or create) datapoint
+  desc 'GET datapoint'
+  task retrieve_datapoint: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    # set this for testing
+    project = Project.first_or_create
+    workflow = project.workflows.first_or_create
+    #building = project.buildings.first_or_create
+    building = Building.find('571565e6b02c30752700016b')
+
+    json_request = JSON.generate('workflow_id' => workflow.id.to_s, 'building_id' => building.id.to_s, 'project_id' => project.id.to_s)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/retrieve_datapoint', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+
   desc 'POST Region Search'
   task region_search: :environment do
     # params:
