@@ -99,7 +99,7 @@ namespace :testing do
     # puts "POST http://<user>:<pwd>@<base_url>/api/v1/related_file, parameters: #{json_request}"
     
     # DLM: Kat, shouldn't we have to post the workflow to a project?
-    project_id = Project.first_or_create.id.to_s
+    #project_id = Project.first_or_create.id.to_s
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/workflow_file', user: @user_name, password: @user_pwd)
@@ -153,8 +153,7 @@ namespace :testing do
     # set this for testing
     project = Project.first_or_create
     workflow = project.workflows.first_or_create
-    #building = project.buildings.first_or_create
-    building = Building.find('571565e6b02c30752700016b')
+    building = project.buildings.first_or_create
 
     json_request = JSON.generate('workflow_id' => workflow.id.to_s, 'building_id' => building.id.to_s, 'project_id' => project.id.to_s)
 
@@ -178,12 +177,12 @@ namespace :testing do
 
     # possible feature types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
-    # DLM: Kat, shouldn't we have to get the region from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = Project.first_or_create
+    project_id = project.id.to_s
     
     params = {}
     params[:commit] = 'Region Search'
-    params[:region_id] = Region.first.id.to_s # region ID # DLM: Kat, shouldn't this have to get the region from the project?
+    params[:region_id] = project.regions.first.id.to_s
     params[:region_feature_types] = ['Building']
     params[:project_id] = project_id
 
@@ -214,12 +213,12 @@ namespace :testing do
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
     
-    # DLM: Kat, shouldn't we have to get the building from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = Project.first_or_create
+    project_id = project.id.to_s
     
     params = {}
     params[:commit] = 'Proximity Search'
-    params[:building_id] = Building.first.id.to_s
+    params[:building_id] = project.buildings.first.id.to_s
     params[:distance] = 100
     params[:proximity_feature_types] = ['Taxlot']
     params[:project_id] = project_id
@@ -250,11 +249,11 @@ namespace :testing do
     # source_name
     # feature_types
     
-    # DLM: Kat, shouldn't we have to get the building from the project?
-    project_id = Project.first_or_create.id.to_s
+    project = Project.first_or_create
+    project_id = project.id.to_s
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    bldg = Building.first
+    bldg = project.buildings.first
 
     params = {}
     params[:commit] = 'Search'
