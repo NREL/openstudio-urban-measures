@@ -43,6 +43,8 @@ Rails.application.routes.draw do
     match 'search' => 'api#search', :via => [:get, :post]
     post 'export' => 'api#export'
     post 'project_search' => 'api#project_search'
+    post 'datapoint' => 'api#datapoint'
+    post 'retrieve_datapoint' => 'api#retrieve_datapoint'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

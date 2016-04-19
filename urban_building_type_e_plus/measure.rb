@@ -41,14 +41,14 @@ class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
 
     # check building space type to see if we are doing residential or commercial path
     residential = false
-	standards_space_type = nil
-	workspace.getObjectsByType("ZoneList".to_IddObjectType).each do |zone_list|
-	  standards_space_type = zone_list.getString(0).to_s.split(":")[0]
-	  if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_space_type
-	    residential = true
-		break
-	  end
-	end	
+    standards_space_type = nil
+    workspace.getObjectsByType("ZoneList".to_IddObjectType).each do |zone_list|
+      standards_space_type = zone_list.getString(0).to_s.split(":")[0]
+      if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_space_type
+        residential = true
+        break
+      end
+    end	
 	
     if residential
       runner.registerInfo("Processing Residential Building, #{standards_space_type}")
@@ -64,11 +64,11 @@ class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
     if residential
       beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-	  unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
+      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
       result = apply_residential(workspace, runner, standards_space_type)
     else
-	  result = true
-	end
+      result = true
+    end
     
     return result
  

@@ -197,6 +197,58 @@ namespace :testing do
     
   end
   
+# Test import datapoint
+  desc 'POST datapoint'
+  task post_datapoint: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    # set this for testing
+    project = Project.first_or_create
+    workflow = project.workflows.first_or_create
+    building = project.buildings.first_or_create
+
+    datapoint = {}
+    datapoint[:workflow_id] = workflow.id.to_s
+    datapoint[:building_id] = building.id.to_s
+    datapoint[:status] = 'test api'
+
+    json_request = JSON.generate('datapoint' => datapoint, 'project_id' => project.id.to_s)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/datapoint', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+  # Test retrieve (or create) datapoint
+  desc 'GET datapoint'
+  task retrieve_datapoint: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    # set this for testing
+    project = Project.first_or_create
+    workflow = project.workflows.first_or_create
+    building = project.buildings.first_or_create
+
+    json_request = JSON.generate('workflow_id' => workflow.id.to_s, 'building_id' => building.id.to_s, 'project_id' => project.id.to_s)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/retrieve_datapoint', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+
   desc 'POST Region Search'
   task region_search: :environment do
     # params:
@@ -212,7 +264,7 @@ namespace :testing do
     
     params = {}
     params[:commit] = 'Region Search'
-    params[:region_id] = Region.first.id.to_s # region ID # DLM: Kat, shouldn't this have to get the region from the project?
+    params[:region_id] = project.regions.first.id.to_s
     params[:region_feature_types] = ['Building']
     params[:project_id] = project_id
 
@@ -249,7 +301,7 @@ namespace :testing do
     
     params = {}
     params[:commit] = 'Proximity Search'
-    params[:building_id] = Building.first.id.to_s
+    params[:building_id] = project.buildings.first.id.to_s
     params[:distance] = 100
     params[:proximity_feature_types] = ['Taxlot']
     params[:project_id] = project_id
@@ -285,7 +337,7 @@ namespace :testing do
     project_id = project.id.to_s
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    bldg = Building.first
+    bldg = project.buildings.first
 
     params = {}
     params[:commit] = 'Search'

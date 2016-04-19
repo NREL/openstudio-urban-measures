@@ -19,103 +19,106 @@ class OpenStudio::Model::Model
         
         # begin
 
-          lookup_building_type = self.get_lookup_name(building_type)
-          
-          # Retrieve the Prototype Inputs from JSON
-          search_criteria = {
-            'template' => building_vintage,
-            'building_type' => building_type
-          }
-          prototype_input = self.find_object($os_standards['prototype_inputs'], search_criteria)
-          if prototype_input.nil?
-            runner.registerError("Could not find prototype inputs for #{search_criteria}, cannot create model.")
-            return false
-          end
-          #self.load_building_type_methods(building_type, building_vintage, climate_zone)
-          #self.load_geometry(building_type, building_vintage, climate_zone)
-          #self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
-          space_type_map = self.define_space_type_map(building_type, building_vintage, climate_zone)
-          self.assign_space_type_stubs(lookup_building_type, building_vintage, space_type_map)      
-          self.add_loads(building_vintage, climate_zone)
-          self.apply_infiltration_standard(building_vintage)
-          self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
-          self.modify_surface_convection_algorithm(building_vintage)
-          self.add_constructions(lookup_building_type, building_vintage, climate_zone)
-          self.create_thermal_zones(building_type, building_vintage, climate_zone)
-          self.add_hvac(building_type, building_vintage, climate_zone, prototype_input)
-          # self.custom_hvac_tweaks(building_type, building_vintage, climate_zone, prototype_input)
-          self.add_swh(building_type, building_vintage, climate_zone, prototype_input)
-          self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
-          self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
-          self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
-          self.set_sizing_parameters(building_type, building_vintage)
-          self.yearDescription.get.setDayofWeekforStartDay('Sunday')
-          
-          # Perform a sizing run
-          if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
-            return false
-          end
-          
-          # If there are any multizone systems, set damper positions
-          # and perform a second sizing run
-          has_multizone_systems = false
-          self.getAirLoopHVACs.sort.each do |air_loop|
-            if air_loop.is_multizone_vav_system
-              self.apply_multizone_vav_outdoor_air_sizing
-              if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
-                return false
-              end
-              break
-            end
-          end
-          
-          # Apply the prototype HVAC assumptions
-          # which include sizing the fan pressure rises based
-          # on the flow rate of the system.
-          self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
-          
-          # Apply the HVAC efficiency standard
-          # self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
-          
-          # Add daylighting controls per standard
-          # only four zones in large hotel have daylighting controls
-          # todo: YXC to merge to the main function
-          if building_type != "LargeHotel"
-            self.addDaylightingControls(building_vintage)
-          else
-            self.add_daylighting_controls(building_vintage)
-          end
-          
-          if building_type == "QuickServiceRestaurant" || building_type == "FullServiceRestaurant"
-            self.update_exhaust_fan_efficiency(building_vintage)
-          end
-          
-          if building_type == "HighriseApartment"
-            self.update_fan_efficiency
-          end
-         
-          # Add output variables for debugging
-          if debug
-            self.request_timeseries_outputs
-          end
-          
-        # rescue Exception => e  
+        lookup_building_type = self.get_lookup_name(building_type)
         
-          # runner.registerError("#{e}")
-          
-          # # print log messages
-          # logStream.logMessages.each do |logMessage|
-            # if logMessage.logLevel < OpenStudio::Warn
-              # runner.registerInfo(logMessage.logMessage)
-            # elsif logMessage.logLevel == OpenStudio::Warn
-              # runner.registerWarning(logMessage.logMessage)
-            # else
-              # runner.registerError(logMessage.logMessage)
-            # end
+        # Retrieve the Prototype Inputs from JSON
+        search_criteria = {
+          'template' => building_vintage,
+          'building_type' => building_type
+        }
+        prototype_input = self.find_object($os_standards['prototype_inputs'], search_criteria)
+        if prototype_input.nil?
+          runner.registerError("Could not find prototype inputs for #{search_criteria}, cannot create model.")
+          return false
+        end
+        #self.load_building_type_methods(building_type, building_vintage, climate_zone)
+        #self.load_geometry(building_type, building_vintage, climate_zone)
+        #self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
+        space_type_map = self.define_space_type_map(building_type, building_vintage, climate_zone)
+        self.assign_space_type_stubs(lookup_building_type, building_vintage, space_type_map)      
+        self.add_loads(building_vintage, climate_zone)
+        self.apply_infiltration_standard(building_vintage)
+        self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
+        self.modify_surface_convection_algorithm(building_vintage)
+        self.add_constructions(lookup_building_type, building_vintage, climate_zone)
+        self.create_thermal_zones(building_type, building_vintage, climate_zone)
+        # TODO: 90.1-2010, MediumOffice has no chw_pumping_type
+        prototype_input['chw_pumping_type'] = 'const_pri'
+        ###
+        self.add_hvac(building_type, building_vintage, climate_zone, prototype_input)
+        # self.custom_hvac_tweaks(building_type, building_vintage, climate_zone, prototype_input)
+        self.add_swh(building_type, building_vintage, climate_zone, prototype_input)
+        self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
+        self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
+        self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
+        self.set_sizing_parameters(building_type, building_vintage)
+        self.yearDescription.get.setDayofWeekforStartDay('Sunday')
+        
+        # Perform a sizing run
+        if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
+          return false
+        end
+        
+        # If there are any multizone systems, set damper positions
+        # and perform a second sizing run
+        has_multizone_systems = false
+        self.getAirLoopHVACs.sort.each do |air_loop|
+          if air_loop.is_multizone_vav_system
+            self.apply_multizone_vav_outdoor_air_sizing
+            if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
+              return false
+            end
+            break
+          end
+        end
+        
+        # Apply the prototype HVAC assumptions
+        # which include sizing the fan pressure rises based
+        # on the flow rate of the system.
+        self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
+        
+        # Apply the HVAC efficiency standard
+        # self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
+        
+        # Add daylighting controls per standard
+        # only four zones in large hotel have daylighting controls
+        # todo: YXC to merge to the main function
+        if building_type != "LargeHotel"
+          self.addDaylightingControls(building_vintage)
+        else
+          self.add_daylighting_controls(building_vintage)
+        end
+        
+        if building_type == "QuickServiceRestaurant" || building_type == "FullServiceRestaurant"
+          self.update_exhaust_fan_efficiency(building_vintage)
+        end
+        
+        if building_type == "HighriseApartment"
+          self.update_fan_efficiency
+        end
+       
+        # Add output variables for debugging
+        if debug
+          self.request_timeseries_outputs
+        end
+        
+      # rescue Exception => e  
+      
+        # runner.registerError("#{e}")
+        
+        # # print log messages
+        # logStream.logMessages.each do |logMessage|
+          # if logMessage.logLevel < OpenStudio::Warn
+            # runner.registerInfo(logMessage.logMessage)
+          # elsif logMessage.logLevel == OpenStudio::Warn
+            # runner.registerWarning(logMessage.logMessage)
+          # else
+            # runner.registerError(logMessage.logMessage)
           # end
-          # return false
-          
         # end
+        # return false
+        
+      # end
        
         return true    
     end
@@ -295,8 +298,6 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
     
     case heating_cooling
     when "Gas_Electric"
-
-        puts num_floors, floor_area
                   
         if num_floors < 3 or floor_area < 75000          
                 

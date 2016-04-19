@@ -12,6 +12,7 @@
     </div>
   <% end %>
   <fieldset>
+    <%= f.hidden_field :project_id %>
     <%= f.text_field :building_id, {label: 'Building ID', disabled: true} %>
     <%= f.hidden_field :building_id %>
   </fieldset>
@@ -23,6 +24,9 @@
   </fieldset>
     <fieldset>
     <%= f.text_field :analysis_id, label: 'Analysis ID' %>
+  </fieldset>
+  <fieldset>
+    <%= f.text_field :status, label: 'Status' %>
   </fieldset>
   <fieldset>
     <%= f.select :workflow, options_for_select(@workflows, @datapoint.workflow_id), { label: 'Workflow', include_blank: true} %>
