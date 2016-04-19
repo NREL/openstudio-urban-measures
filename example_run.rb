@@ -1,10 +1,17 @@
+# this example runs without using the web interface to query input data
+
 require 'json'
 require 'net/http'
 
-openstudio_2_0 = "E:/openstudio-2-0/build"
-city_db_url = "http://insight4.hpc.nrel.gov:8081/"
-source_id = "445"
+openstudio_2_0 = "E:/openstudio-2-0c/build"
+
+city_db_url = "http://localhost:3000"
+#city_db_url = "http://insight4.hpc.nrel.gov:8081/"
+project_name = "san_francisco"
+source_id = "98628"
 source_name = "NREL_GDS"
+
+datapoint_id = "#{project_name}_#{source_id}"
 
 def merge(workflow, properties)
   workflow[:steps].each do |step|
@@ -44,55 +51,16 @@ File.open(File.join(File.dirname(__FILE__), "/workflows/baseline.osw"), 'r') do 
   baseline_osw = JSON::parse(f.read, :symbolize_names => true)
 end
   
-# get the building
-port = 80
-if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-  city_db_url = md[1]
-  port = md[2]
-elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-  city_db_url = md[1]
-end
-    
-params = {}
-params[:commit] = 'Search'
-params[:source_id] = source_id
-params[:source_name] = source_name
-params[:feature_types] = ['Building']
-    
-http = Net::HTTP.new(city_db_url, port)
-request = Net::HTTP::Post.new("/api/search.json")
-request.add_field('Content-Type', 'application/json')
-request.add_field('Accept', 'application/json')
-request.body = JSON.generate(params)
-# DLM: todo, get these from environment variables or as measure inputs?
-request.basic_auth("testing@nrel.gov", "testing123")
-  
-response = http.request(request)
-if  response.code != '200' # success
-  fail("Bad response #{response.code}")
-end
-
-feature_collection = JSON.parse(response.body, :symbolize_names => true)
-if feature_collection[:features].nil?
-  fail("No features found in #{feature_collection}")
-elsif feature_collection[:features].empty?
-  fail("No features found in #{feature_collection}")
-elsif feature_collection[:features].size > 1
-  fail("Multiple features found in #{feature_collection}")
-end
-    
-building_json = feature_collection[:features][0]
-id = building_json[:properties][:id]
-
 # these are made up for now
-datapoint_json = {:id=>id}
+datapoint_json = {:id=>datapoint_id}
+building_json = {:properties=>{:city_db_url => city_db_url, :project_name => project_name, :source_id => source_id, :source_name => source_name}}
 region_json = {:properties=>{:weather_file_name=>"USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
 
 # configure the osw with building_json
 baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json)
 
 # save the configured osw
-baseline_osw_path = File.join(File.dirname(__FILE__), "/run/#{id}_baseline.osw")
+baseline_osw_path = File.join(File.dirname(__FILE__), "/run/#{datapoint_id}_baseline.osw")
 File.open(baseline_osw_path, 'w') do |f|
   f << JSON.generate(baseline_osw)
 end
@@ -102,6 +70,10 @@ ruby = File.join(openstudio_2_0, "Ruby-prefix/src/Ruby/bin/ruby")
 include = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/")
 cli = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/openstudio_cli.rb")
 
-command = "#{ruby} -I #{include} #{cli} #{baseline_osw_path}"
-puts command
+#command = "#{ruby} -I #{include} #{cli} run -w #{baseline_osw_path}"
+#puts command
 #system(command)
+
+command = "ruby #{cli} run --gem_path C:/ruby-2.0.0-p594-x64-mingw32/lib/ruby/gems/2.0.0  -w #{baseline_osw_path}"
+puts command
+system(command)

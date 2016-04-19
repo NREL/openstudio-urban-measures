@@ -2,7 +2,7 @@
   "seed_file": null,
   "root_directory": null,
   "run_directory": null,
-  "file_paths": ["./../weather/"],
+  "file_paths": ["./../"],
   "measure_paths": ["./../"],
 	"steps": [
 		{
@@ -24,10 +24,6 @@
         {
           "name": "city_db_url",
           "value": "http://insight4.hpc.nrel.gov:8081/"
-        },
-        {
-          "name": "project_name",
-          "value": null
         },
         {
           "name": "source_id",

@@ -1,8 +1,45 @@
 # see the URL below for information on how to write OpenStudio measures
 # http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
 
+require 'rubygems'
+
+  puts "Here are the gems that are available:"
+  local_gems = Gem::Specification.sort_by{ |g| [g.name.downcase, g.version] }.group_by{ |g| g.name }
+  local_gems.each do |name, version|
+    puts "#{name}"
+  end
+  puts '' 
+
+  puts "Ruby executable being used:"
+  require 'rbconfig'
+  puts "#{RbConfig::CONFIG['bindir']}"
+  puts ''
+
+  puts "Gem.dir:"
+  puts "#{Gem.dir}"
+  puts ''
+  
+  puts "Gem.user_dir:"
+  puts "#{Gem.user_dir}"
+  puts ''
+  
+  puts "Gem.user_home:"
+  puts "#{Gem.user_home}"
+  puts ''
+  
+  puts "Gem.path (in order):"
+  Gem.path.each do |loc|
+    puts "#{loc}"
+  end
+  puts ''
+  
+  puts "ENV['GEM_PATH'] (in order):"
+  ENV['GEM_PATH'].split(';').each do |loc|
+    puts "#{loc}"
+  end
+  puts '' 
+
 require 'openstudio-standards'
-# require_relative 'resources/Prototype.hvac_systems'
 require 'fileutils'
 
 require_relative 'resources/apply_residential'

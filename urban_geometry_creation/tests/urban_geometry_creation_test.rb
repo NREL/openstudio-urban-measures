@@ -52,20 +52,16 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     runner = OpenStudio::Ruleset::OSRunner.new
 
     # load the test model
-    #city_db_url = "http://localhost:3000"
-    city_db_url = "http://insight4.hpc.nrel.gov:8081/"
+    city_db_url = "http://localhost:3000"
+    #city_db_url = "http://insight4.hpc.nrel.gov:8081/"
     
+    project_name = "san_francisco"
     source_id = "98628"
     source_name = "NREL_GDS"
     
-    #source_id = "445" 	
-    #source_name = "NREL_GDS"
-    
+    #project_name = "denver"
     #source_id = "15251" 	
     #source_name = "NREL_GDS"
-    
-    #source_id = "502349736897" 	
-    #source_name = "LARIAC2"
     
     #surrounding_buildings = "None"
     #surrounding_buildings = "ShadingOnly"
@@ -79,6 +75,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # If the argument has a default that you want to use, you don't need it in the hash
     args_hash = {}
     args_hash["city_db_url"] = city_db_url
+    args_hash["project_name"] = project_name
     args_hash["source_id"] = source_id
     args_hash["source_name"] = source_name
     args_hash["surrounding_buildings"] = surrounding_buildings

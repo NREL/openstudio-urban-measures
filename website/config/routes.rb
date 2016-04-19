@@ -23,7 +23,11 @@ Rails.application.routes.draw do
   resources :district_systems
   resources :taxlots
   resources :buildings
-  resources :datapoints
+  resources :datapoints do
+    member do
+      get 'instance_workflow'
+    end
+  end
   resources :workflows do
     member do
       get 'download_zipfile'
@@ -38,6 +42,7 @@ Rails.application.routes.draw do
     post 'workflow_file' => 'api#workflow_file'
     match 'search' => 'api#search', :via => [:get, :post]
     post 'export' => 'api#export'
+    post 'project_search' => 'api#project_search'
     post 'datapoint' => 'api#datapoint'
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
   end
