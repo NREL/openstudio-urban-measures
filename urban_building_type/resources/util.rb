@@ -187,10 +187,18 @@ class HelperMethods
        
         # remove plant loops
         plantLoops.each do |plantLoop|
-            plantLoop.remove
-            runner.registerInfo("Removed plant loop #{plantLoop.name}.")
-        end    
-
+            remove = true
+            supplyComponents = plantLoop.supplyComponents
+            supplyComponents.each do |supplyComponent|
+                if supplyComponent.to_WaterHeaterMixed.is_initialized or supplyComponent.to_WaterHeaterStratified.is_initialized # don't remove the dhw
+                    remove = false
+                end
+            end
+            if remove
+                plantLoop.remove
+                runner.registerInfo("Removed plant loop #{plantLoop.name}.")
+            end
+        end
     end
 
     def self.add_pthp(model,

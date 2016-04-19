@@ -6,37 +6,31 @@ def apply_residential_infil(workspace, standards_space_type, living_thermal_zone
   case standards_space_type
   when "Single-Family"	
 	
-	measure = ProcessAirflow.new
-	args_hash = default_args_hash(workspace, measure)
-	args_hash["living_thermal_zone"] = living_thermal_zone
-	unless basement_thermal_zone.nil?
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone
-	end
-	run_measure(workspace, measure, args_hash, runner)
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone
+    unless basement_thermal_zone.nil?
+      args_hash["fbasement_thermal_zone"] = basement_thermal_zone
+    end
+    run_measure(workspace, measure, args_hash, runner)
 	
   when "Multifamily (2 to 4 units)"	
 
-	measure = ProcessAirflow.new
-	args_hash = default_args_hash(workspace, measure)
-	args_hash["living_thermal_zone"] = living_thermal_zone
-	unless basement_thermal_zone.nil?
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone
-	end
-	run_measure(workspace, measure, args_hash, runner)
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone
+    run_measure(workspace, measure, args_hash, runner)
   
   when "Multifamily (5 or more units)"
 
-	measure = ProcessAirflow.new
-	args_hash = default_args_hash(workspace, measure)
-	args_hash["living_thermal_zone"] = living_thermal_zone
-	unless basement_thermal_zone.nil?
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone
-	end	
-	run_measure(workspace, measure, args_hash, runner)
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone	
+    run_measure(workspace, measure, args_hash, runner)
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -97,17 +91,17 @@ end
 
 def get_thermal_zones(workspace)
 
-  basement_thermal_zone = nil
-  living_thermal_zone = nil
+  living_thermal_zones = []
+  basement_thermal_zone = nil  
   workspace.getObjectsByType("Zone".to_IddObjectType).each do |zone|
-    if zone.getString(0).to_s.include? "Living"
-	  living_thermal_zone = zone.getString(0).to_s
-	elsif zone.getString(0).to_s.include? "Basement"
-	  basement_thermal_zone = zone.getString(0).to_s	
-	end
+    if zone.getString(0).to_s.include? "Story 0 Space"
+      basement_thermal_zone = zone.getString(0).to_s	
+    else
+      living_thermal_zones << zone.getString(0).to_s
+    end
   end
 
-  return living_thermal_zone, basement_thermal_zone
+  return living_thermal_zones, basement_thermal_zone
   
 end
 
@@ -117,10 +111,17 @@ def apply_residential(workspace, runner, standards_space_type)
   
   living_thermal_zone, basement_thermal_zone = get_thermal_zones(workspace)
  
-  # FIXME: for this to work on the server, need to update weather.rb with a method which retrieves weather file path from workspace (issue #3)
-  # result = result && apply_residential_infil(workspace, standards_space_type, living_thermal_zone, basement_thermal_zone, runner)
-  
+   if not standards_space_type == "Single-Family"
+    unless basement_thermal_zone.nil?
+      living_thermal_zones << basement_thermal_zone
+    end
+  end
+ 
+  # FIXME: for this to work on the server, need to update weather.rb with a method which retrieves weather file path from workspace (issue #3) 
+  living_thermal_zones.each do |living_thermal_zone|
+    result = result && apply_residential_infil(model, standards_space_type, living_thermal_zones, basement_thermal_zone, runner)
+  end
+ 
   return result
     
 end
-

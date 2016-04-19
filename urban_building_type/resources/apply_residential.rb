@@ -1,182 +1,98 @@
-def apply_residential_space_type(space_type, runner)
+def apply_weather(model, runner)
+
+  runner.registerInfo("Applying weather.")
+  require './resources/measures/SetResidentialEPWFile/measure.rb'
   
-  if space_type
-	  standards_space_type = space_type.standardsSpaceType.get
-	  
-	  rendering_color = space_type.renderingColor
-	  if rendering_color.empty?
-		rendering_color = OpenStudio::Model::RenderingColor.new(space_type.model)
-		space_type.setRenderingColor(rendering_color)
-	  else
-		rendering_color = rendering_color.get
-	  end
-	  
-	  case standards_space_type
-	  when "Single-Family"
-		rendering_color.setRGB(0, 0, 0)	
-	  when "Multifamily (2 to 4 units)"
-		rendering_color.setRGB(0, 0, 0)
-	  when "Multifamily (5 or more units)"
-		rendering_color.setRGB(0, 0, 0)
-	  when "Mobile Home"
-		rendering_color.setRGB(0, 0, 0)         
-	  else
-		runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-	  end
-  end
+  measure = SetResidentialEPWFile.new
+  args_hash = default_args_hash(model, measure)
+  args_hash["weather_directory"] = "../../../resources/weather"
+  run_measure(model, measure, args_hash, runner)
   
   return true
+
 end
 
-def apply_residential_constructions(model, living_space_type, basement_space_type, runner)
+def apply_residential_occupancy(model, standards_space_type, runner)
 
-  runner.registerInfo("Applying residential constructions.")
-  require './resources/measures/ProcessConstructionsExteriorInsulatedWallsWoodStud/measure.rb'
-  require './resources/measures/ProcessConstructionsExteriorInsulatedWallsCMU/measure.rb'
-  require './resources/measures/ProcessConstructionsInteriorUninsulatedWalls/measure.rb'
-  require './resources/measures/ProcessConstructionsInteriorUninsulatedFloors/measure.rb'
-  require './resources/measures/ProcessConstructionsSlab/measure.rb'
-  require './resources/measures/ProcessConstructionsFinishedBasement/measure.rb'
-  require './resources/measures/ProcessConstructionsInsulatedRoof/measure.rb'
-  require './resources/measures/ProcessConstructionsWindows/measure.rb'
+  runner.registerInfo("Applying residential occupancy.")  
+  require './resources/measures/AddResidentialBedroomsAndBathrooms/measure.rb'
+    
+  case standards_space_type
+  when "Single-Family"
+	
+    measure = AddResidentialBedroomsAndBathrooms.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+  when "Multifamily (2 to 4 units)"	
+
+    measure = AddResidentialBedroomsAndBathrooms.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
   
-  living_space_type_name = living_space_type.name.get
-  unless basement_space_type.nil?
-	basement_space_type_name = basement_space_type.name.get
+  when "Multifamily (5 or more units)"
+
+    measure = AddResidentialBedroomsAndBathrooms.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
-  standards_space_type = living_space_type.standardsSpaceType.get
+  
+  return true	
+	
+end
+
+def apply_residential_foundations(model, standards_space_type, basement_thermal_zone, runner)
+
+  runner.registerInfo("Applying residential foundation constructions.")
+  require './resources/measures/ProcessConstructionsFoundationsFloorsSlab/measure.rb'
+  require './resources/measures/ProcessConstructionsFoundationsFloorsBasementFinished/measure.rb'
 
   case standards_space_type
   when "Single-Family"
-		
-	measure = ProcessConstructionsExteriorInsulatedWallsWoodStud.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedWalls.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedFloors.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)
-	
-	if basement_space_type_name
-		measure = ProcessConstructionsFinishedBasement.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-		run_measure(model, measure, args_hash, runner)		
-	else
-		measure = ProcessConstructionsSlab.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		run_measure(model, measure, args_hash, runner)
-	end
-
-	measure = ProcessConstructionsInsulatedRoof.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)	
-	
-	measure = ProcessConstructionsWindows.new
-	args_hash = default_args_hash(model, measure)
-	run_measure(model, measure, args_hash, runner) 	
-	
-  when "Multifamily (2 to 4 units)"	
   
-    measure = ProcessConstructionsExteriorInsulatedWallsCMU.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	puts args_hash
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedWalls.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedFloors.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)
-
-	if basement_space_type_name
-		measure = ProcessConstructionsFinishedBasement.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-		run_measure(model, measure, args_hash, runner)		
-	else
-		measure = ProcessConstructionsSlab.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		run_measure(model, measure, args_hash, runner)
-	end	
+    if not basement_thermal_zone.nil?
+      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)		
+    else
+      measure = ProcessConstructionsFoundationsFloorsSlab.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)
+    end  
 	
-	measure = ProcessConstructionsInsulatedRoof.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)	
-	
-	measure = ProcessConstructionsWindows.new
-	args_hash = default_args_hash(model, measure)
-	run_measure(model, measure, args_hash, runner)  	
+  when "Multifamily (2 to 4 units)"   
   
-  when "Multifamily (5 or more units)"
+    if not basement_thermal_zone.nil?
+      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)		
+    else
+      measure = ProcessConstructionsFoundationsFloorsSlab.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)
+    end   
   
-	measure = ProcessConstructionsExteriorInsulatedWallsCMU.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedWalls.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)
-
-	measure = ProcessConstructionsInteriorUninsulatedFloors.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)
-
-	if basement_space_type_name
-		measure = ProcessConstructionsFinishedBasement.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-		run_measure(model, measure, args_hash, runner)		
-	else
-		measure = ProcessConstructionsSlab.new
-		args_hash = default_args_hash(model, measure)
-		args_hash["living_space_type"] = living_space_type_name
-		run_measure(model, measure, args_hash, runner)
-	end	
-	
-	measure = ProcessConstructionsInsulatedRoof.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-	run_measure(model, measure, args_hash, runner)	
-	
-	measure = ProcessConstructionsWindows.new
-	args_hash = default_args_hash(model, measure)
-	run_measure(model, measure, args_hash, runner)
+  when "Multifamily (5 or more units)"  
+  
+    if not basement_thermal_zone.nil?
+      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)		
+    else
+      measure = ProcessConstructionsFoundationsFloorsSlab.new
+      args_hash = default_args_hash(model, measure)
+      run_measure(model, measure, args_hash, runner)
+    end    
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -185,49 +101,256 @@ def apply_residential_constructions(model, living_space_type, basement_space_typ
 	
 end
 
-def apply_residential_characteristics(model, space_type, runner)
+def apply_residential_floors(model, standards_space_type, runner)
 
-  runner.registerInfo("Applying residential characteristics.")  
-  require './resources/measures/AddResidentialBedroomsAndBathrooms/measure.rb'
+  runner.registerInfo("Applying residential floor constructions.")
+  require './resources/measures/ProcessConstructionsUninsulatedFloor/measure.rb'
+  require './resources/measures/ProcessConstructionsFoundationsFloorsCovering/measure.rb'
+  require './resources/measures/ProcessConstructionsFoundationsFloorsThermalMass/measure.rb'
 
-  if not model.getBuilding.standardsNumberOfLivingUnits.empty?
-	units = model.getBuilding.standardsNumberOfLivingUnits.get.to_f
+  case standards_space_type
+  when "Single-Family"
+	
+    measure = ProcessConstructionsUninsulatedFloor.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsFoundationsFloorsCovering.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+	
+  when "Multifamily (2 to 4 units)"
+
+    measure = ProcessConstructionsUninsulatedFloor.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsFoundationsFloorsCovering.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+  
+  when "Multifamily (5 or more units)"
+
+    measure = ProcessConstructionsUninsulatedFloor.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsFoundationsFloorsCovering.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
   
-  space_type_name = space_type.name.get
-  standards_space_type = space_type.standardsSpaceType.get
+  return true	
+	
+end
+
+def apply_residential_ceilings(model, standards_space_type, runner)
+
+  runner.registerInfo("Applying residential ceiling constructions.")
+  require './resources/measures/ProcessConstructionsCeilingsRoofsFinishedRoof/measure.rb'
+  require './resources/measures/ProcessConstructionsCeilingsRoofsRoofingMaterial/measure.rb'
+  require './resources/measures/ProcessConstructionsCeilingsRoofsThermalMass/measure.rb'
+
+  case standards_space_type
+  when "Single-Family"
+	
+    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)     
+	
+  when "Multifamily (2 to 4 units)"
+
+    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner) 
+
+    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)     
+  
+  when "Multifamily (5 or more units)"
+
+    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner) 
+    
+    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)     
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
+  end
+  
+  return true	
+	
+end
+
+def apply_residential_walls(model, standards_space_type, runner)
+
+  runner.registerInfo("Applying residential wall constructions.")
+  require './resources/measures/ProcessConstructionsWallsExteriorWoodStud/measure.rb'
+  require './resources/measures/ProcessConstructionsWallsExteriorCMU/measure.rb'
+  require './resources/measures/ProcessConstructionsUninsulatedWalls/measure.rb'
+  require './resources/measures/ProcessConstructionsWallsSheathing/measure.rb'
+  require './resources/measures/ProcessConstructionsWallsExteriorFinish/measure.rb'
+  require './resources/measures/ProcessConstructionsWallsExteriorThermalMass/measure.rb'
+  require './resources/measures/ProcessConstructionsWallsPartitionThermalMass/measure.rb'
   
   case standards_space_type
-  when "Single-Family"	
-	
-	measure = AddResidentialBedroomsAndBathrooms.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = space_type_name
-	# args_hash["Num_Br"] = (args_hash["Num_Br"].to_f * units).to_i.to_s
-	# args_hash["Num_Ba"] = (args_hash["Num_Ba"].to_f * units).to_i.to_s
-	run_measure(model, measure, args_hash, runner)
+  when "Single-Family"
+		
+    measure = ProcessConstructionsWallsExteriorWoodStud.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsUninsulatedWalls.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsWallsSheathing.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorFinish.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsPartitionThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
 	
   when "Multifamily (2 to 4 units)"	
+  
+    measure = ProcessConstructionsWallsExteriorCMU.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
 
-	measure = AddResidentialBedroomsAndBathrooms.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = space_type_name
-	# args_hash["Num_Br"] = (args_hash["Num_Br"].to_f * units).to_i.to_s
-	# args_hash["Num_Ba"] = (args_hash["Num_Ba"].to_f * units).to_i.to_s
-	run_measure(model, measure, args_hash, runner)
+    measure = ProcessConstructionsUninsulatedWalls.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsSheathing.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorFinish.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsPartitionThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)   	
+  
+  when "Multifamily (5 or more units)"
+  
+    measure = ProcessConstructionsWallsExteriorCMU.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsUninsulatedWalls.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessConstructionsWallsSheathing.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorFinish.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsExteriorThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessConstructionsWallsPartitionThermalMass.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)     
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
+  end 
+  
+  return true	
+	
+end
+
+def apply_residential_fenestration(model, standards_space_type, runner)
+
+  runner.registerInfo("Applying residential window constructions.")
+  require './resources/measures/ProcessConstructionsWindows/measure.rb'
+
+  case standards_space_type
+  when "Single-Family"
+	
+    measure = ProcessConstructionsWindows.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+	
+  when "Multifamily (2 to 4 units)"
+
+    measure = ProcessConstructionsWindows.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner) 	
   
   when "Multifamily (5 or more units)"
 
-	measure = AddResidentialBedroomsAndBathrooms.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = space_type_name
-	# args_hash["Num_Br"] = (args_hash["Num_Br"].to_f * units).to_i.to_s
-	# args_hash["Num_Ba"] = (args_hash["Num_Ba"].to_f * units).to_i.to_s
-	run_measure(model, measure, args_hash, runner)
+    measure = ProcessConstructionsWindows.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -236,55 +359,116 @@ def apply_residential_characteristics(model, space_type, runner)
 	
 end
 
-def apply_residential_appliances(model, space_type, runner)
+def apply_residential_appliances(model, standards_space_type, space, units_per_space, runner)
 
   runner.registerInfo("Applying residential appliances.")
   require './resources/measures/AddResidentialRefrigerator/measure.rb'
-  require './resources/measures/ResidentialCookingRange/measure.rb'  
-
-  space_type_name = space_type.name.get
-  standards_space_type = space_type.standardsSpaceType.get
+  require './resources/measures/ResidentialCookingRange/measure.rb'
+  require './resources/measures/ResidentialDishwasher/measure.rb'
+  require './resources/measures/ResidentialClothesWasher/measure.rb'
+  require './resources/measures/ResidentialClothesDryer/measure.rb'
   
   case standards_space_type
-  when "Single-Family"	
+  when "Single-Family"
 	
-	measure = ResidentialRefrigerator.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)
-	
-	measure = ResidentialCookingRange.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)	
+    if space.name.to_s.include? "Story 1 Space"
+      measure = ResidentialRefrigerator.new
+      args_hash = default_args_hash(model, measure)
+      args_hash["space"] = space.name.get
+      run_measure(model, measure, args_hash, runner)
+      
+      measure = ResidentialCookingRange.new
+      args_hash = default_args_hash(model, measure)
+      args_hash["space"] = space.name.get
+      run_measure(model, measure, args_hash, runner)
+      
+      measure = ResidentialDishwasher.new
+      args_hash = default_args_hash(model, measure)
+      args_hash["space"] = space.name.get
+      run_measure(model, measure, args_hash, runner)
+      
+      measure = ResidentialClothesWasher.new
+      args_hash = default_args_hash(model, measure)
+      args_hash["space"] = space.name.get
+      run_measure(model, measure, args_hash, runner)
+      
+      measure = ResidentialClothesDryer.new
+      args_hash = default_args_hash(model, measure)    
+      args_hash["space"] = space.name.get
+      run_measure(model, measure, args_hash, runner)      
+    end
 	
   when "Multifamily (2 to 4 units)"	
 
-	measure = ResidentialRefrigerator.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)
-	
-	measure = ResidentialCookingRange.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)	
+    measure = ResidentialRefrigerator.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialCookingRange.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+        
+    measure = ResidentialDishwasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult_e"] = units_per_space
+    args_hash["mult_hw"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ResidentialClothesWasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["cw_mult_e"] = units_per_space
+    args_hash["cw_mult_hw"] = units_per_space  
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ResidentialClothesDryer.new
+    args_hash = default_args_hash(model, measure)    
+    args_hash["space"] = space.name.get
+    args_hash["cd_mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)    
   
   when "Multifamily (5 or more units)"
 
-	measure = ResidentialRefrigerator.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)
-	
-	measure = ResidentialCookingRange.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["space_type"] = space_type_name
-	run_measure(model, measure, args_hash, runner)	
+    measure = ResidentialRefrigerator.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialCookingRange.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space    
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialDishwasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult_e"] = units_per_space
+    args_hash["mult_hw"] = units_per_space    
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ResidentialClothesWasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["cw_mult_e"] = units_per_space
+    args_hash["cw_mult_hw"] = units_per_space     
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ResidentialClothesDryer.new
+    args_hash = default_args_hash(model, measure)    
+    args_hash["space"] = space.name.get
+    args_hash["cd_mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -300,47 +484,47 @@ def apply_residential_lighting(model, living_space_type, basement_space_type, ru
 
   living_space_type_name = living_space_type.name.get
   unless basement_space_type.nil?
-	basement_space_type_name = basement_space_type.name.get
+    basement_space_type_name = basement_space_type.name.get
   end
   standards_space_type = living_space_type.standardsSpaceType.get
   
   case standards_space_type
   when "Single-Family"	
 
-	measure = ResidentialLighting.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["selected_ltg"] = "Benchmark"
-	args_hash["living_space_type"] = living_space_type_name	
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)
+    measure = ResidentialLighting.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["selected_ltg"] = "Benchmark"
+    args_hash["living_space_type"] = living_space_type_name	
+    if basement_space_type_name
+      args_hash["fbasement_space_type"] = basement_space_type_name
+    end
+    run_measure(model, measure, args_hash, runner)
 	
   when "Multifamily (2 to 4 units)"	
 
-	measure = ResidentialLighting.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["selected_ltg"] = "Benchmark"
-	args_hash["living_space_type"] = living_space_type_name	
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)	
+    measure = ResidentialLighting.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["selected_ltg"] = "Benchmark"
+    args_hash["living_space_type"] = living_space_type_name	
+    if basement_space_type_name
+      args_hash["fbasement_space_type"] = basement_space_type_name
+    end
+    run_measure(model, measure, args_hash, runner)	
   
   when "Multifamily (5 or more units)"
 
-	measure = ResidentialLighting.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["selected_ltg"] = "Benchmark"
-	args_hash["living_space_type"] = living_space_type_name	
-	if basement_space_type_name
-		args_hash["fbasement_space_type"] = basement_space_type_name
-	end
-	run_measure(model, measure, args_hash, runner)	
+    measure = ResidentialLighting.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["selected_ltg"] = "Benchmark"
+    args_hash["living_space_type"] = living_space_type_name	
+    if basement_space_type_name
+      args_hash["fbasement_space_type"] = basement_space_type_name
+    end
+    run_measure(model, measure, args_hash, runner)	
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -349,51 +533,47 @@ def apply_residential_lighting(model, living_space_type, basement_space_type, ru
 
 end
 
-def apply_residential_mels(model, living_space_type, basement_space_type, runner)
+def apply_residential_mels(model, standards_space_type, units_per_space, runner)
 
   runner.registerInfo("Applying residential MELs.")
   require './resources/measures/ResidentialMiscellaneousElectricLoads/measure.rb'
-
-  living_space_type_name = living_space_type.name.get
-  unless basement_space_type.nil?
-	basement_space_type_name = basement_space_type.name.get
-  end  
-  standards_space_type = living_space_type.standardsSpaceType.get
+  # require './resources/measures/AddResidentialExtraRefrigerator/measure.rb'
+  # require './resources/measures/AddResidentialFreezer/measure.rb'
+  # require './resources/measures/AddResidentialGasFireplace/measure.rb'
+  # require './resources/measures/AddResidentialGasGrill/measure.rb'
+  # require './resources/measures/AddResidentialGasLighting/measure.rb'
+  # require './resources/measures/AddResidentialHotTubHeaterElec/measure.rb'
+  # require './resources/measures/AddResidentialHotTubHeaterGas/measure.rb'
+  # require './resources/measures/AddResidentialHotTubPump/measure.rb'
+  # require './resources/measures/AddResidentialPoolHeaterElec/measure.rb'
+  # require './resources/measures/AddResidentialPoolHeaterGas/measure.rb'
+  # require './resources/measures/AddResidentialPoolHeaterPump/measure.rb'
+  # require './resources/measures/AddResidentialWellPump/measure.rb'
   
   case standards_space_type
   when "Single-Family"	
 
-	measure = ResidentialMiscellaneousElectricLoads.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-    if basement_space_type_name
-	  args_hash["fbasement_space_type"] = basement_space_type_name
-    end		
-	run_measure(model, measure, args_hash, runner)
+    measure = ResidentialMiscellaneousElectricLoads.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
 	
   when "Multifamily (2 to 4 units)"	
 
-	measure = ResidentialMiscellaneousElectricLoads.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name	
-    if basement_space_type_name
-	  args_hash["fbasement_space_type"] = basement_space_type_name
-    end			
-	run_measure(model, measure, args_hash, runner)	
-  
-  when "Multifamily (5 or more units)"
+    measure = ResidentialMiscellaneousElectricLoads.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)	
+    
+    when "Multifamily (5 or more units)"
 
-	measure = ResidentialMiscellaneousElectricLoads.new
-	args_hash = default_args_hash(model, measure)
-	args_hash["living_space_type"] = living_space_type_name
-    if basement_space_type_name
-	  args_hash["fbasement_space_type"] = basement_space_type_name
-    end	
-	run_measure(model, measure, args_hash, runner)	
+    measure = ResidentialMiscellaneousElectricLoads.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)	
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -402,123 +582,108 @@ def apply_residential_mels(model, living_space_type, basement_space_type, runner
 
 end
 
-def apply_residential_hvac(model, living_space_type, living_thermal_zone, basement_thermal_zone, runner)
+def apply_residential_hvac(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential HVAC.")
   require './resources/measures/ProcessHeatingandCoolingSetpoints/measure.rb'
-  require './resources/measures/ProcessElectricBaseboard/measure.rb'
+  require './resources/measures/ProcessBoiler/measure.rb'
   require './resources/measures/ProcessFurnace/measure.rb'
-  require './resources/measures/ProcessCentralAirConditioner/measure.rb'  
-
-  living_thermal_zone_name = living_thermal_zone.name.get
-  unless basement_thermal_zone.nil?
-	basement_thermal_zone_name = basement_thermal_zone.name.get
-  end
-  standards_space_type = living_space_type.standardsSpaceType.get
+  require './resources/measures/ProcessCentralAirConditioner/measure.rb'
+  require './resources/measures/ProcessRoomAirConditioner/measure.rb'
+  # require './resources/measures/AddResidentialDehumidifier/measure.rb'
   
   case standards_space_type
   when "Single-Family"	
 
     measure = ProcessHeatingandCoolingSetpoints.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)
-
-    # TODO: do we want to add a thermostat to the basement?
-    if basement_thermal_zone  
-        measure = ProcessHeatingandCoolingSetpoints.new
-        args_hash = default_args_hash(model, measure)
-        args_hash["living_thermal_zone"] = basement_thermal_zone_name
-        run_measure(model, measure, args_hash, runner)
-    end
     
     measure = ProcessFurnace.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end	
     run_measure(model, measure, args_hash, runner)
 	
     measure = ProcessCentralAirConditioner.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end	
     run_measure(model, measure, args_hash, runner)	
 	
   when "Multifamily (2 to 4 units)"	
 
     measure = ProcessHeatingandCoolingSetpoints.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    run_measure(model, measure, args_hash, runner)
-    
-    # TODO: do we want to add a thermostat to the basement?
-    if basement_thermal_zone  
-        measure = ProcessHeatingandCoolingSetpoints.new
-        args_hash = default_args_hash(model, measure)
-        args_hash["living_thermal_zone"] = basement_thermal_zone_name
-        run_measure(model, measure, args_hash, runner)
-    end   
-
-    measure = ProcessElectricBaseboard.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end
     run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessCentralAirConditioner.new
+    measure = ProcessBoiler.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end	
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessRoomAirConditioner.new
+    args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)	
   
   when "Multifamily (5 or more units)"
 
     measure = ProcessHeatingandCoolingSetpoints.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    run_measure(model, measure, args_hash, runner)
-    
-    # TODO: do we want to add a thermostat to the basement?
-    if basement_thermal_zone  
-        measure = ProcessHeatingandCoolingSetpoints.new
-        args_hash = default_args_hash(model, measure)
-        args_hash["living_thermal_zone"] = basement_thermal_zone_name
-        run_measure(model, measure, args_hash, runner)
-    end    
-
-    measure = ProcessElectricBaseboard.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end
     run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessCentralAirConditioner.new
+    measure = ProcessBoiler.new
     args_hash = default_args_hash(model, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    if basement_thermal_zone
-	  args_hash["fbasement_thermal_zone"] = basement_thermal_zone_name
-    end	
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessRoomAirConditioner.new
+    args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)	
   
   when "Mobile Home"
-	runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-	return false          
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end  
   
   return true
   
+end
+
+def apply_residential_dhw(model, standards_space_type, living_thermal_zone, runner)
+
+  runner.registerInfo("Applying residential DHW.")
+  require './resources/measures/AddOSWaterHeaterMixedStorageElectric/measure.rb'
+
+  living_thermal_zone_name = living_thermal_zone.name.get
+  
+  case standards_space_type
+  when "Single-Family"
+  
+    measure = AddOSWaterHeaterMixedStorageElectric.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["water_heater_location"] = living_thermal_zone_name
+    run_measure(model, measure, args_hash, runner)  
+  
+  when "Multifamily (2 to 4 units)"
+ 
+    measure = AddOSWaterHeaterMixedStorageElectric.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["water_heater_location"] = living_thermal_zone_name
+    run_measure(model, measure, args_hash, runner)  
+ 
+  when "Multifamily (5 or more units)"
+  
+    measure = AddOSWaterHeaterMixedStorageElectric.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["water_heater_location"] = living_thermal_zone_name
+    run_measure(model, measure, args_hash, runner)  
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false  
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
+  end
+  
+  return true
+
 end
 
 def run_measure(model, measure, args_hash, runner)
@@ -571,59 +736,21 @@ def default_args_hash(model, measure)
 	return args_hash
 end
 
-def get_space_types(model)
-
-  basement_space_type = nil
-  living_space_type = nil
-  model.getSpaces.each do |space|
-    if space.name.to_s.include? "Story 0 Space"
-	  space_type = space.spaceType.get # Make a "basement" spacetype and assign it to the space with story=0
-	  basement_space_type_name = "#{space_type.name.to_s}:Basement"
-	  basement_space_type = space_type.clone.to_SpaceType.get
-	  basement_space_type.setName(basement_space_type_name)
-      space.setSpaceType(basement_space_type)
-	elsif space.name.to_s.include? "Story 1 Space"
-	  space_type = space.spaceType.get # Make a "living" spacetype
-	  living_space_type_name = "#{space_type.name.to_s}:Living"
-	  living_space_type = space_type.clone.to_SpaceType.get
-	  living_space_type.setName(living_space_type_name)
-	end
-  end
-  
-  model.getSpaces.each do |space|
-	next if space.name.to_s.include? "Story 0 Space"
-	space.setSpaceType(living_space_type) # Assign the "living" spacetype to story!=0
-  end
-
-  return living_space_type, basement_space_type
-  
-end
-
 def get_thermal_zones(model)
 
+  living_thermal_zones = []
   basement_thermal_zone = nil
-  living_thermal_zone = nil
   model.getSpaces.each do |space|
     if space.name.to_s.include? "Story 0 Space"
-	  thermal_zone = space.thermalZone.get # Make a "basement" thermal zone and assign it to the space with story=0
-	  basement_thermal_zone_name = "#{thermal_zone.name.to_s}:Basement"
-	  basement_thermal_zone = thermal_zone.clone.to_ThermalZone.get
-	  basement_thermal_zone.setName(basement_thermal_zone_name)
-      space.setThermalZone(basement_thermal_zone)
-	elsif space.name.to_s.include? "Story 1 Space"
-	  thermal_zone = space.thermalZone.get # Make a "living" thermal zone
-	  living_thermal_zone_name = "#{thermal_zone.name.to_s}:Living"
-	  living_thermal_zone = thermal_zone.clone.to_ThermalZone.get
-	  living_thermal_zone.setName(living_thermal_zone_name)
-	end
-  end
+      thermal_zone = space.thermalZone.get
+      basement_thermal_zone = thermal_zone
+    else
+      thermal_zone = space.thermalZone.get
+      living_thermal_zones << thermal_zone
+    end
+  end  
   
-  model.getSpaces.each do |space|
-	next if space.name.to_s.include? "Story 0 Space"
-	space.setThermalZone(living_thermal_zone) # Assign the "living" thermal zone to story!=0
-  end
-  
-  return living_thermal_zone, basement_thermal_zone
+  return living_thermal_zones, basement_thermal_zone
   
 end
 
@@ -634,250 +761,250 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
     case heating_cooling
     when "Gas_Electric"
     
-        # [1] PLANT LOOPS
-            # [1] Hot Water Plant Loop with:
-                # [1] Boiler on Supply Side
-                # [1] Coil Heating Water on Demand Side
-            # [0] Chilled Water Plant Loop
-        # [1] ZONE EQUIPMENT
-            # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
-                # [1] Coil Heating Water
-                # [1] Coil Cooling DX Single Speed
-        
-        fan_type = "ConstantVolume" # ConstantVolume, Cycling
-        heating_type = "Water" # Gas, Electric, Water
-        cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
-        
-        hot_water_loop = model.add_hw_loop('NaturalGas')
-        
-        model.add_ptac(nil, 
-                       nil,
-                       hot_water_loop,
-                       HelperMethods.zones_with_thermostats(model.getThermalZones),
-                       fan_type,
-                       heating_type,
-                       cooling_type)
+      # [1] PLANT LOOPS
+          # [1] Hot Water Plant Loop with:
+              # [1] Boiler on Supply Side
+              # [1] Coil Heating Water on Demand Side
+          # [0] Chilled Water Plant Loop
+      # [1] ZONE EQUIPMENT
+          # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
+              # [1] Coil Heating Water
+              # [1] Coil Cooling DX Single Speed
+      
+      fan_type = "ConstantVolume" # ConstantVolume, Cycling
+      heating_type = "Water" # Gas, Electric, Water
+      cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
+      
+      hot_water_loop = model.add_hw_loop('NaturalGas')
+      
+      model.add_ptac(nil, 
+                     nil,
+                     hot_water_loop,
+                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                     fan_type,
+                     heating_type,
+                     cooling_type)
     
     when "Electric_Electric"
     
-        # [0] PLANT LOOPS
-            # [0] Hot Water Plant Loop
-            # [0] Chilled Water Plant Loop
-        # [1] ZONE EQUIPMENT
-            # [1] Packaged Terminal Heat Pump on each zone (Living/Basement) with:
-                # [1] Coil Heating DX Single Speed
-                # [1] Coil Cooling DX Single Speed
-                # [1] Supplemental Coil Heating Electric
-    
-        fan_type = "ConstantVolume" # ConstantVolume, Cycling
-        heating_type = nil
-        cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
-    
-        HelperMethods.add_pthp(model, 
-                               HelperMethods.zones_with_thermostats(model.getThermalZones),
-                               fan_type,
-                               heating_type,
-                               cooling_type)
+      # [0] PLANT LOOPS
+          # [0] Hot Water Plant Loop
+          # [0] Chilled Water Plant Loop
+      # [1] ZONE EQUIPMENT
+          # [1] Packaged Terminal Heat Pump on each zone (Living/Basement) with:
+              # [1] Coil Heating DX Single Speed
+              # [1] Coil Cooling DX Single Speed
+              # [1] Supplemental Coil Heating Electric
+  
+      fan_type = "ConstantVolume" # ConstantVolume, Cycling
+      heating_type = nil
+      cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
+  
+      HelperMethods.add_pthp(model, 
+                             HelperMethods.zones_with_thermostats(model.getThermalZones),
+                             fan_type,
+                             heating_type,
+                             cooling_type)
     
     when "District Hot Water_Electric"
     
-        # [1] PLANT LOOPS
-            # [1] Hot Water Plant Loop with:
-                # [1] District on Supply Side
-                # [1] Coil Heating Water on Demand Side
-            # [0] Chilled Water Plant Loop
-        # [1] ZONE EQUIPMENT
-            # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
-                # [1] Coil Heating Water
-                # [1] Coil Cooling DX Single Speed            
-    
-        fan_type = "ConstantVolume" # ConstantVolume, Cycling
-        heating_type = "Water" # Gas, Electric, Water
-        cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
-        
-        hot_water_loop = model.add_hw_loop('NaturalGas')
-        hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
-        
-        model.add_ptac(nil, 
-                       nil,
-                       hot_water_loop,
-                       HelperMethods.zones_with_thermostats(model.getThermalZones),
-                       fan_type,
-                       heating_type,
-                       cooling_type)        
-    
-    when "District Ambient Water_District Ambient Water"
-    
-        # [1] PLANT LOOPS
-            # [1] Heat Pump Loop with:
-                # [1] District Heating on Supply Side
-                # [1] District Cooling on Supply Side
-                # [1] Coil Heating Water To Air Heat Pump Equation Fit on Demand Side
-                # [1] Coil Cooling Water To Air Heat Pump Equation Fit on Demand Side
-            # [0] Hot Water Plant Loop
-            # [0] Chilled Water Plant Loop
-        # [1] ZONE EQUIPMENT
-            # [1] Water To Air Heat Pump on each zone (Living/Basement) with:
-                # [1] Coil Heating Water To Air Heat Pump Equation Fit
-                # [1] Coil Cooling Water To Air Heat Pump Equation Fit
-                # [1] Supplemental Coil Heating Electric
-        
-        heat_pump_loop = model.add_hp_loop()
-        heat_pump_loop = HelperMethods.make_district_heat_pump_loop(model, runner, heat_pump_loop)    
-    
-        HelperMethods.add_watertoairhp(model,
-                                       heat_pump_loop,
-                                       HelperMethods.zones_with_thermostats(model.getThermalZones))
+      # [1] PLANT LOOPS
+          # [1] Hot Water Plant Loop with:
+              # [1] District on Supply Side
+              # [1] Coil Heating Water on Demand Side
+          # [0] Chilled Water Plant Loop
+      # [1] ZONE EQUIPMENT
+          # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
+              # [1] Coil Heating Water
+              # [1] Coil Cooling DX Single Speed            
+  
+      fan_type = "ConstantVolume" # ConstantVolume, Cycling
+      heating_type = "Water" # Gas, Electric, Water
+      cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
+      
+      hot_water_loop = model.add_hw_loop('NaturalGas')
+      hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
+      
+      model.add_ptac(nil, 
+                     nil,
+                     hot_water_loop,
+                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                     fan_type,
+                     heating_type,
+                     cooling_type)        
+  
+  when "District Ambient Water_District Ambient Water"
+  
+      # [1] PLANT LOOPS
+          # [1] Heat Pump Loop with:
+              # [1] District Heating on Supply Side
+              # [1] District Cooling on Supply Side
+              # [1] Coil Heating Water To Air Heat Pump Equation Fit on Demand Side
+              # [1] Coil Cooling Water To Air Heat Pump Equation Fit on Demand Side
+          # [0] Hot Water Plant Loop
+          # [0] Chilled Water Plant Loop
+      # [1] ZONE EQUIPMENT
+          # [1] Water To Air Heat Pump on each zone (Living/Basement) with:
+              # [1] Coil Heating Water To Air Heat Pump Equation Fit
+              # [1] Coil Cooling Water To Air Heat Pump Equation Fit
+              # [1] Supplemental Coil Heating Electric
+      
+      heat_pump_loop = model.add_hp_loop()
+      heat_pump_loop = HelperMethods.make_district_heat_pump_loop(model, runner, heat_pump_loop)    
+  
+      HelperMethods.add_watertoairhp(model,
+                                     heat_pump_loop,
+                                     HelperMethods.zones_with_thermostats(model.getThermalZones))
     
     when "Gas_District Chilled Water"
     
-        # [2] PLANT LOOPS
-            # [1] Hot Water Plant Loop with:
-                # [1] Boiler on Supply Side
-                # [1] Coil Heating Water on Demand Side
-            # [1] Chilled Water Plant Loop with:
-                # [1] District on Supply Side
-                # [1] Coil Cooling Water on Demand Side
-        # [1] ZONE EQUIPMENT
-            # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
-                # [1] Coil Heating Water
-                # [1] Coil Cooling Water      
-        
-        chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
-        chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
-        chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
-        chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
-        chiller_capacity_guess = nil
-        
-        vav_operation_schedule = nil
-        doas_oa_damper_schedule = nil
-        doas_fan_maximum_flow_rate = nil
-        doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
-        
-        hot_water_loop = model.add_hw_loop('NaturalGas')
-        chilled_water_loop = model.add_chw_loop(nil,
-                                                chw_pumping_type,
-                                                chiller_cooling_type,
-                                                chiller_condenser_type,
-                                                chiller_compressor_type,
-                                                chiller_capacity_guess)
-        chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
-                                                
-        model.add_doas(nil, 
-                       nil,
-                       hot_water_loop, 
-                       chilled_water_loop,
-                       HelperMethods.zones_with_thermostats(model.getThermalZones),
-                       vav_operation_schedule,
-                       doas_oa_damper_schedule,
-                       doas_fan_maximum_flow_rate,
-                       doas_economizer_control_type)         
+      # [2] PLANT LOOPS
+          # [1] Hot Water Plant Loop with:
+              # [1] Boiler on Supply Side
+              # [1] Coil Heating Water on Demand Side
+          # [1] Chilled Water Plant Loop with:
+              # [1] District on Supply Side
+              # [1] Coil Cooling Water on Demand Side
+      # [1] ZONE EQUIPMENT
+          # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
+              # [1] Coil Heating Water
+              # [1] Coil Cooling Water      
+      
+      chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
+      chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
+      chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
+      chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
+      chiller_capacity_guess = nil
+      
+      vav_operation_schedule = nil
+      doas_oa_damper_schedule = nil
+      doas_fan_maximum_flow_rate = nil
+      doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
+      
+      hot_water_loop = model.add_hw_loop('NaturalGas')
+      chilled_water_loop = model.add_chw_loop(nil,
+                                              chw_pumping_type,
+                                              chiller_cooling_type,
+                                              chiller_condenser_type,
+                                              chiller_compressor_type,
+                                              chiller_capacity_guess)
+      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
+                                              
+      model.add_doas(nil, 
+                     nil,
+                     hot_water_loop, 
+                     chilled_water_loop,
+                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                     vav_operation_schedule,
+                     doas_oa_damper_schedule,
+                     doas_fan_maximum_flow_rate,
+                     doas_economizer_control_type)         
     
     when "Electric_District Chilled Water"
     
-        # [1] PLANT LOOPS
-            # [0] Hot Water Plant Loop
-            # [1] Chilled Water Plant Loop with:
-                # [1] District on Supply Side
-                # [1] Coil Cooling Water on Demand Side
-        # [1] ZONE EQUIPMENT
-            # [1] PSZ-AC on each zone (Living/Basement) with:
-                # [1] Coil Heating Electric
-                # [1] Coil Cooling Water
-    
-        chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
-        chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
-        chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
-        chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
-        chiller_capacity_guess = nil    
-    
-        fan_position = "BlowThrough" # BlowThrough, DrawThrough
-        fan_type = "ConstantVolume" # AP: ConstantVolume
-        heating_type = nil # Gas, Water, Single Speed Heat Pump, Water To Air Heat Pump
-        supplemental_heating_type = "Electric" # Electric, Gas
-        cooling_type = "Water" # Water, Two Speed DX AC, Single Speed DX AC, Single Speed Heat Pump, Water To Air Heat Pump
-    
-        chilled_water_loop = model.add_chw_loop(nil,
-                                                chw_pumping_type,
-                                                chiller_cooling_type,
-                                                chiller_condenser_type,
-                                                chiller_compressor_type,
-                                                chiller_capacity_guess)
-        chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)    
-    
-        model.add_psz_ac(nil, 
-                         nil, 
-                         nil, # Typically nil unless water source hp
-                         chilled_water_loop, # Typically nil unless water source hp
-                         HelperMethods.zones_with_thermostats(model.getThermalZones), 
-                         nil,
-                         nil,
-                         fan_position, 
-                         fan_type,
-                         heating_type,
-                         supplemental_heating_type,
-                         cooling_type)
+      # [1] PLANT LOOPS
+          # [0] Hot Water Plant Loop
+          # [1] Chilled Water Plant Loop with:
+              # [1] District on Supply Side
+              # [1] Coil Cooling Water on Demand Side
+      # [1] ZONE EQUIPMENT
+          # [1] PSZ-AC on each zone (Living/Basement) with:
+              # [1] Coil Heating Electric
+              # [1] Coil Cooling Water
+  
+      chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
+      chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
+      chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
+      chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
+      chiller_capacity_guess = nil    
+  
+      fan_position = "BlowThrough" # BlowThrough, DrawThrough
+      fan_type = "ConstantVolume" # AP: ConstantVolume
+      heating_type = nil # Gas, Water, Single Speed Heat Pump, Water To Air Heat Pump
+      supplemental_heating_type = "Electric" # Electric, Gas
+      cooling_type = "Water" # Water, Two Speed DX AC, Single Speed DX AC, Single Speed Heat Pump, Water To Air Heat Pump
+  
+      chilled_water_loop = model.add_chw_loop(nil,
+                                              chw_pumping_type,
+                                              chiller_cooling_type,
+                                              chiller_condenser_type,
+                                              chiller_compressor_type,
+                                              chiller_capacity_guess)
+      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)    
+  
+      model.add_psz_ac(nil, 
+                       nil, 
+                       nil, # Typically nil unless water source hp
+                       chilled_water_loop, # Typically nil unless water source hp
+                       HelperMethods.zones_with_thermostats(model.getThermalZones), 
+                       nil,
+                       nil,
+                       fan_position, 
+                       fan_type,
+                       heating_type,
+                       supplemental_heating_type,
+                       cooling_type)
     
     when "District Hot Water_District Chilled Water"
     
-        # [2] PLANT LOOPS
-            # [1] Hot Water Plant Loop with:
-                # [1] District on Supply Side
-                # [1] Coil Heating Water on Demand Side
-            # [1] Chilled Water Plant Loop with:
-                # [1] District on Supply Side
-                # [1] Coil Cooling Water on Demand Side
-        # [1] ZONE EQUIPMENT
-            # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
-                # [1] Coil Heating Water
-                # [1] Coil Cooling Water      
-        
-        chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
-        chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
-        chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
-        chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
-        chiller_capacity_guess = nil
-        
-        vav_operation_schedule = nil
-        doas_oa_damper_schedule = nil
-        doas_fan_maximum_flow_rate = nil
-        doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
-        
-        hot_water_loop = model.add_hw_loop('NaturalGas')
-        hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
-        chilled_water_loop = model.add_chw_loop(nil,
-                                                chw_pumping_type,
-                                                chiller_cooling_type,
-                                                chiller_condenser_type,
-                                                chiller_compressor_type,
-                                                chiller_capacity_guess)
-        chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
-                                                
-        model.add_doas(nil, 
-                       nil,
-                       hot_water_loop, 
-                       chilled_water_loop,
-                       HelperMethods.zones_with_thermostats(model.getThermalZones),
-                       vav_operation_schedule,
-                       doas_oa_damper_schedule,
-                       doas_fan_maximum_flow_rate,
-                       doas_economizer_control_type)
+      # [2] PLANT LOOPS
+          # [1] Hot Water Plant Loop with:
+              # [1] District on Supply Side
+              # [1] Coil Heating Water on Demand Side
+          # [1] Chilled Water Plant Loop with:
+              # [1] District on Supply Side
+              # [1] Coil Cooling Water on Demand Side
+      # [1] ZONE EQUIPMENT
+          # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
+              # [1] Coil Heating Water
+              # [1] Coil Cooling Water      
+      
+      chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
+      chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
+      chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
+      chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
+      chiller_capacity_guess = nil
+      
+      vav_operation_schedule = nil
+      doas_oa_damper_schedule = nil
+      doas_fan_maximum_flow_rate = nil
+      doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
+      
+      hot_water_loop = model.add_hw_loop('NaturalGas')
+      hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
+      chilled_water_loop = model.add_chw_loop(nil,
+                                              chw_pumping_type,
+                                              chiller_cooling_type,
+                                              chiller_condenser_type,
+                                              chiller_compressor_type,
+                                              chiller_capacity_guess)
+      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
+                                              
+      model.add_doas(nil, 
+                     nil,
+                     hot_water_loop, 
+                     chilled_water_loop,
+                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                     vav_operation_schedule,
+                     doas_oa_damper_schedule,
+                     doas_fan_maximum_flow_rate,
+                     doas_economizer_control_type)
 
     when "District Ambient Water_Electric"
         runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
         return false    
     when "District Ambient Water_District Chilled Water"
-        runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
-        return false    
+      runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
+      return false    
     when "Gas_District Ambient Water"
-        runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
-        return false    
+      runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
+      return false    
     when "Electric_District Ambient Water"
-        runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
-        return false    
+      runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
+      return false    
     when "District Hot Water_District Ambient Water"
-        runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
-        return false    
+      runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
+      return false    
     end
 
     return true
@@ -888,30 +1015,62 @@ def apply_residential(model, runner, heating_source, cooling_source)
   
   result = true
   
-  living_space_type, basement_space_type = get_space_types(model)
-  living_thermal_zone, basement_thermal_zone = get_thermal_zones(model)
- 
-  result = result && apply_residential_space_type(living_space_type, runner)
-  result = result && apply_residential_space_type(basement_space_type, runner)
-  result = result && apply_residential_characteristics(model, living_space_type, runner)
-  result = result && apply_residential_constructions(model, living_space_type, basement_space_type, runner)
-  result = result && apply_residential_appliances(model, living_space_type, runner)
-  result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner)
-  result = result && apply_residential_mels(model, living_space_type, basement_space_type, runner)
-  result = result && apply_residential_hvac(model, living_space_type, living_thermal_zone, basement_thermal_zone, runner)
-  # result = result && apply_residential_dhw(model, ...)
+  building_space_type = model.getBuilding.standardsBuildingType.get
+  number_of_residential_units = model.getBuilding.standardsNumberOfLivingUnits.get.to_i
+  num_spaces = model.getSpaces.length.to_i
+  units_per_space = number_of_residential_units.to_f / num_spaces.to_f
   
-  model.getSpaceTypes.each do |space_type|
-    if space_type.spaces.empty?
-      space_type.remove
+  runner.registerValue('res_units', number_of_residential_units, 'count')
+  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')
+  
+  living_thermal_zones, basement_thermal_zone = get_thermal_zones(model)
+    
+  if basement_thermal_zone.nil?
+    runner.registerValue('has_basement', 0, 'bool')
+  else
+    runner.registerValue('has_basement', 1, 'bool')
+  end    
+    
+  if building_space_type == "Single-Family"
+    model.getSpaces.each do |space|
+      next if space.name.to_s.include? "Story 0 Space"
+      space.setThermalZone(living_thermal_zones[0]) # Assign the living thermal zone to story!=0
     end
-  end   
+    living_thermal_zones = [living_thermal_zones[0]]
+  else
+    unless basement_thermal_zone.nil?
+      living_thermal_zones << basement_thermal_zone
+    end
+  end
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
       thermal_zone.remove
     end
+  end
+  
+  model.getSpaceTypes.each do |space_type|
+    if space_type.spaces.empty?
+      space_type.remove
+    end
   end  
+  
+  result = result && apply_weather(model, runner)
+  result = result && apply_residential_occupancy(model, building_space_type, runner)
+  result = result && apply_residential_foundations(model, building_space_type, basement_thermal_zone, runner)
+  result = result && apply_residential_floors(model, building_space_type, runner)
+  result = result && apply_residential_ceilings(model, building_space_type, runner)
+  result = result && apply_residential_walls(model, building_space_type, runner)
+  result = result && apply_residential_fenestration(model, building_space_type, runner)
+  living_thermal_zones.each do |living_thermal_zone|
+    result = result && apply_residential_dhw(model, building_space_type, living_thermal_zone, runner) # TODO: how can we get hot water loops on every zone so that we may have dishwasher and clothes washer on every space?
+  end
+  model.getSpaces.each do |space|  
+    result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
+  end
+  #result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner) # TODO: ResidentialLighting has not been updated yet.
+  result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
+  result = result && apply_residential_hvac(model, building_space_type, runner)
   
   applicable = true
   if heating_source == "NA" and cooling_source == "NA"
