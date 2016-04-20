@@ -55,12 +55,15 @@ class DenverCleaner < Cleaner
       number_of_stories = nil
     end
     
-    # DLM: NA for Denver
-    #if surface_elevation && roof_elevation
-    #  total_height = roof_elevation.to_f - surface_elevation.to_f
-    #elsif maximum_roof_height
-    #  total_height = maximum_roof_height.to_f
-    #end
+    if average_roof_height == 0
+      average_roof_height = nil
+    end
+    
+    if surface_elevation && roof_elevation
+      total_height = roof_elevation.to_f - surface_elevation.to_f
+    elsif average_roof_height
+      total_height = average_roof_height.to_f
+    end
     
     # DLM: maximum and minimum roof height do not appear to be reliable 
     #if roof_type.nil? && maximum_roof_height && minimum_roof_height
@@ -72,34 +75,33 @@ class DenverCleaner < Cleaner
     #    roof_type_source = "Inferred"
     #  end
     #end  
+
+    if number_of_stories.nil?
       
-    # DLM: NA for Denver  
-    #if number_of_stories.nil?
-    #  
-    #  num_floors_height = nil
-    #  if total_height
-    #    num_floors_height = total_height / assumed_floor_to_floor_height  
-    #  end
-    # 
-    #  num_floors_area = nil
-    #  if floor_area && footprint_area
-    #    num_floors_area = floor_area.to_f / footprint_area.to_f
-    #  end
-    #
-    #  if num_floors_height && num_floors_area
-    #    number_of_stories = num_floors_area.round # prefer the area based weighting as height based metric does not include basements
-    #    number_of_stories_source = "Inferred"
-    #  elsif num_floors_height
-    #    number_of_stories = num_floors_height.round
-    #    number_of_stories_source = "Inferred"
-    #  elsif num_floors_area
-    #    number_of_stories = num_floors_area.round
-    #    number_of_stories_source = "Inferred"
-    #  else
-    #    number_of_stories = 1
-    #    number_of_stories_source = "Inferred"
-    #  end
-    #end
+      num_floors_height = nil
+      if total_height
+        num_floors_height = total_height / assumed_floor_to_floor_height  
+      end
+     
+      num_floors_area = nil
+      if floor_area && footprint_area
+        num_floors_area = floor_area.to_f / footprint_area.to_f
+      end
+    
+      if num_floors_height && num_floors_area
+        number_of_stories = num_floors_area.round # prefer the area based weighting as height based metric does not include basements
+        number_of_stories_source = "Inferred"
+      elsif num_floors_height
+        number_of_stories = num_floors_height.round
+        number_of_stories_source = "Inferred"
+      elsif num_floors_area
+        number_of_stories = num_floors_area.round
+        number_of_stories_source = "Inferred"
+      else
+        number_of_stories = 1
+        number_of_stories_source = "Inferred"
+      end
+    end
     
     if number_of_stories.nil?
       number_of_stories = 1
@@ -422,14 +424,14 @@ class DenverCleaner < Cleaner
       end
     end
     
-    # DLM: Denver does not have a lot of height data but it does have number_of_stories
+    # DLM: Denver does not have number_of_stories but it does have number_of_stories
     
     # "minimum_roof_height": { "count": 0, "values": "No data", "percent": 0.0 }
-    # "average_roof_height": { "count": 0, "values": "No data", "percent": 0.0 }
+    # "average_roof_height": { "count": 22657, "values": "Min = 0.0, Max = 62.7888", "percent": 100.0 }
     # "maximum_roof_height": { "count": 0, "values": "No data", "percent": 0.0 }
     # "roof_elevation": { "count": 0, "values": "No data", "percent": 0.0 }
     # "surface_elevation": { "count": 19365, "values": "Min = 1566.924984, Max = 1653.838704", "percent": 100.0 }
-    # "number_of_stories": { "count": 19365, "values": "Min = 0, Max = 2", "percent": 100.0 }
+    # "number_of_stories": { "count": 0, "values": "No data", "percent": 0.0 }
     # "floor_area": { "count": 0, "values": "No data", "percent": 0.0 }
     
     # convert from feet to meters
