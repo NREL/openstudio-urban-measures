@@ -136,16 +136,34 @@ class DatapointsController < ApplicationController
             name = argument[:name].parameterize.underscore.to_sym
             #puts "name = #{name}"
             
+            if name == 'project_id'.to_sym
+              argument[:value] = project_hash[:id]
+            elsif name == 'project_name'.to_sym
+              argument[:value] = project_hash[:name]
+            end
+            
             value = project_hash[name]
             if value
               #puts "Setting '#{name}' to '#{value}' based on project level properties" 
               argument[:value] = value
             end
             
+            if name == 'region_id'.to_sym
+              argument[:value] = region_hash[:id]
+            elsif name == 'region_name'.to_sym
+              argument[:value] = region_hash[:name]              
+            end
+            
             value = region_hash[name]
             if value
               #puts "Setting '#{name}' to '#{value}' based on region level properties" 
               argument[:value] = value
+            end
+            
+            if name == 'building_id'.to_sym
+              argument[:value] = region_hash[:id]
+            elsif name == 'building_name'.to_sym
+              argument[:value] = building_hash[:name]               
             end
             
             value = building_hash[name]

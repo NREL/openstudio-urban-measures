@@ -1,4 +1,4 @@
 json.array!(@projects) do |project|
-  json.extract! project, :id
+  json.set! :id, project.id.to_s
   json.url project_url(project, format: :json)
 end

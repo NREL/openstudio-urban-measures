@@ -1,9 +1,10 @@
 json.set! :workflow do
   json.set! :id, @workflow.id.to_s
+  json.set! :project_id, @workflow.project.id.to_s
   json.extract! @workflow, :created_at, :updated_at
 
   @workflow.attributes.keys.each do |key|
-    unless %w(created_at updated_at _id workflow_file).include? key
+    unless %w(created_at updated_at _id workflow_file project_id).include? key
       json.set! key, @workflow[key]
     end
   end

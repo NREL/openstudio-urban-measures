@@ -33,7 +33,13 @@ class Runner
   
     workflows = JSON.parse(response.body, :symbolize_names => true)
     workflows.each do |workflow|
-      result << workflow[:id]
+
+      project_id = workflow[:project_id]
+      if project_id == @project_id
+        result << workflow[:id]
+      else
+        puts "skipping workflow #{workflow[:id]} since it is not associated with project #{@project_id}"
+      end
     end
   
     return result
@@ -76,6 +82,9 @@ class Runner
     # connect to database, get list of all building and workflow ids
     all_building_ids = get_all_building_ids
     all_workflow_ids = get_all_workflow_ids
+    
+    puts "#{all_building_ids.size} buildings"
+    puts "#{all_workflow_ids.size} workflows"
 
     # loop over all combinations
     all_building_ids.each do |building_id|
