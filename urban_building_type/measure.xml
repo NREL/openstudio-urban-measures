@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>668230cd-4f69-437e-be31-ad88a62ea9a7</version_id>
-  <version_modified>20160419T165308Z</version_modified>
+  <version_id>0947de60-cc32-4ada-82d6-9fcaf1ba2032</version_id>
+  <version_modified>20160420T174959Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -132,13 +132,7 @@
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>ED5934AB</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>5734B44A</checksum>
+      <checksum>39CB1B29</checksum>
     </file>
     <file>
       <version>
@@ -149,19 +143,25 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>1A15FAD3</checksum>
-    </file>
-    <file>
-      <filename>apply_residential.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>460F71F1</checksum>
+      <checksum>D97822E3</checksum>
     </file>
     <file>
       <filename>util.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
       <checksum>E6BC45C8</checksum>
+    </file>
+    <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>59D57CAE</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C7C45657</checksum>
     </file>
   </files>
 </measure>

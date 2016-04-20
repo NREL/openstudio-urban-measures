@@ -1011,6 +1011,29 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
     
 end
 
+def zone_is_finished(zone)
+    # FIXME: Ugly hack until we can get finished zones from OS
+    # if zone.name.to_s == Constants.LivingZone or zone.name.to_s == Constants.FinishedBasementZone
+    if zone.name.to_s == Constants.LivingZone or zone.name.to_s == Constants.FinishedBasementZone or zone.name.to_s.include? "Story" # URBANopt hack: zone.name.to_s.include? "Story" ensures always finished zone
+        return true
+    end
+    return false
+end
+
+def get_master_and_slave_zones(model)
+  master_zones = []
+  slave_zones = []
+  model.getThermalZones.each do |thermal_zone|
+    next unless zone_is_finished(thermal_zone)
+    if thermal_zone.thermostatSetpointDualSetpoint.is_initialized
+      master_zones << thermal_zone
+    else
+      slave_zones << thermal_zone
+    end
+  end
+  return master_zones, slave_zones
+end
+
 def apply_residential(model, runner, heating_source, cooling_source)
   
   result = true
@@ -1020,28 +1043,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
   num_spaces = model.getSpaces.length.to_i
   units_per_space = number_of_residential_units.to_f / num_spaces.to_f
   
-  runner.registerValue('res_units', number_of_residential_units, 'count')
-  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')
-  
   living_thermal_zones, basement_thermal_zone = get_thermal_zones(model)
-    
-  if basement_thermal_zone.nil?
-    runner.registerValue('has_basement', 0, 'bool')
-  else
-    runner.registerValue('has_basement', 1, 'bool')
-  end    
-    
-  if building_space_type == "Single-Family"
-    model.getSpaces.each do |space|
-      next if space.name.to_s.include? "Story 0 Space"
-      space.setThermalZone(living_thermal_zones[0]) # Assign the living thermal zone to story!=0
-    end
-    living_thermal_zones = [living_thermal_zones[0]]
-  else
-    unless basement_thermal_zone.nil?
-      living_thermal_zones << basement_thermal_zone
-    end
-  end
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
@@ -1062,15 +1064,16 @@ def apply_residential(model, runner, heating_source, cooling_source)
   result = result && apply_residential_ceilings(model, building_space_type, runner)
   result = result && apply_residential_walls(model, building_space_type, runner)
   result = result && apply_residential_fenestration(model, building_space_type, runner)
-  living_thermal_zones.each do |living_thermal_zone|
-    result = result && apply_residential_dhw(model, building_space_type, living_thermal_zone, runner) # TODO: how can we get hot water loops on every zone so that we may have dishwasher and clothes washer on every space?
+  result = result && apply_residential_hvac(model, building_space_type, runner)
+  master_zones, slave_zones = get_master_and_slave_zones(model)
+  master_zones.each do |master_zone|
+    result = result && apply_residential_dhw(model, building_space_type, master_zone, runner)
   end
-  model.getSpaces.each do |space|  
+  model.getSpaces.each do |space|
     result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
   end
   #result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner) # TODO: ResidentialLighting has not been updated yet.
   result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
-  result = result && apply_residential_hvac(model, building_space_type, runner)
   
   applicable = true
   if heating_source == "NA" and cooling_source == "NA"
@@ -1082,6 +1085,11 @@ def apply_residential(model, runner, heating_source, cooling_source)
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source)
   end
+  
+  runner.registerValue('bldg_use', building_space_type)
+  runner.registerValue('res_units', number_of_residential_units, 'count')
+  runner.registerValue('num_spaces', num_spaces, 'spaces')
+  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')    
   
   return result
     

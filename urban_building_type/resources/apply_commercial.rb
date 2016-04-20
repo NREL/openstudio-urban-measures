@@ -1139,6 +1139,8 @@ end
 
 def apply_commercial(model, runner, heating_source, cooling_source)
 
+  num_spaces = model.getSpaces.length.to_i
+
   building_type, num_floors, floor_area = prototype_building_type(model, runner)
   building_vintage = '90.1-2010'
   climate_zone = 'ASHRAE 169-2006-5A'
@@ -1191,6 +1193,9 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area}'.")
     result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
   end  
+  
+  runner.registerValue('bldg_use', building_type)
+  runner.registerValue('num_spaces', num_spaces, 'spaces')
   
   return result
     

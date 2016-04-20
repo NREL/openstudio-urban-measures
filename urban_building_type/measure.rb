@@ -97,11 +97,6 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       return false
     end
     standards_building_type = building_space_type.get.standardsBuildingType.get
-    runner.registerValue('bldg_use', standards_building_type.to_s.downcase.gsub(" ","_").gsub("-","_").gsub("(","_").gsub(")","_"), 'bldgtype')
-    
-    num_spaces = model.getSpaces.length.to_i
-    puts num_spaces
-    runner.registerValue('num_spaces', num_spaces, 'spaces')
     
     residential = false
     if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
