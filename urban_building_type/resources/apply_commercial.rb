@@ -52,7 +52,7 @@ class OpenStudio::Model::Model
         self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
         self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
         self.set_sizing_parameters(building_type, building_vintage)
-        self.yearDescription.get.setDayofWeekforStartDay('Sunday')
+        self.getYearDescription.setDayofWeekforStartDay('Sunday')
         
         # Perform a sizing run
         if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
@@ -905,17 +905,23 @@ def prototype_building_type(model, runner)
   building_type = nil
   num_floors = model.getBuildingStorys.length
   floor_area = model.getBuilding.floorArea
+  
   case standards_building_type
   when "Single-Family"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Multifamily (2 to 4 units)"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Multifamily (5 or more units)"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Mobile Home"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Vacant"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Office"
 
     size = office_size(floor_area, runner)
@@ -928,15 +934,18 @@ def prototype_building_type(model, runner)
     end
     
   when "Laboratory"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Nonrefrigerated warehouse"
     
     building_type = 'Warehouse'
     
   when "Food sales"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Public order and safety"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Outpatient health care"
     
     building_type = 'Outpatient'
@@ -946,19 +955,24 @@ def prototype_building_type(model, runner)
     building_type = 'Warehouse'
     
   when "Religious worship"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Public assembly"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Education"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Food service"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Inpatient health care"
 
     building_type = 'Hospital'
   
   when "Nursing"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Lodging"
     
     size = hotel_size(floor_area, runner)
@@ -973,15 +987,18 @@ def prototype_building_type(model, runner)
     building_type = 'RetailStripmall'
     
   when "Enclosed mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Retail other than mall"
     
     building_type = 'RetailStandalone'
     
   when "Service"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
+    building_type = 'MediumOffice'
   when "Other"
-    runner.registerError("#{standards_building_type} is not a commercial building type")      
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")    
+    building_type = 'MediumOffice'
   else
     runner.registerError("Unknown building type #{standards_building_type}")
   end
@@ -994,7 +1011,7 @@ end
 def map_space_type(space_type, runner)
   
   standards_building_type = space_type.standardsBuildingType.get
-  standards_space_type = space_type.standardsSpaceType
+  standards_space_type = space_type.standardsSpaceType.get
   
   new_building_type = standards_building_type
   new_space_type = standards_space_type
@@ -1002,15 +1019,25 @@ def map_space_type(space_type, runner)
   floor_area = space_type.model.getBuilding.floorArea
   case standards_building_type
   when "Single-Family"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Multifamily (2 to 4 units)"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Multifamily (5 or more units)"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Mobile Home"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Vacant"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Office"
     new_building_type = 'Office' 
     
@@ -1024,15 +1051,21 @@ def map_space_type(space_type, runner)
     end
     
   when "Laboratory"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Nonrefrigerated warehouse"
     
     new_space_type = 'Warehouse - med/blk'
     
   when "Food sales"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Public order and safety"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Outpatient health care"
     
     new_space_type = 'Hospital - exam'
@@ -1042,19 +1075,29 @@ def map_space_type(space_type, runner)
     new_space_type = 'Warehouse - med/blk'
     
   when "Religious worship"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Public assembly"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Education"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Food service"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Inpatient health care"
     
     new_space_type = 'Hospital - exam'
     
   when "Nursing"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Lodging"
     new_building_type = 'Lodging' 
     
@@ -1070,15 +1113,21 @@ def map_space_type(space_type, runner)
     new_space_type = 'Retail'
     
   when "Enclosed mall"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Retail other than mall"
     
     new_space_type = 'Retail'
     
   when "Service"
-    runner.registerError("#{standards_building_type} is not a commercial building type")
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   when "Other"
-    runner.registerError("#{standards_building_type} is not a commercial building type")      
+    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")  
+    new_building_type = 'Office' 
+    new_space_type = 'WholeBuilding - Md Office'
   else
     runner.registerError("Unknown building type #{standards_building_type}")
   end
