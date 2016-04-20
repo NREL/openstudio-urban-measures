@@ -1,6 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_datapoint, only: [:show, :edit, :update, :destroy]
+  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -165,7 +165,7 @@ class DatapointsController < ApplicationController
         format.html { render json: result }
         format.json { render json: result }
       else
-        format.html { render action: 'show' }
+        format.html { render json: { error: @error_message }, status: :unprocessable_entity }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end
