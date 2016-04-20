@@ -2,8 +2,9 @@
 
 require 'json'
 require 'net/http'
+require 'fileutils'
 
-openstudio_2_0 = "E:/openstudio-2-0c/build"
+openstudio_2_0 = "E:/openstudio-2-0/build"
 
 city_db_url = "http://localhost:3000"
 #city_db_url = "http://insight4.hpc.nrel.gov:8081/"
@@ -39,8 +40,8 @@ def configure(workflow, datapoint, building, region)
   # configure with datapoint last
   workflow = merge(workflow, datapoint)
   
-  # run dir is datapoint id
-  workflow[:run_directory] = "./#{datapoint[:id]}"
+  # weather_file comes from the region properties
+  workflow[:weather_file] = region[:properties][:weather_file_name]
   
   return workflow
 end
@@ -59,21 +60,21 @@ region_json = {:properties=>{:weather_file_name=>"USA_CA_San.Francisco.Intl.AP.7
 # configure the osw with building_json
 baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json)
 
+# set up the directory
+baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/#{datapoint_id}_baseline/")
+FileUtils.rm_rf(baseline_osw_dir)
+FileUtils.mkdir_p(baseline_osw_dir)
+
 # save the configured osw
-baseline_osw_path = File.join(File.dirname(__FILE__), "/run/#{datapoint_id}_baseline.osw")
+baseline_osw_path = "#{baseline_osw_dir}/in.osw"
 File.open(baseline_osw_path, 'w') do |f|
   f << JSON.generate(baseline_osw)
 end
   
 # run it 
-ruby = File.join(openstudio_2_0, "Ruby-prefix/src/Ruby/bin/ruby")
 include = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/")
-cli = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/openstudio_cli.rb")
+run_script = File.join(File.dirname(__FILE__), "run.rb")
 
-#command = "#{ruby} -I #{include} #{cli} run -w #{baseline_osw_path}"
-#puts command
-#system(command)
-
-command = "ruby #{cli} run --gem_path C:/ruby-2.0.0-p594-x64-mingw32/lib/ruby/gems/2.0.0  -w #{baseline_osw_path}"
+command = "#{RbConfig.ruby} -I #{include} #{run_script} #{baseline_osw_path}"
 puts command
 system(command)

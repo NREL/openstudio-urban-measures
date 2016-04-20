@@ -1,9 +1,10 @@
 {
   "seed_file": null,
+  "weather_file": null,
   "root_directory": null,
-  "run_directory": null,
-  "file_paths": ["./../weather/"],
-  "measure_paths": ["./../"],
+  "run_directory": ".",
+  "file_paths": ["./../../weather/"],
+  "measure_paths": ["./../../"],
 	"steps": [
 		{
 			"measure_dir_name": "ChangeBuildingLocation",
