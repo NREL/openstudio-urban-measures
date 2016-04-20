@@ -166,16 +166,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         model.getBuilding.setStandardsBuildingType(space_type)
         model.getBuilding.setRelocatable(false)
       end
-    end
       
-    if number_of_residential_units
-      model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+      if number_of_residential_units
+        model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
+      end
+      
+      model.getBuilding.setStandardsNumberOfStories(number_of_stories)
+      model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
+      model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
+      #model.getBuilding.setNominalFloortoCeilingHeight
     end
-    
-    model.getBuilding.setStandardsNumberOfStories(number_of_stories)
-    model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories_above_ground)
-    model.getBuilding.setNominalFloortoFloorHeight(floor_to_floor_height)
-    #model.getBuilding.setNominalFloortoCeilingHeight
       
     spaces = []
     if create_method == :space_per_floor
