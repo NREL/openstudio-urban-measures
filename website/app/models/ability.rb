@@ -42,6 +42,7 @@ class Ability
       can :export, :api
       can :workflow, :api
       can :workflow_file, :api
+      can :instance_workflow, :datapoint
     # unauthenticated
     else
       can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry, Project]

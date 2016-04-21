@@ -112,6 +112,7 @@ class DatapointsController < ApplicationController
 
   # create datapoints for workflow
   def instance_workflow
+    logger.info("instance_workflow, @datapoint = #{@datapoint}")
     @error_message = ''
     error = false
 
@@ -213,6 +214,7 @@ class DatapointsController < ApplicationController
   # Use callbacks to share common setup or constraints between actions.
   def set_datapoint
     @datapoint = Datapoint.find(params[:id])
+    logger.info("@datapoint = #{@datapoint}")
   end
 
   # Get Workflows

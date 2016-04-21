@@ -60,6 +60,7 @@ class Runner
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
     
+    puts "datapoint_id = #{datapoint_id}"
     puts response.body
     fail "hi"
     workflow = JSON.parse(response.body, :symbolize_names => true)
