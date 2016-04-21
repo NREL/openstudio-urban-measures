@@ -34,6 +34,7 @@ class Ability
     if user.has_role? :admin
       # an admin can do everything
       can :manage, :all
+
     # authenticated user
     elsif !user.new_record?
       can :manage, [Project, Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
@@ -42,13 +43,12 @@ class Ability
       can :export, :api
       can :workflow, :api
       can :workflow_file, :api
-      can :instance_workflow, :datapoint
     # unauthenticated
     else
       can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry, Project]
       can :home, AdminController
       can :search, :api
-      # any API actions?
+      can :instance_workflow, Datapoint
     end
   end
 end

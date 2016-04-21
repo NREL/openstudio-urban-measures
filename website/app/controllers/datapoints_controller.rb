@@ -111,8 +111,11 @@ class DatapointsController < ApplicationController
   end
 
   # create datapoints for workflow
+  # GET /datapoints/1/instance_workflow
+  # GET /datapoints/1/instance_workflow.json
   def instance_workflow
     logger.info("instance_workflow, @datapoint = #{@datapoint}")
+    logger.info("CURRENT USER!!!  #{current_user}")
     @error_message = ''
     error = false
 

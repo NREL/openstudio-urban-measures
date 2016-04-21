@@ -248,6 +248,25 @@ namespace :testing do
     end
   end
 
+  # get instance workflow for a datapoint
+  desc 'GET instance_workflow'
+  task instance_workflow: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    datapoint = Datapoint.first
+    puts "Datapoint: #{datapoint.id.to_s}"
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["datapoints/#{datapoint.id.to_s}/instance_workflow"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
 
   desc 'POST Region Search'
   task region_search: :environment do

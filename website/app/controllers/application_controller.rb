@@ -5,6 +5,9 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session, if: proc { |c| c.request.format == 'application/json' }
 
   rescue_from CanCan::AccessDenied do |exception|
-    redirect_to root_url, alert: exception.message
+	 		respond_to do |format|
+	    format.html { redirect_to root_url, alert: exception.message }
+	    format.json { render json: { error: 'You do not have permission to access this resource.'}, :status => :forbidden }
+	  end
   end
 end
