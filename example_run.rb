@@ -75,6 +75,6 @@ end
 include = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/")
 run_script = File.join(File.dirname(__FILE__), "run.rb")
 
-command = "#{RbConfig.ruby} -I #{include} #{run_script} #{baseline_osw_path}"
+command = "#{RbConfig.ruby} -I #{include} #{run_script} #{baseline_osw_path} #{city_db_url} #{datapoint_id} #{project_name}"
 puts command
 system(command)

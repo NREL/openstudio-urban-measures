@@ -10,7 +10,7 @@ class Runner
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_buildings = Float::INFINITY
-    @max_buildings = 4
+    @max_buildings = 1
     @num_parallel = 4
   end
     
@@ -108,6 +108,19 @@ class Runner
         # datapoint is not run, get the workflow
         # this is the merged workflow with the building properties merged in to the template workflow
         workflow = get_workflow(datapoint_id)
+        
+        workflow[:steps].each do |step|
+          step[:arguments].each do |argument|
+            if argument[:name] == 'city_db_url'
+              argument[:value] = @url
+            end
+            
+            # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
+            if argument[:name] == 'weather_file_name'
+              workflow[:weather_file] = argument[:value]
+            end
+          end
+        end
 
         # save workflow
         osw_dir = File.join(File.dirname(__FILE__), "/run/datapoint_#{datapoint_id}/")
@@ -136,7 +149,7 @@ class Runner
       
       datapoint_id = md[1]
       
-      command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}'"
+      command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
       puts command
       system(command)
     end
@@ -144,7 +157,7 @@ class Runner
 end
 
 runner = Runner.new
-#runner.create_osws
+runner.create_osws
 runner.run_osws
 
 
