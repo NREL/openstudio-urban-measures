@@ -1,4 +1,5 @@
 require 'rest-client'
+require 'parallel'
 require 'json'
 
 class Runner
@@ -8,6 +9,9 @@ class Runner
     @project_id = '570d6b12c44c8d1e3800030b'
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
+    @max_buildings = Float::INFINITY
+    @max_buildings = 4
+    @num_parallel = 4
   end
     
   def get_all_building_ids()
@@ -55,14 +59,9 @@ class Runner
   end
 
   def get_workflow(datapoint_id)
-    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
-    
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
-    
-    puts "datapoint_id = #{datapoint_id}"
-    puts response.body
-    fail "hi"
+
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
   end
@@ -88,7 +87,12 @@ class Runner
     puts "#{all_workflow_ids.size} workflows"
 
     # loop over all combinations
+    num_buildings = 0
     all_building_ids.each do |building_id|
+      
+      num_buildings += 1
+      break if @max_buildings < num_buildings
+    
       all_workflow_ids.each do |workflow_id|
         
         # get data point for each pair of building_id, workflow_id
@@ -112,7 +116,7 @@ class Runner
 
         osw_path = "#{osw_dir}/in.osw"
         File.open(osw_path, 'w') do |file|
-          file << workflow
+          file << JSON.generate(workflow)
         end
         
       end
@@ -120,30 +124,27 @@ class Runner
   end
   
   def run_osws
-    Dir.glob("./runs/*.osw").each do |osw_path|
-
-      workflow = JSON::load(osw_path)
-
-      begin
-        # run the osw
-        run(workflow)
-        
-        dencity_id = nil
-        
-        # things worked, post back to the database that this datapoint is done and point to dencity id
-        post_datapoint_success(workflow, dencity_id)
-      rescue
+  
+    dirs = Dir.glob("./run/*")
+    
+    Parallel.each(dirs, in_threads: @num_parallel) do |osw_dir|
       
-        # things broke, post back to the database that this datapoint failed
-        post_datapoint_failed(workflow)
-      end
+      md = /datapoint_(.*)/.match(osw_dir)
+      next if !md
       
+      osw_path = File.join(osw_dir, "in.osw")
+      
+      datapoint_id = md[1]
+      
+      command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}'"
+      puts command
+      system(command)
     end
   end
 end
 
 runner = Runner.new
-runner.create_osws
-
+#runner.create_osws
+runner.run_osws
 
 
