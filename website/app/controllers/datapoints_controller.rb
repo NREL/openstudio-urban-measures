@@ -114,29 +114,28 @@ class DatapointsController < ApplicationController
   # GET /datapoints/1/instance_workflow
   # GET /datapoints/1/instance_workflow.json
   def instance_workflow
-    logger.info("instance_workflow, @datapoint = #{@datapoint}")
-    logger.info("CURRENT USER!!!  #{current_user}")
+
     @error_message = ''
     error = false
 
-    result = get_clean_hash(@datapoint.workflow)
-    building_hash = get_clean_hash(@datapoint.building)
+    result = Workflow.get_clean_hash(@datapoint.workflow)
+    building_hash = Workflow.get_clean_hash(@datapoint.building)
     
     region_hash = {}
     if building_hash[:region_source_name] && building_hash[:region_source_ids]
       building_hash[:region_source_ids].each do |region_source_id|
         region = Region.where(source_id: region_source_id, source_name: building_hash[:region_source_name]).first
-        region_hash = get_clean_hash(region)
+        region_hash = Workflow.get_clean_hash(region)
       end
     end
     
     project_hash = {}
     if @datapoint.building.project
-      project_hash = get_clean_hash(@datapoint.building.project)
+      project_hash = Workflow.get_clean_hash(@datapoint.building.project)
       
       if region_hash.empty?
         region = @datapoint.building.project.regions.first
-        region_hash = get_clean_hash(region)
+        region_hash = Workflow.get_clean_hash(region)
       end
     end    
     
@@ -187,8 +186,7 @@ class DatapointsController < ApplicationController
       end
     end
     
-    # DLM: how to get result into the json return?
-    
+    # DLM: how to get result into the json return?    
     respond_to do |format|
       if !error
         format.html { render json: result }
@@ -202,25 +200,7 @@ class DatapointsController < ApplicationController
 
   private
 
-  # DLM: this should be a common utility method, put it in models?
-  # Ideally this would recursively clean the object, seems like this should exist?
-  def get_clean_hash(object)
-    result = {}
-    if object
-      object.attributes.each do |key, value|
-        # convert object ids to strings
-        if key == '_id'
-          result[:id] = value.to_s
-        elsif value.class == BSON::ObjectId
-          result[key.parameterize.underscore.to_sym] = value.to_s
-        else
-          result[key.parameterize.underscore.to_sym] = value
-        end
-      end
-    end
-    return result
-  end
-  
+    
   # Use callbacks to share common setup or constraints between actions.
   def set_datapoint
     @datapoint = Datapoint.find(params[:id])

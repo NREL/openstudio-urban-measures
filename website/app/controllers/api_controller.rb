@@ -486,6 +486,57 @@ class ApiController < ApplicationController
     end
   end
 
+  # GET workflow file by workflow_id or datapoint_id
+  def retrieve_workflow_file
+    error = false
+    error_messages = []
+
+    if params[:datapoint_id]
+      @dp = Datapoint.where(id: params[:datapoint_id]).first
+      logger.info("!!!DATAPOINT: #{@dp}")
+      if !@dp.nil? 
+        @wf = @dp.workflow
+      else
+        error = true
+        error_messages << "No datapoint found matching id: #{params[:datapoint_id]}."
+      end
+    elsif params[:workflow_id]
+      @wf = Workflow.find(params[:workflow_id])
+    end
+    unless error
+      if @wf.nil?
+        error = true
+        error_messages << "No workflow found."
+      else
+        wf_file = @wf.workflow_file
+        if wf_file
+          the_file = Workflow.get_file_data(wf_file)
+          if the_file
+            encoded_file = Base64.strict_encode64(the_file)
+            @file_data = {}
+            @file_data['file_name'] = wf_file.file_name
+            @file_data['file'] = encoded_file
+
+          else
+            error = true
+            error_messages << 'file not found in database'
+          end
+        else
+          error = true
+          error_messages << 'file not found in database'
+        end
+      end
+    end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_messages, workflow: @wf }, status: :unprocessable_entity }
+      else
+        format.json { render json: {file_data: @file_data}, status: :ok }
+      end
+    end
+
+  end
+
   private
 
   # check authorization

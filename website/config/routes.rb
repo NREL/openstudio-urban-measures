@@ -33,6 +33,7 @@ Rails.application.routes.draw do
       get 'download_zipfile'
       get 'create_datapoints'
       get 'delete_datapoints'
+      get 'datapoints'
     end
   end
 
@@ -45,6 +46,7 @@ Rails.application.routes.draw do
     post 'project_search' => 'api#project_search'
     post 'datapoint' => 'api#datapoint'
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
+    get 'retrieve_workflow_file' => 'api#retrieve_workflow_file'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

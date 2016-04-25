@@ -1,6 +1,6 @@
 class WorkflowsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_workflow, only: [:show, :edit, :update, :destroy, :create_datapoints, :delete_datapoints]
+  before_action :set_workflow, only: [:show, :edit, :update, :destroy, :create_datapoints, :delete_datapoints, :datapoints]
 
   # GET /workflows
   # GET /workflows.json
@@ -151,6 +151,19 @@ class WorkflowsController < ApplicationController
     end
   end
 
+  # GET all datapoints associated with a workflow
+  def datapoints
+
+    @datapoints = @workflow.datapoints
+
+    respond_to do |format|
+      format.html {render action: 'datapoints'}
+      format.json {render 'datapoints/index'}
+    end
+
+
+  end
+
   # delete all datapoints associated with workflow
   def delete_datapoints
     datapoints = Datapoint.where(workflow_id: @workflow.id)
@@ -170,7 +183,7 @@ class WorkflowsController < ApplicationController
     file = @workflow.workflow_file
     raise 'file not found in database' unless file
 
-    file_data = get_file_data(file)
+    file_data = Workflow.get_file_data(file)
     if file_data
       send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment'
     else
@@ -208,20 +221,20 @@ class WorkflowsController < ApplicationController
     data
   end
 
-  # download a file
-  def get_file_data(file)
-    begin
-      file_data = nil
-      raise 'File not stored on the server' unless File.exist?("#{Rails.root}#{file.uri}")
-      file_data = File.read("#{Rails.root}#{file.uri}")
+  # download a file (moved to Workflow model)
+  # def get_file_data(file)
+  #   begin
+  #     file_data = nil
+  #     raise 'File not stored on the server' unless File.exist?("#{Rails.root}#{file.uri}")
+  #     file_data = File.read("#{Rails.root}#{file.uri}")
 
-      raise "Could not find file to download #{file.uri}" if file_data.nil?
-    rescue => e
-      flash[:notice] = "Could not find file to download #{file.uri}. #{e.message}"
-      logger.error "Could not find file to download #{file.uri}. #{e.message}"
-      redirect_to(:back)
-    end
+  #     raise "Could not find file to download #{file.uri}" if file_data.nil?
+  #   rescue => e
+  #     flash[:notice] = "Could not find file to download #{file.uri}. #{e.message}"
+  #     logger.error "Could not find file to download #{file.uri}. #{e.message}"
+  #     redirect_to(:back)
+  #   end
 
-    file_data
-  end
+  #   file_data
+  # end
 end

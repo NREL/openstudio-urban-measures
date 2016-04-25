@@ -267,6 +267,49 @@ namespace :testing do
     end
   end
 
+  # get workflow file by datapoint_id or workflow_id
+  desc 'GET workflow file'
+  task retrieve_workflow_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+
+    dp = proj.datapoints.first
+
+    wf = dp.workflow
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/retrieve_workflow_file?datapoint_id=#{dp.id.to_s}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
+
+  # get workflow datapoints
+  desc 'GET workflow datapoints'
+  task retrieve_workflow_datapoints: :environment do 
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+    wf = proj.workflows.first
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["workflows/#{wf.id.to_s}/datapoints"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
 
   desc 'POST Region Search'
   task region_search: :environment do

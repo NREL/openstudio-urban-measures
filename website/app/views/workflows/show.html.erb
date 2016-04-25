@@ -33,4 +33,4 @@
   <%= link_to 'Create Datapoints for All Buildings', create_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> <%= link_to 'Delete Datapoints for this workflow', delete_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> 
 </div>
 
-<p class="pad-top-20 workflow-text">There are <%= @datapoints.count %> datapoints created for this workflow.</p>
+<p class="pad-top-20 workflow-text">There are <%= link_to "#{@datapoints.count} datapoints", datapoints_workflow_path(@workflow) %> created for this workflow. </p>

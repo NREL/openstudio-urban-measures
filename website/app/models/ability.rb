@@ -39,16 +39,22 @@ class Ability
     elsif !user.new_record?
       can :manage, [Project, Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
       can :home, AdminController
+      can :manage, :api
       can :batch_upload, :api
       can :export, :api
       can :workflow, :api
       can :workflow_file, :api
+      can :retrieve_workflow_file, :api
+      can :retrieve_datapoint, :api
+      can :manage, User, :id => user.id
     # unauthenticated
     else
       can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry, Project]
       can :home, AdminController
       can :search, :api
+      # temporary:  need to 'check_auth' for access via API method for authenticated users only to have access to these methods:
       can :instance_workflow, Datapoint
+      can :datapoints, Workflow
     end
   end
 end
