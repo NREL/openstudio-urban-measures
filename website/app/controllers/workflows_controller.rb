@@ -134,6 +134,7 @@ class WorkflowsController < ApplicationController
     buildings.each do |bld|
       d = Datapoint.find_or_create_by(building_id: bld.id, workflow_id: @workflow.id)
       d.building = bld
+      d.project = @project
       d.workflow = @workflow
       d.save!
     end

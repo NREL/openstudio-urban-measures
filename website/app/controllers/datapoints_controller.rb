@@ -20,6 +20,8 @@ class DatapointsController < ApplicationController
     @datapoint = Datapoint.new
     @datapoint.building = params[:building]
     @datapoint.project = @datapoint.building.project
+    
+    # DLM: datapoint should have 0-1 workflows, is this setting @datapoint.workflows?
     @workflows = get_workflows
 
   end
@@ -41,6 +43,7 @@ class DatapointsController < ApplicationController
     error = false
     @error_message = ''
 
+    # DLM: does this hook the datapoint up to the project?  should we do the same for building and workflow?
     if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
       @project_id = params[:datapoint][:project_id]
     else
