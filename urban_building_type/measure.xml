@@ -1,9 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
+  <error>cannot load such file -- openstudio-standards</error>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>0947de60-cc32-4ada-82d6-9fcaf1ba2032</version_id>
-  <version_modified>20160420T174959Z</version_modified>
+  <version_id>47b9cd02-88e4-4c49-a0c6-a4c577084466</version_id>
+  <version_modified>20160425T154102Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -129,10 +130,16 @@
       <checksum>2AC80C71</checksum>
     </file>
     <file>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>E6BC45C8</checksum>
+    </file>
+    <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>39CB1B29</checksum>
+      <checksum>7D8A607D</checksum>
     </file>
     <file>
       <version>
@@ -143,25 +150,19 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>D97822E3</checksum>
-    </file>
-    <file>
-      <filename>util.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>E6BC45C8</checksum>
+      <checksum>C88E5107</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>59D57CAE</checksum>
+      <checksum>E2BDE170</checksum>
     </file>
     <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>C7C45657</checksum>
+      <checksum>CAE0ED7F</checksum>
     </file>
   </files>
 </measure>

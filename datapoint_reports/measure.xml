@@ -1,0 +1,96 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>datapoint_reports</name>
+  <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
+  <version_id>430c18a1-c809-4602-a298-4143f32d3b06</version_id>
+  <version_modified>20160425T163836Z</version_modified>
+  <xml_checksum>FB304155</xml_checksum>
+  <class_name>DatapointReports</class_name>
+  <display_name>DatapointReports</display_name>
+  <description>Updates Datapoint in CityDB with simulation results</description>
+  <modeler_description></modeler_description>
+  <arguments>
+    <argument>
+      <name>city_db_url</name>
+      <display_name>City Database Url</display_name>
+      <description>Url of the City Database</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
+    </argument>
+    <argument>
+      <name>user_name</name>
+      <display_name>User name</display_name>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>test@nrel.gov</default_value>
+    </argument>
+    <argument>
+      <name>password</name>
+      <display_name>Password</display_name>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>testing123</default_value>
+    </argument>
+    <argument>
+      <name>project_id</name>
+      <display_name>Project ID</display_name>
+      <description>Project ID to generate reports for.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>datapoint_id</name>
+      <display_name>Datapoint ID</display_name>
+      <description>Datapoint ID to generate reports for.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>Reporting.QAQC</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ReportingMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Automatic Report Generation</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>example_model.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>A0199A45</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.11.0</identifier>
+        <min_compatible>1.11.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>C6B0B49E</checksum>
+    </file>
+    <file>
+      <filename>datapoint_reports_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>7240ABF3</checksum>
+    </file>
+  </files>
+</measure>
