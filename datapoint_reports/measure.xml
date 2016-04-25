@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-  <version_id>430c18a1-c809-4602-a298-4143f32d3b06</version_id>
-  <version_modified>20160425T163836Z</version_modified>
+  <version_id>325f3f30-d9e4-4ac0-9e15-57c6af931025</version_id>
+  <version_modified>20160425T173648Z</version_modified>
   <xml_checksum>FB304155</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
@@ -76,6 +76,12 @@
       <checksum>A0199A45</checksum>
     </file>
     <file>
+      <filename>datapoint_reports_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>7240ABF3</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.11.0</identifier>
@@ -84,13 +90,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>C6B0B49E</checksum>
-    </file>
-    <file>
-      <filename>datapoint_reports_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>7240ABF3</checksum>
+      <checksum>6252FAA6</checksum>
     </file>
   </files>
 </measure>

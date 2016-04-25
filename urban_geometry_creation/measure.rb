@@ -152,8 +152,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
-    @runner.registerValue('below_ground_stories', number_of_stories_below_ground, 'count')
-    
     if floor_to_floor_height.nil?
       floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
     end

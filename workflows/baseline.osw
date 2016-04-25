@@ -45,6 +45,10 @@
 			]
 		},
 		{
+			"measure_dir_name": "ViewModel",
+			"arguments": []
+		},    
+		{
 			"measure_dir_name": "urban_building_type",
 			"arguments": [
         {
