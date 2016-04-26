@@ -311,6 +311,28 @@ namespace :testing do
     end
   end
 
+  # get buildings by workflow
+  desc 'GET workflow buildings'
+  task workflow_buildings: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+    wf = proj.workflows.first
+    puts "Request: api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
+
   desc 'POST Region Search'
   task region_search: :environment do
     # params:

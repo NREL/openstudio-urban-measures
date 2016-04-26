@@ -486,6 +486,41 @@ class ApiController < ApplicationController
     end
   end
 
+  # GET workflow_buildings
+  def workflow_buildings
+    # params are project_id and workflow_id
+    error = false
+    error_messages = []
+
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+      if params[:workflow_id]
+        @wf = @project.workflows.where(id: params[:workflow_id]).first
+      else
+        error = true
+        error_messages << "No workflow_id parameter provided."
+      end
+    else
+      error = true
+      error_messages << "No project_id parameter provided."
+    end
+    
+    unless error
+      @datapoints = @wf.datapoints
+      json_data = Geometry.build_geojson_from_datapoints(@datapoints)
+    end
+
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_messages}, status: :unprocessable_entity}
+      else
+        format.json { render json: json_data, status: :ok }
+      end
+    end
+
+
+  end
+
   # GET workflow file by workflow_id or datapoint_id
   def retrieve_workflow_file
     error = false
@@ -502,6 +537,9 @@ class ApiController < ApplicationController
       end
     elsif params[:workflow_id]
       @wf = Workflow.find(params[:workflow_id])
+    else
+      error = true
+      error_messages << "No datapoint_id or workflow_id parameter provided."
     end
     unless error
       if @wf.nil?

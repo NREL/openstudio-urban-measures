@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     post 'datapoint' => 'api#datapoint'
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
     get 'retrieve_workflow_file' => 'api#retrieve_workflow_file'
+    get 'workflow_buildings' => 'api#workflow_buildings'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get
