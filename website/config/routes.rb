@@ -50,6 +50,9 @@ Rails.application.routes.draw do
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
     get 'retrieve_workflow_file' => 'api#retrieve_workflow_file'
     get 'workflow_buildings' => 'api#workflow_buildings'
+    post 'datapoint_file' => 'api#datapoint_file'
+    get 'retrieve_datapoint_file' => 'api#retrieve_datapoint_file'
+    get 'delete_datapoint_file' => 'api#delete_datapoint_file'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

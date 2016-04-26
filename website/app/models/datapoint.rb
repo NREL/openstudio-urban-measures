@@ -58,20 +58,30 @@ class Datapoint
     error = false
     error_message = ''
 
-    # Overwrite file if one already exists
-    file_uri = "#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/#{filename}"
-    FileUtils.mkpath("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}") unless Dir.exist?("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}")
-    Dir.mkdir("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/") unless Dir.exist?("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/")
-
-    the_file = File.open("#{Rails.root}/#{file_uri}", 'wb') do |f|
-      if is_api
-        f.write(Base64.strict_decode64(file))
-      else
-        f.write(file.read)
-      end
+    # first check that file_name is unique
+    res = datapoint.datapoint_files.where(file_name: filename)
+    if res.size > 0
+      error = true
+      error_message = 'There is already a file uploaded with this file_name.'
     end
 
-    df, error, error_message = DatapointFile.add_from_path(file_uri)
+    unless error
+
+      # Overwrite file if one already exists
+      file_uri = "#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/#{filename}"
+      FileUtils.mkpath("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}") unless Dir.exist?("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}")
+      Dir.mkdir("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/") unless Dir.exist?("#{Rails.root}#{DATAPOINT_FILES_BASIC_PATH}#{datapoint.id}/")
+
+      the_file = File.open("#{Rails.root}/#{file_uri}", 'wb') do |f|
+        if is_api
+          f.write(Base64.strict_decode64(file))
+        else
+          f.write(file.read)
+        end
+      end
+
+      df, error, error_message = DatapointFile.add_from_path(file_uri)
+    end
 
     unless error
 

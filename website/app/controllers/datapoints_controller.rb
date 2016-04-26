@@ -38,6 +38,7 @@ class DatapointsController < ApplicationController
   def create
 
     @datapoint = Datapoint.new
+    @workflows = get_workflows
 
     logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
 
@@ -80,6 +81,7 @@ class DatapointsController < ApplicationController
   def update
 
     logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
+    @workflows = get_workflows
 
     error = false
     @error_message = ''

@@ -528,7 +528,6 @@ class ApiController < ApplicationController
 
     if params[:datapoint_id]
       @dp = Datapoint.where(id: params[:datapoint_id]).first
-      logger.info("!!!DATAPOINT: #{@dp}")
       if !@dp.nil? 
         @wf = @dp.workflow
       else
@@ -575,6 +574,133 @@ class ApiController < ApplicationController
 
   end
 
+  # POST /api/datapoint_file.json
+  def datapoint_file
+    # expects workflow_id and file params
+    error = false
+    error_messages = []
+    clean_params = datapoint_file_params
+
+    @datapoint = Datapoint.find(clean_params[:datapoint_id])
+
+    if !@datapoint
+      error = true
+      error_messages << "Datapoint #{@datapoint.id} could not be found."
+    else
+      # save to file_path:
+      if clean_params[:file_data] && clean_params[:file_data][:file_name]
+        filename = clean_params[:file_data][:file_name]
+        file = clean_params[:file_data][:file]
+
+        @datapoint, error, error_message = Datapoint.add_datapoint_file(file, filename, @datapoint, true)
+
+      else
+        error = true
+        error_messages << 'No file data to save.'
+      end
+    end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_message, datapoint: @datapoint }, status: :unprocessable_entity }
+      else
+        format.json { render 'datapoint_files', status: :created, location: datapoint_url(@datapoint) }
+      end
+    end
+  end
+
+  # GET /api/retrieve_datapoint_file.json
+  # retrieve datapoint_file by datapoint_id and file_name
+  def retrieve_datapoint_file
+    error = false
+    error_messages = []
+
+    if params[:datapoint_id]
+      @dp = Datapoint.where(id: params[:datapoint_id]).first
+      if @dp.nil? 
+        error = true
+        error_messages << "No datapoint found matching id: #{params[:datapoint_id]}."
+      end
+    else
+      error = true
+      error_messages << "No datapoint_id parameter provided."
+    end
+    unless error
+      if params[:file_name]
+        @df = @dp.datapoint_files.where(file_name: params[:file_name]).first
+        if @df.nil?
+          error = true
+          error_messages << "No datapoint_file found in database."
+        else
+          the_file = Workflow.get_file_data(@df)
+          if the_file
+            encoded_file = Base64.strict_encode64(the_file)
+            @file_data = {}
+            @file_data['file_name'] = @df.file_name
+            @file_data['file'] = encoded_file
+          else
+            error = true
+            error_message << "No file found."
+          end
+        end
+      else
+        error = true
+        error_message << "No file_name parameter provided."
+      end
+    end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_messages, datapoint: @dp }, status: :unprocessable_entity }
+      else
+        format.json { render json: {file_data: @file_data}, status: :ok }
+      end
+    end
+  end
+
+  # Delete datapoint file by datapoint_id and file_name
+  # TODO: make this a delete? (a GET for now)
+  def delete_datapoint_file
+    error = false
+    error_messages = []
+
+    if params[:datapoint_id]
+      @dp = Datapoint.where(id: params[:datapoint_id]).first
+      if @dp.nil? 
+        error = true
+        error_messages << "No datapoint found matching id: #{params[:datapoint_id]}."
+      end
+    else
+      error = true
+      error_messages << "No datapoint_id parameter provided."
+    end
+    unless error
+      if params[:file_name]
+        @df = @dp.datapoint_files.where(file_name: params[:file_name]).first
+        if @df.nil?
+          error = true
+          error_messages << "No datapoint_file found in database."
+        else
+          if File.exist?("#{Rails.root}#{@df.uri}")
+            File.delete("#{Rails.root}#{@df.uri}")
+          end
+          @df.delete
+        end
+      else
+        error = true
+        error_message << "No file_name parameter provided."
+      end
+    end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_messages, datapoint: @dp }, status: :unprocessable_entity }
+      else
+        format.json { render json: 'file deleted' , status: :ok }
+      end
+    end
+
+
+  end
+
+
   private
 
   # check authorization
@@ -615,5 +741,10 @@ class ApiController < ApplicationController
   def file_params
     params.require(:workflow_id)
     params.permit(:workflow_id, file_data: [:file_name, :file])
+  end
+
+    def datapoint_file_params
+    params.require(:datapoint_id)
+    params.permit(:datapoint_id, file_data: [:file_name, :file])
   end
 end

@@ -9,6 +9,8 @@ class DatapointFile
 
   embedded_in :datapoint
 
+  validates_uniqueness_of :file_name, scope: :datapoint_id
+
   def self.add_from_path(file_path)
     error = false
     error_message = ''
