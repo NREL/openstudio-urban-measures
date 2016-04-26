@@ -26,6 +26,8 @@ Rails.application.routes.draw do
   resources :datapoints do
     member do
       get 'instance_workflow'
+      get 'download_file'
+      get 'delete_file'
     end
   end
   resources :workflows do

@@ -1,6 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow]
+  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow, :download_file, :delete_file]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -52,8 +52,15 @@ class DatapointsController < ApplicationController
     end
 
     unless error
-      # TODO: eventually check datapoint param
+      the_file = params[:datapoint][:file] ? params[:datapoint][:file] : nil
+      params[:datapoint] = params[:datapoint].except(:file)
       @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
+
+    unless error
+      if the_file && the_file.class.name == 'ActionDispatch::Http::UploadedFile'
+        @datapoint, error, @error_message = Datapoint.add_datapoint_file(the_file, the_file.original_filename, @datapoint)
+      end
     end
 
     respond_to do |format|
@@ -85,7 +92,15 @@ class DatapointsController < ApplicationController
     end
 
     unless error
+      the_file = params[:datapoint][:file] ? params[:datapoint][:file] : nil
+      params[:datapoint] = params[:datapoint].except(:file)
       @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
+
+    unless error
+      if the_file && the_file.class.name == 'ActionDispatch::Http::UploadedFile'
+        @datapoint, error, @error_message = Datapoint.add_datapoint_file(the_file, the_file.original_filename, @datapoint)
+      end
     end
 
     respond_to do |format|
@@ -198,6 +213,37 @@ class DatapointsController < ApplicationController
     end
   end
 
+  # download a related datapoint file
+  def download_file
+    file = @datapoint.datapoint_files.find(params[:file_id])
+    raise 'file not found in database' unless file
+
+    file_data = Datapoint.get_file_data(file)
+    if file_data
+      send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment'
+    else
+      raise 'file not found in database'
+    end
+  end
+
+  # delete datapoint file
+  def delete_file
+    file = @datapoint.datapoint_files.find(params[:file_id])
+    raise 'file not found in database' unless file
+
+    if File.exist?("#{Rails.root}#{file.uri}")
+      File.delete("#{Rails.root}#{file.uri}")
+    end
+    df = @datapoint.datapoint_files.find(params[:file_id])
+    df.delete
+
+    respond_to do |format|
+      format.html { redirect_to @datapoint }
+      format.json { render json: 'File deleted', status: :ok }
+    end
+
+  end
+
   private
 
     
@@ -219,7 +265,7 @@ class DatapointsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def datapoint_params
-    params.require(:datapoint).permit(:project_id, :building_id, :dencity_id, :workflow, :status, :dencity_url, :analysis_id, :timestamp_started,
-                                      :timestamp_completed, variable_values: [], results: [], )
+    params.require(:datapoint).permit(:file, :project_id, :building_id, :dencity_id, :workflow, :status, :dencity_url, :analysis_id, :timestamp_started,
+                                      :timestamp_completed, variable_values: [], results: [])
   end
 end

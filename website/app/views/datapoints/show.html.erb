@@ -17,8 +17,17 @@
   <% @datapoint.attributes.keys.sort.each do |key| %>
     <% unless %w(_id workflow_id building_id).include? key %>
 	    <tr>
-	      <th><%= key.humanize %></th>
-	      <td><%= @datapoint[key] %></td>
+        <% if key == 'datapoint_files' %>
+          <th>Related Files</th>
+          <td>
+            <% @datapoint.datapoint_files.each do |df| %>
+              <%= link_to df.file_name, download_file_datapoint_path(file_id: df) %><br/>
+            <% end %>
+          </td>
+        <% else %>
+	        <th><%= key.humanize %></th>
+	        <td><%= @datapoint[key] %></td>
+        <% end %>
 	    </tr>
 	  <% end %>
   <% end %>
