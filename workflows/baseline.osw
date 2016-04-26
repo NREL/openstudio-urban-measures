@@ -45,6 +45,10 @@
 			]
 		},
 		{
+			"measure_dir_name": "ViewModel",
+			"arguments": []
+		},    
+		{
 			"measure_dir_name": "urban_building_type",
 			"arguments": [
         {
@@ -58,69 +62,27 @@
 			]
 		},
 		{
-			"measure_dir_name": "DencityReports",
+			"measure_dir_name": "datapoint_reports",
 			"arguments": [
         {
-          "name": "output_format",
-          "value": "CSV"
-        }
-			]
-		},
-		{
-			"measure_dir_name": "ExportTimeSeriesDatatoCSV",
-			"arguments": []
-		},
-		{
-			"measure_dir_name": "dencity_datapoint_upload",
-			"arguments": [
-        {
-          "name": "hostname",
+          "name": "city_db_url",
           "value": "http://insight4.hpc.nrel.gov:8080/"
         },
         {
-          "name": "user_id",
+          "name": "user_name",
           "value": "test@nrel.gov"
         },
         {
-          "name": "auth_code",
+          "name": "password",
           "value": "testing123"
         },
         {
-          "name": "building_type",
-          "value": null
+          "name": "project_id",
+          "value": "0"
         },
         {
-          "name": "primary_hvac",
-          "value": null
-        }
-			]
-		},
-		{
-			"measure_dir_name": "dencity_file_upload",
-			"arguments": [
-        {
-          "name": "hostname",
-          "value": "http://insight4.hpc.nrel.gov:8080/"
-        },
-        {
-          "name": "user_id",
-          "value": "test@nrel.gov"
-        },
-        {
-          "name": "auth_code",
-          "value": "testing123"
-        },
-        {
-          "name": "file_path_metadata",
-          "value": null
-        },
-        {
-          "name": "file_path_timeseries",
-          "value": null
-        },
-        {
-          "name": "dencity_file_name",
-          "value": null
+          "name": "datapoint_id",
+          "value": "0"
         }
 			]
 		}

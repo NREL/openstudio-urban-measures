@@ -55,3 +55,9 @@ gem 'tzinfo-data', platforms: [:x64_mingw, :mingw, :mswin]
 # group :development, :test do
 #  gem 'capistrano'
 # end
+
+group :development do
+  #gem "rails-erd"
+  gem "railroady" # railroady -o models.dot -M && dot -Tpng models.dot > models.png
+end
+

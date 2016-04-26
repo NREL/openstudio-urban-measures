@@ -18,11 +18,10 @@ class DatapointsController < ApplicationController
   # GET /datapoints/new
   def new
     @datapoint = Datapoint.new
-    logger.info("PARAMS: #{params}")
     @datapoint.building = params[:building]
-    logger.info("hey! #{@datapoint.building}")
     @datapoint.project = @datapoint.building.project
-    logger.info("hey2! #{@datapoint.project}")
+    
+    # DLM: datapoint should have 0-1 workflows, is this setting @datapoint.workflows?
     @workflows = get_workflows
 
   end
@@ -45,6 +44,7 @@ class DatapointsController < ApplicationController
     error = false
     @error_message = ''
 
+    # DLM: does this hook the datapoint up to the project?  should we do the same for building and workflow?
     if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
       @project_id = params[:datapoint][:project_id]
     else
@@ -188,7 +188,7 @@ class DatapointsController < ApplicationController
             end
             
             if name == 'building_id'.to_sym
-              argument[:value] = region_hash[:id]
+              argument[:value] = building_hash[:id]
             elsif name == 'building_name'.to_sym
               argument[:value] = building_hash[:name]               
             end
@@ -198,12 +198,15 @@ class DatapointsController < ApplicationController
               #puts "Setting '#{name}' to '#{value}' based on building level properties" 
               argument[:value] = value
             end
+            
+            if name == 'datapoint_id'.to_sym
+              argument[:value] = @datapoint.id.to_s         
+            end
           end
         end
       end
     end
     
-    # DLM: how to get result into the json return?    
     respond_to do |format|
       if !error
         format.html { render json: result }

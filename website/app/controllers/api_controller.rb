@@ -326,11 +326,13 @@ class ApiController < ApplicationController
             logger.info('DATAPOINT NOT FOUND!')
           end
         else
+          # DLM: should also have a workflow and building id
           @datapoint = Datapoint.new
           created_flag = true
           logger.info('NEW DATAPOINT: CREATING')
         end
         unless error
+          # DLM: should also have a workflow and building id
           @datapoint, error, error_message = Datapoint.create_update_datapoint(data, @datapoint, @project.id)
         end
       else

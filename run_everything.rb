@@ -46,6 +46,7 @@ class Runner
       end
     end
   
+    puts "get_all_workflow_ids = #{result.join(',')}"
     return result
   end
 
@@ -65,18 +66,6 @@ class Runner
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
   end
-
-  def run(workflow)
-
-  end
-
-  def post_datapoint_success(workflow)
-
-  end
-
-  def post_datapoint_failed(workflow)
-
-  end
   
   def create_osws
     # connect to database, get list of all building and workflow ids
@@ -87,12 +76,9 @@ class Runner
     puts "#{all_workflow_ids.size} workflows"
 
     # loop over all combinations
-    num_buildings = 0
+    num_buildings = 1
     all_building_ids.each do |building_id|
-      
-      num_buildings += 1
-      break if @max_buildings < num_buildings
-    
+
       all_workflow_ids.each do |workflow_id|
         
         # get data point for each pair of building_id, workflow_id
@@ -129,10 +115,13 @@ class Runner
 
         osw_path = "#{osw_dir}/in.osw"
         File.open(osw_path, 'w') do |file|
-          file << JSON.generate(workflow)
+          file << JSON.pretty_generate(workflow)
         end
         
       end
+      
+      num_buildings += 1
+      break if @max_buildings < num_buildings
     end
   end
   
