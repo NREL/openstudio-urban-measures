@@ -13,24 +13,13 @@
     </div>
   <% end %>
   <fieldset>
-    <%= f.hidden_field :project_id %>
     <%= f.text_field :building_id, {label: 'Building ID', disabled: true} %>
-    <%= f.hidden_field :building_id %>
-  </fieldset>
-  <fieldset>
-    <%= f.text_field :dencity_id, label: 'DEnCity ID' %>
-  </fieldset>
-  <fieldset>
-    <%= f.text_field :dencity_url, label: 'DEnCity URL' %>
-  </fieldset>
-    <fieldset>
-    <%= f.text_field :analysis_id, label: 'Analysis ID' %>
   </fieldset>
   <fieldset>
     <%= f.text_field :status, label: 'Status' %>
   </fieldset>
   <fieldset>
-    <%= f.select :workflow, options_for_select(@workflows, @datapoint.workflow_id), { label: 'Workflow', include_blank: true} %>
+    <%= f.text_field :workflow_id, {label: 'Workflow ID', disabled: true} %>
   </fieldset>
   <fieldset class="pad-top-30 pad-bot-30">
     <%= f.file_field :file, label: 'Add a file' %>

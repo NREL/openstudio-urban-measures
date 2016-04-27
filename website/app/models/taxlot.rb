@@ -14,6 +14,7 @@ class Taxlot
 
   # Relations
   has_one :geometry, autosave: true, dependent: :destroy
+  has_many :buildings, dependent: :destroy
   belongs_to :project
 
   # Indexes

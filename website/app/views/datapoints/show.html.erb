@@ -8,11 +8,11 @@
   	<td><%= @datapoint.id %></td>
   <tr>
   	<th>Building</th>
-  	<td><%= link_to @datapoint.building.id, @datapoint.building %></td>
+  	<td><%= link_to @datapoint.building.id, @datapoint.building if @datapoint.building %></td>
   </tr>
   <tr>
   	<th>Workflow</th>
-  	<td><% if @datapoint.workflow %><%= link_to @datapoint.workflow.id, @datapoint.workflow %><% end %></td>
+  	<td><%= link_to @datapoint.workflow.id, @datapoint.workflow if @datapoint.workflow%></td>
   </tr> 
   <% @datapoint.attributes.keys.sort.each do |key| %>
     <% unless %w(_id workflow_id building_id).include? key %>

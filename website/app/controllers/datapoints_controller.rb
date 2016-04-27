@@ -270,7 +270,6 @@ class DatapointsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def datapoint_params
-    params.require(:datapoint).permit(:file, :project_id, :building_id, :dencity_id, :workflow, :status, :dencity_url, :analysis_id, :timestamp_started,
-                                      :timestamp_completed, variable_values: [], results: [])
+    params.require(:datapoint).permit(:file, :project_id, :building_id, :workflow_id, :timestamp_started, :timestamp_completed, :status, results: {} )
   end
 end

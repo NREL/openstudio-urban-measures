@@ -1,5 +1,6 @@
 require 'openstudio-workflow'
 require 'rest-client'
+require 'base64'
 
 osw_path = ARGV[0]
 osw_dir = File.dirname(osw_path)
@@ -45,6 +46,25 @@ if city_db_url && datapoint_id && project_id
             request = RestClient::Resource.new('http://localhost:3000/api/datapoint', user: @user_name, password: @user_pwd)
             response = request.post(params, content_type: :json, accept: :json)
           end
+          
+          def send_file(path)
+
+            the_file = ''
+            File.open(path, 'rb') do |file|
+              the_file = Base64.strict_encode64(file.read)
+            end
+    
+            file_data = {}
+            file_data[:file_name] = File.basename(path)
+            file_data[:file] = the_file
+
+            params = {}
+            params[:datapoint_id] = @options[:datapoint_id]
+            params[:file_data] = file_data
+
+            request = RestClient::Resource.new('http://localhost:3000/api/datapoint_file', user: @user_name, password: @user_pwd)
+            response = request.post(params, content_type: :json, accept: :json)
+          end
 
           # Write that the process has started
           def communicate_started
@@ -58,6 +78,7 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/finished.job", 'w') { |f| f << "Finished Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Complete")
+            send_file("#{@options[:output_directory]}/../run.log")
           end
 
           # Write that the process has failed
@@ -65,6 +86,7 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/failed.job", 'w') { |f| f << "Failed Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Failed")
+            send_file("#{@options[:output_directory]}/../run.log")
           end
 
           # Do nothing on a state transition
@@ -72,27 +94,27 @@ if city_db_url && datapoint_id && project_id
 
           # Write the measure attributes to the filesystem
           def communicate_measure_attributes(measure_attributes, _=nil)
-            File.open("#{@options[:output_directory]}/measure_attributes.json", 'w') do |f|
-              f << JSON.pretty_generate(measure_attributes)
-            end
+            #File.open("#{@options[:output_directory]}/measure_attributes.json", 'w') do |f|
+            #  f << JSON.pretty_generate(measure_attributes)
+            #end
           end
 
           # Write the objective function results to the filesystem
           def communicate_objective_function(objectives, _=nil)
-            obj_fun_file = "#{@options[:output_directory]}/objectives.json"
-            FileUtils.rm_f(obj_fun_file) if File.exist?(obj_fun_file)
-            File.open(obj_fun_file, 'w') { |f| f << JSON.pretty_generate(objectives) }
+            #obj_fun_file = "#{@options[:output_directory]}/objectives.json"
+            #FileUtils.rm_f(obj_fun_file) if File.exist?(obj_fun_file)
+            #File.open(obj_fun_file, 'w') { |f| f << JSON.pretty_generate(objectives) }
           end
 
           # Write the results of the workflow to the filesystem
           def communicate_results(directory, results)
             zip_results(directory)
 
-            if results.is_a? Hash
-              File.open("#{@options[:output_directory]}/data_point_out.json", 'w') { |f| f << JSON.pretty_generate(results) }
-            else
-              puts "Unknown datapoint result type. Please handle #{results.class}"
-            end
+            #if results.is_a? Hash
+            #  File.open("#{@options[:output_directory]}/data_point_out.json", 'w') { |f| f << JSON.pretty_generate(results) }
+            #else
+            #  puts "Unknown datapoint result type. Please handle #{results.class}"
+            #end
           end
         end
       end

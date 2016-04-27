@@ -10,8 +10,8 @@ class Runner
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_buildings = Float::INFINITY
-    @max_buildings = 1
-    @num_parallel = 4
+    #@max_buildings = 1
+    @num_parallel = 7
   end
     
   def get_all_building_ids()
@@ -86,11 +86,6 @@ class Runner
         datapoint = get_datapoint(building_id, workflow_id)
         datapoint_id = datapoint[:id]
         
-        # check if this already has dencity results or is queued to run
-        if !datapoint[:dencity_id].nil? || datapoint[:status] == "Queued"
-          next
-        end
-        
         # datapoint is not run, get the workflow
         # this is the merged workflow with the building properties merged in to the template workflow
         workflow = get_workflow(datapoint_id)
@@ -150,3 +145,4 @@ runner.create_osws
 runner.run_osws
 
 
+#http://localhost:3000/api/workflow_buildings.json?project_id=570d6b12c44c8d1e3800030b&workflow_id=5720376cc44c8d41c4000004

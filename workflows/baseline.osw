@@ -40,7 +40,7 @@
         },
         {
           "name": "surrounding_buildings",
-          "value": "ShadingOnly"
+          "value": "None"
         }
 			]
 		},

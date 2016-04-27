@@ -36,6 +36,32 @@
   <div id="map"></div>
 </div>
 
+<h3>Buildings (<%= @region.buildings.count %>)</h3>
+<% if @region.buildings.count <= 0 %>
+  <p>There are no buildings associated with this region.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Date Created</th>
+      <th>Last Edited</th>  
+      <% if can? :update, Building %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @region.buildings.each do |building| %>
+      <tr>
+        <td><%= link_to building.id, building %></td>
+        <td><%= building.created_at.strftime('%_m/%-d/%Y') %></td>
+        <td><%= building.updated_at.strftime('%_m/%-d/%Y') %></td>
+        <% if can? :update, Building %><td><%= link_to 'Edit', edit_building_path(building) %> | <%= link_to 'Destroy', building, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
 
 <script type="text/javascript">
 

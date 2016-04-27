@@ -2,7 +2,14 @@
 
 ## Local Development
 
-Install ruby 2.2.2 using rbenv or your preferred method.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).
+Install ruby 2.2.2 using rbenv or your preferred method.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
+
+Install bundler and rails at a command prompt:
+
+```
+gem install bundler
+gem install rails
+```
 
 Download and install [MongoDB](https://www.mongodb.org).  Open a command propmpt and go to the MongoDB bin directory (on Windows this is 'C:\Program Files\MongoDB\Server\3.0\bin').  Start Mongo with the following command 
 

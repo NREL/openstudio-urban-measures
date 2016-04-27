@@ -197,7 +197,6 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
   
     # this is the datapoint hash that will be posted to the insight center
     results = {}
-    results['id'] = datapoint_id
 
     #get building footprint to use for calculating end use EUIs
     building_area = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Building Area' AND RowName='Total Building Area' AND ColumnName='Area'")
@@ -419,7 +418,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     else
       params = {}
       params['project_id'] = project_id
-      params['datapoint'] = results
+      params['datapoint'] = {'id' => datapoint_id, 'results' => results}
       
       http = Net::HTTP.new(@city_db_url, @port)
       request = Net::HTTP::Post.new("/api/datapoint.json")
@@ -431,9 +430,9 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       request.basic_auth(user_name, password)
     
       response = http.request(request)
-      if  response.code != '200' # success
-        @runner.registerError("Bad response #{response.code}")
-        @runner.registerError(response.body)
+      if response.code != '200' # success
+        runner.registerError("Bad response #{response.code}")
+        runner.registerError(response.body)
         return false
       end
     end

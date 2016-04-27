@@ -152,9 +152,7 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
     ensure
       Dir.chdir(start_dir)
     end
-    
-    # make sure the report file exists
-    assert(File.exist?(report_path(test_name)))
+   
   end
 
 end

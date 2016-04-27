@@ -6,6 +6,7 @@
     <th>ID</th>
     <th>Building</th>
     <th>Workflow</th>  
+    <th>Status</th>  
     <% if can? :update, Datapoint %><th>Actions</th><% end %>
 
   </tr>
@@ -14,7 +15,9 @@
   <% @datapoints.each do |datapoint| %>
     <tr>
       <td><%= link_to datapoint.id, datapoint %></td>
-      <td><%= link_to datapoint.building.id, datapoint.building %></td>
+      <td><%= link_to datapoint.building.id, datapoint.building if datapoint.building %></td>
+      <td><%= link_to datapoint.workflow.id, datapoint.workflow if datapoint.workflow %></td>
+      <td><%= datapoint.status %></td>
       <td></td>
       <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>

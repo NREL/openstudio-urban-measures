@@ -43,7 +43,6 @@
 <div class="pad-bot-20">
   <%= link_to 'Batch Add/Update Features', batch_upload_features_project_path(@project), class: "btn btn-primary" %>
   <%= link_to 'Search Features', search_path(project_id: @project), class: "btn btn-primary" %>
-
 </div>
 
 <h3>Workflows (<%= @project.workflows.count %>)</h3>
@@ -76,7 +75,6 @@
   <%= link_to 'New Workflow', new_workflow_path(project_id: @project), class: "btn btn-primary" %>
 </div>
 
-
 <h3>Regions (<%= @project.regions.count %>)</h3>
 <% if @project.regions.count <= 0 %>
   <p>There are no regions associated with this project.</p>
@@ -88,7 +86,6 @@
       <th>Type</th>
       <th>Source Name & ID</th>  
       <% if can? :update, Region %><th>Actions</th><% end %>
-
     </tr>
     </thead>
     <tbody>
@@ -103,9 +100,6 @@
     </tbody>
   </table>
 <% end %>
-<div class="pad-bot-20">
-  <%= link_to 'New Region', new_region_path(project_id: @project), class: "btn btn-primary" %>
-</div>
 
 <h3>Buildings (<%= @project.buildings.count %>)</h3>
 <% if @project.buildings.count <= 0 %>
@@ -118,7 +112,6 @@
       <th>Type</th>
       <th>Source Name & ID</th>  
       <% if can? :update, Building %><th>Actions</th><% end %>
-
     </tr>
     </thead>
     <tbody>
@@ -133,9 +126,6 @@
     </tbody>
   </table>
 <% end %>
-<div class="pad-bot-20">
-  <%= link_to 'New Building', new_building_path(project_id: @project), class: "btn btn-primary" %>
-</div>
 
 <h3>Taxlots (<%= @project.taxlots.count %>)</h3>
 <% if @project.taxlots.count <= 0 %>
@@ -148,7 +138,6 @@
       <th>Type</th>
       <th>Source Name & ID</th>  
       <% if can? :update, Taxlot %><th>Actions</th><% end %>
-
     </tr>
     </thead>
     <tbody>
@@ -163,9 +152,6 @@
     </tbody>
   </table>
 <% end %>
-<div class="pad-bot-20">
-  <%= link_to 'New Taxlot', new_taxlot_path(project_id: @project), class: "btn btn-primary" %>
-</div>
 
 <h3>District Systems (<%= @project.district_systems.count %>)</h3>
 <% if @project.district_systems.count <= 0 %>
@@ -178,7 +164,6 @@
       <th>Type</th>
       <th>Source Name & ID</th>  
       <% if can? :update, DistrictSystem %><th>Actions</th><% end %>
-
     </tr>
     </thead>
     <tbody>
@@ -196,4 +181,33 @@
 <div class="pad-bot-20">
   <%= link_to 'New District System', new_district_system_path(project_id: @project), class: "btn btn-primary" %>
 </div>
+
+<h3>Datapoints (<%= @project.datapoints.count %>)</h3>
+<% if @project.datapoints.count <= 0 %>
+  <p>There are no datapoints associated with this project.</p>
+<% else %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Building</th>
+      <th>Workflow</th>  
+      <th>Status</th>  
+      <% if can? :update, Datapoint %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @project.datapoints.each do |datapoint| %>
+      <tr>
+        <td><%= link_to datapoint.id, datapoint %></td>
+        <td><%= link_to datapoint.building.id, datapoint.building if datapoint.building %></td>
+        <td><%= link_to datapoint.workflow.id, datapoint.workflow if datapoint.workflow %></td>
+        <td><%= datapoint.status %></td>
+        <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>
 
