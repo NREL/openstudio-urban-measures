@@ -5,7 +5,6 @@ Rails.application.routes.draw do
     end
   end
 
-
   resources :scenarios
   # apipie
   root 'projects#index'
