@@ -5,8 +5,9 @@ require 'json'
 class Runner
 
   def initialize
-    @url = 'http://localhost:3000'
-    @project_id = '570d6b12c44c8d1e3800030b'
+    #@url = 'http://localhost:3000'
+    @url = 'http://insight4.hpc.nrel.gov:8081'
+    @project_id = '57228416b03b420068000002'
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_buildings = Float::INFINITY
@@ -124,7 +125,7 @@ class Runner
   
     dirs = Dir.glob("./run/*")
     
-    Parallel.each(dirs, in_threads: @num_parallel) do |osw_dir|
+    Parallel.each(dirs, in_threads: [@max_buildings,@num_parallel].min) do |osw_dir|
       
       md = /datapoint_(.*)/.match(osw_dir)
       next if !md
@@ -146,3 +147,4 @@ runner.run_osws
 
 
 #http://localhost:3000/api/workflow_buildings.json?project_id=570d6b12c44c8d1e3800030b&workflow_id=5720376cc44c8d41c4000004
+#http://insight4.hpc.nrel.gov:8081/api/workflow_buildings.json?project_id=57228416b03b420068000002&workflow_id=57228438b03b420068000219
