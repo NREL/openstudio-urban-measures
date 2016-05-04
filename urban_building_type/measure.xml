@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>0947de60-cc32-4ada-82d6-9fcaf1ba2032</version_id>
-  <version_modified>20160420T174959Z</version_modified>
+  <version_id>461fbfa1-8adf-44f0-b9e4-a6e1646ff1c0</version_id>
+  <version_modified>20160504T154701Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -123,16 +123,16 @@
       <checksum>C48B2E8F</checksum>
     </file>
     <file>
-      <filename>weather.zip</filename>
-      <filetype>zip</filetype>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>2AC80C71</checksum>
+      <checksum>E6BC45C8</checksum>
     </file>
     <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>39CB1B29</checksum>
+      <checksum>7D8A607D</checksum>
     </file>
     <file>
       <version>
@@ -143,25 +143,31 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>D97822E3</checksum>
+      <checksum>7028BF67</checksum>
     </file>
     <file>
-      <filename>util.rb</filename>
+      <filename>geometry.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E6BC45C8</checksum>
+      <checksum>1B4BF46B</checksum>
     </file>
     <file>
-      <filename>apply_residential.rb</filename>
+      <filename>constants.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>59D57CAE</checksum>
+      <checksum>DFE4EFD1</checksum>
     </file>
     <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>C7C45657</checksum>
+      <checksum>35E958BD</checksum>
+    </file>
+    <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>80A34547</checksum>
     </file>
   </files>
 </measure>

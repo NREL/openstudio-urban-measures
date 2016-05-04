@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>13498ecb-cca0-4500-a70d-e413f43ddc27</version_id>
-  <version_modified>20160419T204333Z</version_modified>
+  <version_id>9283d2ea-8d44-40d9-8e11-e7b14ba0e97c</version_id>
+  <version_modified>20160429T163727Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -18,6 +18,14 @@
       <required>true</required>
       <model_dependent>false</model_dependent>
       <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
+    </argument>
+    <argument>
+      <name>project_name</name>
+      <display_name>Project Name</display_name>
+      <description>Project Name.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>source_id</name>
@@ -101,7 +109,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>EBBB6274</checksum>
+      <checksum>052A42F6</checksum>
     </file>
     <file>
       <version>
@@ -112,7 +120,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>66AC2CA0</checksum>
+      <checksum>5C756DB9</checksum>
     </file>
   </files>
 </measure>

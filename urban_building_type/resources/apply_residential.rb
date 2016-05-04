@@ -5,7 +5,6 @@ def apply_weather(model, runner)
   
   measure = SetResidentialEPWFile.new
   args_hash = default_args_hash(model, measure)
-  args_hash["weather_directory"] = "../../../resources/weather"
   run_measure(model, measure, args_hash, runner)
   
   return true
@@ -104,16 +103,11 @@ end
 def apply_residential_floors(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential floor constructions.")
-  require './resources/measures/ProcessConstructionsUninsulatedFloor/measure.rb'
   require './resources/measures/ProcessConstructionsFoundationsFloorsCovering/measure.rb'
   require './resources/measures/ProcessConstructionsFoundationsFloorsThermalMass/measure.rb'
 
   case standards_space_type
   when "Single-Family"
-	
-    measure = ProcessConstructionsUninsulatedFloor.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
     
     measure = ProcessConstructionsFoundationsFloorsCovering.new
     args_hash = default_args_hash(model, measure)
@@ -125,10 +119,6 @@ def apply_residential_floors(model, standards_space_type, runner)
 	
   when "Multifamily (2 to 4 units)"
 
-    measure = ProcessConstructionsUninsulatedFloor.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
     measure = ProcessConstructionsFoundationsFloorsCovering.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
@@ -138,10 +128,6 @@ def apply_residential_floors(model, standards_space_type, runner)
     run_measure(model, measure, args_hash, runner)    
   
   when "Multifamily (5 or more units)"
-
-    measure = ProcessConstructionsUninsulatedFloor.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
     
     measure = ProcessConstructionsFoundationsFloorsCovering.new
     args_hash = default_args_hash(model, measure)
@@ -228,7 +214,6 @@ def apply_residential_walls(model, standards_space_type, runner)
   runner.registerInfo("Applying residential wall constructions.")
   require './resources/measures/ProcessConstructionsWallsExteriorWoodStud/measure.rb'
   require './resources/measures/ProcessConstructionsWallsExteriorCMU/measure.rb'
-  require './resources/measures/ProcessConstructionsUninsulatedWalls/measure.rb'
   require './resources/measures/ProcessConstructionsWallsSheathing/measure.rb'
   require './resources/measures/ProcessConstructionsWallsExteriorFinish/measure.rb'
   require './resources/measures/ProcessConstructionsWallsExteriorThermalMass/measure.rb'
@@ -238,10 +223,6 @@ def apply_residential_walls(model, standards_space_type, runner)
   when "Single-Family"
 		
     measure = ProcessConstructionsWallsExteriorWoodStud.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ProcessConstructionsUninsulatedWalls.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
     
@@ -267,10 +248,6 @@ def apply_residential_walls(model, standards_space_type, runner)
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessConstructionsUninsulatedWalls.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
     measure = ProcessConstructionsWallsSheathing.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
@@ -290,10 +267,6 @@ def apply_residential_walls(model, standards_space_type, runner)
   when "Multifamily (5 or more units)"
   
     measure = ProcessConstructionsWallsExteriorCMU.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ProcessConstructionsUninsulatedWalls.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
     
@@ -322,6 +295,41 @@ def apply_residential_walls(model, standards_space_type, runner)
   
   return true	
 	
+end
+
+def apply_residential_uninsulated_surfaces(model, standards_space_type, runner)
+
+  runner.registerInfo("Applying residential uninsulated surface constructions.")
+  require './resources/measures/ProcessConstructionsUninsulatedSurfaces/measure.rb'
+
+  case standards_space_type
+  when "Single-Family"
+	
+    measure = ProcessConstructionsUninsulatedSurfaces.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+	
+  when "Multifamily (2 to 4 units)"
+
+    measure = ProcessConstructionsUninsulatedSurfaces.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)     
+  
+  when "Multifamily (5 or more units)"
+
+    measure = ProcessConstructionsUninsulatedSurfaces.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
+  end
+  
+  return true	  
+  
 end
 
 def apply_residential_fenestration(model, standards_space_type, runner)
@@ -613,7 +621,7 @@ def apply_residential_hvac(model, standards_space_type, runner)
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessBoiler.new
+    measure = ProcessFurnace.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 
@@ -1011,29 +1019,6 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
     
 end
 
-def zone_is_finished(zone)
-    # FIXME: Ugly hack until we can get finished zones from OS
-    # if zone.name.to_s == Constants.LivingZone or zone.name.to_s == Constants.FinishedBasementZone
-    if zone.name.to_s == Constants.LivingZone or zone.name.to_s == Constants.FinishedBasementZone or zone.name.to_s.include? "Story" # URBANopt hack: zone.name.to_s.include? "Story" ensures always finished zone
-        return true
-    end
-    return false
-end
-
-def get_master_and_slave_zones(model)
-  master_zones = []
-  slave_zones = []
-  model.getThermalZones.each do |thermal_zone|
-    next unless zone_is_finished(thermal_zone)
-    if thermal_zone.thermostatSetpointDualSetpoint.is_initialized
-      master_zones << thermal_zone
-    else
-      slave_zones << thermal_zone
-    end
-  end
-  return master_zones, slave_zones
-end
-
 def apply_residential(model, runner, heating_source, cooling_source)
   
   result = true
@@ -1063,16 +1048,17 @@ def apply_residential(model, runner, heating_source, cooling_source)
   result = result && apply_residential_floors(model, building_space_type, runner)
   result = result && apply_residential_ceilings(model, building_space_type, runner)
   result = result && apply_residential_walls(model, building_space_type, runner)
+  # result = result && apply_residential_uninsulated_surfaces(model, building_space_type, runner)
   result = result && apply_residential_fenestration(model, building_space_type, runner)
   result = result && apply_residential_hvac(model, building_space_type, runner)
-  master_zones, slave_zones = get_master_and_slave_zones(model)
-  master_zones.each do |master_zone|
-    result = result && apply_residential_dhw(model, building_space_type, master_zone, runner)
+  control_slave_zones_hash = Geometry.get_control_and_slave_zones(model)
+  control_slave_zones_hash.each do |control_zone, slave_zones|
+    result = result && apply_residential_dhw(model, building_space_type, control_zone, runner)
   end
   model.getSpaces.each do |space|
     result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
   end
-  #result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner) # TODO: ResidentialLighting has not been updated yet.
+  # result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner) # TODO: ResidentialLighting has not been updated yet.
   result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
   
   applicable = true
@@ -1089,7 +1075,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
   runner.registerValue('bldg_use', building_space_type)
   runner.registerValue('res_units', number_of_residential_units, 'count')
   runner.registerValue('num_spaces', num_spaces, 'spaces')
-  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')    
+  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')
   
   return result
     

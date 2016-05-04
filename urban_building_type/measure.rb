@@ -7,6 +7,7 @@ require 'fileutils'
 require_relative 'resources/apply_residential'
 require_relative 'resources/apply_commercial'
 require_relative 'resources/util'
+require_relative 'resources/geometry'
 
 module OpenStudio
   module Model
@@ -111,19 +112,12 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     if File.exists?(beopt_measures_dir)
       FileUtils.rm_rf(beopt_measures_dir)
     end
-    beopt_weather_dir = "./resources/weather/"
-    if File.exists?(beopt_weather_dir)
-      FileUtils.rm_rf(beopt_weather_dir)
-    end    
 
     result = nil
     if residential
       beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
-      beopt_weather_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/weather.zip")
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
       unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
-      unzip_file = OpenStudio::UnzipFile.new(beopt_weather_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_weather_dir)) 
       result = apply_residential(model, runner, heating_source, cooling_source)
     else
       result = apply_commercial(model, runner, heating_source, cooling_source)
