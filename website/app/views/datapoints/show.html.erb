@@ -8,17 +8,26 @@
   	<td><%= @datapoint.id %></td>
   <tr>
   	<th>Building</th>
-  	<td><%= link_to @datapoint.building.id, @datapoint.building %></td>
+  	<td><%= link_to @datapoint.building.id, @datapoint.building if @datapoint.building %></td>
   </tr>
   <tr>
   	<th>Workflow</th>
-  	<td><% if @datapoint.workflow %><%= link_to @datapoint.workflow.id, @datapoint.workflow %><% end %></td>
+  	<td><%= link_to @datapoint.workflow.id, @datapoint.workflow if @datapoint.workflow%></td>
   </tr> 
   <% @datapoint.attributes.keys.sort.each do |key| %>
     <% unless %w(_id workflow_id building_id).include? key %>
 	    <tr>
-	      <th><%= key.humanize %></th>
-	      <td><%= @datapoint[key] %></td>
+        <% if key == 'datapoint_files' %>
+          <th>Related Files</th>
+          <td>
+            <% @datapoint.datapoint_files.each do |df| %>
+              <%= link_to df.file_name, download_file_datapoint_path(file_id: df) %><br/>
+            <% end %>
+          </td>
+        <% else %>
+	        <th><%= key.humanize %></th>
+	        <td><%= @datapoint[key] %></td>
+        <% end %>
 	    </tr>
 	  <% end %>
   <% end %>

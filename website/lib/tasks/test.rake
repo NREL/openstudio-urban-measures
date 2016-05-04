@@ -248,6 +248,175 @@ namespace :testing do
     end
   end
 
+  # Test import workflow_file
+  desc 'POST datapoint_file'
+  task post_datapoint_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+    
+    # set this for testing
+    project = Project.first_or_create
+    project_id = project.id.to_s    
+
+    datapoint = project.datapoints.first
+
+    file = File.open("#{Rails.root}/data/test.csv", 'rb')
+    the_file = Base64.strict_encode64(file.read)
+    file.close
+    # file_data param
+    file_data = {}
+    file_data['file_name'] = 'datapoint_file_test.csv'
+    file_data['file'] = the_file
+
+    json_request = JSON.generate('datapoint_id' => datapoint.id.to_s, 'file_data' => file_data)
+    # puts "POST http://<user>:<pwd>@<base_url>/api/v1/related_file, parameters: #{json_request}"
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/datapoint_file', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      if response.code == 201
+        puts "SUCCESS: #{response.body}"
+      else
+        raise response.body
+      end
+    rescue => e
+      puts "ERROR: #{e.response}"
+      puts e.inspect
+    end
+  end
+
+   # get workflow file by datapoint_id and file_name
+  desc 'GET datapoint file'
+  task retrieve_datapoint_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+
+    dp = Datapoint.find('57156befb02c3075270001a9')
+    filename = 'datapoint_file_test.csv'
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/retrieve_datapoint_file?datapoint_id=#{dp.id.to_s}&file_name=#{filename}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
+
+  # delete datapoint file by datapoint_id and file_name
+  desc 'DELETE datapoint file'
+  task delete_datapoint_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+
+    dp = Datapoint.find('57156befb02c3075270001a9')
+    filename = 'datapoint_file_test.csv'
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/delete_datapoint_file?datapoint_id=#{dp.id.to_s}&file_name=#{filename}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
+
+
+  # get instance workflow for a datapoint
+  desc 'GET instance_workflow'
+  task instance_workflow: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    datapoint = Datapoint.first
+    puts "Datapoint: #{datapoint.id.to_s}"
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["datapoints/#{datapoint.id.to_s}/instance_workflow"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+  # get workflow file by datapoint_id or workflow_id
+  desc 'GET workflow file'
+  task retrieve_workflow_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+
+    dp = proj.datapoints.first
+
+    wf = dp.workflow
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/retrieve_workflow_file?datapoint_id=#{dp.id.to_s}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
+
+  # get workflow datapoints
+  desc 'GET workflow datapoints'
+  task retrieve_workflow_datapoints: :environment do 
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+    wf = proj.workflows.first
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["workflows/#{wf.id.to_s}/datapoints"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+  # get buildings by workflow
+  desc 'GET workflow buildings'
+  task workflow_buildings: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+    proj = Project.first
+    wf = proj.workflows.first
+    puts "Request: api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"
+
+    begin
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"].get(content_type: :json, accept: :json)
+
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+
+  end
 
   desc 'POST Region Search'
   task region_search: :environment do

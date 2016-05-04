@@ -77,4 +77,40 @@ class Workflow
 
     [workflow, error, error_message]
   end
+
+  def self.get_file_data(file)
+    begin
+      file_data = nil
+      raise 'File not stored on the server' unless File.exist?("#{Rails.root}#{file.uri}")
+      file_data = File.read("#{Rails.root}#{file.uri}")
+
+      raise "Could not find file to download #{file.uri}" if file_data.nil?
+    rescue => e
+      flash[:notice] = "Could not find file to download #{file.uri}. #{e.message}"
+      logger.error "Could not find file to download #{file.uri}. #{e.message}"
+      redirect_to(:back)
+    end
+
+    file_data
+  end
+
+  # DLM: this should be a common utility method, put it in models?
+  # Ideally this would recursively clean the object, seems like this should exist?
+  def self.get_clean_hash(object)
+    result = {}
+    if object
+      object.attributes.each do |key, value|
+        # convert object ids to strings
+        if key == '_id'
+          result[:id] = value.to_s
+        elsif value.class == BSON::ObjectId
+          result[key.parameterize.underscore.to_sym] = value.to_s
+        else
+          result[key.parameterize.underscore.to_sym] = value
+        end
+      end
+    end
+    return result
+  end
+
 end

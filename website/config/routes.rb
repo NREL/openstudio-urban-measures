@@ -5,7 +5,6 @@ Rails.application.routes.draw do
     end
   end
 
-
   resources :scenarios
   # apipie
   root 'projects#index'
@@ -26,6 +25,8 @@ Rails.application.routes.draw do
   resources :datapoints do
     member do
       get 'instance_workflow'
+      get 'download_file'
+      get 'delete_file'
     end
   end
   resources :workflows do
@@ -33,6 +34,7 @@ Rails.application.routes.draw do
       get 'download_zipfile'
       get 'create_datapoints'
       get 'delete_datapoints'
+      get 'datapoints'
     end
   end
 
@@ -45,6 +47,11 @@ Rails.application.routes.draw do
     post 'project_search' => 'api#project_search'
     post 'datapoint' => 'api#datapoint'
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
+    get 'retrieve_workflow_file' => 'api#retrieve_workflow_file'
+    get 'workflow_buildings' => 'api#workflow_buildings'
+    post 'datapoint_file' => 'api#datapoint_file'
+    get 'retrieve_datapoint_file' => 'api#retrieve_datapoint_file'
+    get 'delete_datapoint_file' => 'api#delete_datapoint_file'
   end
 
   match 'admin/backup_database' => 'admin#backup_database', :via => :get

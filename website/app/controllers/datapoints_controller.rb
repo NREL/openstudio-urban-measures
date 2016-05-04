@@ -1,6 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow]
+  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow, :download_file, :delete_file]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -18,11 +18,10 @@ class DatapointsController < ApplicationController
   # GET /datapoints/new
   def new
     @datapoint = Datapoint.new
-    logger.info("PARAMS: #{params}")
     @datapoint.building = params[:building]
-    logger.info("hey! #{@datapoint.building}")
     @datapoint.project = @datapoint.building.project
-    logger.info("hey2! #{@datapoint.project}")
+    
+    # DLM: datapoint should have 0-1 workflows, is this setting @datapoint.workflows?
     @workflows = get_workflows
 
   end
@@ -38,12 +37,14 @@ class DatapointsController < ApplicationController
   def create
 
     @datapoint = Datapoint.new
+    @workflows = get_workflows
 
     logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
 
     error = false
     @error_message = ''
 
+    # DLM: does this hook the datapoint up to the project?  should we do the same for building and workflow?
     if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
       @project_id = params[:datapoint][:project_id]
     else
@@ -52,8 +53,15 @@ class DatapointsController < ApplicationController
     end
 
     unless error
-      # TODO: eventually check datapoint param
+      the_file = params[:datapoint][:file] ? params[:datapoint][:file] : nil
+      params[:datapoint] = params[:datapoint].except(:file)
       @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
+
+    unless error
+      if the_file && the_file.class.name == 'ActionDispatch::Http::UploadedFile'
+        @datapoint, error, @error_message = Datapoint.add_datapoint_file(the_file, the_file.original_filename, @datapoint)
+      end
     end
 
     respond_to do |format|
@@ -73,6 +81,7 @@ class DatapointsController < ApplicationController
   def update
 
     logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
+    @workflows = get_workflows
 
     error = false
     @error_message = ''
@@ -85,7 +94,15 @@ class DatapointsController < ApplicationController
     end
 
     unless error
+      the_file = params[:datapoint][:file] ? params[:datapoint][:file] : nil
+      params[:datapoint] = params[:datapoint].except(:file)
       @datapoint, error, @error_message = Datapoint.create_update_datapoint(params[:datapoint], @datapoint, @project_id)
+    end
+
+    unless error
+      if the_file && the_file.class.name == 'ActionDispatch::Http::UploadedFile'
+        @datapoint, error, @error_message = Datapoint.add_datapoint_file(the_file, the_file.original_filename, @datapoint)
+      end
     end
 
     respond_to do |format|
@@ -111,22 +128,32 @@ class DatapointsController < ApplicationController
   end
 
   # create datapoints for workflow
+  # GET /datapoints/1/instance_workflow
+  # GET /datapoints/1/instance_workflow.json
   def instance_workflow
+
     @error_message = ''
     error = false
 
-    result = get_clean_hash(@datapoint.workflow)
-    building_hash = get_clean_hash(@datapoint.building)
-
+    result = Workflow.get_clean_hash(@datapoint.workflow)
+    building_hash = Workflow.get_clean_hash(@datapoint.building)
+    
     region_hash = {}
-    if @datapoint.building.region_id
-      region = Region.find(@datapoint.building.region_id)
-      region_hash = get_clean_hash(region)
+    if building_hash[:region_source_name] && building_hash[:region_source_ids]
+      building_hash[:region_source_ids].each do |region_source_id|
+        region = Region.where(source_id: region_source_id, source_name: building_hash[:region_source_name]).first
+        region_hash = Workflow.get_clean_hash(region)
+      end
     end
     
     project_hash = {}
     if @datapoint.building.project
-      project_hash = get_clean_hash(@datapoint.building.project)
+      project_hash = Workflow.get_clean_hash(@datapoint.building.project)
+      
+      if region_hash.empty?
+        region = @datapoint.building.project.regions.first
+        region_hash = Workflow.get_clean_hash(region)
+      end
     end    
     
     if result && result[:steps]
@@ -161,7 +188,7 @@ class DatapointsController < ApplicationController
             end
             
             if name == 'building_id'.to_sym
-              argument[:value] = region_hash[:id]
+              argument[:value] = building_hash[:id]
             elsif name == 'building_name'.to_sym
               argument[:value] = building_hash[:name]               
             end
@@ -171,12 +198,14 @@ class DatapointsController < ApplicationController
               #puts "Setting '#{name}' to '#{value}' based on building level properties" 
               argument[:value] = value
             end
+            
+            if name == 'datapoint_id'.to_sym
+              argument[:value] = @datapoint.id.to_s         
+            end
           end
         end
       end
     end
-    
-    # DLM: how to get result into the json return?
     
     respond_to do |format|
       if !error
@@ -189,30 +218,44 @@ class DatapointsController < ApplicationController
     end
   end
 
+  # download a related datapoint file
+  def download_file
+    file = @datapoint.datapoint_files.find(params[:file_id])
+    raise 'file not found in database' unless file
+
+    file_data = Datapoint.get_file_data(file)
+    if file_data
+      send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment'
+    else
+      raise 'file not found in database'
+    end
+  end
+
+  # delete datapoint file
+  def delete_file
+    file = @datapoint.datapoint_files.find(params[:file_id])
+    raise 'file not found in database' unless file
+
+    if File.exist?("#{Rails.root}#{file.uri}")
+      File.delete("#{Rails.root}#{file.uri}")
+    end
+    df = @datapoint.datapoint_files.find(params[:file_id])
+    df.delete
+
+    respond_to do |format|
+      format.html { redirect_to @datapoint }
+      format.json { render json: 'File deleted', status: :ok }
+    end
+
+  end
+
   private
 
-  # DLM: this should be a common utility method, put it in models?
-  # Ideally this would recursively clean the object, seems like this should exist?
-  def get_clean_hash(object)
-    result = {}
-    if object
-      object.attributes.each do |key, value|
-        # convert object ids to strings
-        if key == '_id'
-          result[:id] = value.to_s
-        elsif value.class == BSON::ObjectId
-          result[key.parameterize.underscore.to_sym] = value.to_s
-        else
-          result[key.parameterize.underscore.to_sym] = value
-        end
-      end
-    end
-    return result
-  end
-  
+    
   # Use callbacks to share common setup or constraints between actions.
   def set_datapoint
     @datapoint = Datapoint.find(params[:id])
+    logger.info("@datapoint = #{@datapoint}")
   end
 
   # Get Workflows
@@ -227,7 +270,6 @@ class DatapointsController < ApplicationController
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def datapoint_params
-    params.require(:datapoint).permit(:project_id, :building_id, :dencity_id, :workflow, :status, :dencity_url, :analysis_id, :timestamp_started,
-                                      :timestamp_completed, variable_values: [], results: [], )
+    params.require(:datapoint).permit(:file, :project_id, :building_id, :workflow_id, :timestamp_started, :timestamp_completed, :status, results: {} )
   end
 end

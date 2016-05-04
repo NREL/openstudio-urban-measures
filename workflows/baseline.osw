@@ -40,10 +40,14 @@
         },
         {
           "name": "surrounding_buildings",
-          "value": "ShadingOnly"
+          "value": "None"
         }
 			]
 		},
+		{
+			"measure_dir_name": "ViewModel",
+			"arguments": []
+		},    
 		{
 			"measure_dir_name": "urban_building_type",
 			"arguments": [
@@ -54,6 +58,31 @@
         {
           "name": "cooling_source",
           "value": "Electric"
+        }
+			]
+		},
+		{
+			"measure_dir_name": "datapoint_reports",
+			"arguments": [
+        {
+          "name": "city_db_url",
+          "value": "http://insight4.hpc.nrel.gov:8080/"
+        },
+        {
+          "name": "user_name",
+          "value": "test@nrel.gov"
+        },
+        {
+          "name": "password",
+          "value": "testing123"
+        },
+        {
+          "name": "project_id",
+          "value": "0"
+        },
+        {
+          "name": "datapoint_id",
+          "value": "0"
         }
 			]
 		}

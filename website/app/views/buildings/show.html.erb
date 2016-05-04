@@ -51,17 +51,17 @@
       <tr>
         <th>ID</th>
         <th>Analysis ID</th>
-        <th>Date Created</th>  
+        <th>Status</th>  
         <% if can? :update, Datapoint %><th>Actions</th><% end %>
       </tr>
     </thead>
     <tbody>
-      <% @building.datapoints.each do |dp| %>
+      <% @building.datapoints.each do |datapoint| %>
         <tr>
-          <td><%= link_to dp.id, dp %></td>
-          <td><%= dp.analysis_id %></td>
-          <td><%= dp.created_at %></td>
-          <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(dp) %> | <%= link_to 'Destroy', dp, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+          <td><%= link_to datapoint.id, datapoint %></td>
+          <td><%= link_to datapoint.workflow.id, datapoint.workflow if datapoint.workflow %></td>
+          <td><%= datapoint.status %></td>
+          <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
         </tr>
       <% end %>
     </tbody>

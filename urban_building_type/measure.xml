@@ -1,5 +1,6 @@
 <measure>
   <schema_version>3.0</schema_version>
+  <error>cannot load such file -- openstudio-standards</error>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
   <version_id>461fbfa1-8adf-44f0-b9e4-a6e1646ff1c0</version_id>
@@ -129,6 +130,12 @@
       <checksum>E6BC45C8</checksum>
     </file>
     <file>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>E6BC45C8</checksum>
+    </file>
+    <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
@@ -143,7 +150,6 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>7028BF67</checksum>
     </file>
     <file>
       <filename>geometry.rb</filename>

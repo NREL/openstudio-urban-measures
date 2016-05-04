@@ -1,13 +1,18 @@
 require 'rest-client'
+require 'parallel'
 require 'json'
 
 class Runner
 
   def initialize
-    @url = 'http://localhost:3000'
-    @project_id = '570d6b12c44c8d1e3800030b'
+    #@url = 'http://localhost:3000'
+    @url = 'http://insight4.hpc.nrel.gov:8081'
+    @project_id = '57228416b03b420068000002'
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
+    @max_buildings = Float::INFINITY
+    #@max_buildings = 1
+    @num_parallel = 7
   end
     
   def get_all_building_ids()
@@ -42,6 +47,7 @@ class Runner
       end
     end
   
+    puts "get_all_workflow_ids = #{result.join(',')}"
     return result
   end
 
@@ -55,27 +61,11 @@ class Runner
   end
 
   def get_workflow(datapoint_id)
-    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
-    
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
-    
-    puts response.body
-    fail "hi"
+
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
-  end
-
-  def run(workflow)
-
-  end
-
-  def post_datapoint_success(workflow)
-
-  end
-
-  def post_datapoint_failed(workflow)
-
   end
   
   def create_osws
@@ -87,7 +77,9 @@ class Runner
     puts "#{all_workflow_ids.size} workflows"
 
     # loop over all combinations
+    num_buildings = 1
     all_building_ids.each do |building_id|
+
       all_workflow_ids.each do |workflow_id|
         
         # get data point for each pair of building_id, workflow_id
@@ -95,14 +87,22 @@ class Runner
         datapoint = get_datapoint(building_id, workflow_id)
         datapoint_id = datapoint[:id]
         
-        # check if this already has dencity results or is queued to run
-        if !datapoint[:dencity_id].nil? || datapoint[:status] == "Queued"
-          next
-        end
-        
         # datapoint is not run, get the workflow
         # this is the merged workflow with the building properties merged in to the template workflow
         workflow = get_workflow(datapoint_id)
+        
+        workflow[:steps].each do |step|
+          step[:arguments].each do |argument|
+            if argument[:name] == 'city_db_url'
+              argument[:value] = @url
+            end
+            
+            # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
+            if argument[:name] == 'weather_file_name'
+              workflow[:weather_file] = argument[:value]
+            end
+          end
+        end
 
         # save workflow
         osw_dir = File.join(File.dirname(__FILE__), "/run/datapoint_#{datapoint_id}/")
@@ -111,38 +111,40 @@ class Runner
 
         osw_path = "#{osw_dir}/in.osw"
         File.open(osw_path, 'w') do |file|
-          file << workflow
+          file << JSON.pretty_generate(workflow)
         end
         
       end
+      
+      num_buildings += 1
+      break if @max_buildings < num_buildings
     end
   end
   
   def run_osws
-    Dir.glob("./runs/*.osw").each do |osw_path|
-
-      workflow = JSON::load(osw_path)
-
-      begin
-        # run the osw
-        run(workflow)
-        
-        dencity_id = nil
-        
-        # things worked, post back to the database that this datapoint is done and point to dencity id
-        post_datapoint_success(workflow, dencity_id)
-      rescue
+  
+    dirs = Dir.glob("./run/*")
+    
+    Parallel.each(dirs, in_threads: [@max_buildings,@num_parallel].min) do |osw_dir|
       
-        # things broke, post back to the database that this datapoint failed
-        post_datapoint_failed(workflow)
-      end
+      md = /datapoint_(.*)/.match(osw_dir)
+      next if !md
       
+      osw_path = File.join(osw_dir, "in.osw")
+      
+      datapoint_id = md[1]
+      
+      command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      puts command
+      system(command)
     end
   end
 end
 
 runner = Runner.new
 runner.create_osws
+runner.run_osws
 
 
-
+#http://localhost:3000/api/workflow_buildings.json?project_id=570d6b12c44c8d1e3800030b&workflow_id=5720376cc44c8d41c4000004
+#http://insight4.hpc.nrel.gov:8081/api/workflow_buildings.json?project_id=57228416b03b420068000002&workflow_id=57228438b03b420068000219

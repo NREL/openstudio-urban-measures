@@ -189,6 +189,28 @@ class Geometry
     json_data = MultiJson.dump(json_hash)
   end
 
+  # create geoJSON of buildings from their datapoints
+  def self.build_geojson_from_datapoints(datapoints)
+    json_hash = {}
+
+    # this doesn't change
+    json_hash[:crs] = { type: 'name', properties: { name: 'EPSG:4326' } }
+    json_hash[:type] = 'FeatureCollection'
+
+    # iterate through results
+    json_hash[:features] = []
+    datapoints.each do |dp|
+      # only datapoints attached to buildings for now
+      if dp.building
+        res_hash = build_feature(dp.building)
+        json_hash[:features] << add_datapoint_to_feature(dp, res_hash)
+      end
+    end
+    # convert to json
+    json_data = MultiJson.dump(json_hash)
+
+  end
+
   # building geoJSON for a single feature
   def self.build_feature(result)
     res_hash = {}
@@ -205,6 +227,23 @@ class Geometry
         res_hash[:properties][:project_id] = value.to_s
       elsif key != 'geometry_id'
         res_hash[:properties][key] = value
+      end
+    end
+    res_hash
+  end
+
+  # add datapoint fields to geoJSON properties
+  def self.add_datapoint_to_feature(datapoint, res_hash)
+    res_hash[:properties][:datapoint] = {}
+    datapoint.attributes.each do |key, value|
+      if key == '_id'
+        res_hash[:properties][:datapoint][:id] = value.to_s
+      elsif key != 'project_id' && key != 'building_id'
+        if key.include? '_id'
+          res_hash[:properties][:datapoint][key] = value.to_s
+        else
+          res_hash[:properties][:datapoint][key] = value
+        end
       end
     end
     res_hash
