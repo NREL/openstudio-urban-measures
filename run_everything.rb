@@ -11,7 +11,7 @@ class Runner
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_buildings = Float::INFINITY
-    @max_buildings = 1
+    #@max_buildings = 8
     @num_parallel = 7
   end
   
@@ -97,9 +97,8 @@ class Runner
     # loop over all combinations
     num_buildings = 1
     all_building_ids.each do |building_id|
-
       all_workflow_ids.each do |workflow_id|
-        
+
         # get data point for each pair of building_id, workflow_id
         # data point is created if it doesn't already exist
         datapoint = get_datapoint(building_id, workflow_id)
@@ -118,6 +117,7 @@ class Runner
             next
           end
         end
+        puts "Saving Datapoint"
         
         # datapoint is not run, get the workflow
         # this is the merged workflow with the building properties merged in to the template workflow
