@@ -79,6 +79,14 @@ class Runner
     return workflow
   end
   
+  def get_results(workflow_id)
+    request = RestClient::Resource.new("#{@url}/api/workflow_buildings.json?project_id=#{@project_id}&workflow_id=#{workflow_id}", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+
+    results = JSON.parse(response.body, :symbolize_names => true)
+    return results
+  end
+  
   # return a vector of directories to run
   def create_osws
     result = []
@@ -107,8 +115,8 @@ class Runner
         # see if datapoint needs to be run
         if datapoint[:status] 
           if datapoint[:status] == "Started"
-            puts "Skipping Started Datapoint"
-            next
+            #puts "Skipping Started Datapoint"
+            #next
           elsif datapoint[:status] == "Complete"
             puts "Skipping Complete Datapoint"
             next
@@ -174,12 +182,28 @@ class Runner
       system(command)
     end
   end
+  
+  def save_results
+  
+    project = get_project
+    project_name = project[:name]
+    
+    all_workflow_ids = get_all_workflow_ids
+    
+    all_workflow_ids.each do |workflow_id|
+      results = get_results(workflow_id)
+      
+      results_path = File.join(File.dirname(__FILE__), "/run/#{project_name}/workflow_#{workflow_id}.geojson")
+      File.open(results_path, 'w') do |file|
+        file << JSON.pretty_generate(results)
+      end
+    end
+    
+  end
+  
 end
 
 runner = Runner.new
-dirs = runner.create_osws
-runner.run_osws(dirs)
-
-
-#http://localhost:3000/api/workflow_buildings.json?project_id=570d6b12c44c8d1e3800030b&workflow_id=5720376cc44c8d41c4000004
-#http://insight4.hpc.nrel.gov:8081/api/workflow_buildings.json?project_id=57228416b03b420068000002&workflow_id=57228438b03b420068000219
+#dirs = runner.create_osws
+#runner.run_osws(dirs)
+runner.save_results
