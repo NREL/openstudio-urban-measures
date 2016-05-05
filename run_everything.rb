@@ -204,6 +204,6 @@ class Runner
 end
 
 runner = Runner.new
-#dirs = runner.create_osws
-#runner.run_osws(dirs)
+dirs = runner.create_osws
+runner.run_osws(dirs)
 runner.save_results
