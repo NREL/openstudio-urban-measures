@@ -11,9 +11,20 @@ class Runner
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_buildings = Float::INFINITY
-    #@max_buildings = 1
+    @max_buildings = 1
     @num_parallel = 7
   end
+  
+  def get_project()
+    result = []
+    
+    request = RestClient::Resource.new("#{@url}/projects/#{@project_id}.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+    
+    result = JSON.parse(response.body, :symbolize_names => true)
+
+    return result[:project]
+  end  
     
   def get_all_building_ids()
     result = []
@@ -68,11 +79,18 @@ class Runner
     return workflow
   end
   
+  # return a vector of directories to run
   def create_osws
+    result = []
+    
+    project = get_project
+    project_name = project[:name]
+    
     # connect to database, get list of all building and workflow ids
     all_building_ids = get_all_building_ids
     all_workflow_ids = get_all_workflow_ids
     
+    puts "Project #{project_name}"
     puts "#{all_building_ids.size} buildings"
     puts "#{all_workflow_ids.size} workflows"
 
@@ -86,6 +104,20 @@ class Runner
         # data point is created if it doesn't already exist
         datapoint = get_datapoint(building_id, workflow_id)
         datapoint_id = datapoint[:id]
+        
+        # see if datapoint needs to be run
+        if datapoint[:status] 
+          if datapoint[:status] == "Started"
+            puts "Skipping Started Datapoint"
+            next
+          elsif datapoint[:status] == "Complete"
+            puts "Skipping Complete Datapoint"
+            next
+          elsif datapoint[:status] == "Failed"
+            puts "Skipping Failed Datapoint"
+            next
+          end
+        end
         
         # datapoint is not run, get the workflow
         # this is the merged workflow with the building properties merged in to the template workflow
@@ -105,9 +137,10 @@ class Runner
         end
 
         # save workflow
-        osw_dir = File.join(File.dirname(__FILE__), "/run/datapoint_#{datapoint_id}/")
+        osw_dir = File.join(File.dirname(__FILE__), "/run/#{project_name}/datapoint_#{datapoint_id}/")
         FileUtils.rm_rf(osw_dir)
         FileUtils.mkdir_p(osw_dir)
+        result << osw_dir
 
         osw_path = "#{osw_dir}/in.osw"
         File.open(osw_path, 'w') do |file|
@@ -119,11 +152,13 @@ class Runner
       num_buildings += 1
       break if @max_buildings < num_buildings
     end
+    
+    return result
   end
   
-  def run_osws
+  def run_osws(dirs)
   
-    dirs = Dir.glob("./run/*")
+    #dirs = Dir.glob("./run/*")
     
     Parallel.each(dirs, in_threads: [@max_buildings,@num_parallel].min) do |osw_dir|
       
@@ -132,7 +167,7 @@ class Runner
       
       osw_path = File.join(osw_dir, "in.osw")
       
-      datapoint_id = md[1]
+      datapoint_id = md[1].gsub('/','')
       
       command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
       puts command
@@ -142,8 +177,8 @@ class Runner
 end
 
 runner = Runner.new
-runner.create_osws
-runner.run_osws
+dirs = runner.create_osws
+runner.run_osws(dirs)
 
 
 #http://localhost:3000/api/workflow_buildings.json?project_id=570d6b12c44c8d1e3800030b&workflow_id=5720376cc44c8d41c4000004

@@ -48,7 +48,7 @@ end
  	
 # load the workflow
 baseline_osw = nil
-File.open(File.join(File.dirname(__FILE__), "/workflows/baseline.osw"), 'r') do |f|
+File.open(File.join(File.dirname(__FILE__), "/workflows/retrofit.osw"), 'r') do |f|
   baseline_osw = JSON::parse(f.read, :symbolize_names => true)
 end
   
