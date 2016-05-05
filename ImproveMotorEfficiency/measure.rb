@@ -315,8 +315,12 @@ class ImproveMotorEfficiency < OpenStudio::Ruleset::ModelUserScript
     end
 
     #reporting initial condition of model
-    runner.registerInitialCondition("The starting motor efficiency values in affected loop(s) range from #{initial_motor_efficiency_values.min*100}% to #{initial_motor_efficiency_values.max*100}%. Initial year 0 capital costs for affected fans or pumps is $#{neat_numbers(yr0_capital_totalCosts_baseline,0)}.")
-
+    if initial_motor_efficiency_values.size == 0
+      runner.registerInitialCondition("The starting model contained no motors in affected loop(s).")
+    else    
+      runner.registerInitialCondition("The starting motor efficiency values in affected loop(s) range from #{initial_motor_efficiency_values.min*100}% to #{initial_motor_efficiency_values.max*100}%. Initial year 0 capital costs for affected fans or pumps is $#{neat_numbers(yr0_capital_totalCosts_baseline,0)}.")
+    end
+    
     if initial_motor_efficiency_values.size + missing_initial_motor_efficiency == 0
       runner.registerAsNotApplicable("The affected loop(s) does not contain any fans or pumps, the model will not be altered.")
       return true

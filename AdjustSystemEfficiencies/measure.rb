@@ -43,7 +43,12 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
       return false
     end
     
-    temp = OpenStudio::OptionalDouble.new(cooling_cop_multiplier*rated_cop.get)
+    new_efficiency = cooling_cop_multiplier*rated_cop.get
+    if new_efficiency > 1
+      new_efficiency = 1
+    end    
+    
+    temp = OpenStudio::OptionalDouble.new(new_efficiency)
     component.setRatedCOP(temp)
     return true
   end
@@ -56,8 +61,19 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
       return false
     end
     
-    component.setRatedLowSpeedCOP(cooling_cop_multiplier*rated_low_speed_cop.get)
-    component.setRatedHighSpeedCOP(cooling_cop_multiplier*rated_high_speed_cop.get)
+    new_efficiency = cooling_cop_multiplier*rated_low_speed_cop.get
+    if new_efficiency > 1
+      new_efficiency = 1
+    end    
+    
+    component.setRatedLowSpeedCOP(new_efficiency)
+    
+    new_efficiency = cooling_cop_multiplier*rated_high_speed_cop.get
+    if new_efficiency > 1
+      new_efficiency = 1
+    end    
+    
+    component.setRatedHighSpeedCOP(new_efficiency)
     return true
   end
   
@@ -65,21 +81,25 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
     nominal_thermal_efficiency = component.nominalThermalEfficiency
     new_efficiency = heating_efficiency_multiplier*nominal_thermal_efficiency
     if new_efficiency > 1
-      return false
+      new_efficiency = 1
     end
     return component.setNominalThermalEfficiency(new_efficiency)
   end
   
   def modify_chiller_electric_eir(component, cooling_cop_multiplier)
     referenceCOP = component.referenceCOP
-    return component.setReferenceCOP(cooling_cop_multiplier*referenceCOP)
+    new_efficiency = cooling_cop_multiplier*referenceCOP.get
+    if new_efficiency > 1
+      new_efficiency = 1
+    end        
+    return component.setReferenceCOP(new_efficiency)
   end
   
   def modify_coil_heating_gas(component, heating_efficiency_multiplier)
     gas_burner_efficiency = component.gasBurnerEfficiency
     new_efficiency = heating_efficiency_multiplier*gas_burner_efficiency
     if new_efficiency > 1
-      return false
+      new_efficiency = 1
     end
     component.setGasBurnerEfficiency(new_efficiency)
     return true
@@ -239,9 +259,13 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
               num_heating_objects_modified += 1
               modified = true
             end
+          
+          # CoilHeatingWater
+          elsif not heating_coil.to_CoilHeatingWater.empty?
+            # no-op
             
           else
-            runner.registerError("Unknown heating coil type for #{heating_coil.name.get}")
+            runner.registerError("Unknown heating coil type '#{heating_coil.iddObject.name}' for '#{heating_coil.name.get}'")
             return false
           end
           
@@ -268,8 +292,12 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
               modified = true
             end
             
+          # CoilCoolingWater
+          elsif not cooling_coil.to_CoilCoolingWater.empty?
+            # no-op
+            
           else
-            runner.registerError("Unknown cooling coil type for #{cooling_coil.name.get}")
+            runner.registerError("Unknown cooling coil type '#{cooling_coil.iddObject.name}' for '#{cooling_coil.name.get}'")
             return false
           end
 

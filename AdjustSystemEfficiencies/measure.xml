@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>adjust_system_efficiencies</name>
   <uid>edeaff3d-3ae4-4487-b4a4-5cf08ea14510</uid>
-  <version_id>0e513bb3-c027-4df7-84a2-04f30820e1cc</version_id>
-  <version_modified>20160505T144526Z</version_modified>
+  <version_id>a50e0109-5196-48e1-84cb-44f06f8c772f</version_id>
+  <version_modified>20160505T160126Z</version_modified>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AdjustSystemEfficiencies</class_name>
   <display_name>AdjustSystemEfficiencies</display_name>
@@ -53,7 +53,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>1B8B843D</checksum>
+      <checksum>813BB896</checksum>
     </file>
   </files>
 </measure>

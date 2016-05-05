@@ -2,16 +2,16 @@
   <schema_version>3.0</schema_version>
   <name>improve_fan_belt_efficiency</name>
   <uid>ebeca0aa-a432-4283-a714-17116f7c8f8c</uid>
-  <version_id>47250fd4-d230-4605-8793-ec408f5099e3</version_id>
-  <version_modified>20160505T144748Z</version_modified>
+  <version_id>037d825e-e276-4b86-8fbe-03b0e91b851b</version_id>
+  <version_modified>20160505T160126Z</version_modified>
   <xml_checksum>F78494F2</xml_checksum>
   <class_name>ImproveFanBeltEfficiency</class_name>
   <display_name>Improve Fan Belt Efficiency</display_name>
-  <description>The assessment team observed opportunities for fan belt improvements on HVAC fan drives. These motors are asynchronous induction motors.&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
-&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
-Improvements in belt efficiency result in energy savings at the motor. The three common belt efficiency measures are belt tightening (1%-5% savings per motor), replace standard v-belts with cogged v-belts (2% savings per motor), and replace standard belts with synchronous belts (3% savings per motor).&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
-&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
-Well-adjusted belts run cooler, last longer, and operate at higher efficiency than standard belts. The belts associated with the largest motors, longest run times, and that are run closest to full load should be given priority when making replacements.&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
+  <description>The assessment team observed opportunities for fan belt improvements on HVAC fan drives. These motors are asynchronous induction motors.&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
+&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
+Improvements in belt efficiency result in energy savings at the motor. The three common belt efficiency measures are belt tightening (1%-5% savings per motor), replace standard v-belts with cogged v-belts (2% savings per motor), and replace standard belts with synchronous belts (3% savings per motor).&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
+&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
+Well-adjusted belts run cooler, last longer, and operate at higher efficiency than standard belts. The belts associated with the largest motors, longest run times, and that are run closest to full load should be given priority when making replacements.&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
   </description>
   <modeler_description>This measure alters fans on all or a single air loop in the building. The three belt ECMs options are then exposed as three user argument fields with a default populated for each. The range of efficiency improvements will be listed in the user argument description. The three user arguments will be summed and added to the existing motor efficiency. The cost arguments are user arguments that are also populated with a default.  If arguments are left blank, the user is notified that the model has not changed in the run manager. A warning is issued if the motor efficiency >96% and an error is issued if efficiency is >100%.</modeler_description>
   <arguments>
@@ -21,10 +21,10 @@ Well-adjusted belts run cooler, last longer, and operate at higher efficiency th
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>{f239fc5a-cc75-4ec7-8173-021044f33460}</default_value>
+      <default_value>{be4f5079-c5ce-44cf-99bf-0942481f3659}</default_value>
       <choices>
         <choice>
-          <value>{f239fc5a-cc75-4ec7-8173-021044f33460}</value>
+          <value>{be4f5079-c5ce-44cf-99bf-0942481f3659}</value>
           <display_name>*All Air Loops*</display_name>
         </choice>
       </choices>
@@ -160,7 +160,7 @@ Well-adjusted belts run cooler, last longer, and operate at higher efficiency th
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>CE80E35E</checksum>
+      <checksum>1B8BFA02</checksum>
     </file>
   </files>
 </measure>
