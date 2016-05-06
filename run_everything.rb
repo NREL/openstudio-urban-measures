@@ -5,13 +5,13 @@ require 'json'
 class Runner
 
   def initialize
-    #@url = 'http://localhost:3000'
-    @url = 'http://insight4.hpc.nrel.gov:8081'
-    @project_id = '57228416b03b420068000002'
+    @url = 'http://localhost:3000'
+    #@url = 'http://insight4.hpc.nrel.gov:8081'
+    @project_id = '572cf0a9c44c8d2290000002'
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
-    @max_buildings = Float::INFINITY
-    #@max_buildings = 8
+    @max_datapoints = Float::INFINITY
+    @max_datapoints = 2
     @num_parallel = 7
   end
   
@@ -103,7 +103,7 @@ class Runner
     puts "#{all_workflow_ids.size} workflows"
 
     # loop over all combinations
-    num_buildings = 1
+    num_datapoints = 1
     all_building_ids.each do |building_id|
       all_workflow_ids.each do |workflow_id|
 
@@ -121,8 +121,8 @@ class Runner
             puts "Skipping Complete Datapoint"
             next
           elsif datapoint[:status] == "Failed"
-            puts "Skipping Failed Datapoint"
-            next
+            #puts "Skipping Failed Datapoint"
+            #next
           end
         end
         puts "Saving Datapoint"
@@ -155,10 +155,12 @@ class Runner
           file << JSON.pretty_generate(workflow)
         end
         
+        num_datapoints += 1
+        if @max_datapoints < num_datapoints
+          return result
+        end
+        
       end
-      
-      num_buildings += 1
-      break if @max_buildings < num_buildings
     end
     
     return result
@@ -168,7 +170,7 @@ class Runner
   
     #dirs = Dir.glob("./run/*")
     
-    Parallel.each(dirs, in_threads: [@max_buildings,@num_parallel].min) do |osw_dir|
+    Parallel.each(dirs, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
       
       md = /datapoint_(.*)/.match(osw_dir)
       next if !md

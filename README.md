@@ -48,7 +48,6 @@ This is a prototype application only, you can try it out using these [installati
 1. Edit the [run_everything](./run_everything.rb) script to point to your project and edit other configurations.
  in your Ruby installation.  
 1. `bundle install`
-1. `bundle update`
 1. `bundle exec ruby run_everything.rb`
 1. This will generate simulation results in the `run` directory as well as push results to the City Database and download GeoJSON files including results.
 

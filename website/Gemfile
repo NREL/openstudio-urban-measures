@@ -20,7 +20,7 @@ gem 'rest-client'
 gem 'kaminari'
 
 # user auth, roles, & permissions
-gem 'devise'
+gem 'devise', '~> 3.5'
 gem 'cancancan', '~> 1.9'
 gem 'role_model'
 

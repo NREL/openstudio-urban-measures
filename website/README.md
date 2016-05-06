@@ -22,7 +22,6 @@ Open a separate console, change directories to the '\openstudio-urban-measures\w
 
 ```
 bundle install
-bundle update
 ```
 
 then start the Rails server
