@@ -24,7 +24,7 @@ class TestdatenCleaner < Cleaner
     data['space_type'] = 'Office' # "function": "31001_2463",
     #"Gebaeudehoehe": "2.373", # Building height
     #"Bodenhoehe": "168.721", # Floor height 
-    #"Dachform": "PULTDACH", # Roof shape 
+    #"Dachform": "PULTDACH", # Roof shape, PENT ROOF 
     #"Dachhoehe": "171.095", # Roof Height 
     #"Gemeindeschluessel": "08125005", # Municipality key 
     #"DatenquelleLage": "1000", # Data source location
@@ -37,6 +37,7 @@ class TestdatenCleaner < Cleaner
     data['floor_area'] = 0
     
     data['intersecting_building_source_ids'] = []
+    data['weather_file_name'] = 'Testdaten.epw'
 
     super(data, schema)
   end

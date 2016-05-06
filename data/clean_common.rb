@@ -289,6 +289,10 @@ class Cleaner
       
       all_errors[p] = []
       
+      if !geojson['crs']
+        geojson['crs'] = {"type" => "name", "properties" => {"name" => "EPSG:4326"}}
+      end
+      
       # loop over features
       geojson['features'].each do |feature|
         all_errors[p] << []

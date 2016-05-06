@@ -253,6 +253,9 @@ class Geometry
   def self.calculate_centroid(coordinates, type)
     points = if type == 'Polygon'
                coordinates[0]
+             elsif type == 'Point'
+               puts coordinates
+               [coordinates]
              else
                # assume multipolygon
                coordinates[0][0]

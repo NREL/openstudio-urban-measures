@@ -131,6 +131,10 @@
 		"footprint_perimeter_source": {
 			"$ref": "#/definitions/source"
 		},
+		"weather_file_name": {
+			"description": "Name of the weather file",
+			"type": "string"
+		},    
 		"zoning": {
 			"type": "string",
 			"enum": [
