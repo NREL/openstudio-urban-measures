@@ -1,10 +1,6 @@
-# OpenStudio Urban Modeling Web Application
+# OpenStudio City Database
 
 ## Local Development
-
-Install ruby 2.2.2 using rbenv or your preferred method.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
-
-On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit follow the [instructions here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit] to install it.
 
 Install bundler and rails at a command prompt:
 
@@ -23,12 +19,13 @@ Open a separate console, change directories to the '\openstudio-urban-measures\w
 
 ```
 bundle install
+bundle update
 ```
 
 then start the Rails server
 
 ```
-rails s
+bundle exec rails s
 ```
 
 View the app in your browser at http://localhost:3000
@@ -36,24 +33,24 @@ View the app in your browser at http://localhost:3000
 Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and initialize the database:
 
 ```
-rake db:setup
+bundle exec rake db:setup
 ```
 
 Create the mongo indexes:
 ```
-rake db:mongoid:create_indexes
+bundle exec rake db:mongoid:create_indexes
 ```
 
 then add default data:
 
 ```
-rake testing:batch_upload_features
+bundle exec rake testing:batch_upload_features
 ```
 
 To reset the database at any time use:
 
 ```
-rake db:reset
+bundle exec rake db:reset
 ```
 
 ## Deployment with Docker, Docker Machine, and Docker Compose

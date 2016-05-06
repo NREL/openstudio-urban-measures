@@ -1,29 +1,18 @@
-electron-boilerplate
-==============
-Comprehensive boilerplate application for [Electron runtime](http://electron.atom.io).  
+# Prototype URBANOpt Application
 
-Scope of this project:
+# Quick Start
 
-- Provide basic structure of the application so you can much easier grasp what should go where.
-- Give you cross-platform development environment, which works the same way on OSX, Windows and Linux.
-- Generate ready for distribution installers of your app for all three operating systems.
+Install Node.JS from [nodejs.org](https://nodejs.org/).
 
-NOT in the scope:
+Open a command prompt (must have git commands available) in the `/electron_app/` directory.  Type the following commands:
 
-- Imposing on you any framework (e.g. Angular, React). You can integrate the one which makes most sense for you.
-
-By the way, there is a twin project to this one: [nw-boilerplate](https://github.com/szwacz/nw-boilerplate), which is the same thing but for NW.js.
-
-# Quick start
-The only development dependency of this project is [Node.js](https://nodejs.org). So just make sure you have it installed.
-Then type few commands known to every Node developer...
 ```
-git clone https://github.com/szwacz/electron-boilerplate.git
-cd electron-boilerplate
 npm install
 npm start
 ```
 ... and boom! You have running desktop application on your screen.
+
+Note that the GeoJSON files loaded are currently hard coded to load from `\electron_app\app\baseline.geojson` and `\electron_app\app\proposed.geojson`, overwrite these files with your own.  Similarly, the result to be rendered `renderProperty` is hard coded in `\electron_app\app\app.js`.  Manually edit this and restart the application to change it.
 
 # Structure of the project
 
@@ -142,27 +131,3 @@ The installer is built using [NSIS](http://nsis.sourceforge.net). You have to in
 #### 32-bit build on 64-bit Windows
 
 There are still a lot of 32-bit Windows installations in use. If you want to support those systems and have 64-bit OS make sure you've installed 32-bit (instead of 64-bit) Node version. There are [versions managers](https://github.com/coreybutler/nvm-windows) if you feel the need for both architectures on the same machine.
-
-# License
-
-The MIT License (MIT)
-
-Copyright (c) 2015 Jakub Szwacz
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
