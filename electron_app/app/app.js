@@ -5,15 +5,16 @@
 import os from 'os'; // native node.js module
 import { remote } from 'electron'; // native electron module
 import jetpack from 'fs-jetpack'; // module loaded from npm
-import { greet } from './hello_world/hello_world'; // code authored by you in this project
+import d3 from 'd3'; // module loaded from npm
 import env from './env';
 
 //console.log('Loaded environment variables:', env);
 
 var app = remote.app;
 var appDir = jetpack.cwd(app.getAppPath());
-var city = appDir.read('city.geojson', 'json');
-var taxlots = appDir.read('taxlots.geojson', 'json');
+var baseline = appDir.read('baseline.geojson', 'json');
+var proposed = appDir.read('proposed.geojson', 'json');
+var allProperties = {};
 
 function imageryError(arg1) {
   console.log('imageryError');
@@ -138,13 +139,13 @@ document.addEventListener('DOMContentLoaded', function() {
   
   loadingIndicator.style.display = 'none';
   
-  var bbox = city['bbox'];
+  var bounds = d3.geo.bounds(baseline);
 
   var ellipsoid = Cesium.Ellipsoid.WGS84;
-  var west = Cesium.Math.toRadians(bbox[0]);
-  var south = Cesium.Math.toRadians(bbox[1]);
-  var east = Cesium.Math.toRadians(bbox[2]);
-  var north = Cesium.Math.toRadians(bbox[3]);
+  var west = Cesium.Math.toRadians(bounds[0][0]);
+  var south = Cesium.Math.toRadians(bounds[0][1]);
+  var east = Cesium.Math.toRadians(bounds[1][0]);
+  var north = Cesium.Math.toRadians(bounds[1][1]);
 
   var extent = new Cesium.Rectangle(west, south, east, north);
   
@@ -161,16 +162,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  var city_datasource = new Cesium.GeoJsonDataSource();
-  viewer.dataSources.add(city_datasource);
+  var baseline_datasource = new Cesium.GeoJsonDataSource();
+  viewer.dataSources.add(baseline_datasource);
   
-  city_datasource.load(city, {
-    stroke: Cesium.Color.RED,
-    fill: Cesium.Color.PINK,
+  baseline_datasource.load(baseline, {
+    stroke: Cesium.Color.BLACK,
+    fill: Cesium.Color.WHITE,
     strokeWidth: 3,
     markerSymbol: '?'
   }).then( function() {
-    var values = city_datasource.entities.values;
+    var values = baseline_datasource.entities.values;
     for (var i = 0; i < values.length; i++) {
       var value = values[i];
       
@@ -181,26 +182,65 @@ document.addEventListener('DOMContentLoaded', function() {
       //var average_roof_height = value.properties["average_roof_height"];
       values[i].polygon.extrudedHeight = height;
       
-      var floor_area = value.properties["floor_area"];
-      if (floor_area < 0.09290304*100000){
-        var zoning = value.properties["zoning"];
-        if (zoning == "Commercial"){
-          values[i].polygon.material = Cesium.Color.BLUE;
-          values[i].polygon.outlineColor = Cesium.Color.BLACK;
-          console.log(values[i].polygon);
+      for (let propertyName of Object.getOwnPropertyNames(value.properties) ){
+        if (propertyName == "datapoint"){
+          continue;
         }
+        if (propertyName == "properties"){
+          continue;
+        }        
+        if (!allProperties[propertyName]){
+          allProperties[propertyName] = [];
+        }
+        allProperties[propertyName].push(value.properties[propertyName]);
+      }
+      if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
+        var results = value.properties["datapoint"]["results"];
+        for (let propertyName of Object.getOwnPropertyNames(results) ){
+          if (!allProperties[propertyName]){
+            allProperties[propertyName] = [];
+          }
+          allProperties[propertyName].push(results[propertyName]);
+        }
+      }
+    } 
+
+    var renderProperty = "total_site_eui";
+    //var renderProperty = "floor_area";
+    
+    var allValues = allProperties[renderProperty].sort(function(a, b){return a-b});
+    var domain = [allValues[0], allValues[allValues.length-1]];
+    console.log(domain);
+    var color_scale = d3.scale.linear().domain(domain).range(['blue', 'red']);
+    
+    for (var i = 0; i < values.length; i++) {
+      var value = values[i];
+      
+      var x = value.properties[renderProperty];
+      if (!x){
+        if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
+          x = value.properties["datapoint"]["results"][renderProperty];
+        }
+      }
+      if (x){
+        var y = color_scale(x);
+        var c = Cesium.Color.fromCssColorString(y);
+        values[i].polygon.material = c;
+        values[i].polygon.outlineColor = Cesium.Color.BLACK;
+      }else{
+        console.log("No data");
       }
     } 
   })
   
   
   
-  viewer.dataSources.add(Cesium.GeoJsonDataSource.load(taxlots, {
-    stroke: Cesium.Color.GREEN,
-    fill: Cesium.Color.GREEN,
-    strokeWidth: 3,
-    markerSymbol: '?'
-  }));
+  //viewer.dataSources.add(Cesium.GeoJsonDataSource.load(taxlots, {
+  //  stroke: Cesium.Color.GREEN,
+  //  fill: Cesium.Color.GREEN,
+  //  strokeWidth: 3,
+  //  markerSymbol: '?'
+  //}));
 
   //var building;
   //for (feature of city['features']){
