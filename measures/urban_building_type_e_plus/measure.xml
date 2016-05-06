@@ -1,0 +1,65 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>urban_building_type_e_plus</name>
+  <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
+  <version_id>f1d97782-20a6-4dec-940d-5064fff1b7d1</version_id>
+  <version_modified>20160504T154702Z</version_modified>
+  <xml_checksum>EF866DD5</xml_checksum>
+  <class_name>UrbanBuildingTypeEPlus</class_name>
+  <display_name>UrbanBuildingTypeEPlus</display_name>
+  <description></description>
+  <modeler_description></modeler_description>
+  <arguments/>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Space Types</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>EnergyPlusMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>urban_building_type_e_plus_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>BA1FB234</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.9.0</identifier>
+        <min_compatible>1.9.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>0C9F6F01</checksum>
+    </file>
+    <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>AB978FE6</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>35E958BD</checksum>
+    </file>
+  </files>
+</measure>

@@ -2,6 +2,7 @@
 .ruby-version
 .idea
 .DS_STORE
+/data/datapoint_files
 
 #Ignore precompiled assets (for now at least)
 /public/assets
