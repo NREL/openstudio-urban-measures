@@ -14,13 +14,16 @@ File.open('Testdaten-LoD2S2-CityGML.geojson') do |file|
   json = JSON::parse(file.read, :symbolize_names => true)
 end
 
-
 bldg_elements = ['bldg:function', 'bldg:roofType', 'bldg:measuredHeight', 'bldg:storeysAboveGround']
 
 doc.xpath('//bldg:Building').each do |node|
   id = node.attr('gml:id').to_s
   feature = json[:features].find {|feature| feature[:properties][:id] == id}
-  next if feature.nil?
+  if feature.nil?
+    puts "Can't find feature #{id}"
+    next
+  end
+  puts "Found feature #{id}"
   
   node.xpath('gen:stringAttribute').each do |att|
     name = att.attr('name').to_s
@@ -39,5 +42,5 @@ doc.xpath('//bldg:Building').each do |node|
 end
 
 File.open('Testdaten-LoD2S2-CityGML.2.geojson', 'w') do |file|
-  file = JSON::pretty_generate(json)
+  file << JSON::generate(json)
 end
