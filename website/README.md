@@ -15,6 +15,9 @@ Download and install [MongoDB](https://www.mongodb.org).  Open a command propmpt
 mongod
 ```
 
+Create the default MongoDB database directory, on Windows this is  'c:\data\db'.
+
+
 Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and install the gem dependencies:
 
 ```
