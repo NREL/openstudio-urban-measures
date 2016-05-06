@@ -5,7 +5,7 @@ class Cleaner
   
   def get_building_schema
     result = nil
-    File.open(File.dirname(__FILE__) + "/../building_properties.json") do |f|
+    File.open(File.dirname(__FILE__) + "/../schema/building_properties.json") do |f|
       result = JSON.parse(f.read)
     end
     return result
@@ -13,7 +13,7 @@ class Cleaner
 
   def get_taxlot_schema
     result = nil
-    File.open(File.dirname(__FILE__) + "/../taxlot_properties.json") do |f|
+    File.open(File.dirname(__FILE__) + "/../schema/taxlot_properties.json") do |f|
       result = JSON.parse(f.read)
     end
     return result
@@ -21,7 +21,7 @@ class Cleaner
 
   def get_district_system_schema
     result = nil
-    File.open(File.dirname(__FILE__) + "/../district_system_properties.json") do |f|
+    File.open(File.dirname(__FILE__) + "/../schema/district_system_properties.json") do |f|
       result = JSON.parse(f.read)
     end
     return result
@@ -29,7 +29,7 @@ class Cleaner
 
   def get_region_schema
     result = nil
-    File.open(File.dirname(__FILE__) + "/../region_properties.json") do |f|
+    File.open(File.dirname(__FILE__) + "/../schema/region_properties.json") do |f|
       result = JSON.parse(f.read)
     end
     return result
@@ -310,6 +310,10 @@ class Cleaner
               elsif data['CODE'] == 'Courtyard'
                 next
               end
+            else
+              # assume building
+              type = 'Building'
+              data['type'] = type
             end
           end
           
