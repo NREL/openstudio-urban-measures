@@ -1,0 +1,16 @@
+# https://github.com/polygon-city/polygon-city-cli
+
+# install redis
+choco install redis-64 
+C:\Chocolatey\bin\..\lib\redis-64.3.0.501\redis-server.exe
+
+# install assimp https://sourceforge.net/projects/assimp
+set PATH=%PATH%;C:/assimp-3.1.1-win-binaries/bin64
+export PATH=$PATH:/c/assimp-3.1.1-win-binaries/bin64
+
+# weird (typo) bug looks for redis on 127.0.01
+set REDIS_PORT_6379_TCP_ADDR=127.0.0.1
+export REDIS_PORT_6379_TCP_ADDR=127.0.0.1
+
+# http://www.lgl-bw.de/lgl-internet/opencms/de/07_Produkte_und_Dienstleistungen/Testdaten/ points to -> EPSG:31467
+polygon-city -c 31467 -E "your_mapzen_elevation_key" -o ./out/ Testdaten-LoD2S2-CityGML.gml
