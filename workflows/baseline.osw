@@ -4,7 +4,7 @@
   "root_directory": null,
   "run_directory": ".",
   "file_paths": ["./../../../weather/"],
-  "measure_paths": ["./../../../"],
+  "measure_paths": ["./../../../measures/"],
 	"steps": [
 		{
 			"measure_dir_name": "ChangeBuildingLocation",
