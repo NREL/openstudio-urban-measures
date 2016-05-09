@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>f1d97782-20a6-4dec-940d-5064fff1b7d1</version_id>
-  <version_modified>20160504T154702Z</version_modified>
+  <version_id>d61d9d62-9455-4101-8dda-2d0bd19e72f3</version_id>
+  <version_modified>20160509T162710Z</version_modified>
   <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
@@ -59,7 +59,7 @@
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>35E958BD</checksum>
+      <checksum>36CE67A4</checksum>
     </file>
   </files>
 </measure>

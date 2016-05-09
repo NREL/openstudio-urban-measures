@@ -1,10 +1,9 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <error>cannot load such file -- openstudio-standards</error>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>461fbfa1-8adf-44f0-b9e4-a6e1646ff1c0</version_id>
-  <version_modified>20160504T154701Z</version_modified>
+  <version_id>9d15ec06-4be1-472e-a7bb-34c7904acff4</version_id>
+  <version_modified>20160509T171254Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -127,19 +126,13 @@
       <filename>util.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E6BC45C8</checksum>
+      <checksum>C1AAE72C</checksum>
     </file>
     <file>
-      <filename>util.rb</filename>
-      <filetype>rb</filetype>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E6BC45C8</checksum>
-    </file>
-    <file>
-      <filename>apply_commercial.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>7D8A607D</checksum>
+      <checksum>36CE67A4</checksum>
     </file>
     <file>
       <version>
@@ -150,30 +143,19 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-    </file>
-    <file>
-      <filename>geometry.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>1B4BF46B</checksum>
-    </file>
-    <file>
-      <filename>constants.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>DFE4EFD1</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>35E958BD</checksum>
+      <checksum>B88FA0C6</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>80A34547</checksum>
+      <checksum>4F293A54</checksum>
+    </file>
+    <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>81EA715A</checksum>
     </file>
   </files>
 </measure>

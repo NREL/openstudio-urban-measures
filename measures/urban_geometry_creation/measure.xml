@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>9283d2ea-8d44-40d9-8e11-e7b14ba0e97c</version_id>
-  <version_modified>20160429T163727Z</version_modified>
+  <version_id>09756a3d-7cb0-45e3-a564-92b8ec84cd1d</version_id>
+  <version_modified>20160506T165836Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -120,7 +120,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>5C756DB9</checksum>
+      <checksum>79132CCD</checksum>
     </file>
   </files>
 </measure>

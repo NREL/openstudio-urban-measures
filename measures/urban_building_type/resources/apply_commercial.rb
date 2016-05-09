@@ -1,4 +1,6 @@
   
+require_relative '../resources/util'
+  
 # open the class to add methods to size all HVAC equipment
 class OpenStudio::Model::Model  
   
@@ -319,6 +321,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)   
         
@@ -330,7 +334,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            nil,
                            nil,
                            hot_water_loop,
-                           nil)       
+                           nil)
+
+            runner.registerInfo("PVAV applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000       
         
@@ -366,6 +372,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
         
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+        
         end
     
     when "Electric_Electric"
@@ -390,6 +398,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
     
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -402,6 +412,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                              prototype_input['vav_fan_efficiency'],
                                              prototype_input['vav_fan_motor_efficiency'],
                                              prototype_input['vav_fan_pressure_rise'])
+                                             
+            runner.registerInfo("PVAV w/PFP boxes applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -426,7 +438,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     nil,
                                     prototype_input['vav_fan_efficiency'],
                                     prototype_input['vav_fan_motor_efficiency'],
-                                    prototype_input['vav_fan_pressure_rise'])        
+                                    prototype_input['vav_fan_pressure_rise'])
+
+            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
         
         end    
     
@@ -443,7 +457,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            nil,
                            nil,
                            hot_water_loop,
-                           nil)   
+                           nil)
+                           
+            runner.registerInfo("PVAV applied to #{building_type}.")
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -456,7 +472,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            nil,
                            nil,
                            hot_water_loop,
-                           nil)           
+                           nil)
+                           
+            runner.registerInfo("PVAV applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -491,7 +509,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_efficiency'],
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
-                                 nil)        
+                                 nil)
+                                 
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
         
         end    
     
@@ -520,6 +540,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
 
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -564,6 +586,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -598,7 +622,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_efficiency'],
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
-                                 nil)        
+                                 nil)
+                                 
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -633,7 +659,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_efficiency'],
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
-                                 nil)         
+                                 nil)
+                                 
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
         
         end    
     
@@ -673,6 +701,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -698,7 +728,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     nil,
                                     prototype_input['vav_fan_efficiency'],
                                     prototype_input['vav_fan_motor_efficiency'],
-                                    prototype_input['vav_fan_pressure_rise'])        
+                                    prototype_input['vav_fan_pressure_rise'])
+                                    
+            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -724,7 +756,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     nil,
                                     prototype_input['vav_fan_efficiency'],
                                     prototype_input['vav_fan_motor_efficiency'],
-                                    prototype_input['vav_fan_pressure_rise'])        
+                                    prototype_input['vav_fan_pressure_rise'])
+                                    
+            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
         
         end    
     
@@ -766,6 +800,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              heating_type,
                              supplemental_heating_type,
                              cooling_type)
+                             
+            runner.registerInfo("PSZ-AC applied to #{building_type}.")
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -801,7 +837,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_efficiency'],
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
-                                 nil)         
+                                 nil)
+                                 
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -837,7 +875,9 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_efficiency'],
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
-                                 nil)            
+                                 nil)
+                                 
+            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
         
         end     
     
@@ -1188,7 +1228,7 @@ def apply_commercial(model, runner, heating_source, cooling_source)
   end
   if applicable
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    HelperMethods.remove_existing_hvac_equipment(model, runner)
+    HelperMethods.remove_all_hvac_equipment(model, runner)
     floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area}'.")
     result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)

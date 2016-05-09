@@ -6,8 +6,6 @@ require 'fileutils'
 
 require_relative 'resources/apply_residential'
 require_relative 'resources/apply_commercial'
-require_relative 'resources/util'
-require_relative 'resources/geometry'
 
 module OpenStudio
   module Model

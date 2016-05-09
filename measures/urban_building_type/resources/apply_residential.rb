@@ -1,3 +1,5 @@
+require_relative '../resources/util'
+
 def apply_weather(model, runner)
 
   runner.registerInfo("Applying weather.")
@@ -762,7 +764,7 @@ def get_thermal_zones(model)
   
 end
 
-def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
+def apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_type)
 
     heating_cooling = "#{heating_source}_#{cooling_source}"
     
@@ -792,6 +794,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                      fan_type,
                      heating_type,
                      cooling_type)
+                     
+      runner.registerInfo("PTAC applied to #{building_type}.")
     
     when "Electric_Electric"
     
@@ -813,6 +817,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                              fan_type,
                              heating_type,
                              cooling_type)
+                             
+      runner.registerInfo("PTHP applied to #{building_type}.")
     
     when "District Hot Water_Electric"
     
@@ -839,9 +845,11 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                      HelperMethods.zones_with_thermostats(model.getThermalZones),
                      fan_type,
                      heating_type,
-                     cooling_type)        
+                     cooling_type)
+
+      runner.registerInfo("PTAC applied to #{building_type}.")
   
-  when "District Ambient Water_District Ambient Water"
+    when "District Ambient Water_District Ambient Water"
   
       # [1] PLANT LOOPS
           # [1] Heat Pump Loop with:
@@ -863,6 +871,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
       HelperMethods.add_watertoairhp(model,
                                      heat_pump_loop,
                                      HelperMethods.zones_with_thermostats(model.getThermalZones))
+    
+      runner.registerInfo("Water-to-Air HP applied to #{building_type}.")
     
     when "Gas_District Chilled Water"
     
@@ -906,7 +916,9 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                      vav_operation_schedule,
                      doas_oa_damper_schedule,
                      doas_fan_maximum_flow_rate,
-                     doas_economizer_control_type)         
+                     doas_economizer_control_type)
+    
+      runner.registerInfo("DOAS applied to #{building_type}.")
     
     when "Electric_District Chilled Water"
     
@@ -953,6 +965,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                        supplemental_heating_type,
                        cooling_type)
     
+      runner.registerInfo("PSZ-AC applied to #{building_type}.")
+    
     when "District Hot Water_District Chilled Water"
     
       # [2] PLANT LOOPS
@@ -997,6 +1011,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source)
                      doas_oa_damper_schedule,
                      doas_fan_maximum_flow_rate,
                      doas_economizer_control_type)
+                     
+      runner.registerInfo("DOAS applied to #{building_type}.")
 
     when "District Ambient Water_Electric"
         runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
@@ -1067,9 +1083,9 @@ def apply_residential(model, runner, heating_source, cooling_source)
   end
   if applicable
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    HelperMethods.remove_existing_hvac_equipment(model, runner)
+    HelperMethods.remove_all_hvac_equipment(model, runner)
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source)
+    result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type)
   end
   
   runner.registerValue('bldg_use', building_space_type)

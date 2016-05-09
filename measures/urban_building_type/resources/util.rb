@@ -156,7 +156,7 @@ class HelperMethods
         
     end
 
-    def self.remove_existing_hvac_equipment(model, runner)
+    def self.remove_all_hvac_equipment(model, runner)
         
         airloops = model.getAirLoopHVACs
         plantLoops = model.getPlantLoops
