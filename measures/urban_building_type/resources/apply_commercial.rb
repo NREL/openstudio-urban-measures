@@ -45,7 +45,8 @@ class OpenStudio::Model::Model
         self.add_constructions(lookup_building_type, building_vintage, climate_zone)
         
         # DLM: is this needed?  can we use existing thermal zones?
-        #self.create_thermal_zones(building_type, building_vintage, climate_zone)
+        self.getThermalZones.each {|thermalZone| thermalZone.remove}
+        self.create_thermal_zones(building_type, building_vintage, climate_zone)
         
         # TODO: 90.1-2010, MediumOffice has no chw_pumping_type
         prototype_input['chw_pumping_type'] = 'const_pri'
