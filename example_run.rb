@@ -8,7 +8,8 @@ include = ""
 #openstudio_2_0 = "E:/openstudio-2-0/build"
 #include = "-I '#{File.join(openstudio_2_0, 'OSCore-prefix/src/OSCore-build/ruby/Debug/')}"
 
-space_type = "Office"
+#space_type = "Office"
+space_type = "Single-Family"
   
 # these are made up for now
 datapoint_json = {:properties=>{}}
@@ -90,6 +91,6 @@ command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{baseline_osw_
 puts command
 system(command)
 
-command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{retrofit_osw_path}"
-puts command
-system(command)
+#command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{retrofit_osw_path}"
+#puts command
+#system(command)

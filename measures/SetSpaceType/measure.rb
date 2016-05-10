@@ -56,8 +56,24 @@ class SetSpaceType < OpenStudio::Ruleset::ModelUserScript
     
     model.getBuilding.setSpaceType(space_type)
     model.getBuilding.setStandardsBuildingType(space_type_name)
-    model.getBuilding.setRelocatable(false)
-
+    
+    if space_type_name == "Mobile Home"
+      model.getBuilding.setStandardsNumberOfLivingUnits(1)
+      model.getBuilding.setRelocatable(true)
+    elsif space_type_name == "Single-Family"
+      model.getBuilding.setStandardsNumberOfLivingUnits(1)
+      model.getBuilding.setRelocatable(false)
+    elsif space_type_name == "Multifamily (2 to 4 units)"
+      model.getBuilding.setStandardsNumberOfLivingUnits(4)
+      model.getBuilding.setRelocatable(false)
+    elsif space_type_name == "Multifamily (5 or more units)"
+      model.getBuilding.setStandardsNumberOfLivingUnits(10)
+      model.getBuilding.setRelocatable(false)
+    else
+      model.getBuilding.setStandardsNumberOfLivingUnits(0)
+      model.getBuilding.setRelocatable(false)
+    end
+   
     return true
  
   end #end the run method
