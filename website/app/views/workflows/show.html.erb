@@ -8,11 +8,19 @@
     <td><%= @workflow.id.to_s %></td>
   </tr>
   <tr>
+    <th>Display Name</th>
+    <td><%= @workflow.display_name.to_s %></td>
+  </tr>
+  <tr>
+    <th>Name</th>
+    <td><%= @workflow.name.to_s %></td>
+  </tr>
+  <tr>
     <th>Project</th>
     <td><%= link_to @workflow.project.display_name, @workflow.project %></td>
   </tr>
   <% @workflow.attributes.keys.sort.each do |key| %>
-    <% unless key == '_id' || key == 'project_id' %>
+    <% unless key == '_id' || key == 'project_id' || key == 'name' || key == 'display_name' %>
       <tr>
       	<% if key == 'workflow_file' %>
       		<th>Related Zip File</th>
