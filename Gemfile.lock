@@ -7,8 +7,8 @@ GIT
 
 GIT
   remote: git://github.com/NREL/openstudio-standards.git
-  revision: 520544722f306c08de90c126b9b32c44eb336ade
-  tag: v0.1.3
+  revision: 9d9c19d40ef501a852778d2fce6be70265cda183
+  ref: 9d9c19d40ef501a852778d2fce6be70265cda183
   specs:
     openstudio-standards (0.1.3)
 

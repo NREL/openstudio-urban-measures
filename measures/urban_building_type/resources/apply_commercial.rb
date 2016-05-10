@@ -43,7 +43,10 @@ class OpenStudio::Model::Model
         self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
         self.modify_surface_convection_algorithm(building_vintage)
         self.add_constructions(lookup_building_type, building_vintage, climate_zone)
-        self.create_thermal_zones(building_type, building_vintage, climate_zone)
+        
+        # DLM: is this needed?  can we use existing thermal zones?
+        #self.create_thermal_zones(building_type, building_vintage, climate_zone)
+        
         # TODO: 90.1-2010, MediumOffice has no chw_pumping_type
         prototype_input['chw_pumping_type'] = 'const_pri'
         ###
@@ -66,7 +69,7 @@ class OpenStudio::Model::Model
         has_multizone_systems = false
         self.getAirLoopHVACs.sort.each do |air_loop|
           if air_loop.is_multizone_vav_system
-            self.apply_multizone_vav_outdoor_air_sizing
+            self.apply_multizone_vav_outdoor_air_sizing(building_vintage)
             if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
               return false
             end
