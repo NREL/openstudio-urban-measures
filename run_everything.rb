@@ -7,7 +7,8 @@ class Runner
   def initialize
     @url = 'http://localhost:3000'
     #@url = 'http://insight4.hpc.nrel.gov:8081'
-    @project_id = '572cf0a9c44c8d2290000002'
+    #@project_id = '572cf0a9c44c8d2290000002'
+    @project_id = '572d25e2c44c8d0d1800119b'    
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
     @max_datapoints = Float::INFINITY
@@ -179,7 +180,7 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      command = "ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      command = "bundle exec ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
       puts command
       system(command)
     end

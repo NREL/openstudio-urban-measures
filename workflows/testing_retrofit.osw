@@ -1,0 +1,91 @@
+{
+	"seed_file": null,
+	"weather_file": null,
+	"root_directory": null,
+	"run_directory": ".",
+	"file_paths": ["./../../../weather/"],
+	"measure_paths": ["./../../../measures/"],
+	"steps": [{
+		"measure_dir_name": "ChangeBuildingLocation",
+		"arguments": [{
+			"name": "weather_directory",
+			"value": "./../../weather"
+		},
+		{
+			"name": "weather_file_name",
+			"value": null
+		}]
+	},
+	{
+		"measure_dir_name": "BarAspectRatioStudy",
+		"arguments": [{
+			"name": "total_bldg_area_ip",
+			"value": 10000.00
+		},
+		{
+			"name": "ns_to_ew_ratio",
+			"value": 2.0
+		},
+		{
+			"name": "num_floors",
+			"value": 2
+		},
+		{
+			"name": "floor_to_floor_height_ip",
+			"value": 14
+		}]
+	},
+	{
+		"measure_dir_name": "SetSpaceType",
+		"arguments": [{
+			"name": "space_type",
+			"value": "Office"
+		}]
+	},
+	{
+		"measure_dir_name": "urban_building_type",
+		"arguments": [{
+			"name": "heating_source",
+			"value": "Gas"
+		},
+		{
+			"name": "cooling_source",
+			"value": "Electric"
+		}]
+	},
+	{
+		"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
+		"arguments": []
+	},
+	{
+		"measure_dir_name": "AedgK12ElectricEquipmentControls",
+		"arguments": []
+	},
+	{
+		"measure_dir_name": "ReduceLightingLoadsByPercentage",
+		"arguments": []
+	},
+	{
+		"measure_dir_name": "AedgK12InteriorLightingControls",
+		"arguments": []
+	},
+	{
+		"measure_dir_name": "AdjustSystemEfficiencies",
+		"arguments": [{
+			"name": "heating_efficiency_multiplier",
+			"value": 1.1
+		},
+		{
+			"name": "cooling_cop_multiplier",
+			"value": 1.3
+		}]
+	},
+	{
+		"measure_dir_name": "ImproveFanBeltEfficiency",
+		"arguments": []
+	},
+	{
+		"measure_dir_name": "ImproveMotorEfficiency",
+		"arguments": []
+	}]
+}

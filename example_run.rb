@@ -4,15 +4,17 @@ require 'json'
 require 'net/http'
 require 'fileutils'
 
-openstudio_2_0 = "E:/openstudio-2-0/build"
+include = ""
+#openstudio_2_0 = "E:/openstudio-2-0/build"
+#include = "-I '#{File.join(openstudio_2_0, 'OSCore-prefix/src/OSCore-build/ruby/Debug/')}"
 
-city_db_url = "http://localhost:3000"
-#city_db_url = "http://insight4.hpc.nrel.gov:8081/"
-project_name = "san_francisco"
-source_id = "98628"
-source_name = "NREL_GDS"
+space_type = "Office"
+  
+# these are made up for now
+datapoint_json = {:properties=>{}}
+building_json = {:properties=>{:space_type => space_type}}
+region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
 
-datapoint_id = "#{project_name}_#{source_id}"
 
 def merge(workflow, properties)
   workflow[:steps].each do |step|
@@ -46,35 +48,48 @@ def configure(workflow, datapoint, building, region)
   return workflow
 end
  	
-# load the workflow
+# load the workflows
 baseline_osw = nil
-File.open(File.join(File.dirname(__FILE__), "/workflows/retrofit.osw"), 'r') do |f|
+File.open(File.join(File.dirname(__FILE__), "/workflows/testing_baseline.osw"), 'r') do |f|
   baseline_osw = JSON::parse(f.read, :symbolize_names => true)
 end
-  
-# these are made up for now
-datapoint_json = {:id=>datapoint_id}
-building_json = {:properties=>{:city_db_url => city_db_url, :project_name => project_name, :source_id => source_id, :source_name => source_name}}
-region_json = {:properties=>{:weather_file_name=>"USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
 
-# configure the osw with building_json
+retrofit_osw = nil
+File.open(File.join(File.dirname(__FILE__), "/workflows/testing_retrofit.osw"), 'r') do |f|
+  retrofit_osw = JSON::parse(f.read, :symbolize_names => true)
+end
+
+# configure the osws with jsons
 baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json)
+retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json)
 
-# set up the directory
-baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/#{datapoint_id}_baseline/")
+# set up the directories
+baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing/baseline/")
 FileUtils.rm_rf(baseline_osw_dir)
 FileUtils.mkdir_p(baseline_osw_dir)
 
-# save the configured osw
+retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing/retrofit/")
+FileUtils.rm_rf(retrofit_osw_dir)
+FileUtils.mkdir_p(retrofit_osw_dir)
+
+# save the configured osws
 baseline_osw_path = "#{baseline_osw_dir}/in.osw"
 File.open(baseline_osw_path, 'w') do |f|
   f << JSON.generate(baseline_osw)
 end
   
-# run it 
-include = File.join(openstudio_2_0, "OSCore-prefix/src/OSCore-build/ruby/Debug/")
+retrofit_osw_path = "#{retrofit_osw_dir}/in.osw"
+File.open(retrofit_osw_path, 'w') do |f|
+  f << JSON.generate(retrofit_osw)
+end
+  
+# run them
 run_script = File.join(File.dirname(__FILE__), "run.rb")
 
-command = "#{RbConfig.ruby} -I #{include} #{run_script} #{baseline_osw_path}"
+command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{baseline_osw_path}"
+puts command
+system(command)
+
+command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{retrofit_osw_path}"
 puts command
 system(command)
