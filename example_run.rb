@@ -36,8 +36,6 @@ buildings = [
 
 #buildings = [buildings[0]]
   
-  
-
 def merge(workflow, properties)
   workflow[:steps].each do |step|
     step[:arguments].each do |argument|
