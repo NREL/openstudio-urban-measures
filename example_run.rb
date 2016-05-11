@@ -1,14 +1,41 @@
 # this example runs without using the web interface to query input data
 
 require 'json'
-require 'net/http'
+require 'parallel'
 require 'fileutils'
 
 include = ""
 #openstudio_2_0 = "E:/openstudio-2-0/build"
 #include = "-I '#{File.join(openstudio_2_0, 'OSCore-prefix/src/OSCore-build/ruby/Debug/')}"
 
-space_types = ["Office", "Single-Family"]
+run_retrofit = true
+num_parallel = 7
+
+buildings = [
+  {name: "Large-Office",             space_type: "Office",                        floor_area: 46320,  number_of_stories: 12, window_to_wall_ratio: 0.3},
+  {name: "Medium-Office",            space_type: "Office",                        floor_area: 4982,   number_of_stories: 3,  window_to_wall_ratio: 0.3},
+  {name: "Small-Office",             space_type: "Office",                        floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Warehouse",                space_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1,  window_to_wall_ratio: 0.1},
+  {name: "Stand-alone Retail",       space_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Strip-Mall",               space_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Primary-School",           space_type: "Education",                     floor_area: 6871,   number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Secondary-School",         space_type: "Education",                     floor_area: 19592,  number_of_stories: 2,  window_to_wall_ratio: 0.3},
+  {name: "Supermarket",              space_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1,  window_to_wall_ratio: 0.1},
+  {name: "Quick-Service-Restaurant", space_type: "Food service",                  floor_area: 232,    number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Full-Service-Restaurant",  space_type: "Food service",                  floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.3},
+  {name: "Hospital",                 space_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5,  window_to_wall_ratio: 0.3},
+  {name: "Outpatient-Health-Care",   space_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3,  window_to_wall_ratio: 0.3},
+  {name: "Small-Hotel",              space_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4,  window_to_wall_ratio: 0.3},
+  {name: "Large-Hotel",              space_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6,  window_to_wall_ratio: 0.3},
+  {name: "Midrise-Apartment",        space_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  window_to_wall_ratio: 0.3,  number_of_residential_units: 60},
+  {name: "Single-Family",            space_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1},
+  {name: "Multifamily-4",            space_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 4},
+  {name: "Multifamily-8",            space_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  window_to_wall_ratio: 0.3,  number_of_residential_units: 8},
+  {name: "Mobile-Home",              space_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1}
+]
+
+buildings = [buildings[0]]
+  
   
 
 def merge(workflow, properties)
@@ -43,13 +70,14 @@ def configure(workflow, datapoint, building, region)
   return workflow
 end
 
-space_types.each do |space_type|
+Parallel.each(buildings, in_threads: num_parallel) do |building|
     
-  # these are made up for now
+  # configure jsons
   datapoint_json = {:properties=>{}}
-  building_json = {:properties=>{:space_type => space_type}}
+  building_json = {:properties=>building}
   region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
 
+  name = building[:name]
 
   # load the workflows
   baseline_osw = nil
@@ -67,13 +95,13 @@ space_types.each do |space_type|
   retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json)
 
   # set up the directories
-  baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{space_type}/baseline/")
+  baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/baseline/")
   FileUtils.rm_rf(baseline_osw_dir)
   FileUtils.mkdir_p(baseline_osw_dir)
 
-  retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{space_type}/retrofit/")
+  retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/retrofit/")
   FileUtils.rm_rf(retrofit_osw_dir)
-  FileUtils.mkdir_p(retrofit_osw_dir)
+  FileUtils.mkdir_p(retrofit_osw_dir) if run_retrofit
 
   # save the configured osws
   baseline_osw_path = "#{baseline_osw_dir}/in.osw"
@@ -81,9 +109,11 @@ space_types.each do |space_type|
     f << JSON.generate(baseline_osw)
   end
     
-  retrofit_osw_path = "#{retrofit_osw_dir}/in.osw"
-  File.open(retrofit_osw_path, 'w') do |f|
-    f << JSON.generate(retrofit_osw)
+  if run_retrofit
+    retrofit_osw_path = "#{retrofit_osw_dir}/in.osw"
+    File.open(retrofit_osw_path, 'w') do |f|
+      f << JSON.generate(retrofit_osw)
+    end
   end
     
   # run them
@@ -93,7 +123,9 @@ space_types.each do |space_type|
   puts command
   system(command)
 
-  #command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{retrofit_osw_path}"
-  #puts command
-  #system(command)
+  if run_retrofit
+    command = "bundle exec #{RbConfig.ruby} #{include} #{run_script} #{retrofit_osw_path}"
+    puts command
+    system(command)
+  end
 end

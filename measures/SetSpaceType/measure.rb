@@ -23,6 +23,11 @@ class SetSpaceType < OpenStudio::Ruleset::ModelUserScript
     space_type = OpenStudio::Ruleset::OSArgument::makeStringArgument("space_type",true)
     space_type.setDisplayName("Space Type")
     args << space_type
+    
+    number_of_residential_units = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("number_of_residential_units",true)
+    number_of_residential_units.setDisplayName("Number of Residential Units")
+    number_of_residential_units.setDefaultValue(0)
+    args << number_of_residential_units  
 
     return args
   end #end the arguments method
@@ -38,6 +43,7 @@ class SetSpaceType < OpenStudio::Ruleset::ModelUserScript
 
     #assign the user inputs to variables
     space_type_name = runner.getStringArgumentValue("space_type",user_arguments)
+    number_of_residential_units = runner.getIntegerArgumentValue("number_of_residential_units",user_arguments)
     
     space_type = nil
     model.getSpaceTypes.each do |s|
@@ -56,21 +62,11 @@ class SetSpaceType < OpenStudio::Ruleset::ModelUserScript
     
     model.getBuilding.setSpaceType(space_type)
     model.getBuilding.setStandardsBuildingType(space_type_name)
+    model.getBuilding.setStandardsNumberOfLivingUnits(number_of_residential_units)
     
-    if space_type_name == "Mobile Home"
-      model.getBuilding.setStandardsNumberOfLivingUnits(1)
+    if space_type_name == "Mobile Home"  
       model.getBuilding.setRelocatable(true)
-    elsif space_type_name == "Single-Family"
-      model.getBuilding.setStandardsNumberOfLivingUnits(1)
-      model.getBuilding.setRelocatable(false)
-    elsif space_type_name == "Multifamily (2 to 4 units)"
-      model.getBuilding.setStandardsNumberOfLivingUnits(4)
-      model.getBuilding.setRelocatable(false)
-    elsif space_type_name == "Multifamily (5 or more units)"
-      model.getBuilding.setStandardsNumberOfLivingUnits(10)
-      model.getBuilding.setRelocatable(false)
     else
-      model.getBuilding.setStandardsNumberOfLivingUnits(0)
       model.getBuilding.setRelocatable(false)
     end
    

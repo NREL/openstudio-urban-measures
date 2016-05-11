@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>set_space_type</name>
   <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
-  <version_id>f46b78d9-1eda-460e-a416-1fcd031f16ff</version_id>
+  <version_id>b63f2b96-1986-4a54-a5df-b6bbc557417b</version_id>
   <xml_checksum>49BEF039</xml_checksum>
   <class_name>SetSpaceType</class_name>
   <display_name>Set Space Type</display_name>
@@ -15,6 +15,14 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>number_of_residential_units</name>
+      <display_name>Number of Residential Units</display_name>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
     </argument>
   </arguments>
   <provenances/>
@@ -53,7 +61,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>2007F6F1</checksum>
+      <checksum>BF0A9E61</checksum>
     </file>
   </files>
 </measure>

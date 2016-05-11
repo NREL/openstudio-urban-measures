@@ -21,11 +21,10 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     args = OpenStudio::Ruleset::OSArgumentVector.new
     
     #make an argument for total floor area
-    total_bldg_area_ip = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("total_bldg_area_ip",true)
-    total_bldg_area_ip.setDisplayName("Total Building Floor Area")
-    total_bldg_area_ip.setUnits("ft^2")
-    total_bldg_area_ip.setDefaultValue(10000.0)
-    args << total_bldg_area_ip
+    floor_area = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("floor_area",true)
+    floor_area.setDisplayName("Total Building Floor Area")
+    floor_area.setUnits("m^2")
+    args << floor_area
 
     #make an argument for aspect ratio
     ns_to_ew_ratio = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("ns_to_ew_ratio",true)
@@ -33,18 +32,24 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     ns_to_ew_ratio.setDefaultValue(2.0)
     args << ns_to_ew_ratio
 
+    #make an argument for wwr
+    window_to_wall_ratio = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("window_to_wall_ratio",true)
+    window_to_wall_ratio.setDisplayName("Window to Wall Ratio")
+    window_to_wall_ratio.setDefaultValue(0.3)
+    args << window_to_wall_ratio
+
     #make an argument for number of floors
-    num_floors = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("num_floors",true)
-    num_floors.setDisplayName("Number of Floors.")
-    num_floors.setDefaultValue(2)
-    args << num_floors
+    number_of_stories = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("number_of_stories",true)
+    number_of_stories.setDisplayName("Number of Floors.")
+    number_of_stories.setDefaultValue(2)
+    args << number_of_stories
 
     #make an argument for floor height
-    floor_to_floor_height_ip = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("floor_to_floor_height_ip",true)
-    floor_to_floor_height_ip.setDisplayName("Floor to Floor Height")
-    floor_to_floor_height_ip.setUnits("ft")
-    floor_to_floor_height_ip.setDefaultValue(10.0)
-    args << floor_to_floor_height_ip
+    floor_to_floor_height = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("floor_to_floor_height",true)
+    floor_to_floor_height.setDisplayName("Floor to Floor Height")
+    floor_to_floor_height.setUnits("m")
+    floor_to_floor_height.setDefaultValue(3.3)
+    args << floor_to_floor_height
 
     #make an argument to surface match
     surface_matching = OpenStudio::Ruleset::OSArgument::makeBoolArgument("surface_matching",true)
@@ -71,24 +76,24 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     end
 
     #assign the user inputs to variables
-    total_bldg_area_ip = runner.getDoubleArgumentValue("total_bldg_area_ip",user_arguments)
+    floor_area = runner.getDoubleArgumentValue("floor_area",user_arguments)
     ns_to_ew_ratio = runner.getDoubleArgumentValue("ns_to_ew_ratio",user_arguments)
-    num_floors = runner.getIntegerArgumentValue("num_floors",user_arguments)
-    floor_to_floor_height_ip = runner.getDoubleArgumentValue("floor_to_floor_height_ip",user_arguments)
+    number_of_stories = runner.getIntegerArgumentValue("number_of_stories",user_arguments)
+    floor_to_floor_height = runner.getDoubleArgumentValue("floor_to_floor_height",user_arguments)
     surface_matching = runner.getBoolArgumentValue("surface_matching",user_arguments)
     make_zones = runner.getBoolArgumentValue("make_zones",user_arguments)
 
     #test for positive inputs
-    if not total_bldg_area_ip > 0
+    if not floor_area > 0
       runner.registerError("Enter a total building area greater than 0.")
     end
     if not ns_to_ew_ratio > 0
       runner.registerError("Enter ratio grater than 0.")
     end
-    if not num_floors > 0
+    if not number_of_stories > 0
       runner.registerError("Enter a number of stories 1 or greater.")
     end
-    if not floor_to_floor_height_ip > 0
+    if not floor_to_floor_height > 0
       runner.registerError("Enter a positive floor height.")
     end
 
@@ -109,9 +114,7 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     end
 
     #calculate needed variables
-    footprint_ip = total_bldg_area_ip/num_floors
-    footprint_si = unit_helper(footprint_ip,"ft^2","m^2")
-    floor_to_floor_height = unit_helper(floor_to_floor_height_ip,"ft","m")
+    footprint_si = floor_area/number_of_stories
 
     #variables from original rectangle script not exposed in this measure
     width = Math.sqrt(footprint_si/ns_to_ew_ratio)
@@ -131,7 +134,7 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     runner.registerInitialCondition("The building started with #{starting_spaces.size} spaces.")
 
     #Loop through the number of floors
-    for floor in (0..num_floors-1)
+    for floor in (0..number_of_stories-1)
 
       z = floor_to_floor_height * floor
 

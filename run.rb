@@ -4,14 +4,16 @@ require 'base64'
 require 'logger'
 
 $logger = Logger.new(STDOUT)
-#$logger.level = Logger::ERROR
+$logger.level = Logger::ERROR
 #$logger.level = Logger::WARN
-$logger.level = Logger::DEBUG
+#$logger.level = Logger::DEBUG
 
 OpenStudio::Logger.instance.standardOutLogger.enable
-#OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
+OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
 #OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Warn)
-OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Debug)
+#OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Debug)
+
+debug = false
 
 osw_path = ARGV[0]
 osw_dir = File.dirname(osw_path)
@@ -141,7 +143,7 @@ end
 
 # Run workflow.osw
 run_options = Hash.new
-run_options[:debug] = true
+run_options[:debug] = debug
 
 k = OpenStudio::Workflow::Run.new(input_adapter, output_adapter, osw_dir, run_options)
 final_state = k.run

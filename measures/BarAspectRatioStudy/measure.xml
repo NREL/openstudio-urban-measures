@@ -2,7 +2,7 @@
   <schema_version>3.0</schema_version>
   <name>bar_aspect_ratio_study</name>
   <uid>3dcac94d-8a2e-43b6-8698-a3a4e8f3903f</uid>
-  <version_id>d77ab8fd-10fa-44cf-86a2-dd9e4ef49e33</version_id>
+  <version_id>99e06c34-0bad-4075-a278-561c028f30dc</version_id>
   <xml_checksum>49BEF039</xml_checksum>
   <class_name>BarAspectRatioStudy</class_name>
   <display_name>Bar Aspect Ratio Study</display_name>
@@ -10,13 +10,12 @@
   <modeler_description>This is based on the SketchUp Plugin user script to create a rectangular building, but just uses different inputs. The resulting building will have a core and perimeter zoning, unless it is too small, in which case eac floor will have a single zone.</modeler_description>
   <arguments>
     <argument>
-      <name>total_bldg_area_ip</name>
+      <name>floor_area</name>
       <display_name>Total Building Floor Area</display_name>
       <type>Double</type>
-      <units>ft^2</units>
+      <units>m^2</units>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>10000</default_value>
     </argument>
     <argument>
       <name>ns_to_ew_ratio</name>
@@ -27,7 +26,15 @@
       <default_value>2</default_value>
     </argument>
     <argument>
-      <name>num_floors</name>
+      <name>window_to_wall_ratio</name>
+      <display_name>Window to Wall Ratio</display_name>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.3</default_value>
+    </argument>
+    <argument>
+      <name>number_of_stories</name>
       <display_name>Number of Floors.</display_name>
       <type>Integer</type>
       <required>true</required>
@@ -35,13 +42,13 @@
       <default_value>2</default_value>
     </argument>
     <argument>
-      <name>floor_to_floor_height_ip</name>
+      <name>floor_to_floor_height</name>
       <display_name>Floor to Floor Height</display_name>
       <type>Double</type>
-      <units>ft</units>
+      <units>m</units>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>10</default_value>
+      <default_value>3.3</default_value>
     </argument>
     <argument>
       <name>surface_matching</name>
@@ -122,7 +129,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>585EAED2</checksum>
+      <checksum>9A976E7A</checksum>
     </file>
   </files>
 </measure>
