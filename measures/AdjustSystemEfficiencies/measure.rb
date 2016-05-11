@@ -88,7 +88,7 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
   
   def modify_chiller_electric_eir(component, cooling_cop_multiplier)
     referenceCOP = component.referenceCOP
-    new_efficiency = cooling_cop_multiplier*referenceCOP.get
+    new_efficiency = cooling_cop_multiplier*referenceCOP
     if new_efficiency > 1
       new_efficiency = 1
     end        

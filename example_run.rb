@@ -69,7 +69,8 @@ def configure(workflow, datapoint, building, region)
 end
 
 Parallel.each(buildings, in_threads: num_parallel) do |building|
-    
+#buildings.each do |building|
+
   # configure jsons
   datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}
