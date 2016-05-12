@@ -9,6 +9,8 @@ web:
     - RAILS_ENV=docker
     - CITYDB_HOST_URL
     - CITYDB_SECRET_KEY_BASE
+  volumes_from:
+    - filedata
 db:
   image: mongo
   volumes_from:

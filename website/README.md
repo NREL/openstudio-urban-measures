@@ -80,9 +80,14 @@ eval $(docker-machine env dev) # this sets up environment variables
 ```
 
 ### Create the data volumes
-If you have data volumes (i.e., for mongo and solr), create them:
+If you have data volumes (i.e., for mongo, files, and solr), create them:
 ```
 docker run -v /data/db --name <VOLUME NAME> busybox true
+```
+
+Example:
+```
+docker run -v /srv/data --name filedata busy box true
 ```
 
 ### Export environment variables
