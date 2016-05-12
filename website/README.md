@@ -87,7 +87,7 @@ docker run -v /data/db --name <VOLUME NAME> busybox true
 
 Example:
 ```
-docker run -v /srv/data --name filedata busy box true
+docker run -v /srv/data --name filedata busybox true
 ```
 
 ### Export environment variables
