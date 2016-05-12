@@ -1,6 +1,19 @@
 require 'openstudio-workflow'
 require 'rest-client'
 require 'base64'
+require 'logger'
+
+$logger = Logger.new(STDOUT)
+$logger.level = Logger::ERROR
+#$logger.level = Logger::WARN
+#$logger.level = Logger::DEBUG
+
+OpenStudio::Logger.instance.standardOutLogger.enable
+OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
+#OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Warn)
+#OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Debug)
+
+debug = false
 
 osw_path = ARGV[0]
 osw_dir = File.dirname(osw_path)
@@ -28,6 +41,8 @@ if city_db_url && datapoint_id && project_id
         class CityDB < OutputAdapters
           def initialize(options = {})
             fail 'The required :output_directory option was not passed to the local output adapter' unless options[:output_directory]
+            fail 'The required :url option was not passed to the local output adapter' unless options[:url]
+            @url = options[:url]
             @user_name = 'test@nrel.gov'
             @user_pwd = 'testing123'
             super
@@ -43,7 +58,7 @@ if city_db_url && datapoint_id && project_id
             params[:project_id] = @options[:project_id]
             params[:datapoint] = datapoint
 
-            request = RestClient::Resource.new('http://localhost:3000/api/datapoint', user: @user_name, password: @user_pwd)
+            request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
             response = request.post(params, content_type: :json, accept: :json)
           end
           
@@ -62,7 +77,7 @@ if city_db_url && datapoint_id && project_id
             params[:datapoint_id] = @options[:datapoint_id]
             params[:file_data] = file_data
 
-            request = RestClient::Resource.new('http://localhost:3000/api/datapoint_file', user: @user_name, password: @user_pwd)
+            request = RestClient::Resource.new("#{@url}/api/datapoint_file", user: @user_name, password: @user_pwd)
             response = request.post(params, content_type: :json, accept: :json)
           end
 
@@ -128,6 +143,7 @@ end
 
 # Run workflow.osw
 run_options = Hash.new
+run_options[:debug] = debug
 
 k = OpenStudio::Workflow::Run.new(input_adapter, output_adapter, osw_dir, run_options)
 final_state = k.run

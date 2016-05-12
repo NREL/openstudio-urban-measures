@@ -432,7 +432,7 @@ class ApiController < ApplicationController
           logger.info('NEW WORKFLOW: CREATING')
         end
         unless error
-          @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow, @project.id)
+          @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow, @project.id, params[:name], params[:display_name])
         end
       else
         error = true

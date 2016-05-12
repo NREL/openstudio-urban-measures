@@ -1,0 +1,161 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <error>cannot load such file -- openstudio-standards</error>
+  <name>urban_building_type</name>
+  <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
+  <version_id>bef673b1-cabc-457e-9f85-bd5ccb313236</version_id>
+  <xml_checksum>28AD5222</xml_checksum>
+  <class_name>UrbanBuildingType</class_name>
+  <display_name>Urban Building Type</display_name>
+  <description>This measure addings space type, constructions, and schedules as well as HVAC systems based on building type.</description>
+  <modeler_description></modeler_description>
+  <arguments>
+    <argument>
+      <name>heating_source</name>
+      <display_name>Heating source to model</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>NA</default_value>
+      <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
+        <choice>
+          <value>Gas</value>
+          <display_name>Gas</display_name>
+        </choice>
+        <choice>
+          <value>Electric</value>
+          <display_name>Electric</display_name>
+        </choice>
+        <choice>
+          <value>District Hot Water</value>
+          <display_name>District Hot Water</display_name>
+        </choice>
+        <choice>
+          <value>District Ambient Water</value>
+          <display_name>District Ambient Water</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>cooling_source</name>
+      <display_name>Cooling source to model</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>NA</default_value>
+      <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
+        <choice>
+          <value>Electric</value>
+          <display_name>Electric</display_name>
+        </choice>
+        <choice>
+          <value>District Chilled Water</value>
+          <display_name>District Chilled Water</display_name>
+        </choice>
+        <choice>
+          <value>District Ambient Water</value>
+          <display_name>District Ambient Water</display_name>
+        </choice>
+      </choices>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Space Types</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Apply Measure Now</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Analysis Spreadsheet</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Model Articulation</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>urban_building_type_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>FEE2CA0D</checksum>
+    </file>
+    <file>
+      <filename>test_one_output.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>B1E02AE9</checksum>
+    </file>
+    <file>
+      <filename>MinimalTemplate.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C48B2E8F</checksum>
+    </file>
+    <file>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C1AAE72C</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>36CE67A4</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.9.0</identifier>
+        <min_compatible>1.9.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>B88FA0C6</checksum>
+    </file>
+    <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>4F293A54</checksum>
+    </file>
+    <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>EE8D130F</checksum>
+    </file>
+  </files>
+</measure>

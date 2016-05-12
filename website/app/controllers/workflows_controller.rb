@@ -48,7 +48,7 @@ class WorkflowsController < ApplicationController
           error = true
           @error_message += 'No data to process'
         else
-          @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @project_id)
+          @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @project_id, params[:name], params[:display_name])
         end
       else
         error = true
@@ -88,7 +88,7 @@ class WorkflowsController < ApplicationController
         error = true
         @error_message += 'No data to process'
       else
-        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @workflow.project.id.to_s)
+        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @workflow.project.id.to_s, params[:name], params[:display_name])
       end
     else
       error = true

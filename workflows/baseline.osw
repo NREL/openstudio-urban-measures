@@ -3,15 +3,15 @@
   "weather_file": null,
   "root_directory": null,
   "run_directory": ".",
-  "file_paths": ["./../../weather/"],
-  "measure_paths": ["./../../"],
+  "file_paths": ["./../../../weather/"],
+  "measure_paths": ["./../../../measures/"],
 	"steps": [
 		{
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": [
         {
           "name": "weather_directory",
-          "value": "./../weather"
+          "value": "./../../weather"
         },
         {
           "name": "weather_file_name",
@@ -43,11 +43,7 @@
           "value": "None"
         }
 			]
-		},
-		{
-			"measure_dir_name": "ViewModel",
-			"arguments": []
-		},    
+		},   
 		{
 			"measure_dir_name": "urban_building_type",
 			"arguments": [

@@ -3,7 +3,8 @@ class Workflow
   include Mongoid::Document
   include Mongoid::Timestamps
 
-  field :type, type: String # template, instance
+  field :name, type: String
+  field :display_name, type: String
 
   # Relations
   embeds_one :workflow_file do
@@ -15,7 +16,7 @@ class Workflow
   belongs_to :project
   has_many :datapoints, dependent: :destroy
 
-  def self.create_update_workflow(data, workflow, project_id)
+  def self.create_update_workflow(data, workflow, project_id, name, display_name)
     error = false
     error_message = ''
 
@@ -32,10 +33,10 @@ class Workflow
       end
     end
     workflow.project_id = project_id
+    workflow.name = name if name
+    workflow.display_name = display_name if display_name
 
     unless error
-      # uploaded workflows are always templates
-      workflow.type = 'template'
 
       unless workflow.save!
         error = true

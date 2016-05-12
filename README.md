@@ -1,31 +1,55 @@
-# OpenStudio Urban Measures
+# OpenStudio Urban Modeling
 
-This repository contains OpenStudio measures and utilities for urban modeling. An overview of this functionality is shown below:
+This repository contains functionality for urban modeling with OpenStudio. An overview of this functionality is shown below:
 
 <img src="./overview.jpg" alt="Overview" width="600">
 
-The OpenStudio Urban Modeling platform is built around the OpenStudio City Database.  The OpenStudio City Database stores information about buildings and analyses and imports/exports JSON formated data through a RESTful API.  Building, taxlot, and region data is transfered in GeoJSON format; supported properties are defined in [JSON Schema](http://json-schema.org/) format for [buildings](./building_properties.json), [taxlots](./taxlot_properties.json), [regions](./taxlot_properties.json), and [district systems](./district_system_properties.json).  Analysis data is transferred in the [OpenStudio Analysis](https://github.com/NREL/OpenStudio-analysis-gem) (OSA) format.  As an intermediate step, [OpenStudio Workflow](https://github.com/NREL/OpenStudio-workflow-gem/blob/develop/spec/schema/osw.json) (OSW) can be used to specify simulation workflow instead of the full Openstudio Analysis.  Simulation results are stored in a [DEnCity](http://dencity.org/) database; high level simulation results can be imported from DEnCity into the OpenStudio City Database.  A typical workflow is detailed below:
+The OpenStudio Urban Modeling platform is built around the OpenStudio City Database.  The OpenStudio City Database stores information about the urban model, JSON formated data is imported and exported through a RESTful API.  Building, taxlot, and region data is transfered in GeoJSON format; supported properties are defined in [JSON Schema](http://json-schema.org/) format for [buildings](./schema/building_properties.json), [taxlots](./schema/taxlot_properties.json), [regions](./schema/taxlot_properties.json), and [district systems](./schema/district_system_properties.json).  [OpenStudio Workflow](https://github.com/NREL/OpenStudio-workflow-gem/blob/develop/spec/schema/osw.json) (OSW) format is used to specify simulation workflows.  A simulation datapoint is created by pairing a building (or district system) with a particular workflow.  Simulation results for each datapoint are stored in the OpenStudio City Database.  A typical workflow is detailed below:
 
-1. The first step in the urban modeling process is to import public records for existing buildings into the database.  This is done by uploading GeoJSON files containing building, taxlot, region, and district system information to the RESTful API.  NREL has developed a [system]((https://github.nrel.gov/jabbottw/City_Building_Model) to export data from a Postgres database to GeoJSON for upload.
-2. Once initial public record data is imported, one or more scripts can be run to fill in missing data or transform the data in some way.  Example use cases include inferring the number of stories for buildings or assigning space types by sampling from the CBECS data set.
-3. An OpenStudio Analysis (OSA), created by PAT 2.0, is uploaded to the city database as a template.  The OSA specifies a set of variables that define the parameter space for the analysis as well as seed model and measures.  A separate API call requests to run the analysis template for a given building, generating a new analysis in the database and queues it to run.  Any building properties which have the same name as arguments or variables in the template analysis overwrite the default values for those arguments or variables in the new analysis.  For example, if the building has property 'heating_method' and the template analysis has a static argument 'heating_method', the building's 'heating_method' value will replace the value for 'heating_method' in the new analysis.  Typically, building analyses will include the Urban Geometry Creation Measure.  This measure pulls GeoJSON data from the city database's API to creates geometry for a given building (including adjacent buildings for heat transfer and surrounding buildings for shading).   This measure also assigns stub space types with names that match CBECS PBA codes for commercial buildings or RECS Structure codes for residential buildings.  Mixed-use buildings may have difference space types per floor, the primary building space type will be assigned at the building level.  Once the geometry is created it is passed through other measures as defined by the OpenStudio Analysis.  Results from simulations are pushed to a [DEncity](https://dencity.org) database.
-  1. As a temporary step we will be able to upload OpenStudio Workflow (OSW) as a template rather than a complete OpenStudio Analysis.  Workflows generated from the Workflow template for a given building will be assigned a unique id that can be used to look up results in DEnCity.
-4.  After the analysis is complete, results from the DEncity database are imported into the database and a GeoJSON file with embedded results is exported.  A scenario JSON defines the variable values for each building; pairing each building with a particular datapoint.  The variables and allowable values are defined by the OpenStudio Analysis JSON.  The variable values associated with each building in the scenario are used to look up results in the DEncity database.
-5. If the scenario includes district systems, a district level template analysis can be uploaded and run.  This analysis writes district system OSM files and simulates them, pushing the results back to DEncity.  The scenario exporter then includes district simulation results in the results GeoJSON.
-6. Once a results GeoJSON is written for a particular scenario, the results can be visualized in the desktop results GUI or the NREL Insight Center.  
+1. The first step in the urban modeling process is to assemble GeoJSON files containing building, taxlot, region, and district system information for upload to the RESTful API. These files should have properties as described by the JSON schema files. 
+    * Data for existing building can be exported from GIS databases or converted from other formats such as CityGML. Example GeoJSON files can be found in the [data](./data/) directory.
+    * NREL has developed a [system]((https://github.nrel.gov/jabbottw/City_Building_Model) to export data from a Postgres database to GeoJSON for upload.
+    * Data for new construction can be genarated using a GeoJSON editor such as [geojson.io](http://geojson.io/)
+    * Once the data is in GeoJSON format, one or more scripts can be run to fill in missing data or transform the data in some way.  Example use cases include inferring the number of stories for buildings or assigning space types by sampling from the CBECS data set.  Example scripts can be found in the [data](./data/) directory.
+
+1. Once complete GeoJSON files have been created, they can be uploaded to the City Database.  Each GeoJSON file is uploaded to a particular user defined project. 
+
+1.  Simulation workflows are specified in OpenStudio Workflow (OSW) format and uploaded to a project in the City Database.  Each workflow specifies a series of OpenStudio Measures to apply in order to simulate a given building.  A datapoint is created for each building, workflow pair (that is a datapoint is the result of simulating a particular building with a particular workflow).  When a datapoint is simulated, building properties are applied to any OpenStudio Measure arguments with the same name.  For example, if a measure in the workflow takes an argument named `space_type` and the building's properties specify `space_type: "Office"` then the value `"Office"` will be passed to the measure argument named `space_type`.  Example workflows can be found in the [workflows](./workflows/) directory.
+
+     * Typically, building analyses will include the Urban Geometry Creation Measure.  This measure pulls GeoJSON data from the city database's API to creates geometry for a given building (including adjacent buildings for heat transfer and surrounding buildings for shading).   This measure also assigns stub space types with names that match CBECS PBA codes for commercial buildings or RECS Structure codes for residential buildings.  Mixed-use buildings may have difference space types per floor, the primary building space type will be assigned at the building level.  
+    * A reporting measure will also push results back to the database.  High level simulation results can be added to the datapoint directly.  Larger results (such as timeseries data) can be attached to the datapoint as related files.
+    * In the future, complete OpenStudio Analyses (OSA) files will be uploaded to the City Database.
+
+1. Once all input data has been uploaded to the project in the City Database, the project can be run using the [run_everything](./run_everything.rb) script.  This script will create and simulate datapoints for each building, workflow pair.
+
+4.  After the analysis is complete, a GeoJSON file with embedded results can exported for each workflow.  This file includes results of running all buildings in the project with the given workflow.  This resulting GeoJSON file can be viewed using the [prototype URBANOpt](./electron_app) application.
+    * In the future, scenarios will be defined that pairing each building with a particular workflow. 
+
+# General Installation
+
+1. Install git.  On Windows we use [Git for Windows](https://git-scm.com/download/win).
+1. Install Ruby 2.0.0.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
+1. On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit follow the [instructions here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit] to install it.
 
 # OpenStudio City Database
 
-## API
+If you want to develop or run the OpenStudio City Database, follow these [installation instructions](./website/README.md).
 
-* Import GeoJSON which can contains buildings, taxlots, regions, or district systems.  If existing records already exist (according to source id) then update them.
-* Get GeoJSON for region, taxlot, or particular building or district system.  Building, taxlot, region, or district system properties should be inserted into the GeoJSON.For particular building include option to include surrounding buildings.  
-* Upload OpenStudio Analysis JSON as a template analysis.
-  *  As a temporary step we will also want to be able to upload OpenStudio Workflow (OSW) JSON as a template
-* Run OpenStudio Analysis for particular building or district system (takes template analysis id and building/system id).
-  *  As a temporary step we also want to be able to run a template workflow for a given building or system.
-* Import data from DEnCity for analysis.
-* Export scenario (takes scenario JSON, which is pretty much a list of datapoints, as input).
+# Prototype URBANOpt Application
+
+This is a prototype application only, you can try it out using these [installation instructions](./electron_appp/README.md).
+
+# Running an Analysis
+
+1. Upload  buildings and workflows to a project in an OpenStudio City Database.
+1. Install OpenStudio (version 1.11.0 is tested to work). Ensure that you install 64-bit Openstudio if you are using 64-bit Ruby or the same for 32-bit.
+1. Add OpenStudio to your Ruby environment by adding `require 'C:\Program Files\OpenStudio 1.11.0\Ruby\openstudio.rb'` to the file `\lib\ruby\site_ruby\openstudio.rb`
+1. Open a command prompt (must have git commands available) in the root directory.
+1. Edit the [run_everything](./run_everything.rb) script to point to your project and edit other configurations.
+ in your Ruby installation.  
+1. `bundle install`
+1. `bundle exec ruby run_everything.rb`
+1. This will generate simulation results in the `run` directory as well as push results to the City Database and download GeoJSON files including results.
 
 # Reference
 
@@ -59,15 +83,4 @@ The CBECS PBA codes are:
 * Service
 * Other
 
-# Installation
 
-## OpenStudio City Database
-
-## OpenStudio Standards
-
-1. Check out https://github.com/NREL/openstudio-standards
-2. `cd \openstudio-standards\openstudio-standards`
-3. `bundle install`
-4. `rake build`
-5. `gem install --user-install pkg/openstudio-standards-0.1.0.gem`
-6. Set environment variable GEM_PATH to the user gem directory, e.g. C:\Users\dmacumbe\.gem\ruby\2.0.0

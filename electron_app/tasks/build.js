@@ -21,8 +21,8 @@ var paths = {
         './**/*.html',
         './**/*.+(jpg|png|svg)',
         './stylesheets/*.css',
-        './city.geojson',
-        './taxlots.geojson'
+        './baseline.geojson',
+        './proposed.geojson'
     ],
 }
 
