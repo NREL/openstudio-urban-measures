@@ -37,7 +37,7 @@
 
 <h3>Datapoints</h3>
 
-<div class="pad-top-20">
+<div class="pad-top-20 pad-bot-20">
   <%= link_to 'Create Datapoints for All Buildings', create_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> <%= link_to 'Delete Datapoints for this workflow', delete_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> 
 </div>
 
@@ -45,6 +45,7 @@
 <% if @workflow.datapoints.count <= 0 %>
   <p>There are no datapoints associated with this workflow.</p>
 <% else %>
+  <%= link_to 'Show GeoJSON Results', datapoints_workflow_path(id: @workflow, format: :json), class: "btn btn-primary" %>
   <table class="tablesorter table table-striped">
     <thead>
     <tr>

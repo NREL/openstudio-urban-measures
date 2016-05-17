@@ -153,13 +153,16 @@ class WorkflowsController < ApplicationController
   end
 
   # GET all datapoints associated with a workflow
+  # For GEOJSON, return as geojson object (like workflow_buildings api)
   def datapoints
 
     @datapoints = @workflow.datapoints
 
+    json_data = Geometry.build_geojson_from_datapoints(@workflow.datapoints)
+
     respond_to do |format|
       format.html {render action: 'datapoints'}
-      format.json {render 'datapoints/index'}
+      format.json {render json: json_data, status: :ok}
     end
 
 
