@@ -158,10 +158,10 @@ class WorkflowsController < ApplicationController
 
     @datapoints = @workflow.datapoints
 
-    json_data = Geometry.build_geojson_from_datapoints(@workflow.datapoints)
+    @json_data = Geometry.build_geojson_from_datapoints(@datapoints)
 
     respond_to do |format|
-      format.html {render action: 'datapoints'}
+      format.html {render action: 'datapoints'} # todo: rename results
       format.json {render json: json_data, status: :ok}
     end
 
