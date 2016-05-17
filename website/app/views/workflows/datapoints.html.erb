@@ -5,9 +5,7 @@
 <%= javascript_tag do %>
  var json_data = <%= raw @json_data %>;
  var allProperties = {};
-<% end %>
 
-<script>
 
 function imageryError(arg1) {
   console.log('imageryError');
@@ -35,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
     viewer = new Cesium.Viewer('cesiumContainer', {            
             imageryProvider : imageryProvider,
             baseLayerPicker : true,
-            scene3DOnly : false,
+            scene3DOnly : true,
             sceneModePicker: true,
             homeButton: false,
             baseLayerPicker: false
@@ -174,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
   scene.camera.flyTo({destination : extent});
   viewer.render();
 });
-</script> 
+<% end %>
 
 
 <div id="cesiumContainer"></div>
