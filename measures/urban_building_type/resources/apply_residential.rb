@@ -381,33 +381,38 @@ def apply_residential_appliances(model, standards_space_type, space, units_per_s
   case standards_space_type
   when "Single-Family"
 	
-    if space.name.to_s.include? "Story 1 Space"
-      measure = ResidentialRefrigerator.new
-      args_hash = default_args_hash(model, measure)
-      args_hash["space"] = space.name.get
-      run_measure(model, measure, args_hash, runner)
-      
-      measure = ResidentialCookingRange.new
-      args_hash = default_args_hash(model, measure)
-      args_hash["space"] = space.name.get
-      run_measure(model, measure, args_hash, runner)
-      
-      measure = ResidentialDishwasher.new
-      args_hash = default_args_hash(model, measure)
-      args_hash["space"] = space.name.get
-      run_measure(model, measure, args_hash, runner)
-      
-      measure = ResidentialClothesWasher.new
-      args_hash = default_args_hash(model, measure)
-      args_hash["space"] = space.name.get
-      run_measure(model, measure, args_hash, runner)
-      
-      measure = ResidentialClothesDryer.new
-      args_hash = default_args_hash(model, measure)    
-      args_hash["space"] = space.name.get
-      run_measure(model, measure, args_hash, runner)      
-    end
-	
+    measure = ResidentialRefrigerator.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialCookingRange.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult"] = units_per_space
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialDishwasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["mult_e"] = units_per_space
+    args_hash["mult_hw"] = units_per_space    
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialClothesWasher.new
+    args_hash = default_args_hash(model, measure)
+    args_hash["space"] = space.name.get
+    args_hash["cw_mult_e"] = units_per_space
+    args_hash["cw_mult_hw"] = units_per_space     
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ResidentialClothesDryer.new
+    args_hash = default_args_hash(model, measure)    
+    args_hash["space"] = space.name.get
+    args_hash["cd_mult"] = units_per_space    
+    run_measure(model, measure, args_hash, runner)      
+
   when "Multifamily (2 to 4 units)"	
 
     measure = ResidentialRefrigerator.new
@@ -487,57 +492,14 @@ def apply_residential_appliances(model, standards_space_type, space, units_per_s
 
 end
 
-def apply_residential_lighting(model, living_space_type, basement_space_type, runner)
+def apply_residential_lighting(model, runner)
 
   runner.registerInfo("Applying residential lighting.")
   require './resources/measures/ResidentialLighting/measure.rb'
 
-  living_space_type_name = living_space_type.name.get
-  unless basement_space_type.nil?
-    basement_space_type_name = basement_space_type.name.get
-  end
-  standards_space_type = living_space_type.standardsSpaceType.get
-  
-  case standards_space_type
-  when "Single-Family"	
-
-    measure = ResidentialLighting.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["selected_ltg"] = "Benchmark"
-    args_hash["living_space_type"] = living_space_type_name	
-    if basement_space_type_name
-      args_hash["fbasement_space_type"] = basement_space_type_name
-    end
-    run_measure(model, measure, args_hash, runner)
-	
-  when "Multifamily (2 to 4 units)"	
-
-    measure = ResidentialLighting.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["selected_ltg"] = "Benchmark"
-    args_hash["living_space_type"] = living_space_type_name	
-    if basement_space_type_name
-      args_hash["fbasement_space_type"] = basement_space_type_name
-    end
-    run_measure(model, measure, args_hash, runner)	
-  
-  when "Multifamily (5 or more units)"
-
-    measure = ResidentialLighting.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["selected_ltg"] = "Benchmark"
-    args_hash["living_space_type"] = living_space_type_name	
-    if basement_space_type_name
-      args_hash["fbasement_space_type"] = basement_space_type_name
-    end
-    run_measure(model, measure, args_hash, runner)	
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ResidentialLighting.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 
@@ -659,28 +621,28 @@ end
 def apply_residential_dhw(model, standards_space_type, living_thermal_zone, runner)
 
   runner.registerInfo("Applying residential DHW.")
-  require './resources/measures/AddOSWaterHeaterMixedStorageElectric/measure.rb'
+  require './resources/measures/AddOSWaterHeaterMixedStorageGas/measure.rb'
 
   living_thermal_zone_name = living_thermal_zone.name.get
   
   case standards_space_type
   when "Single-Family"
   
-    measure = AddOSWaterHeaterMixedStorageElectric.new
+    measure = AddOSWaterHeaterMixedStorageGas.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
   
   when "Multifamily (2 to 4 units)"
  
-    measure = AddOSWaterHeaterMixedStorageElectric.new
+    measure = AddOSWaterHeaterMixedStorageGas.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
  
   when "Multifamily (5 or more units)"
   
-    measure = AddOSWaterHeaterMixedStorageElectric.new
+    measure = AddOSWaterHeaterMixedStorageGas.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
@@ -795,7 +757,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                      heating_type,
                      cooling_type)
                      
-      runner.registerInfo("PTAC applied to #{building_type}.")
+      equip_applied = "PTAC"
     
     when "Electric_Electric"
     
@@ -818,7 +780,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                              heating_type,
                              cooling_type)
                              
-      runner.registerInfo("PTHP applied to #{building_type}.")
+      equip_applied = "PTHP"
     
     when "District Hot Water_Electric"
     
@@ -847,7 +809,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                      heating_type,
                      cooling_type)
 
-      runner.registerInfo("PTAC applied to #{building_type}.")
+      equip_applied = "PTAC"
   
     when "District Ambient Water_District Ambient Water"
   
@@ -872,7 +834,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                                      heat_pump_loop,
                                      HelperMethods.zones_with_thermostats(model.getThermalZones))
     
-      runner.registerInfo("Water-to-Air HP applied to #{building_type}.")
+      equip_applied = "Water-to-Air HP"
     
     when "Gas_District Chilled Water"
     
@@ -918,7 +880,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                      doas_fan_maximum_flow_rate,
                      doas_economizer_control_type)
     
-      runner.registerInfo("DOAS applied to #{building_type}.")
+      equip_applied = "DOAS"
     
     when "Electric_District Chilled Water"
     
@@ -965,7 +927,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                        supplemental_heating_type,
                        cooling_type)
     
-      runner.registerInfo("PSZ-AC applied to #{building_type}.")
+      equip_applied = "PSZ-AC"
     
     when "District Hot Water_District Chilled Water"
     
@@ -1012,7 +974,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                      doas_fan_maximum_flow_rate,
                      doas_economizer_control_type)
                      
-      runner.registerInfo("DOAS applied to #{building_type}.")
+      equip_applied = "DOAS"
 
     when "District Ambient Water_Electric"
         runner.registerError("Cooling source '#{cooling_source}' and heating source '#{heating_source}' not supported.")
@@ -1031,6 +993,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       return false    
     end
 
+    puts "#{equip_applied} applied to #{building_type}."
+    
     return true
     
 end
@@ -1064,17 +1028,22 @@ def apply_residential(model, runner, heating_source, cooling_source)
   result = result && apply_residential_floors(model, building_space_type, runner)
   result = result && apply_residential_ceilings(model, building_space_type, runner)
   result = result && apply_residential_walls(model, building_space_type, runner)
-  # result = result && apply_residential_uninsulated_surfaces(model, building_space_type, runner)
+  result = result && apply_residential_uninsulated_surfaces(model, building_space_type, runner)
   result = result && apply_residential_fenestration(model, building_space_type, runner)
   result = result && apply_residential_hvac(model, building_space_type, runner)
   control_slave_zones_hash = Geometry.get_control_and_slave_zones(model)
+  all_slave_zones = []
   control_slave_zones_hash.each do |control_zone, slave_zones|
     result = result && apply_residential_dhw(model, building_space_type, control_zone, runner)
+    unless slave_zones.empty?
+      all_slave_zones += slave_zones
+    end
   end
+  puts "#{building_space_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)."
   model.getSpaces.each do |space|
     result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
   end
-  # result = result && apply_residential_lighting(model, living_space_type, basement_space_type, runner) # TODO: ResidentialLighting has not been updated yet.
+  result = result && apply_residential_lighting(model, runner)
   result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
   
   applicable = true

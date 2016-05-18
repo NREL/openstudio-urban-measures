@@ -4,3 +4,4 @@ run/
 output/
 analysis/
 urban_building_type/resources/beopt-measures/
+.bundle/

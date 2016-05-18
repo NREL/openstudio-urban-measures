@@ -33,6 +33,7 @@ class OpenStudio::Model::Model
           runner.registerError("Could not find prototype inputs for #{search_criteria}, cannot create model.")
           return false
         end
+
         #self.load_building_type_methods(building_type, building_vintage, climate_zone)
         #self.load_geometry(building_type, building_vintage, climate_zone)
         #self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
@@ -302,6 +303,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
     }
     prototype_input = model.find_object($os_standards['prototype_inputs'], search_criteria)     
     
+    equip_applied = nil
+    
     case heating_cooling
     when "Gas_Electric"
                   
@@ -326,7 +329,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)   
         
@@ -340,7 +343,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            hot_water_loop,
                            nil)
 
-            runner.registerInfo("PVAV applied to #{building_type}.")
+            equip_applied = "PVAV"
         
         elsif num_floors > 5 or floor_area > 150000       
         
@@ -376,7 +379,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
         
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            equip_applied = "VAV w/reheat"
         
         end
     
@@ -403,7 +406,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
     
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -417,7 +420,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                              prototype_input['vav_fan_motor_efficiency'],
                                              prototype_input['vav_fan_pressure_rise'])
                                              
-            runner.registerInfo("PVAV w/PFP boxes applied to #{building_type}.")
+            equip_applied = "PVAV w/PFP boxes"
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -444,7 +447,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     prototype_input['vav_fan_motor_efficiency'],
                                     prototype_input['vav_fan_pressure_rise'])
 
-            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
+            equip_applied = "VAV w/PFP boxes"
         
         end    
     
@@ -463,7 +466,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            hot_water_loop,
                            nil)
                            
-            runner.registerInfo("PVAV applied to #{building_type}.")
+            equip_applied = "PVAV"
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -478,7 +481,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                            hot_water_loop,
                            nil)
                            
-            runner.registerInfo("PVAV applied to #{building_type}.")
+            equip_applied = "PVAV"
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -514,8 +517,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
-                                 
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            
+            equip_applied = "VAV w/reheat"
         
         end    
     
@@ -545,7 +548,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
 
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -591,7 +594,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -628,7 +631,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
                                  
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            equip_applied = "VAV w/reheat"
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -664,8 +667,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
-                                 
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            
+            equip_applied = "VAV w/reheat"
         
         end    
     
@@ -706,7 +709,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -734,7 +737,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     prototype_input['vav_fan_motor_efficiency'],
                                     prototype_input['vav_fan_pressure_rise'])
                                     
-            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
+            equip_applied = "VAV w/PFP boxes"
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -761,8 +764,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                     prototype_input['vav_fan_efficiency'],
                                     prototype_input['vav_fan_motor_efficiency'],
                                     prototype_input['vav_fan_pressure_rise'])
-                                    
-            runner.registerInfo("VAV w/PFP boxes applied to #{building_type}.")
+            
+            equip_applied = "VAV w/PFP boxes"
         
         end    
     
@@ -805,7 +808,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                              supplemental_heating_type,
                              cooling_type)
                              
-            runner.registerInfo("PSZ-AC applied to #{building_type}.")
+            equip_applied = "PSZ-AC"
         
         elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
         
@@ -842,8 +845,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_motor_efficiency'],
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
-                                 
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            
+            equip_applied = "VAV w/reheat"
         
         elsif num_floors > 5 or floor_area > 150000
         
@@ -881,7 +884,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                  prototype_input['vav_fan_pressure_rise'],
                                  nil)
                                  
-            runner.registerInfo("VAV w/reheat applied to #{building_type}.")
+            equip_applied = "VAV w/reheat"
         
         end     
     
@@ -902,6 +905,8 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
         return false    
     end
 
+    puts "#{equip_applied} applied to #{building_type}."
+      
     return true
     
 end
@@ -911,9 +916,9 @@ def office_size(floor_area, runner)
   result = "Medium"
       
   # todo: put in real ranges
-  if floor_area > 200000000 # FIXME: seems there is currently a bug in openstudio-standards gem when building_type='LargeOffice' (~line 716 of create_thermal_zones in Prototype.Model.rb)
+  if floor_area > 40000
     result = "Large"
-  elsif floor_area > 1
+  elsif floor_area > 4000
     result = "Medium"
   elsif floor_area > 0
     result = "Small"
@@ -928,12 +933,42 @@ def hotel_size(floor_area, runner)
   result = "Large"
       
   # todo: put in real ranges
-  if floor_area > 2
+  if floor_area > 10000
     result = "Large"
-  elsif floor_area > 1
+  elsif floor_area > 0
     result = "Small"
   else
     runner.registerError("Building floor area is 0, cannot determine hotel size")
+  end
+  
+  return result
+end
+
+def restaurant_size(floor_area, runner)
+  result = "Full"
+      
+  # todo: put in real ranges
+  if floor_area > 500
+    result = "Full"
+  elsif floor_area > 0
+    result = "Quick"
+  else
+    runner.registerError("Building floor area is 0, cannot determine restaurant size")
+  end
+  
+  return result
+end
+
+def school_size(floor_area, runner)
+  result = "Secondary"
+      
+  # todo: put in real ranges
+  if floor_area > 15000
+    result = "Secondary"
+  elsif floor_area > 0
+    result = "Primary"
+  else
+    runner.registerError("Building floor area is 0, cannot determine school size")
   end
   
   return result
@@ -951,23 +986,10 @@ def prototype_building_type(model, runner)
   floor_area = model.getBuilding.floorArea
   
   case standards_building_type
-  when "Single-Family"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
-  when "Multifamily (2 to 4 units)"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
-  when "Multifamily (5 or more units)"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
-  when "Mobile Home"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
   when "Vacant"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   when "Office"
-
     size = office_size(floor_area, runner)
     if size == 'Large'
       building_type = 'LargeOffice'
@@ -976,78 +998,68 @@ def prototype_building_type(model, runner)
     elsif size == 'Small'
       building_type = 'SmallOffice'
     end
-    
   when "Laboratory"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   when "Nonrefrigerated warehouse"
-    
     building_type = 'Warehouse'
-    
   when "Food sales"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    building_type = 'RetailStandalone'
   when "Public order and safety"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   when "Outpatient health care"
-    
     building_type = 'Outpatient'
-    
   when "Refrigerated warehouse"
-    
     building_type = 'Warehouse'
-    
   when "Religious worship"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   when "Public assembly"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   when "Education"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    size = school_size(floor_area, runner)
+    if size == 'Primary'
+      building_type = 'PrimarySchool'
+    elsif size == 'Secondary'
+      building_type = 'SecondarySchool'
+    end
   when "Food service"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    size = restaurant_size(floor_area, runner)
+    if size == 'Full'
+      building_type = 'FullServiceRestaurant'
+    elsif size == 'Quick'
+      building_type = 'QuickServiceRestaurant'
+    end
   when "Inpatient health care"
-
     building_type = 'Hospital'
-  
   when "Nursing"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    building_type = 'Outpatient'
   when "Lodging"
-    
     size = hotel_size(floor_area, runner)
     if size == 'Large'
       building_type = 'LargeHotel'
     elsif size == 'Small'
       building_type = 'SmallHotel'
     end
-    
   when "Strip shopping mall"
-    
     building_type = 'RetailStripmall'
-    
   when "Enclosed mall"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
-  when "Retail other than mall"
-    
     building_type = 'RetailStandalone'
-    
+  when "Retail other than mall"
+    building_type = 'RetailStandalone'
   when "Service"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")
-    building_type = 'MediumOffice'
+    building_type = 'RetailStripmall'
   when "Other"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'MediumOffice'")    
-    building_type = 'MediumOffice'
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   else
-    runner.registerError("Unknown building type #{standards_building_type}")
+    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
+    return false, building_type, num_floors, floor_area
   end
   
-  return building_type, num_floors, floor_area
+  return true, building_type, num_floors, floor_area
 
 end
 
@@ -1062,116 +1074,72 @@ def map_space_type(space_type, runner)
 
   floor_area = space_type.model.getBuilding.floorArea
   case standards_building_type
-  when "Single-Family"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Multifamily (2 to 4 units)"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Multifamily (5 or more units)"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Mobile Home"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Vacant"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
   when "Office"
-    new_building_type = 'Office' 
-    
     size = office_size(floor_area, runner)
-    if size == "Large"
+    if size == 'Large'
       new_space_type = 'WholeBuilding - Lg Office'
-    elsif size == "Medium"
+      new_building_type = 'LargeOffice'
+    elsif size == 'Medium'
       new_space_type = 'WholeBuilding - Md Office'
-    elsif size == "Small"
+      new_building_type = 'MediumOffice'
+    elsif size == 'Small'
       new_space_type = 'WholeBuilding - Sm Office'
+      new_building_type = 'SmallOffice'
     end
-    
-  when "Laboratory"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
   when "Nonrefrigerated warehouse"
-    
-    new_space_type = 'Warehouse - med/blk'
-    
+    new_space_type = 'Bulk'
+    new_building_type = 'Warehouse'
   when "Food sales"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Public order and safety"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'Retail'
+    new_building_type = 'RetailStandalone'
   when "Outpatient health care"
-    
-    new_space_type = 'Hospital - exam'
-    
+    new_space_type = 'PatRoom'
+    new_building_type = 'Outpatient'
   when "Refrigerated warehouse"
-    
-    new_space_type = 'Warehouse - med/blk'
-    
-  when "Religious worship"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Public assembly"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'Bulk'
+    new_building_type = 'Warehouse'
   when "Education"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'Classroom'
+    size = school_size(floor_area, runner)
+    if size == 'Primary'
+      new_building_type = 'PrimarySchool'
+    elsif size == 'Secondary'
+      new_building_type = 'SecondarySchool'
+    end    
   when "Food service"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'Dining'
+    size = restaurant_size(floor_area, runner)
+    if size == 'Full'
+      new_building_type = 'FullServiceRestaurant'
+    elsif size == 'Quick'
+      new_building_type = 'QuickServiceRestaurant'
+    end
   when "Inpatient health care"
-    
-    new_space_type = 'Hospital - exam'
-    
+    new_space_type = 'PatRoom'
+    new_building_type = 'Hospital'
   when "Nursing"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'PatRoom'
+    new_building_type = 'Outpatient'
   when "Lodging"
-    new_building_type = 'Lodging' 
-    
+    new_space_type = 'GuestRoom123Occ'
     size = hotel_size(floor_area, runner)
-    if size == "Large"
-      new_space_type = 'Hotel/Motel - rooms'
-    elsif size == "Small"
-      new_space_type = 'Hotel/Motel - rooms'
-    end  
-  
+    if size == 'Large'
+      new_building_type = 'LargeHotel'
+    elsif size == 'Small'
+      new_building_type = 'SmallHotel'
+    end    
   when "Strip shopping mall"
-    
     new_space_type = 'Retail'
-    
+    new_building_type = 'RetailStripmall'
   when "Enclosed mall"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Retail other than mall"
-    
     new_space_type = 'Retail'
-    
+    new_building_type = 'RetailStandalone'
+  when "Retail other than mall"
+    new_space_type = 'Retail'
+    new_building_type = 'RetailStandalone'
   when "Service"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
-  when "Other"
-    runner.registerWarning("#{standards_building_type} is not a commercial building type, using 'Office'")  
-    new_building_type = 'Office' 
-    new_space_type = 'WholeBuilding - Md Office'
+    new_space_type = 'Retail'
+    new_building_type = 'RetailStripmall'
   else
     runner.registerError("Unknown building type #{standards_building_type}")
   end
@@ -1185,19 +1153,20 @@ def apply_commercial(model, runner, heating_source, cooling_source)
 
   num_spaces = model.getSpaces.length.to_i
 
-  building_type, num_floors, floor_area = prototype_building_type(model, runner)
+  result, building_type, num_floors, floor_area = prototype_building_type(model, runner)
   building_vintage = '90.1-2010'
   climate_zone = 'ASHRAE 169-2006-5A'
+  
+  if !result
+    runner.registerError("Cannot apply building type")
+    return result
+  end  
     
   model.getSpaceTypes.each do |space_type|
     map_space_type(space_type, runner)
   end
-  
+
   result = model.apply_standard(runner, building_type, building_vintage, climate_zone)
-  if !result
-    runner.registerError("Cannot apply building type")
-    return result
-  end
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
@@ -1234,7 +1203,7 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     HelperMethods.remove_all_hvac_equipment(model, runner)
     floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
-    runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area}'.")
+    runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area.round}' ft^2.")
     result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
   end  
   

@@ -108,9 +108,6 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
       water_temp.setAnnualAverageOutdoorAirTemperature(stat_file.mean_dry_bulb)
       water_temp.setMaximumDifferenceInMonthlyAverageOutdoorAirTemperatures(stat_file.delta_dry_bulb)
       runner.registerInfo("Setting water main temperatures.")
-      puts "mean dry bulb is #{stat_file.mean_dry_bulb}"
-      puts "delta dry bulb is #{stat_file.delta_dry_bulb}"
-      puts water_temp
     else
       runner.registerWarning("Can't access STAT file to set water main temperatures.")
     end
@@ -126,7 +123,6 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
         # grab only the ones that matter
         ddy_list = /(Htg 99.6. Condns DB)|(Clg .4. Condns WB=>MDB)|(Clg .4% Condns DB=>MWB)/
         if d.name.get =~ ddy_list
-          puts "Adding object #{d.name}"
           runner.registerInfo("Adding design day '#{d.name}'.")
 
           # add the object to the existing model
