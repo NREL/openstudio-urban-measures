@@ -7,11 +7,13 @@
     <td><b>Render By Variable</b></td>
     <td><b>Min</b></td>
     <td><b>Max</b></td>
+    <td><b>Units</b></td>
   </tr>
   <tr>
     <td><select id="render-dropdown"></select></td>
-    <td><div id="render-min-value"/></td>
-    <td><div id="render-max-value"/></td>
+    <td><div id="render-min"/></td>
+    <td><div id="render-max"/></td>
+    <td><div id="render-units"/></td>
   </tr>
 </table> 
 
@@ -34,195 +36,297 @@ $(function() {
     var renderProperty = $( "#render-dropdown" ).val();
     console.log('Render by: ' + renderProperty);
     
-    baseline_datasource.load(json_data, {
-        stroke: Cesium.Color.BLACK,
-        fill: Cesium.Color.WHITE,
-        strokeWidth: 3,
-        markerSymbol: '?'
-      }).then( function() {
-        
-        var color_scale;
-        if (allProperties[renderProperty]){
-          var allValues = allProperties[renderProperty].sort(function(a, b){return a-b});
-          var domain = [allValues[0], allValues[allValues.length-1]];
-          $( "#render-min-value" ).html(domain[0].toPrecision(5));
-          $( "#render-max-value" ).html(domain[1].toPrecision(5));
-          color_scale = d3.scale.linear().domain(domain).range(['blue', 'red']);
-        }
-          
-        var values = baseline_datasource.entities.values;
-        for (var i = 0; i < values.length; i++) {
-          var value = values[i];
-          
-          var surface_elevation = value.properties["surface_elevation"];
-          var roof_elevation = value.properties["roof_elevation"];
-          var height = roof_elevation - surface_elevation;
-     
-          //var average_roof_height = value.properties["average_roof_height"];
-          value.polygon.extrudedHeight = height;
+    var color_scale;
+    var property = allProperties[renderProperty];
+    if (property){
+      $( "#render-min" ).html(property.min.toPrecision(5));
+      $( "#render-max" ).html(property.max.toPrecision(5));
+      $( "#render-units" ).html(property.units);
+      color_scale = d3.scale.linear().domain([property.min, property.max]).range(['blue', 'red']);
+    }
+      
+    var values = baseline_datasource.entities.values;
+    for (var i = 0; i < values.length; i++) {
+      var value = values[i];
+      
+      var surface_elevation = value.properties["surface_elevation"];
+      var roof_elevation = value.properties["roof_elevation"];
+      var height = roof_elevation - surface_elevation;
+ 
+      //var average_roof_height = value.properties["average_roof_height"];
+      value.polygon.extrudedHeight = height;
 
-          if (color_scale){
-            var x = value.properties[renderProperty];
-            if (!x){
-              if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
-                x = value.properties["datapoint"]["results"][renderProperty];
-              }
-            }
-            if (x){
-              var y = color_scale(x);
-              var c = Cesium.Color.fromCssColorString(y);
-              value.polygon.material = c;
-              value.polygon.outlineColor = Cesium.Color.BLACK;
-            }else{
-              //console.log("No data");
-            }
+      if (color_scale){
+        var x = value.properties[renderProperty];
+        if (!x){
+          if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
+            x = value.properties["datapoint"]["results"][renderProperty];
           }
         }
-      })
-    }
-    
-    // GeoJSON data including results
-    var json_data = <%= raw @json_data %>;
-  
-    var baseline_datasource = new Cesium.GeoJsonDataSource();
-    
-    var allProperties = {};
-    var loadingIndicator = document.getElementById('loadingIndicator');
-    var cesiumContainer = document.getElementById('cesiumContainer');
-      
-    // This should not be here, where should it be?
-    var bingKey = 'OS7Aeoxh8uTsCDK8Ei7i~adKTbclqLHxxcbR5EHd15A~ArarK4g2lDPp3--tA7K-lNaVf4miYu4kJOgNISo7EbiWvsQZ67e5JcEHik2w1RFK';
-    Cesium.BingMapsApi.defaultKey = bingKey;
-    
-    var imageryErrorEvent = new Cesium.Event();
-    imageryErrorEvent.addEventListener(imageryError);
-
-    var imageryProvider = Cesium.createOpenStreetMapImageryProvider({
-            url : "http://a.tile.openstreetmap.org/"
-        });
-          
-    var viewer;
-    try {
-      viewer = new Cesium.Viewer('cesiumContainer', {            
-              imageryProvider : imageryProvider,
-              baseLayerPicker : true,
-              scene3DOnly : true,
-              sceneModePicker: false,
-              homeButton: false,
-              baseLayerPicker: false
-            });
-      viewer._geocoder._viewModel._url = 'http://dev.virtualearth.net/';
-    } catch (exception) {
-      var message = Cesium.formatError(exception);
-      console.error(message);
-      if (!document.querySelector('.cesium-widget-errorPanel')) {
-        window.alert(message);
+        if (x){
+          var y = color_scale(x);
+          var c = Cesium.Color.fromCssColorString(y);
+          value.label.text = x.toPrecision(5);
+          value.polygon.material = c;
+          value.polygon.fill = true;
+          value.polygon.outline = true;
+          value.polygon.outlineColor = Cesium.Color.BLACK;
+        }else{
+          value.label.text = "No data";
+          value.polygon.material = Cesium.Color.WHITE;
+          value.polygon.fill = true;
+          value.polygon.outline = true;
+          value.polygon.outlineColor = Cesium.Color.BLACK;
+        }
       }
-      loadingIndicator.style.display = 'none';
+    }
+  }
+  
+  // GeoJSON data including results
+  var json_data = <%= raw @json_data %>;
+  var baseline_datasource = new Cesium.GeoJsonDataSource();
+ 
+  var allProperties = {};
+  var loadingIndicator = document.getElementById('loadingIndicator');
+  var cesiumContainer = document.getElementById('cesiumContainer');
+    
+  // This should not be here, where should it be?
+  var bingKey = 'OS7Aeoxh8uTsCDK8Ei7i~adKTbclqLHxxcbR5EHd15A~ArarK4g2lDPp3--tA7K-lNaVf4miYu4kJOgNISo7EbiWvsQZ67e5JcEHik2w1RFK';
+  Cesium.BingMapsApi.defaultKey = bingKey;
+  
+  var imageryErrorEvent = new Cesium.Event();
+  imageryErrorEvent.addEventListener(imageryError);
+
+  var imageryProvider = Cesium.createOpenStreetMapImageryProvider({
+          url : "http://a.tile.openstreetmap.org/"
+      });
+        
+  var viewer;
+  try {
+    viewer = new Cesium.Viewer('cesiumContainer', {            
+            imageryProvider : imageryProvider,
+            baseLayerPicker : true,
+            scene3DOnly : true,
+            sceneModePicker: false,
+            homeButton: false,
+            baseLayerPicker: false
+          });
+    viewer._geocoder._viewModel._url = 'http://dev.virtualearth.net/';
+  } catch (exception) {
+    var message = Cesium.formatError(exception);
+    console.error(message);
+    if (!document.querySelector('.cesium-widget-errorPanel')) {
+      window.alert(message);
+    }
+    loadingIndicator.style.display = 'none';
+    return;
+  }
+
+  var scene = viewer.scene;
+  var context = scene.context;
+  //context.validateShaderProgram = true;
+  //context.validateFramebuffer = true;
+  //context.logShaderCompilation = true;
+  //context.throwOnWebGLError = true;
+  
+      
+  var labelEntity = viewer.entities.add({
+    label : {
+      show : false,
+      fillColor : Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      outlineWidth: 4,
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      eyeOffset: new Cesium.Cartesian3(0.0, 0.0, -100.0)
+    }
+  });
+
+  var lastSelected = null;
+  function resetLastSelected() {
+    if (lastSelected){
+      lastSelected.polygon.outlineColor = Cesium.Color.BLACK ;
+      lastSelected.polygon.outlineWidth = 1;
+    }
+    lastSelected = null;
+  }
+
+  // mouse over handler
+  var handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
+  handler.setInputAction(function(movement) {
+    var pickedObject = scene.pick(movement.endPosition);
+
+    if (!pickedObject || !pickedObject.hasOwnProperty("id")){
+      resetLastSelected();
+      labelEntity.show = false;
+      labelEntity.label.show = false;
       return;
     }
+    
+    var entity = pickedObject.id;
+    if (entity == labelEntity){
+      return;
+    }
+    
+    if (!entity.polygon || !entity.position || !entity.label){
+      resetLastSelected();
+      labelEntity.show = false;
+      labelEntity.label.show = false;
+      return;
+    }
+    
+    if (lastSelected == entity){
+      return;
+    }     
+    resetLastSelected();
+    lastSelected = entity;
+    
+    entity.polygon.outlineColor = Cesium.Color.LIME ;
+    entity.polygon.outlineWidth = 10;
+    
+    //var labelPosition = scene.pickPosition(movement.endPosition); 
+    
+    var surfaceNormal = ellipsoid.geodeticSurfaceNormal(entity.position['_value']);
+    var height = new Cesium.Cartesian3();
+    Cesium.Cartesian3.multiplyByScalar(surfaceNormal, entity.polygon.extrudedHeight['_value'] + 10, height);
+    var labelPosition = new Cesium.Cartesian3();
+    Cesium.Cartesian3.add(entity.position['_value'], height, labelPosition);
 
-    var scene = viewer.scene;
-    var context = scene.context;
-    //context.validateShaderProgram = true;
-    //context.validateFramebuffer = true;
-    //context.logShaderCompilation = true;
-    //context.throwOnWebGLError = true;
+    labelEntity.position = labelPosition;
+    labelEntity.show = true;
+    labelEntity.label.show = true;
+    labelEntity.label.text = entity.label.text.getValue();
+    
+  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
-    //scene.debugShowFramesPerSecond = true;
+  //scene.debugShowFramesPerSecond = true;
+
+  loadingIndicator.style.display = 'none';
   
-    loadingIndicator.style.display = 'none';
-    
-    var bounds = d3.geo.bounds(json_data);
+  var bounds = d3.geo.bounds(json_data);
 
-    var ellipsoid = Cesium.Ellipsoid.WGS84;
-    var west = Cesium.Math.toRadians(bounds[0][0]);
-    var south = Cesium.Math.toRadians(bounds[0][1]);
-    var east = Cesium.Math.toRadians(bounds[1][0]);
-    var north = Cesium.Math.toRadians(bounds[1][1]);
+  var ellipsoid = Cesium.Ellipsoid.WGS84;
+  var west = Cesium.Math.toRadians(bounds[0][0]);
+  var south = Cesium.Math.toRadians(bounds[0][1]);
+  var east = Cesium.Math.toRadians(bounds[1][0]);
+  var north = Cesium.Math.toRadians(bounds[1][1]);
 
-    var extent = new Cesium.Rectangle(west, south, east, north);
+  var extent = new Cesium.Rectangle(west, south, east, north);
+  
+  //scene.mode = Cesium.SceneMode.SCENE2D;
+  scene.mode = Cesium.SceneMode.SCENE3D;
+  
+  // Show the rectangle.  Not required; just for show.
+  viewer.entities.add({
+    rectangle : {
+      coordinates : extent,
+      fill : false,
+      outline : true,
+      outlineColor : Cesium.Color.WHITE
+    }
+  });
+
+  viewer.dataSources.add(baseline_datasource);
+
+  // load json the first time and compute all properties
+  baseline_datasource.load(json_data, {
+    stroke: Cesium.Color.BLACK,
+    fill: Cesium.Color.WHITE,
+    strokeWidth: 3,
+    markerSymbol: '?'
+  }).then( function() {
     
-    //scene.mode = Cesium.SceneMode.SCENE2D;
-    scene.mode = Cesium.SceneMode.SCENE3D;
+    var values = baseline_datasource.entities.values;
+    for (var i = 0; i < values.length; i++) {
+      var value = values[i];
+      
+      var surface_elevation = value.properties["surface_elevation"];
+      var roof_elevation = value.properties["roof_elevation"];
+      var height = roof_elevation - surface_elevation;
+ 
+      //var average_roof_height = value.properties["average_roof_height"];
+      value.polygon.extrudedHeight = height;
+      
+      value.polygon.fill = true;
+      
+      var positions = value.polygon.hierarchy['_value'].positions;
+      var center = Cesium.BoundingSphere.fromPoints(positions).center;
+      ellipsoid.scaleToGeodeticSurface(center, center);
+      value.position = new Cesium.ConstantPositionProperty(center);
+      
+      value.label = {show: false};
+      
+      // populate all properties from the building
+      for (let propertyName of Object.getOwnPropertyNames(value.properties) ){
+        if (propertyName == "datapoint"){
+          continue;
+        }
+        if (propertyName == "properties"){
+          continue;
+        }
+        if (propertyName.endsWith("_units")){
+          continue;
+        }    
+        
+        var x = value.properties[propertyName];
+        if (Number.isFinite(x)){
+          var property = allProperties[propertyName];
+          if (!property){
+            var units = value.properties[propertyName + "_units"];
+            if (!units){
+              units = "";
+            }
+            allProperties[propertyName] = {name: propertyName, units: units, min: x, max: x};
+          }else{
+            property.min = Math.min(property.min, x);
+            property.max = Math.max(property.max, x);
+          }
+        }
+      }
+
+      // populate all properties from the results
+      if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
+        var results = value.properties["datapoint"]["results"];
+        for (let propertyName of Object.getOwnPropertyNames(results) ){
+          if (propertyName.endsWith("_units")){
+            continue;
+          }    
+        
+          var x = results[propertyName];
+          if (Number.isFinite(x)){
+            var property = allProperties[propertyName];
+            if (!property){
+              var units = results[propertyName + "_units"];
+              if (!units){
+                units = "";
+              }
+              allProperties[propertyName] = {name: propertyName, units: units, min: x, max: x};
+            }else{
+              property.min = Math.min(property.min, x);
+              property.max = Math.max(property.max, x);
+            }
+          }
+        }
+      }
+    } 
     
-    // Show the rectangle.  Not required; just for show.
-    viewer.entities.add({
-      rectangle : {
-        coordinates : extent,
-        fill : false,
-        outline : true,
-        outlineColor : Cesium.Color.WHITE
+    var dropdown = $('#render-dropdown');
+    dropdown.change(onDropdownChange);
+    
+    var have_selected = false;
+    $.each( allProperties, function( key, value ) {
+      if (value.min == value.max){
+        return;
+      }
+      
+      if (!have_selected){
+        have_selected = true;
+        dropdown.append('<option selected>' + key + '</option>');
+      }else{
+        dropdown.append('<option>' + key + '</option>');
       }
     });
+    onDropdownChange();
 
-    viewer.dataSources.add(baseline_datasource);
-  
-    // load json the first time and compute all properties
-    baseline_datasource.load(json_data, {
-      stroke: Cesium.Color.BLACK,
-      fill: Cesium.Color.WHITE,
-      strokeWidth: 3,
-      markerSymbol: '?'
-    }).then( function() {
-      
-      var values = baseline_datasource.entities.values;
-      for (var i = 0; i < values.length; i++) {
-        var value = values[i];
-        
-        var surface_elevation = value.properties["surface_elevation"];
-        var roof_elevation = value.properties["roof_elevation"];
-        var height = roof_elevation - surface_elevation;
-   
-        //var average_roof_height = value.properties["average_roof_height"];
-        values[i].polygon.extrudedHeight = height;
-        
-        // populate all properties from the building
-        for (let propertyName of Object.getOwnPropertyNames(value.properties) ){
-          if (propertyName == "datapoint"){
-            continue;
-          }
-          if (propertyName == "properties"){
-            continue;
-          }        
-          
-          var x = value.properties[propertyName];
-          if (Number.isFinite(x)){
-            if (!allProperties[propertyName]){
-              allProperties[propertyName] = [];
-            }
-            allProperties[propertyName].push(x);
-          }
-        }
-
-        // populate all properties from the results
-        if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
-          var results = value.properties["datapoint"]["results"];
-          for (let propertyName of Object.getOwnPropertyNames(results) ){
-            var x = value.properties[propertyName];
-            if (Number.isFinite(x)){
-              if (!allProperties[propertyName]){
-                allProperties[propertyName] = [];
-              }
-              allProperties[propertyName].push(results[propertyName]);
-            }
-          }
-        }
-      } 
-      
-      var dropdown = $('#render-dropdown');
-      dropdown.change(onDropdownChange);
-      
-      var have_selected = false;
-      $.each( allProperties, function( key, value ) {
-        if (!have_selected){
-          have_selected = true;
-          dropdown.append('<option selected>' + key + '</option>');
-        }else{
-          dropdown.append('<option>' + key + '</option>');
-        }
-      });
-      onDropdownChange();
   })
   
   scene.camera.flyTo({destination : extent});
