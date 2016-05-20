@@ -1,9 +1,19 @@
-<h2>Workflow Results <%= link_to @workflow.id, @workflow %></h2>
+<h2>Workflow Results: <%= link_to @workflow.display_name, @workflow %></h2>
 
 <%= stylesheet_link_tag "CesiumViewer.css" %>
 
-<select id="render-dropdown">
-</select> 
+ <table class="render-table">
+  <tr>
+    <td><b>Render By Variable</b></td>
+    <td><b>Min</b></td>
+    <td><b>Max</b></td>
+  </tr>
+  <tr>
+    <td><select id="render-dropdown"></select></td>
+    <td><div id="render-min-value"/></td>
+    <td><div id="render-max-value"/></td>
+  </tr>
+</table> 
 
 <div id="cesiumContainer"></div>
 <div id="loadingIndicator" class="loadingIndicator"></div>
@@ -35,6 +45,8 @@ $(function() {
         if (allProperties[renderProperty]){
           var allValues = allProperties[renderProperty].sort(function(a, b){return a-b});
           var domain = [allValues[0], allValues[allValues.length-1]];
+          $( "#render-min-value" ).html(domain[0].toPrecision(5));
+          $( "#render-max-value" ).html(domain[1].toPrecision(5));
           color_scale = d3.scale.linear().domain(domain).range(['blue', 'red']);
         }
           
