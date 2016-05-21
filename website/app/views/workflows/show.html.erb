@@ -45,7 +45,7 @@
 <% if @workflow.datapoints.count <= 0 %>
   <p>There are no datapoints associated with this workflow.</p>
 <% else %>
-  <%= link_to 'Show GeoJSON Results', datapoints_workflow_path(id: @workflow, format: :json), class: "btn btn-primary" %>
+  <%= link_to 'Show GeoJSON Results', datapoints_workflow_path(id: @workflow, format: :html), class: "btn btn-primary" %>
   <table class="tablesorter table table-striped">
     <thead>
     <tr>

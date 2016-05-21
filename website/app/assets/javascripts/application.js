@@ -12,6 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require d3.min.js
+//= require Cesium
 //= require bootstrap
 //= require turbolinks
 //= require leaflet

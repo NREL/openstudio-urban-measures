@@ -14,7 +14,7 @@
   <% @workflows.each do |workflow| %>
     <tr>
       <td><%= link_to workflow.id, workflow %></td>
-      <td><%= link_to workflow.project.display_name, @workflow.project %></td>
+      <td><%= link_to workflow.project.display_name, workflow.project %></td>
       <td><%= workflow.display_name %></td>
       <% if can? :update, Workflow %><td><%= link_to 'Edit', edit_workflow_path(workflow) %> | <%= link_to 'Destroy', workflow, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>

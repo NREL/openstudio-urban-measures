@@ -1,6 +1,7 @@
 /*
  *= require rails_bootstrap_forms
  *= require leaflet
+ *= require CesiumViewer
  */
 
 //= depend_on_asset "layers.png"
@@ -180,6 +181,12 @@ input[type='text'] {
 
 .table-pad {
   padding-top:20px;
+}
+
+.render-table {
+  td {
+  	padding: 5px;
+  }
 }
 
 .dropdown-menu {
