@@ -43,25 +43,23 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 
     # heating source
     heating_sources = OpenStudio::StringVector.new
-    heating_sources << "NA"
     heating_sources << "Gas"
     heating_sources << "Electric"
     heating_sources << "District Hot Water"
     heating_sources << "District Ambient Water"
     heating_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("heating_source", heating_sources, true)
     heating_source.setDisplayName("Heating source to model")
-    heating_source.setDefaultValue("NA")
+    heating_source.setDefaultValue("Gas")
     args << heating_source    
     
     # cooling source
     cooling_sources = OpenStudio::StringVector.new
-    cooling_sources << "NA"
     cooling_sources << "Electric"
     cooling_sources << "District Chilled Water"
     cooling_sources << "District Ambient Water"
     cooling_source = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("cooling_source", cooling_sources, true)
     cooling_source.setDisplayName("Cooling source to model")
-    cooling_source.setDefaultValue("NA")
+    cooling_source.setDefaultValue("Electric")
     args << cooling_source
     
     return args

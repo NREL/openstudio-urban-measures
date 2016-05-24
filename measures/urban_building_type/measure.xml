@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>2d97f7e3-3b8c-4a4f-9757-ed0797a9d28f</version_id>
-  <version_modified>20160518T190643Z</version_modified>
+  <version_id>400e0852-d87d-498d-af64-a7a8a624a838</version_id>
+  <version_modified>20160524T151145Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -16,12 +16,8 @@
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>NA</default_value>
+      <default_value>Gas</default_value>
       <choices>
-        <choice>
-          <value>NA</value>
-          <display_name>NA</display_name>
-        </choice>
         <choice>
           <value>Gas</value>
           <display_name>Gas</display_name>
@@ -46,12 +42,8 @@
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>NA</default_value>
+      <default_value>Electric</default_value>
       <choices>
-        <choice>
-          <value>NA</value>
-          <display_name>NA</display_name>
-        </choice>
         <choice>
           <value>Electric</value>
           <display_name>Electric</display_name>
@@ -129,6 +121,18 @@
       <checksum>C1AAE72C</checksum>
     </file>
     <file>
+      <filename>apply_residential.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>94987944</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>8BCCBEAA</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -137,25 +141,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>B88FA0C6</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>DA959E95</checksum>
-    </file>
-    <file>
-      <filename>apply_residential.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>94987944</checksum>
+      <checksum>AC0AFF3D</checksum>
     </file>
     <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>C567B57C</checksum>
+      <checksum>C95AE486</checksum>
     </file>
   </files>
 </measure>

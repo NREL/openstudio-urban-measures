@@ -12,26 +12,26 @@ run_retrofit = false
 num_parallel = 7
 
 buildings = [
-  #{name: "Large-Office",             space_type: "Office",                        floor_area: 46320,  number_of_stories: 12, window_to_wall_ratio: 0.4 }, # failure (openstudio-standards/prototypes/Prototype.Model.rb:710:in 'create_thermal_zones': undefined method 'define_space_multiplier' for #)
-  # {name: "Medium-Office",            space_type: "Office",                        floor_area: 4982,   number_of_stories: 3,  window_to_wall_ratio: 0.3 }, # success
-  # {name: "Small-Office",             space_type: "Office",                        floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.2 }, # success
-  # {name: "Warehouse",                space_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1,  window_to_wall_ratio: 0.01}, # failure (Prototype.hvac_systems.rb:576:setFanEfficiency)
-  # {name: "Stand-alone Retail",       space_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1,  window_to_wall_ratio: 0.07}, # failure (Standards.SpaceType.rb:53:set_rendering_color)
-  # {name: "Strip-Mall",               space_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # failure (Standards.SpaceType.rb:53:set_rendering_color)
-  # {name: "Primary-School",           space_type: "Education",                     floor_area: 6871,   number_of_stories: 1,  window_to_wall_ratio: 0.35}, # success
-  # {name: "Secondary-School",         space_type: "Education",                     floor_area: 19592,  number_of_stories: 2,  window_to_wall_ratio: 0.33}, # success
-  # {name: "Supermarket",              space_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # failure (Standards.SpaceType.rb:53:set_rendering_color)
-  # {name: "Quick-Service-Restaurant", space_type: "Food service",                  floor_area: 232,    number_of_stories: 1,  window_to_wall_ratio: 0.14}, # failure (undefined method 'update_exhaust_fan_efficiency')
-  # {name: "Full-Service-Restaurant",  space_type: "Food service",                  floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.17}, # failure (undefined method 'update_exhaust_fan_efficiency')
-  # {name: "Hospital",                 space_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5,  window_to_wall_ratio: 0.16}, # success in PAT, not example_run.rb (undefined method 'define_space_multiplier')
-  # {name: "Outpatient-Health-Care",   space_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3,  window_to_wall_ratio: 0.2 }, # failure (Standards.SpaceType.rb:53:set_rendering_color)
-  # {name: "Small-Hotel",              space_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4,  window_to_wall_ratio: 0.1 }, # success
-  # {name: "Large-Hotel",              space_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6,  window_to_wall_ratio: 0.3 }, # failure (Standards.SpaceType.rb:53:set_rendering_color)
-  # {name: "Midrise-Apartment",        space_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  window_to_wall_ratio: 0.2,  number_of_residential_units: 24}, # success
-  # {name: "Single-Family",            space_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1}, # success
-  # {name: "Multifamily-4",            space_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 4}, # success
-  # {name: "Multifamily-8",            space_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  window_to_wall_ratio: 0.3,  number_of_residential_units: 8}, # success
-  # {name: "Mobile-Home",              space_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1} # failure (graceful)
+  {name: "Large-Office",             space_type: "Office",                        floor_area: 46320,  number_of_stories: 12, window_to_wall_ratio: 0.4 }, # PAT success, example_run FAILURE
+  {name: "Medium-Office",            space_type: "Office",                        floor_area: 4982,   number_of_stories: 3,  window_to_wall_ratio: 0.3 }, # PAT success, example_run success
+  {name: "Small-Office",             space_type: "Office",                        floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
+  {name: "Warehouse",                space_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1,  window_to_wall_ratio: 0.01}, # PAT success, example_run success
+  {name: "StandaloneRetail",         space_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1,  window_to_wall_ratio: 0.07}, # PAT success, example_run success
+  {name: "Strip-Mall",               space_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  {name: "Primary-School",           space_type: "Education",                     floor_area: 6871,   number_of_stories: 1,  window_to_wall_ratio: 0.35}, # PAT success, example_run success
+  {name: "Secondary-School",         space_type: "Education",                     floor_area: 19592,  number_of_stories: 2,  window_to_wall_ratio: 0.33}, # PAT success, example_run success
+  {name: "Supermarket",              space_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  {name: "Quick-Service-Restaurant", space_type: "Food service",                  floor_area: 232,    number_of_stories: 1,  window_to_wall_ratio: 0.14}, # PAT success, example_run success
+  {name: "Full-Service-Restaurant",  space_type: "Food service",                  floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.17}, # PAT success, example_run success
+  {name: "Hospital",                 space_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5,  window_to_wall_ratio: 0.16}, # PAT success, example_run FAILURE
+  {name: "Outpatient-Health-Care",   space_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
+  {name: "Small-Hotel",              space_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  {name: "Large-Hotel",              space_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6,  window_to_wall_ratio: 0.3 }, # PAT success, example_run FAILURE
+  {name: "Midrise-Apartment",        space_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  window_to_wall_ratio: 0.2,  number_of_residential_units: 24}, # PAT success, example_run success
+  {name: "Single-Family",            space_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1}, # PAT success, example_run success
+  {name: "Multifamily-4",            space_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 4}, # PAT success, example_run success
+  {name: "Multifamily-8",            space_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  window_to_wall_ratio: 0.3,  number_of_residential_units: 8}, # PAT success, example_run success
+  {name: "Mobile-Home",              space_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1} # failure (graceful)
 ]
 
 #buildings = [buildings[0]]

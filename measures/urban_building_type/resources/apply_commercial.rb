@@ -16,196 +16,133 @@ class OpenStudio::Model::Model
     #   model.create_prototype_building('SmallOffice', '90.1-2010', 'ASHRAE 169-2006-5A')
     def apply_standard(runner, building_type, building_vintage, climate_zone, sizing_run_dir = Dir.pwd, debug = false)
       
-        logStream = OpenStudio::StringStreamLogSink.new
-        logStream.setLogLevel(OpenStudio::Warn)
-        
-        # begin
-
-        lookup_building_type = self.get_lookup_name(building_type)
-        
-        # Retrieve the Prototype Inputs from JSON
-        search_criteria = {
-          'template' => building_vintage,
-          'building_type' => building_type
-        }
-        prototype_input = self.find_object($os_standards['prototype_inputs'], search_criteria)
-        if prototype_input.nil?
-          runner.registerError("Could not find prototype inputs for #{search_criteria}, cannot create model.")
+      # There are no reference models for HighriseApartment at vintages Pre-1980 and 1980-2004. This is a quick check.
+      if building_type == "HighriseApartment"
+        if building_vintage == 'DOE Ref Pre-1980' or building_vintage == 'DOE Ref 1980-2004'
+          OpenStudio::logFree(OpenStudio::Error, 'Not available', "DOE Reference models for #{building_type} at vintage #{building_vintage} are not available, the measure is disabled for this specific type.")
           return false
         end
+      end
 
-        #self.load_building_type_methods(building_type, building_vintage, climate_zone)
-        #self.load_geometry(building_type, building_vintage, climate_zone)
-        #self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
-        space_type_map = self.define_space_type_map(building_type, building_vintage, climate_zone)
-        self.assign_space_type_stubs(lookup_building_type, building_vintage, space_type_map)      
-        self.add_loads(building_vintage, climate_zone)
-        self.apply_infiltration_standard(building_vintage)
-        self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
-        self.modify_surface_convection_algorithm(building_vintage)
-        self.add_constructions(lookup_building_type, building_vintage, climate_zone)
-        
-        # DLM: is this needed?  can we use existing thermal zones?
-        self.getThermalZones.each {|thermalZone| thermalZone.remove}
-        self.create_thermal_zones(building_type, building_vintage, climate_zone)
-        
-        # TODO: 90.1-2010, MediumOffice has no chw_pumping_type
-        prototype_input['chw_pumping_type'] = 'const_pri'
-        ###
-        self.add_hvac(building_type, building_vintage, climate_zone, prototype_input)
-        # self.custom_hvac_tweaks(building_type, building_vintage, climate_zone, prototype_input)
-        self.add_swh(building_type, building_vintage, climate_zone, prototype_input)
-        self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
-        self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
-        self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
-        self.set_sizing_parameters(building_type, building_vintage)
-        self.getYearDescription.setDayofWeekforStartDay('Sunday')
-        
-        # Perform a sizing run
-        if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
-          return false
-        end
-        
-        # If there are any multizone systems, set damper positions
-        # and perform a second sizing run
-        has_multizone_systems = false
-        self.getAirLoopHVACs.sort.each do |air_loop|
-          if air_loop.is_multizone_vav_system
-            self.apply_multizone_vav_outdoor_air_sizing(building_vintage)
-            if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
-              return false
-            end
-            break
-          end
-        end
-        
-        # Apply the prototype HVAC assumptions
-        # which include sizing the fan pressure rises based
-        # on the flow rate of the system.
-        self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
-        
-        # Apply the HVAC efficiency standard
-        # self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
-        
-        # Add daylighting controls per standard
-        # only four zones in large hotel have daylighting controls
-        # todo: YXC to merge to the main function
-        if building_type != "LargeHotel"
-          self.addDaylightingControls(building_vintage)
+      lookup_building_type = self.get_lookup_name(building_type)
+
+      # Retrieve the Prototype Inputs from JSON
+      search_criteria = {
+        'template' => building_vintage,
+        'building_type' => building_type
+      }
+      prototype_input = self.find_object($os_standards['prototype_inputs'], search_criteria)
+      if prototype_input.nil?
+        OpenStudio::logFree(OpenStudio::Error, 'openstudio.standards.Model', "Could not find prototype inputs for #{search_criteria}, cannot create model.")
+        return false
+      end
+
+      # self.load_building_type_methods(building_type, building_vintage, climate_zone)
+      # self.load_geometry(building_type, building_vintage, climate_zone)
+      # self.getBuilding.setName("#{building_vintage}-#{building_type}-#{climate_zone} created: #{Time.new}")
+      # space_type_map = self.define_space_type_map(building_type, building_vintage, climate_zone)
+      # self.assign_space_type_stubs(lookup_building_type, building_vintage, space_type_map)
+      self.add_loads(building_vintage, climate_zone)
+      self.apply_infiltration_standard(building_vintage)
+      self.modify_infiltration_coefficients(building_type, building_vintage, climate_zone)
+      self.modify_surface_convection_algorithm(building_vintage)
+      self.add_constructions(lookup_building_type, building_vintage, climate_zone)
+      # self.create_thermal_zones(building_type, building_vintage, climate_zone)
+      self.getSpaces.each do |space|
+        zone = space.thermalZone.get
+
+        # Skip thermostat for spaces with no space type
+        next if space.spaceType.empty?
+
+        # Add a thermostat
+        space_type_name = space.spaceType.get.name.get
+        thermostat_name = space_type_name + ' Thermostat'
+        thermostat = self.getThermostatSetpointDualSetpointByName(thermostat_name)
+        if thermostat.empty?
+          OpenStudio::logFree(OpenStudio::Error, 'openstudio.model.Model', "Thermostat #{thermostat_name} not found for space name: #{space.name}")
         else
-          self.add_daylighting_controls(building_vintage)
+          thermostatClone = thermostat.get.clone(self).to_ThermostatSetpointDualSetpoint.get
+          zone.setThermostatSetpointDualSetpoint(thermostatClone)
         end
-        
-        if building_type == "QuickServiceRestaurant" || building_type == "FullServiceRestaurant"
-          self.update_exhaust_fan_efficiency(building_vintage)
+      end      
+      # self.add_hvac(building_type, building_vintage, climate_zone, prototype_input)
+      # self.custom_hvac_tweaks(building_type, building_vintage, climate_zone, prototype_input)
+      # self.add_swh(building_type, building_vintage, climate_zone, prototype_input)
+      # self.custom_swh_tweaks(building_type, building_vintage, climate_zone, prototype_input)
+      self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
+      self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
+      self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
+      self.set_sizing_parameters(building_type, building_vintage)
+      # self.yearDescription.get.setDayofWeekforStartDay('Sunday')
+
+      # set climate zone and building type
+      # self.getBuilding.setStandardsBuildingType(building_type)
+      if climate_zone.include? 'ASHRAE 169-2006-'
+        self.getClimateZones.setClimateZone("ASHRAE",climate_zone.gsub('ASHRAE 169-2006-',''))
+      end
+
+      # Perform a sizing run
+      if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
+        return false
+      end
+
+      # If there are any multizone systems, set damper positions
+      # and perform a second sizing run
+      has_multizone_systems = false
+      self.getAirLoopHVACs.sort.each do |air_loop|
+        if air_loop.is_multizone_vav_system
+          self.apply_multizone_vav_outdoor_air_sizing(building_vintage)
+          if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
+            return false
+          end
+          break
         end
-        
-        if building_type == "HighriseApartment"
-          self.update_fan_efficiency
-        end
-       
-        # Add output variables for debugging
-        if debug
-          self.request_timeseries_outputs
-        end
-        
-      # rescue Exception => e  
-      
-        # runner.registerError("#{e}")
-        
-        # # print log messages
-        # logStream.logMessages.each do |logMessage|
-          # if logMessage.logLevel < OpenStudio::Warn
-            # runner.registerInfo(logMessage.logMessage)
-          # elsif logMessage.logLevel == OpenStudio::Warn
-            # runner.registerWarning(logMessage.logMessage)
-          # else
-            # runner.registerError(logMessage.logMessage)
-          # end
-        # end
-        # return false
-        
+      end
+
+      # Apply the prototype HVAC assumptions
+      # which include sizing the fan pressure rises based
+      # on the flow rate of the system.
+      self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
+          
+      # Apply the HVAC efficiency standard
+      self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
+
+      # Add daylighting controls per standard
+      # only four zones in large hotel have daylighting controls
+      # todo: YXC to merge to the main function
+      # if building_type != "LargeHotel"
+      self.addDaylightingControls(building_vintage)
+      # else
+        # self.add_daylighting_controls(building_vintage)
       # end
-       
-        return true    
-    end
+
+      if building_type == "QuickServiceRestaurant" || building_type == "FullServiceRestaurant" || building_type == "Outpatient"
+        self.update_exhaust_fan_efficiency(building_vintage)
+      end
       
-    def define_space_type_map(building_type, building_vintage, climate_zone)
-        space_type_map = {}
-        
-        self.getSpaceTypes.each do |space_type|
-          standards_space_type = space_type.standardsSpaceType.get
-          space_names = []
-          space_type.spaces.each do |space|
-            space_names << space.name.to_s
-          end
-          space_type_map[standards_space_type] = space_names
-        end
-        
-        return space_type_map
-    end  
-      
-    # Get the name of the building type used in lookups
-    #
-    # @param building_type [String] the building type
-    #   a .osm file in the /resources directory
-    # @return [String] returns the lookup name as a string
-    # @todo Unify the lookup names and eliminate this method
-    def get_lookup_name(building_type)
+      if building_type == "HighriseApartment"
+        self.update_fan_efficiency
+      end
 
-        lookup_name = building_type
+      # for 90.1-2010 Outpatient, AHU2 set minimum outdoor air flow rate as 0
+      # AHU1 doesn't have economizer
+      if building_type == "Outpatient"
+        # remove the controller:mechanical ventilation for AHU1 OA
+        self.modify_OAcontroller(building_vintage)
+        # For operating room 1&2 in 2010 and 2013, VAV minimum air flow is set by schedule
+        self.reset_or_room_vav_minimum_damper(prototype_input, building_vintage)
+      end
 
-        case building_type
-        when 'SmallOffice'
-          lookup_name = 'Office'
-        when 'MediumOffice'
-          lookup_name = 'Office'
-        when 'LargeOffice'
-          lookup_name = 'Office'
-        when 'RetailStandalone'
-          lookup_name = 'Retail'
-        when 'RetailStripmall'
-          lookup_name = 'StripMall'
-        end
+      # Add output variables for debugging
+      if debug
+        self.request_timeseries_outputs
+      end
 
-        return lookup_name
+      # Finished
+      model_status = 'final'
+      self.save(OpenStudio::Path.new("#{sizing_run_dir}/#{model_status}.osm"), true)
 
-    end  
-      
-    # Reads in a mapping between names of space types and
-    # names of spaces in the model, creates an empty OpenStudio::Model::SpaceType
-    # (no loads, occupants, schedules, etc.) for each space type, and assigns this
-    # space type to the list of spaces named.  Later on, these empty space types
-    # can be used as keys in a lookup to add loads, schedules, and
-    # other inputs that are either typical or governed by a standard.
-    #
-    # @param building_type [String] the name of the building type
-    # @param space_type_map [Hash] a hash where the key is the space type name
-    #   and the value is a vector of space names that should be assigned this space type.
-    #   The hash for each building is defined inside the Prototype.building_name
-    #   e.g. (Prototype.secondary_school.rb) file.
-    # @return [Bool] returns true if successful, false if not
-    def assign_space_type_stubs(building_type, building_vintage, space_type_map)
-
-        space_type_map.each do |space_type_name, space_names|
-          # Create a new space type
-          stub_space_type = OpenStudio::Model::SpaceType.new(self)
-          stub_space_type.setStandardsBuildingType(building_type)
-          stub_space_type.setStandardsSpaceType(space_type_name)
-          stub_space_type.setName("#{building_type} #{space_type_name}")
-          stub_space_type.set_rendering_color(building_vintage)
-
-          space_names.each do |space_name|
-            space = self.getSpaceByName(space_name)
-            next if space.empty?
-            space = space.get
-            space.setSpaceType(stub_space_type)
-
-            #OpenStudio::logFree(OpenStudio::Info, 'openstudio.model.Model', "Setting #{space.name} to #{building_type}.#{space_type_name}")
-          end
-        end
-
-        return true
+      return true    
     end
 
     # Get the list of all conditioned spaces, as defined for each building in the
@@ -236,61 +173,69 @@ class OpenStudio::Model::Model
           space_names << space.name.to_s
         end
       
-        system_to_space_map << {'type' => 'VAV', 'name' => "VAV #{building_story.name}", 'space_names' => space_names}
+        system_to_space_map << {'space_names' => space_names}
      
       end
     
       return system_to_space_map
-    end    
-   
-    def load_building_type_methods(runner, building_type)
-
-      building_methods = nil
-
-      case building_type
-      when 'SecondarySchool'
-        building_methods = 'Prototype.secondary_school'    
-      when 'PrimarySchool'
-        building_methods = 'Prototype.primary_school'
-      when 'SmallOffice'
-        building_methods = 'Prototype.small_office'
-      when 'MediumOffice'
-        building_methods = 'Prototype.medium_office'
-      when 'LargeOffice'
-        building_methods = 'Prototype.large_office'
-      when 'SmallHotel'
-        building_methods = 'Prototype.small_hotel'
-      when 'LargeHotel'
-        building_methods = 'Prototype.large_hotel'
-      when 'Warehouse'
-        building_methods = 'Prototype.warehouse'
-      when 'RetailStandalone'
-        building_methods = 'Prototype.retail_standalone'
-      when 'RetailStripmall'
-        building_methods = 'Prototype.retail_stripmall'
-      when 'QuickServiceRestaurant'
-        building_methods = 'Prototype.quick_service_restaurant'
-      when 'FullServiceRestaurant'
-        building_methods = 'Prototype.full_service_restaurant'
-      when 'Hospital'
-        building_methods = 'Prototype.hospital'
-      when 'Outpatient'
-        building_methods = 'Prototype.outpatient'
-      when 'MidriseApartment'
-        building_methods = 'Prototype.mid_rise_apartment'
-      else
-        OpenStudio::logFree(OpenStudio::Error, 'openstudio.model.Model',"Building Type = #{building_type} not recognized")
-        return false
+    end
+       
+    def update_exhaust_fan_efficiency(building_vintage)
+      case building_vintage
+      when '90.1-2004', '90.1-2007', '90.1-2010', '90.1-2013'
+        self.getFanZoneExhausts.sort.each do |exhaust_fan|
+          fan_name = exhaust_fan.name.to_s
+          if fan_name.include? "Dining"
+            exhaust_fan.setFanEfficiency(1)
+            exhaust_fan.setPressureRise(0)
+          end
+        end
+      when 'DOE Ref Pre-1980', 'DOE Ref 1980-2004'
+        self.getFanZoneExhausts.sort.each do |exhaust_fan|
+          exhaust_fan.setFanEfficiency(1)
+          exhaust_fan.setPressureRise(0.000001)
+        end
       end
-
-      spec = Gem::Specification.find_by_name("openstudio-standards")
-      gem_root = spec.gem_dir
-      require "#{gem_root}/lib/openstudio-standards/prototypes/#{building_methods}"
-
-      return true
-
-    end 
-   
+    end       
+       
+    # for 90.1-2010 Outpatient, AHU2 set minimum outdoor air flow rate as 0
+    # AHU1 doesn't have economizer       
+    def modify_OAcontroller(building_vintage)
+      self.getAirLoopHVACs.each do |air_loop|
+        oa_system = air_loop.airLoopHVACOutdoorAirSystem.get
+        controller_oa = oa_system.getControllerOutdoorAir
+        controller_mv = controller_oa.controllerMechanicalVentilation
+        # AHU1 OA doesn't have controller:mechanicalventilation
+        if air_loop.name.to_s.include? "Outpatient F1"
+          controller_mv.setAvailabilitySchedule(self.alwaysOffDiscreteSchedule)
+          # add minimum fraction of outdoor air schedule to AHU1
+          controller_oa.setMinimumFractionofOutdoorAirSchedule(self.add_schedule('OutPatientHealthCare AHU-1_OAminOAFracSchedule'))
+        # for AHU2, at vintages '90.1-2004', '90.1-2007', '90.1-2010', '90.1-2013', the minimum OA schedule is not the same as
+        # airloop availability schedule, but separately assigned.
+        elsif building_vintage=='90.1-2004' || building_vintage=='90.1-2007' || building_vintage=='90.1-2010' || building_vintage=='90.1-2013'
+          controller_oa.setMinimumOutdoorAirSchedule(self.add_schedule('OutPatientHealthCare BLDG_OA_SCH'))
+          # add minimum fraction of outdoor air schedule to AHU2
+          controller_oa.setMinimumFractionofOutdoorAirSchedule(self.add_schedule('OutPatientHealthCare BLDG_OA_FRAC_SCH'))
+        end
+      end
+    end
+       
+    # For operating room 1&2 in 2010 and 2013, VAV minimum air flow is set by schedule
+    def reset_or_room_vav_minimum_damper(prototype_input, building_vintage)
+      case building_vintage
+      when '90.1-2004', '90.1-2007'
+        return true
+      when '90.1-2010', '90.1-2013'
+        self.getAirTerminalSingleDuctVAVReheats.sort.each do |airterminal|
+          airterminal_name = airterminal.name.get
+          if airterminal_name.include? "Floor 1 Operating Room 1" or airterminal_name.include? "Floor 1 Operating Room 2"
+            airterminal.setZoneMinimumAirFlowMethod('Scheduled')
+            airterminal.setMinimumAirFlowFractionSchedule(add_schedule("OutPatientHealthCare OR_MinSA_Sched"))
+          end
+        end
+      end
+    end       
+       
 end
   
 def apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
@@ -366,7 +311,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
                                                     chiller_condenser_type,
                                                     chiller_compressor_type,
                                                     chiller_capacity_guess)            
-            
+
             model.add_vav_reheat(building_vintage, 
                                  nil, 
                                  hot_water_loop, 
@@ -1078,22 +1023,19 @@ def map_space_type(space_type, runner)
     size = office_size(floor_area, runner)
     if size == 'Large'
       new_space_type = 'WholeBuilding - Lg Office'
-      new_building_type = 'LargeOffice'
     elsif size == 'Medium'
       new_space_type = 'WholeBuilding - Md Office'
-      new_building_type = 'MediumOffice'
     elsif size == 'Small'
       new_space_type = 'WholeBuilding - Sm Office'
-      new_building_type = 'SmallOffice'
     end
   when "Nonrefrigerated warehouse"
     new_space_type = 'Bulk'
     new_building_type = 'Warehouse'
   when "Food sales"
     new_space_type = 'Retail'
-    new_building_type = 'RetailStandalone'
+    new_building_type = 'Retail'
   when "Outpatient health care"
-    new_space_type = 'PatRoom'
+    new_space_type = 'Exam'
     new_building_type = 'Outpatient'
   when "Refrigerated warehouse"
     new_space_type = 'Bulk'
@@ -1118,28 +1060,29 @@ def map_space_type(space_type, runner)
     new_space_type = 'PatRoom'
     new_building_type = 'Hospital'
   when "Nursing"
-    new_space_type = 'PatRoom'
+    new_space_type = 'Exam'
     new_building_type = 'Outpatient'
   when "Lodging"
-    new_space_type = 'GuestRoom123Occ'
     size = hotel_size(floor_area, runner)
     if size == 'Large'
+      new_space_type = 'GuestRoom'
       new_building_type = 'LargeHotel'
     elsif size == 'Small'
+      new_space_type = 'GuestRoom123Occ'
       new_building_type = 'SmallHotel'
     end    
   when "Strip shopping mall"
-    new_space_type = 'Retail'
-    new_building_type = 'RetailStripmall'
+    new_space_type = 'Strip mall - type 1'
+    new_building_type = 'StripMall'
   when "Enclosed mall"
     new_space_type = 'Retail'
-    new_building_type = 'RetailStandalone'
+    new_building_type = 'Retail'
   when "Retail other than mall"
     new_space_type = 'Retail'
-    new_building_type = 'RetailStandalone'
+    new_building_type = 'Retail'
   when "Service"
-    new_space_type = 'Retail'
-    new_building_type = 'RetailStripmall'
+    new_space_type = 'Strip mall - type 1'
+    new_building_type = 'StripMall'
   else
     runner.registerError("Unknown building type #{standards_building_type}")
   end
@@ -1165,14 +1108,14 @@ def apply_commercial(model, runner, heating_source, cooling_source)
   model.getSpaceTypes.each do |space_type|
     map_space_type(space_type, runner)
   end
-
+  
   result = model.apply_standard(runner, building_type, building_vintage, climate_zone)
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
       thermal_zone.remove
     end
-  end
+  end 
   
   default_construction_set = model.getBuilding.defaultConstructionSet
   if !default_construction_set.empty?
