@@ -1140,7 +1140,7 @@
         "roof_elevation_source": "Inferred",
         "source_id": "183137",
         "source_name": "NREL_GDS",
-        "space_type": "Office",
+        "space_type": "Food service",
         "space_type_source": "Inferred",
         "surface_elevation": 1584.3504,
         "taxlot_source_name": "NREL GDS",
@@ -1295,44 +1295,6 @@
                 -104.996045362577,
                 39.7528063273088
               ]
-            ],
-            [
-              [
-                -104.99617804206,
-                39.7526489117365
-              ],
-              [
-                -104.996222929223,
-                39.7526139996096
-              ],
-              [
-                -104.99623312626,
-                39.752621809638
-              ],
-              [
-                -104.996266831382,
-                39.7525955935427
-              ],
-              [
-                -104.996276035416,
-                39.7526026425683
-              ],
-              [
-                -104.996283737444,
-                39.7525966535466
-              ],
-              [
-                -104.996210979179,
-                39.7525409223439
-              ],
-              [
-                -104.996124684866,
-                39.752608040588
-              ],
-              [
-                -104.99617804206,
-                39.7526489117365
-              ]
             ]
           ]
         ]
@@ -1348,7 +1310,6 @@
         "footprint_perimeter": 213.386325788403,
         "footprint_perimeter_source": "Measured",
         "intersecting_building_source_ids": [
-          183135,
           183136,
           183143
         ],
@@ -1368,163 +1329,7 @@
         "roof_elevation_source": "Inferred",
         "source_id": "183144",
         "source_name": "NREL_GDS",
-        "space_type": "Office",
-        "space_type_source": "Inferred",
-        "surface_elevation": 1584.3504,
-        "taxlot_source_name": "NREL GDS",
-        "type": "Building",
-        "zoning": "Commercial",
-        "zoning_source": "Assessor"
-      }
-    },
-    {
-      "geometry": {
-        "type": "MultiPolygon",
-        "coordinates": [
-          [
-            [
-              [
-                -104.996045362577,
-                39.7528063273088
-              ],
-              [
-                -104.995847282857,
-                39.7526545957572
-              ],
-              [
-                -104.995822733768,
-                39.7526357896888
-              ],
-              [
-                -104.995942092202,
-                39.7525429533513
-              ],
-              [
-                -104.995868423934,
-                39.7524865211462
-              ],
-              [
-                -104.995884132991,
-                39.7524743031017
-              ],
-              [
-                -104.995869622938,
-                39.7524631870613
-              ],
-              [
-                -104.995955191249,
-                39.7523966328194
-              ],
-              [
-                -104.996042483567,
-                39.7524634980625
-              ],
-              [
-                -104.996075157686,
-                39.7524380849701
-              ],
-              [
-                -104.995986245362,
-                39.7523699757225
-              ],
-              [
-                -104.996048216588,
-                39.7523217735472
-              ],
-              [
-                -104.996363624734,
-                39.7525633794256
-              ],
-              [
-                -104.996301595509,
-                39.752611624601
-              ],
-              [
-                -104.996305227522,
-                39.7526144086111
-              ],
-              [
-                -104.9960517216,
-                39.7528112633267
-              ],
-              [
-                -104.996045362577,
-                39.7528063273088
-              ]
-            ],
-            [
-              [
-                -104.99617804206,
-                39.7526489117365
-              ],
-              [
-                -104.996222929223,
-                39.7526139996096
-              ],
-              [
-                -104.99623312626,
-                39.752621809638
-              ],
-              [
-                -104.996266831382,
-                39.7525955935427
-              ],
-              [
-                -104.996276035416,
-                39.7526026425683
-              ],
-              [
-                -104.996283737444,
-                39.7525966535466
-              ],
-              [
-                -104.996210979179,
-                39.7525409223439
-              ],
-              [
-                -104.996124684866,
-                39.752608040588
-              ],
-              [
-                -104.99617804206,
-                39.7526489117365
-              ]
-            ]
-          ]
-        ]
-      },
-      "type": "Feature",
-      "properties": {
-        "average_roof_height": 8.8392,
-        "average_roof_height_source": "Assessor",
-        "floor_area": 2386.33516089952,
-        "floor_area_source": "Inferred",
-        "footprint_area": 1193.16758044976,
-        "footprint_area_source": "Measured",
-        "footprint_perimeter": 213.386325788403,
-        "footprint_perimeter_source": "Measured",
-        "intersecting_building_source_ids": [
-          183135,
-          183136,
-          183143
-        ],
-        "number_of_stories": 2,
-        "number_of_stories_above_ground": 2,
-        "number_of_stories_above_ground_source": "Inferred",
-        "number_of_stories_below_ground": 0,
-        "number_of_stories_below_ground_source": "Inferred",
-        "number_of_stories_source": "Inferred",
-        "region_source_ids": [
-          "08",
-          "031",
-          "001701"
-        ],
-        "region_source_name": "NREL GDS",
-        "roof_elevation": 1591.6504,
-        "roof_elevation_source": "Inferred",
-        "source_id": "183144",
-        "source_name": "NREL_GDS",
-        "space_type": "Office",
+        "space_type": "Food service",
         "space_type_source": "Inferred",
         "surface_elevation": 1584.3504,
         "taxlot_source_name": "NREL GDS",
@@ -1608,7 +1413,7 @@
         "roof_elevation_source": "Inferred",
         "source_id": "183134",
         "source_name": "NREL_GDS",
-        "space_type": "Office",
+        "space_type": "Lodging",
         "space_type_source": "Inferred",
         "surface_elevation": 1582.8264,
         "taxlot_source_name": "NREL GDS",
@@ -1704,7 +1509,7 @@
         "roof_elevation_source": "Inferred",
         "source_id": "183141",
         "source_name": "NREL_GDS",
-        "space_type": "Office",
+        "space_type": "Retail other than mall",
         "space_type_source": "Inferred",
         "surface_elevation": 1582.8264,
         "taxlot_source_name": "NREL GDS",
@@ -2148,93 +1953,9 @@
         "roof_elevation_source": "Inferred",
         "source_id": "183131",
         "source_name": "NREL_GDS",
-        "space_type": "Office",
+        "space_type": "Food service",
         "space_type_source": "Inferred",
         "surface_elevation": 1582.8264,
-        "taxlot_source_name": "NREL GDS",
-        "type": "Building",
-        "zoning": "Commercial",
-        "zoning_source": "Assessor"
-      }
-    },
-    {
-      "geometry": {
-        "type": "MultiPolygon",
-        "coordinates": [
-          [
-            [
-              [
-                -104.99617804206,
-                39.7526489117365
-              ],
-              [
-                -104.996124684866,
-                39.752608040588
-              ],
-              [
-                -104.996210979179,
-                39.7525409223439
-              ],
-              [
-                -104.996283737444,
-                39.7525966535466
-              ],
-              [
-                -104.996276035416,
-                39.7526026425683
-              ],
-              [
-                -104.996266831382,
-                39.7525955935427
-              ],
-              [
-                -104.99623312626,
-                39.752621809638
-              ],
-              [
-                -104.996222929223,
-                39.7526139996096
-              ],
-              [
-                -104.99617804206,
-                39.7526489117365
-              ]
-            ]
-          ]
-        ]
-      },
-      "type": "Feature",
-      "properties": {
-        "average_roof_height": 12.192,
-        "average_roof_height_source": "Assessor",
-        "floor_area": 224.6417931022506,
-        "floor_area_source": "Inferred",
-        "footprint_area": 74.8805977007502,
-        "footprint_area_source": "Measured",
-        "footprint_perimeter": 38.567032782158,
-        "footprint_perimeter_source": "Measured",
-        "intersecting_building_source_ids": [
-          183144
-        ],
-        "number_of_stories": 3,
-        "number_of_stories_above_ground": 3,
-        "number_of_stories_above_ground_source": "Inferred",
-        "number_of_stories_below_ground": 0,
-        "number_of_stories_below_ground_source": "Inferred",
-        "number_of_stories_source": "Inferred",
-        "region_source_ids": [
-          "08",
-          "031",
-          "001701"
-        ],
-        "region_source_name": "NREL GDS",
-        "roof_elevation": 1595.3004,
-        "roof_elevation_source": "Inferred",
-        "source_id": "183135",
-        "source_name": "NREL_GDS",
-        "space_type": "Office",
-        "space_type_source": "Inferred",
-        "surface_elevation": 1584.3504,
         "taxlot_source_name": "NREL GDS",
         "type": "Building",
         "zoning": "Commercial",

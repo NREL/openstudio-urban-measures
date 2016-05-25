@@ -1,3 +1,5 @@
+require 'fileutils'
+
 class HelperMethods
 
     def self.add_watertoairhp(model, heat_pump_loop, thermal_zones)
@@ -647,6 +649,6 @@ class HelperMethods
 
     return air_loop
 
-  end    
-
+  end
+  
 end
