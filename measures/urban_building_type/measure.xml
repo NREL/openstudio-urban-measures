@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>d7f48fb5-49e7-40f0-adfa-20a0856c5623</version_id>
-  <version_modified>20160525T155458Z</version_modified>
+  <version_id>63acf690-daf2-49c9-8948-319b0afcab28</version_id>
+  <version_modified>20160526T155723Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -135,13 +135,19 @@
       <filename>util.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>6D468D80</checksum>
+      <checksum>DDAD47EF</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>602C01A5</checksum>
+      <checksum>9998F072</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C1E24302</checksum>
     </file>
   </files>
 </measure>
