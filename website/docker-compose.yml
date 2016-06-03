@@ -7,7 +7,7 @@ web:
     - "8081:80"
   environment:
     - RAILS_ENV=docker
-    - CITYDB_HOST_URL
+    - CITYDB_HOST_URL=WhateverYourKeyIs
     - CITYDB_SECRET_KEY_BASE
   volumes_from:
     - filedata

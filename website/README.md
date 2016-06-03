@@ -74,6 +74,20 @@ The command below will create a 100GB volume for development. This is a very lar
 docker-machine create --virtualbox-disk-size 100000 --virtualbox-cpu-count 4 --virtualbox-memory 4096 -d virtualbox urbanbox
 ```
 
+### Export environment variables
+Each time or set permanently
+
+Mac/Unix:
+```
+export CITYDB_HOST_URL=localhost
+export CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
+```
+Windows:
+```
+set CITYDB_HOST_URL=localhost
+set CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
+```
+
 ### Start Docker-Machine Image (only on non-linux machines)
 Each time 
 
@@ -88,20 +102,6 @@ First time only
 ```
 docker run -v /data/urban/db --name citydb_mongodata busybox true
 docker run -v /data/urban/filedata --name filedata busybox true
-```
-
-### Export environment variables
-Each time or set permanently
-
-Mac/Unix:
-```
-export CITYDB_HOST_URL=localhost
-export CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
-```
-Windows:
-```
-set CITYDB_HOST_URL=localhost
-set CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
 ```
 
 ### Run Docker Compose 
