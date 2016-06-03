@@ -66,36 +66,47 @@ Docker deployment should be tested locally before deploying in a production envi
 * [Install Docker-Compose](https://docs.docker.com/compose/install/)
 
 ### Create Docker-Machine Image (only on non-linux machines)
+First time only
+
 The command below will create a 100GB volume for development. This is a very large volume and can be adjusted. Make sure to create a volume greater than 30GB.
 
 ```
-docker-machine create --virtualbox-disk-size 100000 --virtualbox-cpu-count 4 --virtualbox-memory 4096 -d virtualbox dev
+docker-machine create --virtualbox-disk-size 100000 --virtualbox-cpu-count 4 --virtualbox-memory 4096 -d virtualbox urbanbox
 ```
 
 ### Start Docker-Machine Image (only on non-linux machines)
+Each time 
+
 ```
-docker-machine start dev  # if not already running
-eval $(docker-machine env dev) # this sets up environment variables
+docker-machine start urbanbox  # if not already running
+eval $(docker-machine env urbanbox) # this sets up environment variables in the command shell
 ```
 
-### Create the data volumes
-If you have data volumes (i.e., for mongo, files, and solr), create them:
-```
-docker run -v /data/db --name <VOLUME NAME> busybox true
-```
+### Create File Volumes
+First time only
 
-Example:
 ```
-docker run -v /srv/data --name filedata busybox true
+docker run -v /data/urban/db --name citydb_mongodata busybox true
+docker run -v /data/urban/filedata --name filedata busybox true
 ```
 
 ### Export environment variables
-If you have rails environment variables (such as HOST_URL or SECRET_KEY_BASE), don't forget to export them. Example:
+Each time or set permanently
+
+Mac/Unix:
 ```
-export HOST_URL=localhost
+export CITYDB_HOST_URL=localhost
+export CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
+```
+Windows:
+```
+set CITYDB_HOST_URL=localhost
+set CITYDB_SECRET_KEY_BASE=WhateverYourKeyIs
 ```
 
 ### Run Docker Compose 
+Each time
+
 ```
 docker-compose build
 ```
@@ -107,7 +118,7 @@ docker-compose up
 **Note that you may need to build the containers a couple times for everything to converge**
 
 #### You're done!!! ####
-Get the Docker IP address (`docker-machine ip dev`) and point your browser at [http://`ip-address`:8000](http://`ip-address`:8000)
+Get the Docker IP address (`docker-machine ip urbanbox`) and point your browser at [http://`ip-address`:8000](http://`ip-address`:8000)
 
 To log in to the container:
 ```

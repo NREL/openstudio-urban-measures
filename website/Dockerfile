@@ -114,7 +114,7 @@ ADD /app/models/user.rb /srv/app/models/user.rb
 # Now call precompile
 ENV RAILS_ENV docker
 
-RUN bundle exec rake assets:precompile
+#RUN bundle exec rake assets:precompile
 
 # Bundle app source
 ADD / /srv
