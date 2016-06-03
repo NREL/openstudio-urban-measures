@@ -33,6 +33,6 @@ module UrbanModeling
     # config.active_record.raise_in_transactional_callbacks = true
     
     # Enable or disable precompiled assets
-    config.assets.enabled = false
+    config.assets.enabled = true
   end
 end
