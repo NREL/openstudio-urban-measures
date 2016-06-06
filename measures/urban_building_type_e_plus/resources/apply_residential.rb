@@ -1,16 +1,24 @@
-def apply_residential_infil(workspace, standards_space_type, living_thermal_zone, basement_thermal_zone, runner)
+require_relative '../resources/geometry'
+
+def apply_residential_infil(workspace, standards_space_type, control_zone, slave_zones, runner)
 
   runner.registerInfo("Applying residential infiltration.")  
   require './resources/measures/ProcessAirflow/measure.rb'
+  
+  living_thermal_zone_name = control_zone.name.get
+  fbasement_thermal_zone_name = nil
+  unless slave_zones.empty?
+    fbasement_thermal_zone_name = slave_zones[0].name.get
+  end
   
   case standards_space_type
   when "Single-Family"	
 	
     measure = ProcessAirflow.new
     args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone
-    unless basement_thermal_zone.nil?
-      args_hash["fbasement_thermal_zone"] = basement_thermal_zone
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    unless fbasement_thermal_zone_name.nil?
+      args_hash["fbasement_thermal_zone"] = fbasement_thermal_zone_name
     end
     run_measure(workspace, measure, args_hash, runner)
 	
@@ -18,14 +26,14 @@ def apply_residential_infil(workspace, standards_space_type, living_thermal_zone
 
     measure = ProcessAirflow.new
     args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(workspace, measure, args_hash, runner)
   
   when "Multifamily (5 or more units)"
 
     measure = ProcessAirflow.new
     args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone	
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
     run_measure(workspace, measure, args_hash, runner)
   
   when "Mobile Home"
@@ -89,38 +97,20 @@ def default_args_hash(workspace, measure)
 	return args_hash
 end
 
-def get_thermal_zones(workspace)
-
-  living_thermal_zones = []
-  basement_thermal_zone = nil  
-  workspace.getObjectsByType("Zone".to_IddObjectType).each do |zone|
-    if zone.getString(0).to_s.include? "Story 0 Space"
-      basement_thermal_zone = zone.getString(0).to_s	
-    else
-      living_thermal_zones << zone.getString(0).to_s
-    end
-  end
-
-  return living_thermal_zones, basement_thermal_zone
-  
-end
-
-def apply_residential(workspace, runner, standards_space_type)
+def apply_residential(workspace, runner, standards_building_type, model)
   
   result = true
-  
-  living_thermal_zone, basement_thermal_zone = get_thermal_zones(workspace)
+
+  control_slave_zones_hash = Geometry.get_control_and_slave_zones(model)
  
-   if not standards_space_type == "Single-Family"
-    unless basement_thermal_zone.nil?
-      living_thermal_zones << basement_thermal_zone
-    end
+  all_slave_zones = []
+  control_slave_zones_hash.each do |control_zone, slave_zones|
+    result = result && apply_residential_infil(workspace, standards_building_type, control_zone, slave_zones, runner)
+    unless slave_zones.empty?
+      all_slave_zones += slave_zones
+    end    
   end
- 
-  # FIXME: for this to work on the server, need to update weather.rb with a method which retrieves weather file path from workspace (issue #3) 
-  living_thermal_zones.each do |living_thermal_zone|
-    result = result && apply_residential_infil(model, standards_space_type, living_thermal_zones, basement_thermal_zone, runner)
-  end
+  puts "#{standards_building_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)." 
  
   return result
     

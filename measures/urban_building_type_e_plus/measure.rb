@@ -38,34 +38,40 @@ class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
     if !runner.validateUserArguments(arguments(workspace), user_arguments)
       return false
     end
+    
+    model = runner.lastOpenStudioModel.get
 
     # check building space type to see if we are doing residential or commercial path
-    residential = false
-    standards_space_type = nil
-    workspace.getObjectsByType("ZoneList".to_IddObjectType).each do |zone_list|
-      standards_space_type = zone_list.getString(0).to_s.split(":")[0]
-      if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_space_type
-        residential = true
-        break
-      end
-    end	
-	
-    if residential
-      runner.registerInfo("Processing Residential Building, #{standards_space_type}")
-      residential = true
+    building = model.getBuilding
+    building_space_type = building.spaceType
+    if building_space_type.empty?
+      runner.registerError("Cannot determine building space type")
+      return false
     end
-	    
+
+    if building_space_type.get.standardsBuildingType.empty?
+      runner.registerError("Cannot determine standards building type")
+      return false
+    end
+    standards_building_type = building_space_type.get.standardsBuildingType.get	
+  
+    residential = false
+    if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
+      runner.registerInfo("Processing Residential Building, #{standards_building_type}")
+      residential = true
+    end  
+  
     beopt_measures_dir = "./resources/measures/"
     if File.exists?(beopt_measures_dir)
       FileUtils.rm_rf(beopt_measures_dir)
-    end
-    
+    end  
+  
     result = nil
     if residential
       beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
       unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
-      result = apply_residential(workspace, runner, standards_space_type)
+      result = apply_residential(workspace, runner, standards_building_type, model)
     else
       result = true
     end

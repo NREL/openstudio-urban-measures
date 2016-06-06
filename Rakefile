@@ -5,12 +5,11 @@ require 'fileutils'
 desc 'update residential measures'
 task :update_residential_measures do
 
-      rev = '4527658'
       ["urban_building_type", "urban_building_type_e_plus"].each do |measure|
       
         ["resources", "measures"].each do |folder|
   
-          command = "svn checkout -r #{rev} https://github.com/NREL/OpenStudio-Beopt/trunk/#{folder} ./measures/#{measure}/resources/#{folder}"
+          command = "svn checkout https://github.com/NREL/OpenStudio-Beopt/trunk/#{folder} ./measures/#{measure}/resources/#{folder}"
           system(command)
           if folder == "measures"
             update_residential_resources(measure)

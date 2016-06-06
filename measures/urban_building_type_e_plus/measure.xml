@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>594dca22-5dee-44ad-ade6-1443ef90e2d8</version_id>
-  <version_modified>20160526T151109Z</version_modified>
+  <version_id>70450ffb-b194-4154-95c5-14eeffc69ced</version_id>
+  <version_modified>20160606T194201Z</version_modified>
   <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
@@ -39,6 +39,18 @@
       <checksum>BA1FB234</checksum>
     </file>
     <file>
+      <filename>constants.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>9F7D2989</checksum>
+    </file>
+    <file>
+      <filename>geometry.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>E1556074</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -47,19 +59,19 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>0C9F6F01</checksum>
+      <checksum>8ED20319</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>AB978FE6</checksum>
+      <checksum>905EBEA5</checksum>
     </file>
     <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>2F111FE3</checksum>
+      <checksum>950D2030</checksum>
     </file>
   </files>
 </measure>

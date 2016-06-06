@@ -1,4 +1,5 @@
 require_relative '../resources/util'
+require_relative '../resources/geometry'
 
 def apply_weather(model, runner)
 
