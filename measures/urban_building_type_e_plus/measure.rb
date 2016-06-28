@@ -3,7 +3,7 @@
 
 require 'fileutils'
 
-require_relative 'resources/apply_residential'
+require_relative 'resources/apply_residential_e_plus'
 
 # start the measure
 class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
@@ -38,7 +38,7 @@ class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
     if !runner.validateUserArguments(arguments(workspace), user_arguments)
       return false
     end
-    
+        
     model = runner.lastOpenStudioModel.get
 
     # check building space type to see if we are doing residential or commercial path
@@ -71,7 +71,7 @@ class UrbanBuildingTypeEPlus < OpenStudio::Ruleset::WorkspaceUserScript
       beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
       unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
       unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))	
-      result = apply_residential(workspace, runner, standards_building_type, model)
+      result = apply_residential_e_plus(workspace, runner, standards_building_type, model)
     else
       result = true
     end

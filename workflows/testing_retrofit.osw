@@ -64,6 +64,10 @@
 		}]
 	},
 	{
+		"measure_dir_name": "urban_building_type_e_plus",
+		"arguments": []
+	},
+	{
 		"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
 		"arguments": []
 	},

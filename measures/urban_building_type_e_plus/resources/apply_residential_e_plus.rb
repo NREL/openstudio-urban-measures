@@ -13,7 +13,7 @@ def apply_residential_infil(workspace, standards_space_type, control_zone, slave
   
   case standards_space_type
   when "Single-Family"	
-	
+    
     measure = ProcessAirflow.new
     args_hash = default_args_hash(workspace, measure)
     args_hash["living_thermal_zone"] = living_thermal_zone_name
@@ -49,6 +49,7 @@ end
 
 def run_measure(workspace, measure, args_hash, runner)
   # get arguments
+  puts 'here0'
   arguments = measure.arguments(workspace)
   argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
 
@@ -68,6 +69,7 @@ def run_measure(workspace, measure, args_hash, runner)
   test = measure.run(workspace, runner, argument_map)
 
   if !test
+    puts 'here1'
     runner.registerError("Failed to run measure #{measure.name}")
   end
 end
@@ -97,7 +99,7 @@ def default_args_hash(workspace, measure)
 	return args_hash
 end
 
-def apply_residential(workspace, runner, standards_building_type, model)
+def apply_residential_e_plus(workspace, runner, standards_building_type, model)
   
   result = true
 
@@ -111,7 +113,7 @@ def apply_residential(workspace, runner, standards_building_type, model)
     end    
   end
   puts "#{standards_building_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)." 
- 
+  puts result
   return result
     
 end

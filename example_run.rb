@@ -12,30 +12,30 @@ run_retrofit = false
 num_parallel = 7
 
 buildings = [
-  {name: "Large-Office",             space_type: "Office",                        floor_area: 46320,  number_of_stories: 12, window_to_wall_ratio: 0.4 }, # PAT success, example_run FAILURE
-  {name: "Medium-Office",            space_type: "Office",                        floor_area: 4982,   number_of_stories: 3,  window_to_wall_ratio: 0.3 }, # PAT success, example_run success
-  {name: "Small-Office",             space_type: "Office",                        floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
-  {name: "Warehouse",                space_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1,  window_to_wall_ratio: 0.01}, # PAT success, example_run success
-  {name: "StandaloneRetail",         space_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1,  window_to_wall_ratio: 0.07}, # PAT success, example_run success
-  {name: "Strip-Mall",               space_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
-  {name: "Primary-School",           space_type: "Education",                     floor_area: 6871,   number_of_stories: 1,  window_to_wall_ratio: 0.35}, # PAT success, example_run success
-  {name: "Secondary-School",         space_type: "Education",                     floor_area: 19592,  number_of_stories: 2,  window_to_wall_ratio: 0.33}, # PAT success, example_run success
-  {name: "Supermarket",              space_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
-  {name: "Quick-Service-Restaurant", space_type: "Food service",                  floor_area: 232,    number_of_stories: 1,  window_to_wall_ratio: 0.14}, # PAT success, example_run success
-  {name: "Full-Service-Restaurant",  space_type: "Food service",                  floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.17}, # PAT success, example_run success
-  {name: "Hospital",                 space_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5,  window_to_wall_ratio: 0.16}, # PAT success, example_run FAILURE
-  {name: "Outpatient-Health-Care",   space_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
-  {name: "Small-Hotel",              space_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
-  {name: "Large-Hotel",              space_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6,  window_to_wall_ratio: 0.3 }, # PAT success, example_run FAILURE
-  {name: "Midrise-Apartment",        space_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  window_to_wall_ratio: 0.2,  number_of_residential_units: 24}, # PAT success, example_run success
+  # {name: "Large-Office",             space_type: "Office",                        floor_area: 46320,  number_of_stories: 12, window_to_wall_ratio: 0.4 }, # PAT success, example_run FAILURE
+  # {name: "Medium-Office",            space_type: "Office",                        floor_area: 4982,   number_of_stories: 3,  window_to_wall_ratio: 0.3 }, # PAT success, example_run success
+  # {name: "Small-Office",             space_type: "Office",                        floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
+  # {name: "Warehouse",                space_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1,  window_to_wall_ratio: 0.01}, # PAT success, example_run success
+  # {name: "StandaloneRetail",         space_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1,  window_to_wall_ratio: 0.07}, # PAT success, example_run success
+  # {name: "Strip-Mall",               space_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  # {name: "Primary-School",           space_type: "Education",                     floor_area: 6871,   number_of_stories: 1,  window_to_wall_ratio: 0.35}, # PAT success, example_run success
+  # {name: "Secondary-School",         space_type: "Education",                     floor_area: 19592,  number_of_stories: 2,  window_to_wall_ratio: 0.33}, # PAT success, example_run success
+  # {name: "Supermarket",              space_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  # {name: "Quick-Service-Restaurant", space_type: "Food service",                  floor_area: 232,    number_of_stories: 1,  window_to_wall_ratio: 0.14}, # PAT success, example_run success
+  # {name: "Full-Service-Restaurant",  space_type: "Food service",                  floor_area: 511,    number_of_stories: 1,  window_to_wall_ratio: 0.17}, # PAT success, example_run success
+  # {name: "Hospital",                 space_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5,  window_to_wall_ratio: 0.16}, # PAT success, example_run FAILURE
+  # {name: "Outpatient-Health-Care",   space_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3,  window_to_wall_ratio: 0.2 }, # PAT success, example_run success
+  # {name: "Small-Hotel",              space_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4,  window_to_wall_ratio: 0.1 }, # PAT success, example_run success
+  # {name: "Large-Hotel",              space_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6,  window_to_wall_ratio: 0.3 }, # PAT success, example_run FAILURE
+  # {name: "Midrise-Apartment",        space_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  window_to_wall_ratio: 0.2,  number_of_residential_units: 24}, # PAT success, example_run success
   {name: "Single-Family",            space_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1}, # PAT success, example_run success
-  {name: "Multifamily-4",            space_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 4}, # PAT success, example_run success
-  {name: "Multifamily-8",            space_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  window_to_wall_ratio: 0.3,  number_of_residential_units: 8}, # PAT success, example_run success
-  {name: "Mobile-Home",              space_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1} # failure (graceful)
+  # {name: "Multifamily-4",            space_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  window_to_wall_ratio: 0.3,  number_of_residential_units: 4}, # PAT success, example_run success
+  # {name: "Multifamily-8",            space_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  window_to_wall_ratio: 0.3,  number_of_residential_units: 8}, # PAT success, example_run success
+  # {name: "Mobile-Home",              space_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  window_to_wall_ratio: 0.3,  number_of_residential_units: 1} # failure (graceful)
 ]
 
 #buildings = [buildings[0]]
-  
+
 def merge(workflow, properties)
   workflow[:steps].each do |step|
     step[:arguments].each do |argument|
@@ -83,7 +83,7 @@ Parallel.each(buildings, in_threads: num_parallel) do |building|
   File.open(File.join(File.dirname(__FILE__), "/workflows/testing_baseline.osw"), 'r') do |f|
     baseline_osw = JSON::parse(f.read, :symbolize_names => true)
   end
-
+    
   retrofit_osw = nil
   File.open(File.join(File.dirname(__FILE__), "/workflows/testing_retrofit.osw"), 'r') do |f|
     retrofit_osw = JSON::parse(f.read, :symbolize_names => true)
@@ -101,7 +101,7 @@ Parallel.each(buildings, in_threads: num_parallel) do |building|
   retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/retrofit/")
   FileUtils.rm_rf(retrofit_osw_dir)
   FileUtils.mkdir_p(retrofit_osw_dir) if run_retrofit
-
+  
   # save the configured osws
   baseline_osw_path = "#{baseline_osw_dir}/in.osw"
   File.open(baseline_osw_path, 'w') do |f|
