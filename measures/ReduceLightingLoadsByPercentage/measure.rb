@@ -9,6 +9,11 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
   #define the arguments that the user will input
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    skip = OpenStudio::Ruleset::OSArgument::makeBoolArgument("__SKIP__",false)
+    skip.setDisplayName("Skip this measure?")
+    skip.setDefaultValue(false)
+    args << skip
 
     #make a choice argument for model objects
     space_type_handles = OpenStudio::StringVector.new
@@ -100,7 +105,13 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
     if not runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
+    
+    skip = runner.getBoolArgumentValue("__SKIP__",user_arguments)
+    if skip
+      runner.registerInfo("Skipping measure.")
+      return true
+    end
+    
     #assign the user inputs to variables
     object = runner.getOptionalWorkspaceObjectChoiceValue("space_type",user_arguments,model)
     lighting_power_reduction_percent = runner.getDoubleArgumentValue("lighting_power_reduction_percent",user_arguments)

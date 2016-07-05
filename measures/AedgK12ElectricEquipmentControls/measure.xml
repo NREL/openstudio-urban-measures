@@ -2,14 +2,32 @@
   <schema_version>3.0</schema_version>
   <name>aedg_k_12_electric_equipment_controls</name>
   <uid>285bc263-7429-4049-a0ce-f60fabf46eec</uid>
-  <version_id>18b25cb3-4b89-4163-b27a-085b4dd41766</version_id>
-  <version_modified>20160505T144301Z</version_modified>
-  <xml_checksum>1F21832E</xml_checksum>
+  <version_id>8462eae0-451b-41e3-bedd-7c0a907934e3</version_id>
+  <version_modified>20160705T170909Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>AedgK12ElectricEquipmentControls</class_name>
   <display_name>AedgK12ElectricEquipmentControls</display_name>
   <description>This measure reduces the values associated with electric equipment schedules to simulate reductions due to equipment controls throughout the building. This includes occupancy based outlets or adapters, as well as network or timer based controls. Kitchen equipment controls are not altered by this measure. The kitchen has a dedicated measure of its own which includes equipment controls.</description>
   <modeler_description>This measure is intended to be used on schedules that have not previously been adjusted for advanced controls. If you run this measure multiple times you will end up with more schedule reduction than is appropriate. The schedules used in the OpenStudio templates have not been adjusted for advanced controls, so it is appropriate to run them through this measure to simulation their impact on energy use. This measure applies a reduction of 0.15 to schedule values that are below 0.5 start with, no reduction is applied to values that are at or above 0.5 to start with. As a result the lower the initial fractional value the higher the percentage reduction it will receive. Values won't be lowered to a value below 0.1. Values already below this level will keep their original value.</modeler_description>
   <arguments>
+    <argument>
+      <name>__SKIP__</name>
+      <display_name>Skip this measure?</display_name>
+      <type>Boolean</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>false</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
     <argument>
       <name>costTotal</name>
       <display_name>Total cost for all Equipment Controls in the Building ($).</display_name>
@@ -19,6 +37,7 @@
       <default_value>0</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Equipment.Equipment Controls</tag>
@@ -81,7 +100,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E1E6B940</checksum>
+      <checksum>BBB80BFE</checksum>
     </file>
   </files>
 </measure>

@@ -10,6 +10,11 @@ class ImproveMotorEfficiency < OpenStudio::Ruleset::ModelUserScript
   #define the arguments that the user will input
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    skip = OpenStudio::Ruleset::OSArgument::makeBoolArgument("__SKIP__",false)
+    skip.setDisplayName("Skip this measure?")
+    skip.setDefaultValue(false)
+    args << skip
 
     #populate choice argument for constructions that are applied to surfaces in the model
     loop_handles = OpenStudio::StringVector.new
@@ -127,7 +132,13 @@ class ImproveMotorEfficiency < OpenStudio::Ruleset::ModelUserScript
     if not runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
+    
+    skip = runner.getBoolArgumentValue("__SKIP__",user_arguments)
+    if skip
+      runner.registerInfo("Skipping measure.")
+      return true
+    end
+    
     #assign the user inputs to variables
     object = runner.getOptionalWorkspaceObjectChoiceValue("object",user_arguments,model) #model is passed in because of argument type
     motor_eff = runner.getDoubleArgumentValue("motor_eff",user_arguments)

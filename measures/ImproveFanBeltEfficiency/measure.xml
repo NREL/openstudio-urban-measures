@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>improve_fan_belt_efficiency</name>
   <uid>ebeca0aa-a432-4283-a714-17116f7c8f8c</uid>
-  <version_id>037d825e-e276-4b86-8fbe-03b0e91b851b</version_id>
-  <version_modified>20160505T160126Z</version_modified>
-  <xml_checksum>F78494F2</xml_checksum>
+  <version_id>e1e151ed-585d-4296-8e3b-052fa547689b</version_id>
+  <version_modified>20160705T170911Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>ImproveFanBeltEfficiency</class_name>
   <display_name>Improve Fan Belt Efficiency</display_name>
   <description>The assessment team observed opportunities for fan belt improvements on HVAC fan drives. These motors are asynchronous induction motors.&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;&#xd;
@@ -16,15 +16,33 @@ Well-adjusted belts run cooler, last longer, and operate at higher efficiency th
   <modeler_description>This measure alters fans on all or a single air loop in the building. The three belt ECMs options are then exposed as three user argument fields with a default populated for each. The range of efficiency improvements will be listed in the user argument description. The three user arguments will be summed and added to the existing motor efficiency. The cost arguments are user arguments that are also populated with a default.  If arguments are left blank, the user is notified that the model has not changed in the run manager. A warning is issued if the motor efficiency >96% and an error is issued if efficiency is >100%.</modeler_description>
   <arguments>
     <argument>
+      <name>__SKIP__</name>
+      <display_name>Skip this measure?</display_name>
+      <type>Boolean</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>false</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
       <name>object</name>
       <display_name>Choose an Air Loop to Alter.</display_name>
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>{be4f5079-c5ce-44cf-99bf-0942481f3659}</default_value>
+      <default_value>{e083fd8d-fe4e-42b1-b6cd-b3ae43ba580e}</default_value>
       <choices>
         <choice>
-          <value>{be4f5079-c5ce-44cf-99bf-0942481f3659}</value>
+          <value>{e083fd8d-fe4e-42b1-b6cd-b3ae43ba580e}</value>
           <display_name>*All Air Loops*</display_name>
         </choice>
       </choices>
@@ -122,6 +140,7 @@ Well-adjusted belts run cooler, last longer, and operate at higher efficiency th
       <default_value>1</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Distribution</tag>
@@ -160,7 +179,7 @@ Well-adjusted belts run cooler, last longer, and operate at higher efficiency th
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>1B8BFA02</checksum>
+      <checksum>EBDB20C2</checksum>
     </file>
   </files>
 </measure>

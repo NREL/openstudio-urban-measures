@@ -2,14 +2,32 @@
   <schema_version>3.0</schema_version>
   <name>adjust_system_efficiencies</name>
   <uid>edeaff3d-3ae4-4487-b4a4-5cf08ea14510</uid>
-  <version_id>00bbc8e7-f1e9-45bf-826f-281d46b033a7</version_id>
-  <version_modified>20160511T035137Z</version_modified>
-  <xml_checksum>4435983D</xml_checksum>
+  <version_id>c8085901-2d1d-4f23-bdf1-37685f1e3564</version_id>
+  <version_modified>20160705T170909Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>AdjustSystemEfficiencies</class_name>
   <display_name>AdjustSystemEfficiencies</display_name>
   <description>Updates heating and cooling efficiencies of all equipment in a model by a multiplier.</description>
   <modeler_description>This measure will search through all air loops, plant loops, and thermal zones in the model and adjust heating and cooling efficiencies of all relevant objects found.</modeler_description>
   <arguments>
+    <argument>
+      <name>__SKIP__</name>
+      <display_name>Skip this measure?</display_name>
+      <type>Boolean</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>false</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
     <argument>
       <name>heating_efficiency_multiplier</name>
       <display_name>Heating Efficiency Multiplier</display_name>
@@ -27,6 +45,7 @@
       <default_value>1</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>
@@ -53,7 +72,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>F3EB3BF9</checksum>
+      <checksum>9A02D80B</checksum>
     </file>
   </files>
 </measure>

@@ -2,8 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>set_space_type</name>
   <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
-  <version_id>b63f2b96-1986-4a54-a5df-b6bbc557417b</version_id>
-  <xml_checksum>49BEF039</xml_checksum>
+  <version_id>2b5e3762-482a-492c-af9e-915fa0315dae</version_id>
+  <version_modified>20160705T170911Z</version_modified>
+  <xml_checksum>E8A47F56</xml_checksum>
   <class_name>SetSpaceType</class_name>
   <display_name>Set Space Type</display_name>
   <description>This measure will create a building envelope based on a target floor area, aspect ratio, and floor to floor height.</description>
@@ -25,6 +26,7 @@
       <default_value>0</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Envelope.Form</tag>

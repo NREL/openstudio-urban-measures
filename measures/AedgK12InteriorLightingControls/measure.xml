@@ -2,14 +2,32 @@
   <schema_version>3.0</schema_version>
   <name>aedg_k_12_interior_lighting_controls</name>
   <uid>9f395ee4-5f82-4ca6-8a50-cb854893827e</uid>
-  <version_id>8fc002ac-ceb1-4b77-b3e5-0c5bd291bba1</version_id>
-  <version_modified>20160505T144301Z</version_modified>
-  <xml_checksum>9B7BB4D8</xml_checksum>
+  <version_id>07736b43-b424-4f04-8aa0-180d5aa2b831</version_id>
+  <version_modified>20160705T170909Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>AedgK12InteriorLightingControls</class_name>
   <display_name>AedgK12InteriorLightingControls</display_name>
   <description>This measure reduces the values associated with lighting schedules to simulate reductions due to vacancy sensors throughout the building.</description>
   <modeler_description>This measure is intended to be used on schedules that have not previously been adjusted for advanced controls. If you run this measure multiple times you will end up with more schedule reduction than is appropriate. The schedules used in the OpenStudio templates have not been adjusted for vacancy controls, so it is appropriate to run them through this measure to simulation their impact on energy use. This measure applies a 15% reduction to the fractional schedule values.</modeler_description>
   <arguments>
+    <argument>
+      <name>__SKIP__</name>
+      <display_name>Skip this measure?</display_name>
+      <type>Boolean</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+      <default_value>false</default_value>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
     <argument>
       <name>costTotal</name>
       <display_name>Total cost for all Lighting Controls in the Building ($).</display_name>
@@ -19,6 +37,7 @@
       <default_value>0</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Electric Lighting.Electric Lighting Controls</tag>
@@ -81,7 +100,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>F96CC5F0</checksum>
+      <checksum>DEDC26EA</checksum>
     </file>
   </files>
 </measure>

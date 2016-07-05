@@ -2,14 +2,15 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>70450ffb-b194-4154-95c5-14eeffc69ced</version_id>
-  <version_modified>20160606T194201Z</version_modified>
-  <xml_checksum>EF866DD5</xml_checksum>
+  <version_id>e9c78712-0249-46e0-9f64-780f27cef404</version_id>
+  <version_modified>20160705T170912Z</version_modified>
+  <xml_checksum>FF4FCBE9</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
   <description></description>
   <modeler_description></modeler_description>
   <arguments/>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Whole Building.Space Types</tag>

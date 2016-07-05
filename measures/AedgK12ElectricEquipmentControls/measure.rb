@@ -25,6 +25,11 @@ class AedgK12ElectricEquipmentControls < OpenStudio::Ruleset::ModelUserScript
   #define the arguments that the user will input
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    skip = OpenStudio::Ruleset::OSArgument::makeBoolArgument("__SKIP__",false)
+    skip.setDisplayName("Skip this measure?")
+    skip.setDefaultValue(false)
+    args << skip
 
     #make an argument for material and installation cost
     costTotal = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("costTotal",true)
@@ -43,7 +48,13 @@ class AedgK12ElectricEquipmentControls < OpenStudio::Ruleset::ModelUserScript
     if not runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
+    
+    skip = runner.getBoolArgumentValue("__SKIP__",user_arguments)
+    if skip
+      runner.registerInfo("Skipping measure.")
+      return true
+    end
+    
     #assign the user inputs to variables
     costTotal = runner.getDoubleArgumentValue("costTotal",user_arguments)
 

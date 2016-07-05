@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-  <version_id>1c648f9d-c8ec-4fc1-99c7-4623b8bde952</version_id>
-  <version_modified>20160428T155816Z</version_modified>
-  <xml_checksum>FB304155</xml_checksum>
+  <version_id>4c3e9e0f-3cf6-46f2-b311-8332ba7804aa</version_id>
+  <version_modified>20160705T170910Z</version_modified>
+  <xml_checksum>5CC0F801</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
   <description>Updates Datapoint in CityDB with simulation results</description>
@@ -52,6 +52,7 @@
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Reporting.QAQC</tag>

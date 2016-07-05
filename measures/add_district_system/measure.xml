@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>add_district_system</name>
   <uid>5c781ee3-b77c-4a71-ac0d-5ad19863c96b</uid>
-  <version_id>ced310dc-0780-418f-9ad5-9f8e8a0d098b</version_id>
-  <version_modified>20160211T162832</version_modified>
-  <xml_checksum>A7890DC7</xml_checksum>
+  <version_id>8865c630-a6d1-44f9-8848-42105b26fc9f</version_id>
+  <version_modified>20160705T170909Z</version_modified>
+  <xml_checksum>F2B10865</xml_checksum>
   <class_name>AddDistrictSystem</class_name>
   <display_name>add_district_system</display_name>
   <description>Add district system</description>
@@ -34,6 +34,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>

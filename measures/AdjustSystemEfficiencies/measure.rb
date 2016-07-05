@@ -20,6 +20,11 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
     
+    skip = OpenStudio::Ruleset::OSArgument::makeBoolArgument("__SKIP__",false)
+    skip.setDisplayName("Skip this measure?")
+    skip.setDefaultValue(false)
+    args << skip
+    
     # Heating efficiency multiplier
     heating_efficiency_multiplier = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("heating_efficiency_multiplier",true)
     heating_efficiency_multiplier.setDisplayName("Heating Efficiency Multiplier")
@@ -123,6 +128,12 @@ class AdjustSystemEfficiencies < OpenStudio::Ruleset::ModelUserScript
       return false
     end
 
+    skip = runner.getBoolArgumentValue("__SKIP__",user_arguments)
+    if skip
+      runner.registerInfo("Skipping measure.")
+      return true
+    end
+    
     #assign the user inputs to variables
     heating_efficiency_multiplier = runner.getDoubleArgumentValue("heating_efficiency_multiplier",user_arguments)
     cooling_cop_multiplier = runner.getDoubleArgumentValue("cooling_cop_multiplier",user_arguments)
