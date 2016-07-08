@@ -26,6 +26,10 @@
       "description": "Id of the taxlot that this feature is located on, managed by the database.",
       "type": "string"
     },
+    "taxlot_index": {
+      "description": "Index of building on taxlot if there are multiple buildings on taxlot. ",
+      "type": "integer"
+    },
     "geojson_id": {
       "description": "Id of the geojson for this feature, managed by the database.",
       "type": "string"
@@ -55,10 +59,6 @@
     "taxlot_source_id": {
       "description": "Source id of the taxlot this feature is located on. Used to match with existing taxlot on upload.",
       "type": "string"
-    },
-    "taxlot_index": {
-      "description": "Index of building on taxlot if there are multiple buildings on taxlot. ",
-      "type": "integer"
     },
     "name": {
       "description": "Feature name. Informational only.",
@@ -194,36 +194,6 @@
       "required": [
         "percent_floor_area",
         "space_type"
-      ],
-      "additionalProperties": false
-    },
-    "cost": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "number"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "Fixed cost",
-            "Cost per floor area",
-            "Cost per wall area",
-            "Cost per window area",
-            "Cost per roof area",
-            "Cost per heating kW",
-            "Cost per cooling kW",
-            "Cost per photovoltaic kW"
-          ]
-        }
-      },
-      "required": [
-        "name",
-        "value",
-        "type"
       ],
       "additionalProperties": false
     }

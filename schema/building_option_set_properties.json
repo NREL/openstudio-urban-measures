@@ -23,16 +23,19 @@
       "type": "string"
     },
     "name": {
-      "description": "Name for this group of variables.",
+      "description": "Option name",
       "type": "string"
     },
-    "variables": {
+    "building_options": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/buildingVariables"
+        "$ref": "#/definitions/buildingOption"
       }
     }
   },
+  "required": [
+    "building_options"
+  ],
   "additionalProperties": false,
   "definitions": {
     "spaceType": {
@@ -95,7 +98,7 @@
       ],
       "additionalProperties": false
     },
-    "buildingVariables": {
+    "buildingOption": {
       "type": "object",
       "properties": {
         "space_type": {
