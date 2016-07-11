@@ -758,14 +758,23 @@
 			"properties": {
 				"maximum_roof_height": 28.956,
 				"floor_area": 35219.22547444872,
-				"number_of_residential_units": 252,
+				"number_of_residential_units": 189,
 				"number_of_stories": 8,
 				"number_of_stories_above_ground": 8,
 				"source_id": "177160",
 				"source_name": "NREL_GDS",
-				"building_type": "Multifamily (5 or more units)",
+				"building_type": "Mixed use",
 				"surface_elevation": 1587.3984,
-				"type": "Building"
+				"type": "Building",
+				"mixed_types": [
+					{
+						"percent_floor_area": 25.0,
+						"building_type": "Office"
+					}, {
+						"percent_floor_area": 75.0,
+						"building_type": "Multifamily (5 or more units)"
+					}
+				]
 			}
 		}, {
 			"geometry": {
@@ -1152,6 +1161,49 @@
 				"building_type": "Office",
 				"surface_elevation": 1588.3128,
 				"type": "Building"
+			}
+		}, {
+			"geometry": {
+				"type": "MultiPolygon",
+				"coordinates": [
+					[
+						[
+							[
+								-104.989678644431, 39.7553619385996
+							], [
+								-104.989674770417, 39.7553588695884
+							], [
+								-104.989674655417, 39.7553587795881
+							], [
+								-104.989689970473, 39.7553472605462
+							], [
+								-104.98973599864, 39.7553126444204
+							], [
+								-104.989738460649, 39.7553145934274
+							], [
+								-104.989721367587, 39.7553280924765
+							], [
+								-104.989845115037, 39.7554214238158
+							], [
+								-104.989859237088, 39.7554102677753
+							], [
+								-104.989898918232, 39.7554416988896
+							], [
+								-104.989838367012, 39.7554872390551
+							], [
+								-104.989681857443, 39.7553595915911
+							], [
+								-104.989678644431, 39.7553619385996
+							]
+						]
+					]
+				]
+			},
+			"type": "Feature",
+			"properties": {
+				"building_ids": [],
+				"district_system_type": "Central Chilled Water",
+				"type": "District System"
 			}
 		}
 	]

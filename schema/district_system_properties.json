@@ -58,12 +58,17 @@
     },
     "district_system_type": {
       "$ref": "#/definitions/districtSystemType"
+    },
+    "building_ids": {
+      "description": "Buildings served by this district system",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
     "type",
-    "source_name",
-    "source_id",
     "district_system_type"
   ],
   "definitions": {
