@@ -43,7 +43,8 @@
         "County",
         "CensusTract",
         "CensusBlockGroup",
-        "CensusBlock"
+        "CensusBlock",
+        "Custom"
       ]
     },
     "source_name": {
@@ -105,10 +106,6 @@
     "footprint_perimeter": {
       "description": "Perimeter of the footprint (m)",
       "type": "number"
-    },
-    "weather_file_name": {
-      "description": "Name of the weather file",
-      "type": "string"
     }
   },
   "required": [
