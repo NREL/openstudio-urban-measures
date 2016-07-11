@@ -26,19 +26,36 @@
       "description": "Option name",
       "type": "string"
     },
-    "building_options": {
+    "type": {
+      "description": "Type of feature.",
+      "type": "string",
+      "enum": [
+        "Building",
+        "Taxlot",
+        "Region",
+        "District System"
+      ]
+    },
+    "building_type": {
+      "$ref": "#/definitions/buildingType"
+    },
+    "district_system_type": {
+      "$ref": "#/definitions/districtSystemType"
+    },
+    "options": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/buildingOption"
+        "$ref": "#/definitions/option"
       }
     }
   },
   "required": [
-    "building_options"
+    "type",
+    "options"
   ],
   "additionalProperties": false,
   "definitions": {
-    "spaceType": {
+    "buildingType": {
       "description": "Overall building space type. Fixed parameter.",
       "type": "string",
       "enum": [
@@ -66,6 +83,15 @@
         "Retail other than mall",
         "Service",
         "Mixed use"
+      ]
+    },
+    "districtSystemType": {
+      "type": "string",
+      "enum": [
+        "Central Chilled Water",
+        "Central Hot Water",
+        "Central Ambient Water",
+        "Community Photovoltaic"
       ]
     },
     "cost": {
@@ -98,12 +124,24 @@
       ],
       "additionalProperties": false
     },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "$ref": "#/definitions/buildingOption"
+        },
+        {
+          "$ref": "#/definitions/centralChilledWaterOption"
+        },
+        {
+          "$ref": "#/definitions/centralHotWaterOption"
+        }
+      ]
+    },
     "buildingOption": {
       "type": "object",
       "properties": {
-        "space_type": {
-          "$ref": "#/definitions/spaceType"
-        },
         "structure_type": {
           "description": "The predominant construction method used to build the structure. Smart defaulted if not set.  Variable parameter.",
           "type": "string",
@@ -215,7 +253,6 @@
         }
       },
       "required": [
-        "space_type",
         "structure_type",
         "window_to_wall_south",
         "window_to_wall_east",
@@ -229,6 +266,38 @@
         "cooling_source ",
         "heating_source ",
         "rooftop_photovoltaics",
+        "costs"
+      ],
+      "additionalProperties": false
+    },
+    "centralChilledWaterOption": {
+      "type": "object",
+      "properties": {
+        "costs": {
+          "description": "Variable parameter.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cost"
+          }
+        }
+      },
+      "required": [
+        "costs"
+      ],
+      "additionalProperties": false
+    },
+    "centralHotWaterOption": {
+      "type": "object",
+      "properties": {
+        "costs": {
+          "description": "Variable parameter.",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cost"
+          }
+        }
+      },
+      "required": [
         "costs"
       ],
       "additionalProperties": false

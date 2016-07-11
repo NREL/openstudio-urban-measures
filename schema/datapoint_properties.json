@@ -26,7 +26,7 @@
       "description": "Id of associated feature, managed by the database.",
       "type": "string"
     },
-    "feature_option_set_id": {
+    "option_set_id": {
       "description": "Id of associated feature option set, managed by the database.",
       "type": "string"
     },
@@ -37,14 +37,6 @@
     "out_of_date": {
       "description": "A datapoint is out of date if the feature, feature_option_set, or workflow have been updated more recently than the datapoint. Managed by database.",
       "type": "boolean"
-    },
-    "dencity_id": {
-      "description": "Id of corresponding datapoint in DEnCity database.",
-      "type": "string"
-    },
-    "dencity_url": {
-      "description": "Url of DEnCity database.",
-      "type": "string"
     },
     "results": {
       "description": "Simulation results.",
