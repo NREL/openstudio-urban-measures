@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>7fb0a7a6-ea99-4af1-846d-3cae88f39609</version_id>
-  <version_modified>20160705T170912Z</version_modified>
-  <xml_checksum>612457D2</xml_checksum>
+  <version_id>31825338-8e73-467e-adb0-fde6e879fd68</version_id>
+  <version_modified>20160713T191910Z</version_modified>
+  <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
   <description>This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures.</description>
@@ -68,7 +68,6 @@
       </choices>
     </argument>
   </arguments>
-  <outputs/>
   <provenances/>
   <tags>
     <tag>Envelope.Form</tag>

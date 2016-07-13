@@ -2,15 +2,14 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>e9c78712-0249-46e0-9f64-780f27cef404</version_id>
-  <version_modified>20160705T170912Z</version_modified>
-  <xml_checksum>FF4FCBE9</xml_checksum>
+  <version_id>25395926-2c86-4e76-8804-544195af18ae</version_id>
+  <version_modified>20160713T191909Z</version_modified>
+  <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
   <description></description>
   <modeler_description></modeler_description>
   <arguments/>
-  <outputs/>
   <provenances/>
   <tags>
     <tag>Whole Building.Space Types</tag>
@@ -43,13 +42,13 @@
       <filename>constants.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>9F7D2989</checksum>
+      <checksum>6FEC70C2</checksum>
     </file>
     <file>
       <filename>geometry.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E1556074</checksum>
+      <checksum>2285CA0B</checksum>
     </file>
     <file>
       <version>
@@ -60,19 +59,19 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>8ED20319</checksum>
-    </file>
-    <file>
-      <filename>apply_residential.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>905EBEA5</checksum>
+      <checksum>40BC94E4</checksum>
     </file>
     <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>950D2030</checksum>
+      <checksum>5CB83B7C</checksum>
+    </file>
+    <file>
+      <filename>apply_residential_e_plus.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>492EE463</checksum>
     </file>
   </files>
 </measure>

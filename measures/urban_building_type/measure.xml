@@ -1,11 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <error>cannot load such file -- openstudio-standards</error>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>9e4953a7-ae96-44fb-9969-09e28482ef46</version_id>
-  <version_modified>20160705T170912Z</version_modified>
-  <xml_checksum>612457D2</xml_checksum>
+  <version_id>7b4a6dc1-4f47-498d-ac51-1b075c1f5124</version_id>
+  <version_modified>20160713T191909Z</version_modified>
+  <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
   <description>This measure addings space type, constructions, and schedules as well as HVAC systems based on building type.</description>
@@ -60,7 +59,6 @@
       </choices>
     </argument>
   </arguments>
-  <outputs/>
   <provenances/>
   <tags>
     <tag>Whole Building.Space Types</tag>
@@ -128,22 +126,10 @@
       <checksum>AC0AFF3D</checksum>
     </file>
     <file>
-      <filename>apply_commercial.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>C95AE486</checksum>
-    </file>
-    <file>
       <filename>util.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
       <checksum>DDAD47EF</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>950D2030</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
@@ -152,16 +138,28 @@
       <checksum>11EAC933</checksum>
     </file>
     <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>1E32686F</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>C7E4FC19</checksum>
+    </file>
+    <file>
       <filename>geometry.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E1556074</checksum>
+      <checksum>2285CA0B</checksum>
     </file>
     <file>
       <filename>constants.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>9F7D2989</checksum>
+      <checksum>6FEC70C2</checksum>
     </file>
   </files>
 </measure>

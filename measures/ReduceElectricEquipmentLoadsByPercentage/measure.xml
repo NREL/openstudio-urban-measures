@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>reduce_electric_equipment_loads_by_percentage</name>
   <uid>0902e302-70db-4339-99b0-17f08bc93629</uid>
-  <version_id>9cac4ed5-747f-4b18-9dfc-dd1224d32088</version_id>
-  <version_modified>20160705T170911Z</version_modified>
-  <xml_checksum>E8A47F56</xml_checksum>
+  <version_id>f1cc9101-cef8-4540-8bf4-fc0db1dc2cc3</version_id>
+  <version_modified>20160713T191905Z</version_modified>
+  <xml_checksum>F9A5B8F0</xml_checksum>
   <class_name>ReduceElectricEquipmentLoadsByPercentage</class_name>
   <display_name>Reduce Electric Equipment Loads by Percentage</display_name>
   <description>Reduce electric equipment loads. This will affect equipment that have a, power, power per area (LPD), or power per person value. This can be applied to the entire building or a specific space type. A positive percentage represents an increase electric equipment power, while a negative percentage can be used for an increase in electric equipment power.</description>
@@ -117,7 +117,6 @@
       <default_value>1</default_value>
     </argument>
   </arguments>
-  <outputs/>
   <provenances/>
   <tags>
     <tag>Equipment.Electric Equipment</tag>
