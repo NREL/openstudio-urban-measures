@@ -26,7 +26,7 @@
 		"measure_dir_name": "SetBuildingType",
 		"arguments": {
 			"building_type": "Office",
-      "mixed_types": "[]",
+      "mixed_types": null,
 			"number_of_residential_units": 0
 		}
 	},
