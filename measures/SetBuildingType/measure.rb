@@ -24,8 +24,9 @@ class SetBuildingType < OpenStudio::Ruleset::ModelUserScript
     building_type.setDisplayName("Building Type")
     args << building_type
     
-    mixed_types = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_types",false)
+    mixed_types = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_types",true)
     mixed_types.setDisplayName("Mixed Types")
+    mixed_types.setDefaultValue("[]")
     args << mixed_types
     
     number_of_residential_units = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("number_of_residential_units",true)
@@ -50,16 +51,18 @@ class SetBuildingType < OpenStudio::Ruleset::ModelUserScript
     mixed_types = runner.getStringArgumentValue("mixed_types",user_arguments)
     number_of_residential_units = runner.getIntegerArgumentValue("number_of_residential_units",user_arguments)
     
+    if mixed_types
+      mixed_types = JSON::parse(mixed_types, :symbolize_names=>true)
+    end
+      
     if building_type_name == "Mixed use"
-      if mixed_types
-        mixed_types = JSON::parse(mixed_types, :symbolize_names=>true)
-      else
+      if mixed_types.nil? or mixed_types.empty?
         runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
         return false
       end
     else
-      if mixed_types
-        runner.registerWarning("Building type is 'building_type_name' and 'mixed_types' argument is not empty, input ignored")
+      if !mixed_types.empty?
+        runner.registerWarning("Building type is '#{building_type_name}', 'mixed_types' argument ignored")
       end
       mixed_types = []
     end

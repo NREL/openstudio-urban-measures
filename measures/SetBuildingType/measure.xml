@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>set_building_type</name>
   <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
-  <version_id>bec83206-05f9-4f7d-912c-3eee82d4e85e</version_id>
-  <version_modified>20160713T191906Z</version_modified>
+  <version_id>cc104845-5380-44b9-8872-bc3b09881610</version_id>
+  <version_modified>20160713T195136Z</version_modified>
   <xml_checksum>49BEF039</xml_checksum>
   <class_name>SetBuildingType</class_name>
   <display_name>Set Building Type</display_name>
@@ -21,8 +21,9 @@
       <name>mixed_types</name>
       <display_name>Mixed Types</display_name>
       <type>String</type>
-      <required>false</required>
+      <required>true</required>
       <model_dependent>false</model_dependent>
+      <default_value>[]</default_value>
     </argument>
     <argument>
       <name>number_of_residential_units</name>
@@ -69,7 +70,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>B445819B</checksum>
+      <checksum>7DB563A6</checksum>
     </file>
   </files>
 </measure>

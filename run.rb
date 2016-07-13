@@ -1,4 +1,5 @@
 require 'openstudio-workflow'
+require 'openstudio/workflow/adapters/output_adapter'
 require 'rest-client'
 require 'base64'
 require 'logger'
@@ -24,13 +25,9 @@ datapoint_id = ARGV[2]
 
 project_id = ARGV[3]
 
-# Create adapters
-input_options = {workflow_filename: File.basename(osw_path)}
-input_adapter = OpenStudio::Workflow.load_input_adapter('local', input_options)
-
-# DLM - have to do this first to get it to load the OutputAdapters class
-output_options = {output_directory: File.join(osw_dir, 'run')}
-output_adapter = OpenStudio::Workflow.load_output_adapter('local', output_options)
+# Run workflow.osw
+run_options = Hash.new
+run_options[:debug] = debug
 
 if city_db_url && datapoint_id && project_id
 
@@ -138,12 +135,10 @@ if city_db_url && datapoint_id && project_id
 
   output_options = {output_directory: File.join(osw_dir, 'run'), url: city_db_url, datapoint_id: datapoint_id, project_id: project_id}
   output_adapter = OpenStudio::Workflow::OutputAdapter::CityDB.new(output_options)
-
+  
+  run_options[:output_adapter] = output_adapter
 end
 
-# Run workflow.osw
-run_options = Hash.new
-run_options[:debug] = debug
-
-k = OpenStudio::Workflow::Run.new(input_adapter, output_adapter, osw_dir, run_options)
+# do the run
+k = OpenStudio::Workflow::Run.new(osw_path, run_options)
 final_state = k.run

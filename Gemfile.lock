@@ -1,33 +1,35 @@
 GIT
   remote: git://github.com/NREL/OpenStudio-workflow-gem.git
-  revision: f71e43d98ff54e5a4bb18c78f0acb6f4d9d041f5
-  ref: f71e43d98ff54e5a4bb18c78f0acb6f4d9d041f5
+  revision: 36e012bbdae72fcde1cf0c302f9bc382caed49e9
+  ref: 36e012bbdae72fcde1cf0c302f9bc382caed49e9
   specs:
     openstudio-workflow (1.0.0.alpha.0)
 
 GIT
   remote: git://github.com/NREL/openstudio-standards.git
-  revision: ee56da31b574dd1230588af6e25c132abc306694
-  ref: ee56da31b574dd1230588af6e25c132abc306694
+  revision: 2925e5c997c5656f7e8dfa42a03c356285e91211
+  ref: 2925e5c997c5656f7e8dfa42a03c356285e91211
   specs:
-    openstudio-standards (0.1.3)
+    openstudio-standards (0.1.4)
 
 GEM
   remote: http://rubygems.org/
   specs:
-    domain_name (0.5.20160310)
+    domain_name (0.5.20160615)
       unf (>= 0.0.5, < 1.0.0)
-    ffi (1.9.10-x64-mingw32)
+    ffi (1.9.14-x64-mingw32)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
-    mime-types (2.99.1)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
     netrc (0.11.0)
-    parallel (1.8.0)
-    rest-client (1.8.0-x64-mingw32)
+    parallel (1.9.0)
+    rest-client (2.0.0-x64-mingw32)
       ffi (~> 1.9)
       http-cookie (>= 1.0.2, < 2.0)
-      mime-types (>= 1.16, < 3.0)
-      netrc (~> 0.7)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2-x64-mingw32)
@@ -42,4 +44,4 @@ DEPENDENCIES
   rest-client
 
 BUNDLED WITH
-   1.12.2
+   1.12.5
