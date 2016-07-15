@@ -26,7 +26,14 @@
 		"measure_dir_name": "SetBuildingType",
 		"arguments": {
 			"building_type": "Office",
-      "mixed_types": null,
+      "mixed_type_1": null,
+      "mixed_type_1_percentage": null,
+      "mixed_type_2": null,
+      "mixed_type_2_percentage": null,
+      "mixed_type_3": null,
+      "mixed_type_3_percentage": null,
+      "mixed_type_4": null,
+      "mixed_type_4_percentage": null,     
 			"number_of_residential_units": 0
 		}
 	},

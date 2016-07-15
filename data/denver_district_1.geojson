@@ -766,15 +766,10 @@
 				"building_type": "Mixed use",
 				"surface_elevation": 1587.3984,
 				"type": "Building",
-				"mixed_types": [
-					{
-						"percent_floor_area": 25.0,
-						"building_type": "Office"
-					}, {
-						"percent_floor_area": 75.0,
-						"building_type": "Multifamily (5 or more units)"
-					}
-				]
+				"mixed_type_1": "Multifamily (5 or more units)",
+				"mixed_type_1_percentage": 75.0,
+				"mixed_type_2": "Office",
+				"mixed_type_2_percentage": 25.0
 			}
 		}, {
 			"geometry": {

@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>set_building_type</name>
   <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
-  <version_id>cc104845-5380-44b9-8872-bc3b09881610</version_id>
-  <version_modified>20160713T195136Z</version_modified>
+  <version_id>3aabec56-601e-4263-ba67-5efb5a469865</version_id>
+  <version_modified>20160715T183515Z</version_modified>
   <xml_checksum>49BEF039</xml_checksum>
   <class_name>SetBuildingType</class_name>
   <display_name>Set Building Type</display_name>
@@ -18,12 +18,60 @@
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>mixed_types</name>
-      <display_name>Mixed Types</display_name>
+      <name>mixed_type_1</name>
+      <display_name>Mixed Type 1</display_name>
       <type>String</type>
-      <required>true</required>
+      <required>false</required>
       <model_dependent>false</model_dependent>
-      <default_value>[]</default_value>
+    </argument>
+    <argument>
+      <name>mixed_type_1_percentage</name>
+      <display_name>Mixed Type 1 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_2</name>
+      <display_name>Mixed Type 2</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_2_percentage</name>
+      <display_name>Mixed Type 2 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_3</name>
+      <display_name>Mixed Type 3</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_3_percentage</name>
+      <display_name>Mixed Type 3 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_4</name>
+      <display_name>Mixed Type 4</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_4_percentage</name>
+      <display_name>Mixed Type 4 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
     </argument>
     <argument>
       <name>number_of_residential_units</name>
@@ -70,7 +118,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>7DB563A6</checksum>
+      <checksum>C19A7B0E</checksum>
     </file>
   </files>
 </measure>

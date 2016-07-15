@@ -24,10 +24,37 @@ class SetBuildingType < OpenStudio::Ruleset::ModelUserScript
     building_type.setDisplayName("Building Type")
     args << building_type
     
-    mixed_types = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_types",true)
-    mixed_types.setDisplayName("Mixed Types")
-    mixed_types.setDefaultValue("[]")
-    args << mixed_types
+    mixed_type_1 = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_type_1",false)
+    mixed_type_1.setDisplayName("Mixed Type 1")
+    args << mixed_type_1
+    
+    mixed_type_1_percentage = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("mixed_type_1_percentage",false)
+    mixed_type_1_percentage.setDisplayName("Mixed Type 1 Percentage")
+    args << mixed_type_1_percentage
+    
+    mixed_type_2 = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_type_2",false)
+    mixed_type_2.setDisplayName("Mixed Type 2")
+    args << mixed_type_2
+    
+    mixed_type_2_percentage = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("mixed_type_2_percentage",false)
+    mixed_type_2_percentage.setDisplayName("Mixed Type 2 Percentage")
+    args << mixed_type_2_percentage
+    
+    mixed_type_3 = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_type_3",false)
+    mixed_type_3.setDisplayName("Mixed Type 3")
+    args << mixed_type_3
+    
+    mixed_type_3_percentage = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("mixed_type_3_percentage",false)
+    mixed_type_3_percentage.setDisplayName("Mixed Type 3 Percentage")
+    args << mixed_type_3_percentage
+    
+    mixed_type_4 = OpenStudio::Ruleset::OSArgument::makeStringArgument("mixed_type_4",false)
+    mixed_type_4.setDisplayName("Mixed Type 4")
+    args << mixed_type_4
+    
+    mixed_type_4_percentage = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("mixed_type_4_percentage",false)
+    mixed_type_4_percentage.setDisplayName("Mixed Type 4 Percentage")
+    args << mixed_type_4_percentage
     
     number_of_residential_units = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("number_of_residential_units",true)
     number_of_residential_units.setDisplayName("Number of Residential Units")
@@ -48,23 +75,48 @@ class SetBuildingType < OpenStudio::Ruleset::ModelUserScript
 
     #assign the user inputs to variables
     building_type_name = runner.getStringArgumentValue("building_type",user_arguments)
-    mixed_types = runner.getStringArgumentValue("mixed_types",user_arguments)
     number_of_residential_units = runner.getIntegerArgumentValue("number_of_residential_units",user_arguments)
+
+    mixed_types = []
+    mixed_type_1 = runner.getOptionalStringArgumentValue("mixed_type_1",user_arguments)
+    mixed_type_1_percentage = runner.getOptionalDoubleArgumentValue("mixed_type_1_percentage",user_arguments)
+    if mixed_type_1.is_initialized && mixed_type_1_percentage.is_initialized
+      mixed_types << {type: mixed_type_1.get, percentage: mixed_type_1_percentage.get}
+    end
     
-    if mixed_types
-      mixed_types = JSON::parse(mixed_types, :symbolize_names=>true)
+    mixed_type_2 = runner.getOptionalStringArgumentValue("mixed_type_2",user_arguments)
+    mixed_type_2_percentage = runner.getOptionalDoubleArgumentValue("mixed_type_2_percentage",user_arguments)
+    if mixed_type_2.is_initialized && mixed_type_2_percentage.is_initialized
+      mixed_types << {type: mixed_type_2.get, percentage: mixed_type_2_percentage.get}
+    end
+    
+    mixed_type_3 = runner.getOptionalStringArgumentValue("mixed_type_3",user_arguments)
+    mixed_type_3_percentage = runner.getOptionalDoubleArgumentValue("mixed_type_3_percentage",user_arguments)
+    if mixed_type_3.is_initialized && mixed_type_3_percentage.is_initialized
+      mixed_types << {type: mixed_type_3.get, percentage: mixed_type_3_percentage.get}
+    end
+    
+    mixed_type_4 = runner.getOptionalStringArgumentValue("mixed_type_4",user_arguments)
+    mixed_type_4_percentage = runner.getOptionalDoubleArgumentValue("mixed_type_4_percentage",user_arguments)
+    if mixed_type_4.is_initialized && mixed_type_4_percentage.is_initialized
+      mixed_types << {type: mixed_type_4.get, percentage: mixed_type_4_percentage.get}
     end
       
     if building_type_name == "Mixed use"
-      if mixed_types.nil? or mixed_types.empty?
+      if mixed_types.empty?
         runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
         return false
       end
+     
+      mixed_types.sort! {|x,y| x[:percentage] <=> y[:percentage]}
+      
+      # DLM: temp code
+      building_type_name = mixed_types[-1][:type]
+      runner.registerWarning("'Mixed use' building type requested, using largest type '#{building_type_name}' for now")
     else
       if !mixed_types.empty?
-        runner.registerWarning("Building type is '#{building_type_name}', 'mixed_types' argument ignored")
+        runner.registerWarning("'#{building_type_name}' building type, ignoring mixed type arguments")
       end
-      mixed_types = []
     end
     
     building_type = nil
