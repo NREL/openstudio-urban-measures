@@ -418,6 +418,7 @@
         "state_code": "41",
         "state_name": "OR",
         "type": "Region",
+        "weather_file_name": "USA_OR_Portland.726980_TMY2.epw",
         "zip_code": "97205"
       }
     },

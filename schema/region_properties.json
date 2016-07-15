@@ -99,6 +99,9 @@
       "description": "Five digit zip code.",
       "type": "string"
     },
+    "weather_file_name": {
+      "type": "string"
+    },
     "footprint_area": {
       "description": "Area of the footprint (m^2)",
       "type": "number"

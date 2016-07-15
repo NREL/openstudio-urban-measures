@@ -1,4 +1,5 @@
 {
+  "feature_type", "Building",
   "seed_file": null,
   "weather_file": null,
   "root_directory": null,
@@ -20,7 +21,7 @@
         "project_name": null,
         "source_id": null,
         "source_name": null,
-        "surrounding_buildings: "None"
+        "surrounding_buildings": "None"
       }
     },   
     {

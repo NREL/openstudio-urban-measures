@@ -51,6 +51,11 @@ $(function() {
       
       var surface_elevation = value.properties["surface_elevation"];
       var roof_elevation = value.properties["roof_elevation"];
+      if (!roof_elevation){
+        var number_of_stories_above_ground = value.properties["number_of_stories_above_ground"];
+        roof_elevation = surface_elevation + 3.6*number_of_stories_above_ground;
+      }
+      
       var height = roof_elevation - surface_elevation;
  
       //var average_roof_height = value.properties["average_roof_height"];
@@ -241,6 +246,11 @@ $(function() {
       
       var surface_elevation = value.properties["surface_elevation"];
       var roof_elevation = value.properties["roof_elevation"];
+      if (!roof_elevation){
+        var number_of_stories_above_ground = value.properties["number_of_stories_above_ground"];
+        roof_elevation = surface_elevation + 3.6*number_of_stories_above_ground;
+      }
+      
       var height = roof_elevation - surface_elevation;
  
       //var average_roof_height = value.properties["average_roof_height"];

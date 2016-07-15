@@ -159,48 +159,49 @@ class DatapointsController < ApplicationController
     if result && result[:steps]
       result[:steps].each do |step|
         if step[:arguments]
-          step[:arguments].each do |argument|
-            name = argument[:name].parameterize.underscore.to_sym
+          arguments = step[:arguments]
+          arguments.each_key do |name|
+            name = name.parameterize.underscore.to_sym
             #puts "name = #{name}"
             
             if name == 'project_id'.to_sym
-              argument[:value] = project_hash[:id]
+              arguments[name] = project_hash[:id]
             elsif name == 'project_name'.to_sym
-              argument[:value] = project_hash[:name]
+              arguments[name] = project_hash[:name]
             end
             
             value = project_hash[name]
             if value
               #puts "Setting '#{name}' to '#{value}' based on project level properties" 
-              argument[:value] = value
+              arguments[name] = value
             end
             
             if name == 'region_id'.to_sym
-              argument[:value] = region_hash[:id]
+              arguments[name] = region_hash[:id]
             elsif name == 'region_name'.to_sym
-              argument[:value] = region_hash[:name]              
+              arguments[name] = region_hash[:name]              
             end
             
             value = region_hash[name]
             if value
               #puts "Setting '#{name}' to '#{value}' based on region level properties" 
-              argument[:value] = value
+              arguments[name] = value
             end
             
             if name == 'building_id'.to_sym
-              argument[:value] = building_hash[:id]
+              arguments[name] = building_hash[:id]
             elsif name == 'building_name'.to_sym
-              argument[:value] = building_hash[:name]               
+              arguments[name] = building_hash[:name]               
             end
             
             value = building_hash[name]
             if value
               #puts "Setting '#{name}' to '#{value}' based on building level properties" 
-              argument[:value] = value
+              arguments[name] = value
             end
             
             if name == 'datapoint_id'.to_sym
-              argument[:value] = @datapoint.id.to_s         
+              arguments[name] = @datapoint.id.to_s         
             end
           end
         end

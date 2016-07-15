@@ -60,6 +60,10 @@ if city_db_url && datapoint_id && project_id
           end
           
           def send_file(path)
+            if !File.exists?(path)
+              puts "send_file cannot open file '#{path}'"
+              return
+            end
 
             the_file = ''
             File.open(path, 'rb') do |file|
@@ -73,6 +77,9 @@ if city_db_url && datapoint_id && project_id
             params = {}
             params[:datapoint_id] = @options[:datapoint_id]
             params[:file_data] = file_data
+            
+            #puts "sending file '#{path}'"
+            #puts params
 
             request = RestClient::Resource.new("#{@url}/api/datapoint_file", user: @user_name, password: @user_pwd)
             response = request.post(params, content_type: :json, accept: :json)
@@ -90,7 +97,7 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/finished.job", 'w') { |f| f << "Finished Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Complete")
-            send_file("#{@options[:output_directory]}/../run.log")
+            send_file("#{@options[:output_directory]}/run.log")
           end
 
           # Write that the process has failed
@@ -98,7 +105,7 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/failed.job", 'w') { |f| f << "Failed Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Failed")
-            send_file("#{@options[:output_directory]}/../run.log")
+            send_file("#{@options[:output_directory]}/run.log")
           end
 
           # Do nothing on a state transition

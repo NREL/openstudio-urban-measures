@@ -162,7 +162,7 @@ class WorkflowsController < ApplicationController
 
     respond_to do |format|
       format.html {render action: 'datapoints'} # todo: rename results
-      format.json {render json: json_data, status: :ok}
+      format.json {render json: @json_data, status: :ok}
     end
 
 

@@ -141,20 +141,48 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     number_of_stories_below_ground = properties[:number_of_stories_below_ground]
     number_of_residential_units = properties[:number_of_residential_units]
     floor_to_floor_height = properties[:floor_to_floor_height]
-    space_type = properties[:space_type]
+    space_type = properties[:building_type]
+    
+    if space_type == "Mixed use"
+      mixed_types = []
+      
+      if properties[:mixed_type_1] && properties[:mixed_type_1_percentage]
+        mixed_types << {type: properties[:mixed_type_1], percentage: properties[:mixed_type_1_percentage]}
+      end
+      
+      if properties[:mixed_type_2] && properties[:mixed_type_2_percentage]
+        mixed_types << {type: properties[:mixed_type_2], percentage: properties[:mixed_type_2_percentage]}
+      end
+      
+      if properties[:mixed_type_3] && properties[:mixed_type_3_percentage]
+        mixed_types << {type: properties[:mixed_type_3], percentage: properties[:mixed_type_3_percentage]}
+      end
+      
+      if properties[:mixed_type_4] && properties[:mixed_type_4_percentage]
+        mixed_types << {type: properties[:mixed_type_4], percentage: properties[:mixed_type_4_percentage]}
+      end
+      
+      if mixed_types.empty?
+        runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
+        return false
+      end
+     
+      mixed_types.sort! {|x,y| x[:percentage] <=> y[:percentage]}
+      
+      # DLM: temp code
+      space_type = mixed_types[-1][:type]
+      runner.registerWarning("'Mixed use' building type requested, using largest type '#{space_type}' for now")
+    end
     
     if number_of_stories_above_ground.nil?
-      if number_of_stories_below_ground.nil?
-        number_of_stories_above_ground = number_of_stories
-        number_of_stories_below_ground = 0
-      else
-        number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
-      end
+      number_of_stories_above_ground = number_of_stories
+      number_of_stories_below_ground = 0
+    else
+      number_of_stories_below_ground = number_of_stories - number_of_stories_above_ground
     end
     
-    if floor_to_floor_height.nil?
-      floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
-    end
+    # DLM: todo, set this by space type
+    floor_to_floor_height = 3.6
     
     if create_method == :space_per_floor
       if space_type

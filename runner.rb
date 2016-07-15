@@ -136,14 +136,16 @@ class Runner
         workflow = get_workflow(datapoint_id)
         
         workflow[:steps].each do |step|
-          step[:arguments].each do |argument|
-            if argument[:name] == 'city_db_url'
-              argument[:value] = @url
+          arguments = step[:arguments]
+          arguments.each_key do |name|
+
+            if name == 'city_db_url'.to_sym
+              arguments[name] = @url
             end
             
             # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
-            if argument[:name] == 'weather_file_name'
-              workflow[:weather_file] = argument[:value]
+            if name == 'weather_file_name'.to_sym
+              workflow[:weather_file] = arguments[name]
             end
           end
         end
@@ -199,7 +201,7 @@ class Runner
     all_workflow_ids.each do |workflow_id|
       results_path = File.join(File.dirname(__FILE__), "/run/#{project_name}/workflow_#{workflow_id}.geojson")
       
-      if !File.exists(results_path)
+      if !File.exists?(results_path)
         results = get_results(workflow_id)
         
         File.open(results_path, 'w') do |file|
