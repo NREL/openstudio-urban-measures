@@ -17,7 +17,7 @@ class Runner
     @project_name = @project[:name]
   end
   
-  def clear_results(datapoint_ids = [], status = nil)
+  def clear_results(datapoint_ids = [])
     if datapoint_ids.empty?
       datapoint_ids = get_all_datapoint_ids
     end
@@ -25,7 +25,8 @@ class Runner
     datapoint_ids.each do |datapoint_id|
       datapoint = {}
       datapoint[:id] = datapoint_id
-      datapoint[:status] = status
+      datapoint[:status] = nil
+      datapoint[:results] = nil
 
       params = {}
       params[:project_id] = @project_id
