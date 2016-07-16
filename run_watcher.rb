@@ -27,6 +27,12 @@ def get_all_project_ids(url, user_name, user_pwd)
   return result
 end
 
+#project_ids = get_all_project_ids(url, user_name, user_pwd)
+#project_ids.each do |project_id|
+#  runner = Runner.new(url, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+#  runner.clear_results
+#end
+
 # main loop
 while true
 

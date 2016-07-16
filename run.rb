@@ -69,6 +69,11 @@ if city_db_url && datapoint_id && project_id
             File.open(path, 'rb') do |file|
               the_file = Base64.strict_encode64(file.read)
             end
+            
+            if the_file.empty?
+              puts "send_file cannot send empty file '#{path}'"
+              return
+            end
     
             file_data = {}
             file_data[:file_name] = File.basename(path)
@@ -98,6 +103,7 @@ if city_db_url && datapoint_id && project_id
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Complete")
             send_file("#{@options[:output_directory]}/run.log")
+            Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
           end
 
           # Write that the process has failed
@@ -106,6 +112,7 @@ if city_db_url && datapoint_id && project_id
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Failed")
             send_file("#{@options[:output_directory]}/run.log")
+            Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
           end
 
           # Do nothing on a state transition

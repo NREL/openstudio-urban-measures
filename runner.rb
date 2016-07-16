@@ -12,11 +12,28 @@ class Runner
     @user_pwd = user_pwd
     @max_datapoints = max_datapoints
     @num_parallel = num_parallel
+    
+    @project = get_project
+    @project_name = @project[:name]
   end
   
-  def clear_results()
-    # todo: reset all datapoints status to nil
-    # have option to reset all with status Started or Failed
+  def clear_results(datapoint_ids = [], status = nil)
+    if datapoint_ids.empty?
+      datapoint_ids = get_all_datapoint_ids
+    end
+    
+    datapoint_ids.each do |datapoint_id|
+      datapoint = {}
+      datapoint[:id] = datapoint_id
+      datapoint[:status] = status
+
+      params = {}
+      params[:project_id] = @project_id
+      params[:datapoint] = datapoint
+
+      request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
+      response = request.post(params, content_type: :json, accept: :json)    
+    end
   end
   
   def get_project()
@@ -65,7 +82,28 @@ class Runner
     puts "get_all_workflow_ids = #{result.join(',')}"
     return result
   end
+  
+  def get_all_datapoint_ids()
+    result = []
+    
+    request = RestClient::Resource.new("#{@url}/datapoints.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+  
+    datapoints = JSON.parse(response.body, :symbolize_names => true)
+    datapoints.each do |datapoint|
 
+      project_id = datapoint[:project_id]
+      if project_id == @project_id
+        result << datapoint[:id]
+      else
+        puts "skipping datapoint #{datapoint[:id]} since it is not associated with project #{@project_id}"
+      end
+    end
+  
+    puts "get_all_datapoint_ids = #{result.join(',')}"
+    return result
+  end
+  
   def get_datapoint(building_id, workflow_id)
     json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
@@ -75,6 +113,14 @@ class Runner
     return datapoint[:datapoint]
   end
 
+   def get_datapoint_by_id(datapoint_id)
+    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+    
+    datapoint = JSON.parse(response.body, :symbolize_names => true)
+    return datapoint[:datapoint]
+  end
+  
   def get_workflow(datapoint_id)
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
@@ -95,14 +141,11 @@ class Runner
   def create_osws
     result = []
     
-    project = get_project
-    project_name = project[:name]
-    
     # connect to database, get list of all building and workflow ids
     all_building_ids = get_all_building_ids
     all_workflow_ids = get_all_workflow_ids
     
-    puts "Project #{project_name}"
+    puts "Project #{@project_name}"
     puts "#{all_building_ids.size} buildings"
     puts "#{all_workflow_ids.size} workflows"
 
@@ -131,35 +174,7 @@ class Runner
         end
         puts "Saving Datapoint"
         
-        # datapoint is not run, get the workflow
-        # this is the merged workflow with the building properties merged in to the template workflow
-        workflow = get_workflow(datapoint_id)
-        
-        workflow[:steps].each do |step|
-          arguments = step[:arguments]
-          arguments.each_key do |name|
-
-            if name == 'city_db_url'.to_sym
-              arguments[name] = @url
-            end
-            
-            # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
-            if name == 'weather_file_name'.to_sym
-              workflow[:weather_file] = arguments[name]
-            end
-          end
-        end
-
-        # save workflow
-        osw_dir = File.join(File.dirname(__FILE__), "/run/#{project_name}/datapoint_#{datapoint_id}/")
-        FileUtils.rm_rf(osw_dir)
-        FileUtils.mkdir_p(osw_dir)
-        result << osw_dir
-
-        osw_path = "#{osw_dir}/in.osw"
-        File.open(osw_path, 'w') do |file|
-          file << JSON.pretty_generate(workflow)
-        end
+        result << create_osw(datapoint_id)
         
         num_datapoints += 1
         if @max_datapoints < num_datapoints
@@ -170,6 +185,43 @@ class Runner
     end
     
     return result
+  end
+
+  def create_osw(datapoint_id)
+
+    datapoint = get_datapoint_by_id(datapoint_id)
+    datapoint_id = datapoint[:id]
+    
+    # datapoint is not run, get the workflow
+    # this is the merged workflow with the building properties merged in to the template workflow
+    workflow = get_workflow(datapoint_id)
+    
+    workflow[:steps].each do |step|
+      arguments = step[:arguments]
+      arguments.each_key do |name|
+
+        if name == 'city_db_url'.to_sym
+          arguments[name] = @url
+        end
+        
+        # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
+        if name == 'weather_file_name'.to_sym
+          workflow[:weather_file] = arguments[name]
+        end
+      end
+    end
+
+    # save workflow
+    osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
+    FileUtils.rm_rf(osw_dir)
+    FileUtils.mkdir_p(osw_dir)
+ 
+    osw_path = "#{osw_dir}/in.osw"
+    File.open(osw_path, 'w') do |file|
+      file << JSON.pretty_generate(workflow)
+    end
+            
+    return osw_dir
   end
   
   def run_osws(dirs)
@@ -193,13 +245,10 @@ class Runner
   
   def save_results
   
-    project = get_project
-    project_name = project[:name]
-    
     all_workflow_ids = get_all_workflow_ids
     
     all_workflow_ids.each do |workflow_id|
-      results_path = File.join(File.dirname(__FILE__), "/run/#{project_name}/workflow_#{workflow_id}.geojson")
+      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/workflow_#{workflow_id}.geojson")
       
       if !File.exists?(results_path)
         results = get_results(workflow_id)

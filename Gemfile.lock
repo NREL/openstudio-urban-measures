@@ -1,16 +1,14 @@
 GIT
-  remote: git://github.com/NREL/OpenStudio-workflow-gem.git
-  revision: 0902102fbad56383e323484f7cdd5d858bef014c
-  ref: 0902102fbad56383e323484f7cdd5d858bef014c
-  specs:
-    openstudio-workflow (1.0.0.alpha.0)
-
-GIT
   remote: git://github.com/NREL/openstudio-standards.git
   revision: 2925e5c997c5656f7e8dfa42a03c356285e91211
   ref: 2925e5c997c5656f7e8dfa42a03c356285e91211
   specs:
     openstudio-standards (0.1.4)
+
+PATH
+  remote: E:/openstudio-workflow-gem
+  specs:
+    openstudio-workflow (1.0.0.alpha.0)
 
 GEM
   remote: http://rubygems.org/

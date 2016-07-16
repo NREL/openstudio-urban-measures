@@ -409,6 +409,30 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     aspect_ratio ||= nil
 
     add_result(results, "aspect_ratio", aspect_ratio, "")
+    
+    # get timeseries
+    electric_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "Electricity:Facility", "")
+    gas_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "Gas:Facility", "")
+    district_cooling_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "DistrictCooling:Facility", "")
+    district_heating_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "DistrictHeating:Facility", "")
+    
+    electric_meter_values = electric_meter.get.values
+    n = electric_meter_values.size
+    
+    gas_meter_values = Array.new(n, 0)
+    gas_meter_values = gas_meter.get.values if gas_meter.is_initialized
+    
+    district_cooling_meter_values = Array.new(n, 0)
+    district_cooling_meter_values = district_cooling_meter.get.values if district_cooling_meter.is_initialized
+    
+    district_heating_meter_values = Array.new(n, 0)
+    district_heating_meter_values = district_heating_meter.get.values if district_heating_meter.is_initialized
+    
+    File.open("report.csv", 'w') do |file|
+      (0...n).each do |i|
+        file.puts("#{electric_meter_values[i]},#{gas_meter_values[i]},#{district_cooling_meter_values[i]},#{district_heating_meter_values[i]}") 
+      end
+    end
 
     #closing the sql file
     sql_file.close
