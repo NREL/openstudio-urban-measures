@@ -15585,7 +15585,7 @@
               37.8045832933132
             ],
             [
-              -122.41794326622,
+              -122.41794326621999,
               37.8045968901826
             ],
             [
@@ -33935,7 +33935,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 21.68207756846648,
         "floor_area_source": "Inferred",
@@ -35560,7 +35560,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 788.03777202696,
         "floor_area_source": "Inferred",
@@ -35697,7 +35697,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 425.863930313,
         "floor_area_source": "Inferred",
@@ -35831,7 +35831,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 421.180642548424,
         "floor_area_source": "Inferred",
@@ -35983,7 +35983,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 409.732484794372,
         "floor_area_source": "Inferred",
@@ -36140,7 +36140,7 @@
       },
       "type": "Feature",
       "properties": {
-        "average_roof_height": 13.01530852356,
+        "average_roof_height": 13.015308523560002,
         "average_roof_height_source": "Measured",
         "floor_area": 371.244214636632,
         "floor_area_source": "Inferred",
@@ -53309,7 +53309,7 @@
         "average_roof_height_source": "Measured",
         "floor_area": 19.20617922229065,
         "floor_area_source": "Inferred",
-        "footprint_area": 6.40205974076355,
+        "footprint_area": 6.4020597407635496,
         "footprint_area_source": "Measured",
         "footprint_perimeter": 16.963583968523,
         "footprint_perimeter_source": "Measured",

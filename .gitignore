@@ -5,3 +5,4 @@ output/
 analysis/
 urban_building_type/resources/beopt-measures/
 .bundle/
+data/co_tracts/
