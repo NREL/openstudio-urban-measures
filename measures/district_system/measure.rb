@@ -104,7 +104,22 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
       datapoint_files.each do |datapoint_file|
         if /datapoint_reports_report\.csv/.match( datapoint_file[:file_name] )
           file_id = datapoint_file[:_id][:$oid]
-          puts "http://localhost:3000/datapoints/#{datapoint_id}/download_file?file_id=#{file_id}"
+
+          http = Net::HTTP.new(@city_db_url, @port)
+          request = Net::HTTP::Get.new("/datapoints/#{datapoint_id}/download_file?file_id=#{file_id}")
+          
+          request.basic_auth("test@nrel.gov", "testing123")
+        
+          response = http.request(request)
+          if  response.code != '200' # success
+            @runner.registerError("Bad response #{response.code}")
+            @runner.registerError(response.body)
+            return nil
+          end
+    
+          File.open("#{datapoint_id}_datapoint_reports_report.csv", "w") do |file|
+            file.write(response.body)
+          end
         end
       end
     end
