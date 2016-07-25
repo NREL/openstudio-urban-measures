@@ -27,6 +27,8 @@ class Runner
       datapoint[:id] = datapoint_id
       datapoint[:status] = nil
       datapoint[:results] = nil
+      
+      # DLM: todo, how to reset related files?
 
       params = {}
       params[:project_id] = @project_id
@@ -48,10 +50,10 @@ class Runner
     return result[:project]
   end  
     
-  def get_all_building_ids()
+  def get_all_feature_ids(feature_type)
     result = []
     
-    json_request = JSON.generate('types' => ['Building'], 'project_id' => @project_id)
+    json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/export", user: @user_name, password: @user_pwd)
     response = request.post(json_request, content_type: :json, accept: :json)
     
@@ -62,8 +64,8 @@ class Runner
 
     return result
   end
-
-  def get_all_workflow_ids()
+  
+  def get_all_workflow_ids(feature_type)
     result = []
     
     request = RestClient::Resource.new("#{@url}/workflows.json", user: @user_name, password: @user_pwd)
@@ -71,7 +73,11 @@ class Runner
   
     workflows = JSON.parse(response.body, :symbolize_names => true)
     workflows.each do |workflow|
-
+      if feature_type != workflow[:feature_type]
+        puts "skipping workflow with feature_type '#{workflow[:feature_type]}', requested feature_type '#{feature_type}'"
+        next
+      end
+      
       project_id = workflow[:project_id]
       if project_id == @project_id
         result << workflow[:id]
@@ -106,6 +112,7 @@ class Runner
   end
   
   def get_datapoint(building_id, workflow_id)
+    # todo: DLM, needs to be generalized to take feature_id
     json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
     response = request.post(json_request, content_type: :json, accept: :json)
@@ -143,17 +150,22 @@ class Runner
     result = []
     
     # connect to database, get list of all building and workflow ids
-    all_building_ids = get_all_building_ids
-    all_workflow_ids = get_all_workflow_ids
+    all_building_ids = get_all_feature_ids("Building")
+    all_building_workflow_ids = get_all_workflow_ids("Building")
+    
+    all_district_system_ids = get_all_feature_ids("District System")
+    all_district_system_workflow_ids = get_all_workflow_ids("District System")
     
     puts "Project #{@project_name}"
     puts "#{all_building_ids.size} buildings"
-    puts "#{all_workflow_ids.size} workflows"
-
+    puts "#{all_building_workflow_ids.size} building workflows"
+    puts "#{all_district_system_ids.size} district systems"
+    puts "#{all_district_system_workflow_ids.size} district systems workflows"
+    
     # loop over all combinations
     num_datapoints = 1
     all_building_ids.each do |building_id|
-      all_workflow_ids.each do |workflow_id|
+      all_building_workflow_ids.each do |workflow_id|
 
         # get data point for each pair of building_id, workflow_id
         # data point is created if it doesn't already exist
@@ -185,6 +197,39 @@ class Runner
       end
     end
     
+    all_district_system_ids.each do |district_system_id|
+      all_district_system_workflow_ids.each do |workflow_id|
+
+        # get data point for each pair of building_id, workflow_id
+        # data point is created if it doesn't already exist
+        datapoint = get_datapoint(district_system_id, workflow_id)
+        datapoint_id = datapoint[:id]
+        
+        # see if datapoint needs to be run
+        if datapoint[:status] 
+          if datapoint[:status] == "Started"
+            puts "Skipping Started Datapoint"
+            next
+          elsif datapoint[:status] == "Complete"
+            puts "Skipping Complete Datapoint"
+            next
+          elsif datapoint[:status] == "Failed"
+            puts "Skipping Failed Datapoint"
+            next
+          end
+        end
+        puts "Saving District Datapoint #{datapoint_id}"
+        
+        result << create_osw(datapoint_id)
+        
+        num_datapoints += 1
+        if @max_datapoints < num_datapoints
+          return result
+        end
+        
+      end
+    end
+    
     return result
   end
 
@@ -197,6 +242,12 @@ class Runner
     # this is the merged workflow with the building properties merged in to the template workflow
     workflow = get_workflow(datapoint_id)
     
+    building_workflow_id = nil
+    if workflow[:feature_type] == "District System"
+      building_workflow_ids = get_all_workflow_ids("Building")
+      building_workflow_id = building_workflow_ids[0]
+    end
+    
     workflow[:steps].each do |step|
       arguments = step[:arguments]
       arguments.each_key do |name|
@@ -205,6 +256,10 @@ class Runner
           arguments[name] = @url
         end
         
+        if name == 'building_workflow_id'.to_sym
+          arguments[name] = building_workflow_id
+        end
+
         # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
         if name == 'weather_file_name'.to_sym
           workflow[:weather_file] = arguments[name]

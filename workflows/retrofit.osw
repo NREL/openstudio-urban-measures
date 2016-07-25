@@ -1,5 +1,5 @@
 {
-  "feature_type", "Building",
+  "feature_type": "Building",
 	"seed_file": null,
 	"weather_file": null,
 	"root_directory": null,

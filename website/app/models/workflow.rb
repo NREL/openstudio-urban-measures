@@ -5,6 +5,7 @@ class Workflow
 
   field :name, type: String
   field :display_name, type: String
+  field :feature_type, type: String
 
   # Relations
   embeds_one :workflow_file do
@@ -35,7 +36,7 @@ class Workflow
     workflow.project_id = project_id
     workflow.name = name if name
     workflow.display_name = display_name if display_name
-
+    
     unless error
 
       unless workflow.save!

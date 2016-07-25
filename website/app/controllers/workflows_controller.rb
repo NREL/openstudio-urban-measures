@@ -127,6 +127,8 @@ class WorkflowsController < ApplicationController
   def create_datapoints
     @error_message = ''
     error = false
+    
+    # todo: DLM, this needs to check the type of feature that this workflow is for, only create datapoints for the right type of features
 
     @project = @workflow.project
     buildings = @project.buildings.all

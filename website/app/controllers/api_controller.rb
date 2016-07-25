@@ -40,7 +40,7 @@ class ApiController < ApplicationController
   def export
     # params:
     # types: array of types to export
-
+    puts "qoooooooooooooooooo"
     # for now, choose what types to export only
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
@@ -49,7 +49,9 @@ class ApiController < ApplicationController
     @types = []
     if params[:types]
       params[:types].each do |type|
-        @types << type.capitalize if @possible_types.include? type.capitalize
+        # DLM: capitalize turns 'District System' into 'District system'
+        #@types << type.capitalize if @possible_types.include? type.capitalize
+        @types << type if @possible_types.include? type
       end
     else
       @types << 'All'
@@ -70,7 +72,8 @@ class ApiController < ApplicationController
       model = type.constantize
       @results += model.where(project_id: project_id).includes(:geometry)
     end
-
+    puts "hi"
+    puts "@results = '#{@results}'"
     json_data = Geometry.build_geojson(@results)
 
     respond_to do |format|

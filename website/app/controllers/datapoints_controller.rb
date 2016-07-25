@@ -136,22 +136,27 @@ class DatapointsController < ApplicationController
     error = false
 
     result = Workflow.get_clean_hash(@datapoint.workflow)
-    building_hash = Workflow.get_clean_hash(@datapoint.building)
     
+    building_hash = {}
     region_hash = {}
-    if building_hash[:region_source_name] && building_hash[:region_source_ids]
-      building_hash[:region_source_ids].each do |region_source_id|
-        region = Region.where(source_id: region_source_id, source_name: building_hash[:region_source_name]).first
-        region_hash = Workflow.get_clean_hash(region)
+    project_hash = {}
+    
+    if @datapoint.building
+      building_hash = Workflow.get_clean_hash(@datapoint.building)
+      
+      if building_hash[:region_source_name] && building_hash[:region_source_ids]
+        building_hash[:region_source_ids].each do |region_source_id|
+          region = Region.where(source_id: region_source_id, source_name: building_hash[:region_source_name]).first
+          region_hash = Workflow.get_clean_hash(region)
+        end
       end
     end
     
-    project_hash = {}
-    if @datapoint.building.project
-      project_hash = Workflow.get_clean_hash(@datapoint.building.project)
+    if @datapoint.project
+      project_hash = Workflow.get_clean_hash(@datapoint.project)
       
       if region_hash.empty?
-        region = @datapoint.building.project.regions.first
+        region = @datapoint.project.regions.first
         region_hash = Workflow.get_clean_hash(region)
       end
     end    

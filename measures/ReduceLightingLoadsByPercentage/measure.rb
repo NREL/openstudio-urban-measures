@@ -392,7 +392,7 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
           #clone rename and add to hash
           new_def = exist_def.clone(model)
           new_def_name = new_def.setName("#{new_def.name} - #{lighting_power_reduction_percent} percent reduction")
-          cloned_lights_defs[exist_def.name] = new_def
+          cloned_lights_defs[exist_def.name.to_s] = new_def
           new_def = new_def.to_LightsDefinition.get
 
           #add demo cost of object being removed to one counter for one time demo cost for baseline objects

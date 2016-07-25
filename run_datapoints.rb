@@ -12,7 +12,7 @@ user_pwd = 'testing123'
 max_datapoints = 2
 num_parallel = 7
 project_id = "578939a2c44c8d1b88000003"
-datapoint_ids = ["57896a4ac44c8d1b88000095"]
+datapoint_ids = ["57964c36c44c8d2298000002"]
 
 runner = Runner.new(url, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.clear_results(datapoint_ids)

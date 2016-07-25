@@ -1,5 +1,5 @@
 {
-  "feature_type": "Building",
+  "feature_type": "District System",
   "seed_file": null,
   "weather_file": null,
   "root_directory": null,
@@ -15,20 +15,11 @@
       }
     },
     {
-      "measure_dir_name": "urban_geometry_creation",
+      "measure_dir_name": "district_system",
       "arguments": {
         "city_db_url": "http://insight4.hpc.nrel.gov:8081/",
-        "project_name": null,
-        "source_id": null,
-        "source_name": null,
-        "surrounding_buildings": "None"
-      }
-    },   
-    {
-      "measure_dir_name": "urban_building_type",
-      "arguments": {
-        "heating_source": "Gas",
-        "cooling_source": "Electric"
+        "project_id": null,
+        "building_workflow_id": null
       }
     },
     {
