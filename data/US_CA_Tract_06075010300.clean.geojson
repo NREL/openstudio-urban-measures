@@ -11694,7 +11694,7 @@
               37.8045832933132
             ],
             [
-              -122.41794326622,
+              -122.41794326621999,
               37.8045968901826
             ],
             [
@@ -41027,7 +41027,7 @@
       "properties": {
         "building_type": "Vacant",
         "floor_area": 19.20617922229065,
-        "footprint_area": 6.40205974076355,
+        "footprint_area": 6.4020597407635496,
         "footprint_perimeter": 16.963583968523,
         "maximum_roof_height": 9.71992648848,
         "number_of_stories": 3,

@@ -49,7 +49,6 @@ end
 
 def run_measure(workspace, measure, args_hash, runner)
   # get arguments
-  puts 'here0'
   arguments = measure.arguments(workspace)
   argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
 
@@ -69,7 +68,6 @@ def run_measure(workspace, measure, args_hash, runner)
   test = measure.run(workspace, runner, argument_map)
 
   if !test
-    puts 'here1'
     runner.registerError("Failed to run measure #{measure.name}")
   end
 end
@@ -113,7 +111,6 @@ def apply_residential_e_plus(workspace, runner, standards_building_type, model)
     end    
   end
   puts "#{standards_building_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)." 
-  puts result
   return result
     
 end
