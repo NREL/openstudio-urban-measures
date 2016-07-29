@@ -7,16 +7,16 @@ require 'base64'
 require 'csv'
 
 # start the measure
-class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
+class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
 
   # human readable name
   def name
-    return "District System"
+    return "Import District System Loads"
   end
 
   # human readable description
   def description
-    return ""
+    return "Imports District System Loads as Schedules"
   end
 
   # human readable description of modeling approach
@@ -231,4 +231,4 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
 end
 
 # register the measure to be used by the application
-DistrictSystem.new.registerWithApplication
+ImportDistrictSystemLoads.new.registerWithApplication

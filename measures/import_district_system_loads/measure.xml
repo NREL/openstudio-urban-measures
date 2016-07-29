@@ -1,13 +1,13 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>district_system</name>
+  <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>ca8501e6-ac0d-4272-8887-27c374e24aa2</version_id>
-  <version_modified>20160729T173110Z</version_modified>
+  <version_id>af643198-51b1-4261-b3c2-f62de3517b4e</version_id>
+  <version_modified>20160729T174047Z</version_modified>
   <xml_checksum>45EB89EB</xml_checksum>
-  <class_name>DistrictSystem</class_name>
-  <display_name>District System</display_name>
-  <description></description>
+  <class_name>ImportDistrictSystemLoads</class_name>
+  <display_name>Import District System Loads</display_name>
+  <description>Imports District System Loads as Schedules</description>
   <modeler_description></modeler_description>
   <arguments>
     <argument>
@@ -57,7 +57,7 @@
       <filename>district_system_measure_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>78B8350B</checksum>
+      <checksum>F184818B</checksum>
     </file>
     <file>
       <version>
@@ -68,13 +68,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>D4A2335E</checksum>
-    </file>
-    <file>
-      <filename>out.txt</filename>
-      <filetype>txt</filetype>
-      <usage_type>test</usage_type>
-      <checksum>0B3D5002</checksum>
+      <checksum>33BB48A5</checksum>
     </file>
   </files>
 </measure>

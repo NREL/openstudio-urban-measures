@@ -4,7 +4,7 @@ require 'minitest/autorun'
 require_relative '../measure.rb'
 require 'fileutils'
 
-class DistrictSystemTest < MiniTest::Unit::TestCase
+class ImportDistrictSystemLoadsTest < MiniTest::Unit::TestCase
 
   # def setup
   # end
@@ -14,7 +14,7 @@ class DistrictSystemTest < MiniTest::Unit::TestCase
 
   def test_good_argument_values
     # create an instance of the measure
-    measure = DistrictSystem.new
+    measure = ImportDistrictSystemLoads.new
 
     # create an instance of a runner
     runner = OpenStudio::Ruleset::OSRunner.new
