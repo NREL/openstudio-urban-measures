@@ -3,6 +3,8 @@
 
 require 'json'
 require 'net/http'
+require 'base64'
+require 'csv'
 
 # start the measure
 class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
@@ -65,7 +67,7 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
       @runner.registerError(response.body)
-      return {}
+      @result = false
     end
     
     datapoints = JSON.parse(response.body, :symbolize_names => true)
@@ -95,36 +97,56 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
       @runner.registerError(response.body)
-      return {}
+      @result = false
     end
-    
+
     datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
       datapoint_files.each do |datapoint_file|
         if /datapoint_reports_report\.csv/.match( datapoint_file[:file_name] )
+          file_name = datapoint_file[:file_name]
           file_id = datapoint_file[:_id][:$oid]
 
           http = Net::HTTP.new(@city_db_url, @port)
-          request = Net::HTTP::Get.new("/datapoints/#{datapoint_id}/download_file?file_id=#{file_id}")
+          request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}")
+          "/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}"
           
+          # DLM: todo, get these from environment variables or as measure inputs?
           request.basic_auth("test@nrel.gov", "testing123")
-        
+       
           response = http.request(request)
           if  response.code != '200' # success
             @runner.registerError("Bad response #{response.code}")
             @runner.registerError(response.body)
-            return nil
+            @result = false
           end
-    
-          File.open("#{datapoint_id}_datapoint_reports_report.csv", "w") do |file|
-            file.write(response.body)
+          
+          file_data = JSON.parse(response.body, :symbolize_names => true)[:file_data]
+          file = Base64.strict_decode64(file_data[:file])
+
+          filename = "#{datapoint_id}_timeseries.csv"
+          File.open(filename, "w") do |f|
+            f.write(file)
           end
+          return filename
         end
       end
     end
     
-    #http://localhost:3000/datapoints/57966325c44c8d3924000031/download_file?file_id=579683a7c44c8d3924000046
+    return nil
+  end
+  
+  def makeSchedule(start_date, time_step, values, model, name)
+    timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values, "GJ")
+    schedule = OpenStudio::Model::ScheduleInterval.fromTimeSeries(timeseries, model)
+    if schedule.empty?
+      @runner.registerError("Could not create schedule '#{name}'")
+      @result = false
+      return nil
+    end
+    schedule.get.setName(name)
+    return schedule.get
   end
   
   # define what happens when the measure is run
@@ -142,6 +164,7 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
     building_workflow_id = runner.getStringArgumentValue("building_workflow_id", user_arguments)
     
     @runner = runner
+    @result = true
     
     @port = 80
     if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
@@ -151,15 +174,57 @@ class DistrictSystem < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    
+    # DLM: this should be all datapoints for buildings on this system in this scenario
     datapoint_ids = get_datapoint_ids(project_id, building_workflow_id)
     
     datapoint_files = []
     datapoint_ids.each do |datapoint_id|
-      datapoint_files << download_datapoint(datapoint_id)
+      datapoint_file = download_datapoint(datapoint_id)
+      if datapoint_file
+        datapoint_files << datapoint_file
+      end
     end
     
-    return true
+    # 15 minute timesteps
+    num_rows = 8760*4
+    start_date = model.getYearDescription.makeDate(1,1)
+    time_step = OpenStudio::Time.new(0,0,15,0)
+    
+    electric_schedules = []
+    gas_schedules = []
+    district_cooling_schedules = []
+    district_heating_schedules = []
+    
+    datapoint_files.each do |file|
+    
+      basename = File.basename(file, '.csv') 
+      puts "Reading #{basename}"
+      
+      electric_use = OpenStudio::Vector.new(num_rows)
+      gas_use = OpenStudio::Vector.new(num_rows)
+      district_cooling_use = OpenStudio::Vector.new(num_rows)
+      district_heating_use = OpenStudio::Vector.new(num_rows)
+      i = 0
+      CSV.foreach(file) do |row|
+        if i < num_rows
+          electric_use[i] = row[0].to_f
+          gas_use[i] = row[1].to_f
+          district_cooling_use[i] = row[2].to_f
+          district_heating_use[i] = row[3].to_f
+        end
+        i += 1
+      end
+      
+      electric_schedules << makeSchedule(start_date, time_step, electric_use, model, "#{basename} Electricity")
+      gas_schedules << makeSchedule(start_date, time_step, gas_use, model, "#{basename} Gas")
+      district_cooling_schedules << makeSchedule(start_date, time_step, district_cooling_use, model, "#{basename} District Cooling")
+      district_heating_schedules << makeSchedule(start_date, time_step, district_heating_use, model, "#{basename} District Heating")
+      
+    end
+    
+    # todo: create a plant loop
+    
+    return @result
 
   end
   

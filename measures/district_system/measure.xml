@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>district_system</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>6aa7b7c1-20bc-4f3c-8a19-04fa0ad48393</version_id>
-  <version_modified>20160725T214416Z</version_modified>
+  <version_id>ca8501e6-ac0d-4272-8887-27c374e24aa2</version_id>
+  <version_modified>20160729T173110Z</version_modified>
   <xml_checksum>45EB89EB</xml_checksum>
   <class_name>DistrictSystem</class_name>
   <display_name>District System</display_name>
@@ -57,7 +57,7 @@
       <filename>district_system_measure_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>E98A3C60</checksum>
+      <checksum>78B8350B</checksum>
     </file>
     <file>
       <version>
@@ -68,7 +68,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>89DD14A5</checksum>
+      <checksum>D4A2335E</checksum>
+    </file>
+    <file>
+      <filename>out.txt</filename>
+      <filetype>txt</filetype>
+      <usage_type>test</usage_type>
+      <checksum>0B3D5002</checksum>
     </file>
   </files>
 </measure>

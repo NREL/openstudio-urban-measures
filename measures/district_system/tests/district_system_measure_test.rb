@@ -42,7 +42,19 @@ class DistrictSystemTest < MiniTest::Unit::TestCase
     end
 
     # run the measure
-    measure.run(model, runner, argument_map)
+    pwd = Dir.pwd
+    if File.exists?(File.dirname(__FILE__) + "/output")
+      FileUtils.rm_rf(File.dirname(__FILE__) + "/output")
+    end
+    FileUtils.mkdir_p(File.dirname(__FILE__) + "/output")
+    Dir.chdir(File.dirname(__FILE__) + "/output")
+    
+    begin
+      measure.run(model, runner, argument_map)
+    ensure
+      Dir.chdir(pwd)
+    end
+    
     result = runner.result
 
     # show the output

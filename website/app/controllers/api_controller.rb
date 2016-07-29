@@ -644,12 +644,12 @@ class ApiController < ApplicationController
             @file_data['file'] = encoded_file
           else
             error = true
-            error_message << "No file found."
+            error_messages << "No file found."
           end
         end
       else
         error = true
-        error_message << "No file_name parameter provided."
+        error_messages << "No file_name parameter provided."
       end
     end
     respond_to do |format|
