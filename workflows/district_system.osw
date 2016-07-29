@@ -15,11 +15,17 @@
       }
     },
     {
-      "measure_dir_name": "district_system",
+      "measure_dir_name": "import_district_system_loads",
       "arguments": {
         "city_db_url": "http://insight4.hpc.nrel.gov:8081/",
         "project_id": null,
         "building_workflow_id": null
+      }
+    },
+    {
+      "measure_dir_name": "add_district_system",
+      "arguments": {
+        "system_type": "Central Hot and Chilled Water"
       }
     },
     {
