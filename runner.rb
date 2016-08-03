@@ -301,7 +301,8 @@ class Runner
   
   def save_results
   
-    all_workflow_ids = get_all_workflow_ids
+    all_workflow_ids = get_all_workflow_ids("Building")
+    all_workflow_ids.concat(get_all_workflow_ids("District System"))
     
     all_workflow_ids.each do |workflow_id|
       results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/workflow_#{workflow_id}.geojson")

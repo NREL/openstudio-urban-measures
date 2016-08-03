@@ -68,6 +68,14 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     if !runner.validateUserArguments(arguments(), user_arguments)
       return result
     end
+
+    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
+                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
+                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+
+    timeseries.each do |ts|
+      result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},timestep;").get
+    end
     
     return result
   end
@@ -411,26 +419,34 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "aspect_ratio", aspect_ratio, "")
     
     # get timeseries
-    electric_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "Electricity:Facility", "")
-    gas_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "Gas:Facility", "")
-    district_cooling_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "DistrictCooling:Facility", "")
-    district_heating_meter = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", "DistrictHeating:Facility", "")
+    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
+                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
+                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
     
-    electric_meter_values = electric_meter.get.values
-    n = electric_meter_values.size
-    
-    gas_meter_values = Array.new(n, 0)
-    gas_meter_values = gas_meter.get.values if gas_meter.is_initialized
-    
-    district_cooling_meter_values = Array.new(n, 0)
-    district_cooling_meter_values = district_cooling_meter.get.values if district_cooling_meter.is_initialized
-    
-    district_heating_meter_values = Array.new(n, 0)
-    district_heating_meter_values = district_heating_meter.get.values if district_heating_meter.is_initialized
-    
+    n = nil
+    values = []
+    timeseries.each_index do |i|
+      timeseries_name = timeseries[i]
+      ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, "")
+      if n.nil? 
+        # first timeseries should always be set
+        values[i] = ts.get.values
+        n = values[i].size 
+      elsif ts.is_initialized
+        values[i] = ts.get.values
+      else
+        values[i] = Array.new(n, 0)
+      end
+    end
+
     File.open("report.csv", 'w') do |file|
+      file.puts(timeseries.join(','))
       (0...n).each do |i|
-        file.puts("#{electric_meter_values[i]},#{gas_meter_values[i]},#{district_cooling_meter_values[i]},#{district_heating_meter_values[i]}") 
+        line = []
+        values.each_index do |j|
+          line << values[j][i]
+        end
+        file.puts(line.join(',')) 
       end
     end
 

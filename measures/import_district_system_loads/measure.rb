@@ -137,16 +137,39 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     return nil
   end
   
-  def makeSchedule(start_date, time_step, values, model, name)
-    timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values, "GJ")
-    schedule = OpenStudio::Model::ScheduleInterval.fromTimeSeries(timeseries, model)
-    if schedule.empty?
-      @runner.registerError("Could not create schedule '#{name}'")
-      @result = false
-      return nil
+  def makeSchedule(start_date, time_step, values, model, basename, ts)
+  
+    maximum = OpenStudio::maximum(values)
+    minimum = OpenStudio::minimum(values)
+    if ts[:normalize]
+      n = values.size
+      (0...n).each do |i|
+        if maximum == 0
+          values[i] = 0
+        else
+          values[i] = values[i]/maximum
+        end
+      end
     end
-    schedule.get.setName(name)
-    return schedule.get
+  
+    name = "#{basename} #{ts[:name]}"
+    if maximum == minimum
+      schedule = OpenStudio::Model::ScheduleConstant.new(model)
+      schedule.setValue(maximum)
+    else
+      timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values, ts[:units])
+      schedule = OpenStudio::Model::ScheduleInterval.fromTimeSeries(timeseries, model)
+      if schedule.empty?
+        @runner.registerError("Could not create schedule '#{name}'")
+        @result = false
+        return nil
+      end
+      schedule = schedule.get
+    end
+  
+    schedule.setName(name)
+    schedule.setComment("Maximum = #{maximum}")
+    return schedule
   end
   
   # define what happens when the measure is run
@@ -197,29 +220,36 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     
     datapoint_files.each do |file|
     
-      basename = File.basename(file, '.csv') 
-      puts "Reading #{basename}"
+      puts "Reading #{file}"
       
-      electric_use = OpenStudio::Vector.new(num_rows)
-      gas_use = OpenStudio::Vector.new(num_rows)
-      district_cooling_use = OpenStudio::Vector.new(num_rows)
-      district_heating_use = OpenStudio::Vector.new(num_rows)
+      basename = File.basename(file, '.csv').gsub('_timeseries', '')
+      
       i = 0
+      headers = []
+      values = {}
       CSV.foreach(file) do |row|
-        if i < num_rows
-          electric_use[i] = row[0].to_f
-          gas_use[i] = row[1].to_f
-          district_cooling_use[i] = row[2].to_f
-          district_heating_use[i] = row[3].to_f
+        if i == 0
+          # header row
+          headers = row
+          headers.each do |header|
+            values[header] = OpenStudio::Vector.new(num_rows)
+          end
+        elsif i <= num_rows
+          headers.each_index do |j|
+            values[headers[j]][i-1] = row[j].to_f
+          end
         end
         i += 1
       end
-      
-      electric_schedules << makeSchedule(start_date, time_step, electric_use, model, "#{basename} Electricity")
-      gas_schedules << makeSchedule(start_date, time_step, gas_use, model, "#{basename} Gas")
-      district_cooling_schedules << makeSchedule(start_date, time_step, district_cooling_use, model, "#{basename} District Cooling")
-      district_heating_schedules << makeSchedule(start_date, time_step, district_heating_use, model, "#{basename} District Heating")
-      
+  
+      timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
+                    {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
+                    {name: "District Heating Hot Water Rate", units: "W", normalize: false},
+                    {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
+                    
+      timeseries.each do |ts|
+        makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
+      end
     end
     
     # todo: create a plant loop

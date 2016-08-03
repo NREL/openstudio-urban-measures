@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>06cfad78-d7c0-48f2-9a77-80ada0231a05</version_id>
-  <version_modified>20160729T175509Z</version_modified>
+  <version_id>34e2d126-d154-44a2-a764-2e9b7845dd10</version_id>
+  <version_modified>20160803T055923Z</version_modified>
   <xml_checksum>45EB89EB</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
@@ -54,6 +54,12 @@
   </attributes>
   <files>
     <file>
+      <filename>import_district_system_loads_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>F184818B</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.12.0</identifier>
@@ -62,13 +68,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>33BB48A5</checksum>
-    </file>
-    <file>
-      <filename>import_district_system_loads_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>F184818B</checksum>
+      <checksum>2AECCB16</checksum>
     </file>
   </files>
 </measure>

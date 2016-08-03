@@ -40,7 +40,7 @@ class ApiController < ApplicationController
   def export
     # params:
     # types: array of types to export
-    puts "qoooooooooooooooooo"
+
     # for now, choose what types to export only
     @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
 
@@ -72,8 +72,7 @@ class ApiController < ApplicationController
       model = type.constantize
       @results += model.where(project_id: project_id).includes(:geometry)
     end
-    puts "hi"
-    puts "@results = '#{@results}'"
+
     json_data = Geometry.build_geojson(@results)
 
     respond_to do |format|
@@ -593,7 +592,7 @@ class ApiController < ApplicationController
       error_messages << "Datapoint #{@datapoint.id} could not be found."
     else
       # save to file_path:
-      if clean_params[:file_data] && clean_params[:file_data][:file_name]
+      if clean_params[:file_data] && clean_params[:file_data][:file_name] && clean_params[:file_data][:file]
         filename = clean_params[:file_data][:file_name]
         file = clean_params[:file_data][:file]
 

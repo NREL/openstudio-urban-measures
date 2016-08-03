@@ -56,13 +56,22 @@ if city_db_url && datapoint_id && project_id
             params[:datapoint] = datapoint
 
             request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
-            response = request.post(params, content_type: :json, accept: :json)
+            
+            begin
+              response = request.post(params, content_type: :json, accept: :json)
+            rescue => e
+              puts "Bad response #{e.response}"
+              puts e.message
+              return false
+            end
+          
+            return true
           end
           
           def send_file(path)
             if !File.exists?(path)
               puts "send_file cannot open file '#{path}'"
-              return
+              return false
             end
 
             the_file = ''
@@ -71,8 +80,7 @@ if city_db_url && datapoint_id && project_id
             end
             
             if the_file.empty?
-              puts "send_file cannot send empty file '#{path}'"
-              return
+              the_file = Base64.strict_encode64("\n")
             end
     
             file_data = {}
@@ -83,11 +91,22 @@ if city_db_url && datapoint_id && project_id
             params[:datapoint_id] = @options[:datapoint_id]
             params[:file_data] = file_data
             
-            #puts "sending file '#{path}'"
-            #puts params
+            puts "sending file '#{path}'"
+            visible_params = Marshal.load(Marshal.dump(params))
+            visible_params[:file_data].delete(:file)
+            puts visible_params
 
             request = RestClient::Resource.new("#{@url}/api/datapoint_file", user: @user_name, password: @user_pwd)
-            response = request.post(params, content_type: :json, accept: :json)
+            
+            begin
+              response = request.post(params, content_type: :json, accept: :json)            
+            rescue => e
+              puts "Bad response #{e.response}"
+              puts e.message
+              return false
+            end
+            
+            return true
           end
 
           # Write that the process has started

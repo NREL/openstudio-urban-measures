@@ -163,7 +163,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
       
       if mixed_types.empty?
-        runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
+        @runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
         return false
       end
      
@@ -171,7 +171,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       
       # DLM: temp code
       space_type = mixed_types[-1][:type]
-      runner.registerWarning("'Mixed use' building type requested, using largest type '#{space_type}' for now")
+      @runner.registerWarning("'Mixed use' building type requested, using largest type '#{space_type}' for now")
     end
     
     if number_of_stories_above_ground.nil?
@@ -556,7 +556,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     project = get_project(project_name)
     
     if project.nil? || project.empty?
-      runner.registerError("Could not find project '#{project_name}")
+      @runner.registerError("Could not find project '#{project_name}")
       return false
     end
     project_id = project.first[:id]
@@ -571,20 +571,20 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     feature_collection = get_feature_collection(params)
 
     if feature_collection[:features].nil?
-      runner.registerError("No features found in #{feature_collection}")
+      @runner.registerError("No features found in #{feature_collection}")
       return false
     elsif feature_collection[:features].empty?
-      runner.registerError("No features found in #{feature_collection}")
+      @runner.registerError("No features found in #{feature_collection}")
       return false
     elsif feature_collection[:features].size > 1
-      runner.registerError("Multiple features found in #{feature_collection}")
+      @runner.registerError("Multiple features found in #{feature_collection}")
       return false
     end
     
     building_json = feature_collection[:features][0]
     
     if building_json[:geometry].nil?
-      runner.registerError("No geometry found in #{building_json}")
+      @runner.registerError("No geometry found in #{building_json}")
       return false
     end
     
@@ -594,7 +594,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     elsif geometry_type == "MultiPolygon"
       # ok
     else
-      runner.registerError("Unknown geometry type #{geometry_type}")
+      @runner.registerError("Unknown geometry type #{geometry_type}")
       return false
     end
 
@@ -604,10 +604,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     min_lat = min_lon_lat[1]
 
     if min_lon == Float::MAX || min_lat == Float::MAX 
-      runner.registerError("Could not determine min_lat and min_lon")
+      @runner.registerError("Could not determine min_lat and min_lon")
       return false
     else
-      runner.registerInfo("Min_lat = #{min_lat}, min_lon = #{min_lon}")
+      @runner.registerInfo("Min_lat = #{min_lat}, min_lon = #{min_lon}")
     end
 
     @origin_lat_lon = OpenStudio::PointLatLon.new(min_lat, min_lon, 0)
@@ -624,7 +624,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     # make requested building
     spaces = create_building(building_json, :space_per_floor, model)
     if spaces.nil? || spaces.empty?
-      runner.registerError("Failed to create spaces for building #{source_id}")
+      @runner.registerError("Failed to create spaces for building #{source_id}")
       return false
     end
     
@@ -662,11 +662,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       feature_collection = get_feature_collection(params)
       
       if feature_collection[:features].nil?
-        runner.registerError("No features found in #{feature_collection}")
+        @runner.registerError("No features found in #{feature_collection}")
         return false
       end
 
-      runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
+      @runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
       
       count = 0
       feature_collection[:features].each do |other_building|
@@ -721,7 +721,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
        
         other_spaces = create_building(other_building, :space_per_building, model)
         if other_spaces.nil? || other_spaces.empty?
-          runner.registerError("Failed to create spaces for other building #{other_source_id}")
+          @runner.registerError("Failed to create spaces for other building #{other_source_id}")
           return false
         end
         
@@ -730,7 +730,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
     
     # intersect surfaces in this building with others
-    runner.registerInfo("Intersecting surfaces")
+    @runner.registerInfo("Intersecting surfaces")
     spaces.each do |space|
       convert_to_shades.each do |other_space|
         space.intersectSurfaces(other_space)
@@ -738,7 +738,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
 
     # match surfaces
-    runner.registerInfo("Matching surfaces")
+    @runner.registerInfo("Matching surfaces")
     all_spaces = OpenStudio::Model::SpaceVector.new
     model.getSpaces.each do |space|
       all_spaces << space
@@ -761,7 +761,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
     
     # change adjacent surfaces to adiabatic
-    runner.registerInfo("Changing adjacent surfaces to adiabatic")
+    @runner.registerInfo("Changing adjacent surfaces to adiabatic")
     model.getSurfaces.each do |surface|
       adjacent_surface = surface.adjacentSurface
       if !adjacent_surface.empty?
