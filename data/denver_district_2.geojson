@@ -617,9 +617,13 @@
 				"number_of_stories_above_ground": 3,
 				"source_id": "183143",
 				"source_name": "NREL_GDS",
-				"building_type": "Multifamily (2 to 4 units)",
+				"building_type": "Mixed use",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "Building",
+				"mixed_type_1": "Multifamily (5 or more units)",
+				"mixed_type_1_percentage": 75.0,
+				"mixed_type_2": "Office",
+				"mixed_type_2_percentage": 25.0        
 			}
 		}, {
 			"geometry": {
@@ -726,53 +730,6 @@
 					[
 						[
 							[
-								-104.996123469861, 39.7530617242373
-							], [
-								-104.996405952888, 39.7532774840217
-							], [
-								-104.996410210904, 39.7532741630096
-							], [
-								-104.996416956928, 39.7532793140283
-							], [
-								-104.996452995059, 39.7532512029262
-							], [
-								-104.996456197071, 39.7532914470725
-							], [
-								-104.996185580087, 39.7534999188303
-							], [
-								-104.996136504909, 39.7534624356941
-							], [
-								-104.996122733858, 39.7534519176558
-							], [
-								-104.995999770411, 39.7535478320045
-							], [
-								-104.995747398494, 39.7533550723037
-							], [
-								-104.996123469861, 39.7530617242373
-							]
-						]
-					]
-				]
-			},
-			"type": "Feature",
-			"properties": {
-				"maximum_roof_height": 10.0584,
-				"floor_area": 4928.03216789988,
-				"number_of_stories": 3,
-				"number_of_stories_above_ground": 3,
-				"source_id": "183141",
-				"source_name": "NREL_GDS",
-				"building_type": "Retail other than mall",
-				"surface_elevation": 1582.8264,
-				"type": "Building"
-			}
-		}, {
-			"geometry": {
-				"type": "MultiPolygon",
-				"coordinates": [
-					[
-						[
-							[
 								-104.996456197071, 39.7532914470725
 							], [
 								-104.996452995059, 39.7532512029262
@@ -865,9 +822,13 @@
 				"number_of_stories_above_ground": 5,
 				"source_id": "183139",
 				"source_name": "NREL_GDS",
-				"building_type": "Multifamily (5 or more units)",
+				"building_type": "Mixed use",
 				"surface_elevation": 1582.8264,
-				"type": "Building"
+				"type": "Building",
+				"mixed_type_1": "Multifamily (5 or more units)",
+				"mixed_type_1_percentage": 75.0,
+				"mixed_type_2": "Office",
+				"mixed_type_2_percentage": 25.0        
 			}
 		}, {
 			"geometry": {
@@ -984,6 +945,49 @@
 				"surface_elevation": 1582.8264,
 				"type": "Building"
 			}
-		}
+		}, {
+			"geometry": {
+				"type": "MultiPolygon",
+				"coordinates": [
+					[
+						[
+							[
+								-104.989678644431, 39.7553619385996
+							], [
+								-104.989674770417, 39.7553588695884
+							], [
+								-104.989674655417, 39.7553587795881
+							], [
+								-104.989689970473, 39.7553472605462
+							], [
+								-104.98973599864, 39.7553126444204
+							], [
+								-104.989738460649, 39.7553145934274
+							], [
+								-104.989721367587, 39.7553280924765
+							], [
+								-104.989845115037, 39.7554214238158
+							], [
+								-104.989859237088, 39.7554102677753
+							], [
+								-104.989898918232, 39.7554416988896
+							], [
+								-104.989838367012, 39.7554872390551
+							], [
+								-104.989681857443, 39.7553595915911
+							], [
+								-104.989678644431, 39.7553619385996
+							]
+						]
+					]
+				]
+			},
+			"type": "Feature",
+			"properties": {
+				"building_ids": [],
+				"district_system_type": "Central Hot Water",
+				"type": "District System"
+			}
+    }
 	]
 }

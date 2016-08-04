@@ -558,19 +558,16 @@ end
 def apply_residential_hvac(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential HVAC.")
-  require './resources/measures/ProcessHeatingandCoolingSetpoints/measure.rb'
   require './resources/measures/ProcessBoiler/measure.rb'
   require './resources/measures/ProcessFurnace/measure.rb'
   require './resources/measures/ProcessCentralAirConditioner/measure.rb'
   require './resources/measures/ProcessRoomAirConditioner/measure.rb'
+  require './resources/measures/ProcessHeatingSetpoints/measure.rb'
+  require './resources/measures/ProcessCoolingSetpoints/measure.rb'
   # require './resources/measures/AddResidentialDehumidifier/measure.rb'
   
   case standards_space_type
-  when "Single-Family"	
-
-    measure = ProcessHeatingandCoolingSetpoints.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
+  when "Single-Family"
     
     measure = ProcessFurnace.new
     args_hash = default_args_hash(model, measure)
@@ -579,12 +576,16 @@ def apply_residential_hvac(model, standards_space_type, runner)
     measure = ProcessCentralAirConditioner.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)	
-	
-  when "Multifamily (2 to 4 units)"	
-
-    measure = ProcessHeatingandCoolingSetpoints.new
+    
+    measure = ProcessHeatingSetpoints.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessCoolingSetpoints.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+    
+  when "Multifamily (2 to 4 units)"
 
     measure = ProcessFurnace.new
     args_hash = default_args_hash(model, measure)
@@ -592,13 +593,17 @@ def apply_residential_hvac(model, standards_space_type, runner)
 
     measure = ProcessRoomAirConditioner.new
     args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)	
-  
-  when "Multifamily (5 or more units)"
-
-    measure = ProcessHeatingandCoolingSetpoints.new
+    run_measure(model, measure, args_hash, runner)
+    
+    measure = ProcessHeatingSetpoints.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessCoolingSetpoints.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)    
+  
+  when "Multifamily (5 or more units)"
 
     measure = ProcessBoiler.new
     args_hash = default_args_hash(model, measure)
@@ -607,6 +612,14 @@ def apply_residential_hvac(model, standards_space_type, runner)
     measure = ProcessRoomAirConditioner.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)	
+  
+    measure = ProcessHeatingSetpoints.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)
+
+    measure = ProcessCoolingSetpoints.new
+    args_hash = default_args_hash(model, measure)
+    run_measure(model, measure, args_hash, runner)  
   
   when "Mobile Home"
     runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")

@@ -145,7 +145,6 @@ class HelperMethods
         district_heating = OpenStudio::Model::DistrictHeating.new(model)
         district_heating.setNominalCapacity(1000000000000) # large number; no autosizing
         loop.addSupplyBranchForComponent(district_heating)
-        puts district_heating.outletModelObject.get.to_Node.get
         # TODO: the following doesn't work for some reason
         # hp_stpt_manager.addToNode(district_heating.outletModelObject.get.to_Node.get)
         runner.registerInfo("Adding '#{district_heating.name}' to '#{loop.name}'.")

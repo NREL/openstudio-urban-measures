@@ -111,6 +111,7 @@ def apply_residential_e_plus(workspace, runner, standards_building_type, model)
     end    
   end
   puts "#{standards_building_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)." 
+
   return result
     
 end
