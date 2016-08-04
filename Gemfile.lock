@@ -1,12 +1,7 @@
 GIT
-  remote: git://github.com/NREL/openstudio-standards.git
-  revision: 2925e5c997c5656f7e8dfa42a03c356285e91211
-  ref: 2925e5c997c5656f7e8dfa42a03c356285e91211
-  specs:
-    openstudio-standards (0.1.4)
-
-PATH
-  remote: E:/openstudio-workflow-gem
+  remote: git://github.com/NREL/OpenStudio-workflow-gem.git
+  revision: 7e750ad364c85ae1d4e928f3d224cb89940a6ba4
+  ref: 7e750ad364c85ae1d4e928f3d224cb89940a6ba4
   specs:
     openstudio-workflow (1.0.0.rc1)
       colored (~> 1.2)
@@ -14,6 +9,13 @@ PATH
       multi_json (~> 1.10)
       rubyXL (~> 3.3)
       rubyzip (~> 1.2)
+
+GIT
+  remote: git://github.com/NREL/openstudio-standards.git
+  revision: 2925e5c997c5656f7e8dfa42a03c356285e91211
+  ref: 2925e5c997c5656f7e8dfa42a03c356285e91211
+  specs:
+    openstudio-standards (0.1.4)
 
 GEM
   remote: http://rubygems.org/
