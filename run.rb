@@ -1,4 +1,5 @@
 require 'openstudio-workflow'
+require 'openstudio/workflow/adapters/output_adapter'
 require 'rest-client'
 require 'base64'
 require 'logger'
@@ -24,13 +25,9 @@ datapoint_id = ARGV[2]
 
 project_id = ARGV[3]
 
-# Create adapters
-input_options = {workflow_filename: File.basename(osw_path)}
-input_adapter = OpenStudio::Workflow.load_input_adapter('local', input_options)
-
-# DLM - have to do this first to get it to load the OutputAdapters class
-output_options = {output_directory: File.join(osw_dir, 'run')}
-output_adapter = OpenStudio::Workflow.load_output_adapter('local', output_options)
+# Run workflow.osw
+run_options = Hash.new
+run_options[:debug] = debug
 
 if city_db_url && datapoint_id && project_id
 
@@ -59,14 +56,31 @@ if city_db_url && datapoint_id && project_id
             params[:datapoint] = datapoint
 
             request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
-            response = request.post(params, content_type: :json, accept: :json)
+            
+            begin
+              response = request.post(params, content_type: :json, accept: :json)
+            rescue => e
+              puts "Bad response #{e.response}"
+              puts e.message
+              return false
+            end
+          
+            return true
           end
           
           def send_file(path)
+            if !File.exists?(path)
+              puts "send_file cannot open file '#{path}'"
+              return false
+            end
 
             the_file = ''
             File.open(path, 'rb') do |file|
               the_file = Base64.strict_encode64(file.read)
+            end
+            
+            if the_file.empty?
+              the_file = Base64.strict_encode64("\n")
             end
     
             file_data = {}
@@ -76,9 +90,23 @@ if city_db_url && datapoint_id && project_id
             params = {}
             params[:datapoint_id] = @options[:datapoint_id]
             params[:file_data] = file_data
+            
+            puts "sending file '#{path}'"
+            visible_params = Marshal.load(Marshal.dump(params))
+            visible_params[:file_data].delete(:file)
+            puts visible_params
 
             request = RestClient::Resource.new("#{@url}/api/datapoint_file", user: @user_name, password: @user_pwd)
-            response = request.post(params, content_type: :json, accept: :json)
+            
+            begin
+              response = request.post(params, content_type: :json, accept: :json)            
+            rescue => e
+              puts "Bad response #{e.response}"
+              puts e.message
+              return false
+            end
+            
+            return true
           end
 
           # Write that the process has started
@@ -93,7 +121,8 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/finished.job", 'w') { |f| f << "Finished Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Complete")
-            send_file("#{@options[:output_directory]}/../run.log")
+            send_file("#{@options[:output_directory]}/run.log")
+            Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
           end
 
           # Write that the process has failed
@@ -101,7 +130,8 @@ if city_db_url && datapoint_id && project_id
             File.open("#{@options[:output_directory]}/failed.job", 'w') { |f| f << "Failed Workflow #{::Time.now} #{@options}" }
             fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
             send_status("Failed")
-            send_file("#{@options[:output_directory]}/../run.log")
+            send_file("#{@options[:output_directory]}/run.log")
+            Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
           end
 
           # Do nothing on a state transition
@@ -138,12 +168,10 @@ if city_db_url && datapoint_id && project_id
 
   output_options = {output_directory: File.join(osw_dir, 'run'), url: city_db_url, datapoint_id: datapoint_id, project_id: project_id}
   output_adapter = OpenStudio::Workflow::OutputAdapter::CityDB.new(output_options)
-
+  
+  run_options[:output_adapter] = output_adapter
 end
 
-# Run workflow.osw
-run_options = Hash.new
-run_options[:debug] = debug
-
-k = OpenStudio::Workflow::Run.new(input_adapter, output_adapter, osw_dir, run_options)
+# do the run
+k = OpenStudio::Workflow::Run.new(osw_path, run_options)
 final_state = k.run

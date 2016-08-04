@@ -21,27 +21,16 @@ class DenverCleaner < Cleaner
     total_height = nil
 
     average_roof_height = data['average_roof_height']
-    average_roof_height_source = data['average_roof_height_source']
     floor_area = data['floor_area']
-    floor_area_source = data['floor_area_source']
-    footprint_area = data['footprint_area']
-    footprint_area_source = data['footprint_area_source']    
+    footprint_area = data['footprint_area'] 
     maximum_roof_height = data['maximum_roof_height']
-    maximum_roof_height_source = data['maximum_roof_height_source']
     minimum_roof_height = data['minimum_roof_height']
-    minimum_roof_height_source = data['minimum_roof_height_source']
     number_of_stories = data['number_of_stories']
-    number_of_stories_source = data['number_of_stories_source']
     number_of_stories_above_ground = data['number_of_stories_above_ground']
-    number_of_stories_above_ground_source = data['number_of_stories_above_ground_source']
     number_of_stories_below_ground = data['number_of_stories_below_ground']
-    number_of_stories_below_ground_source = data['number_of_stories_below_ground_source']
     roof_elevation = data['roof_elevation']
-    roof_elevation_source = data['roof_elevation_source']
     roof_type = data['roof_type']
-    roof_type_source = data['roof_type_source']
     surface_elevation = data['surface_elevation']
-    surface_elevation_source = data['surface_elevation_source']
     zoning = data['zoning']
     
     # todo: different assumed height for first floor of mixed use?
@@ -90,22 +79,13 @@ class DenverCleaner < Cleaner
     
       if num_floors_height && num_floors_area
         number_of_stories = num_floors_area.round # prefer the area based weighting as height based metric does not include basements
-        number_of_stories_source = "Inferred"
       elsif num_floors_height
         number_of_stories = num_floors_height.round
-        number_of_stories_source = "Inferred"
       elsif num_floors_area
         number_of_stories = num_floors_area.round
-        number_of_stories_source = "Inferred"
       else
         number_of_stories = 1
-        number_of_stories_source = "Inferred"
       end
-    end
-    
-    if number_of_stories.nil?
-      number_of_stories = 1
-      number_of_stories_source = "Inferred"
     end
     
     if total_height.nil?
@@ -121,8 +101,6 @@ class DenverCleaner < Cleaner
     #    new_resulting_area = footprint_area * new_result
     #    if (floor_area-new_resulting_area).abs < (floor_area-resulting_area).abs
     #      number_of_stories = new_result
-    #      number_of_stories_source = "Inferred"
-    #      
     #      total_height = number_of_stories * assumed_floor_to_floor_height
     #    end
     #  end
@@ -135,78 +113,51 @@ class DenverCleaner < Cleaner
     #  floor_to_floor_height_with_basement = total_height / (number_of_stories - 1)
     #  if (floor_to_floor_height_no_basement - assumed_floor_to_floor_height).abs < (floor_to_floor_height_with_basement - assumed_floor_to_floor_height).abs
     #    number_of_stories_above_ground = number_of_stories
-    #    number_of_stories_above_ground_source = "Inferred"
     #    number_of_stories_below_ground = 0
-    #    number_of_stories_below_ground_source = "Inferred"
     #  else
     #    number_of_stories_above_ground = number_of_stories-1
-    #    number_of_stories_above_ground_source = "Inferred"
     #    number_of_stories_below_ground = 1
-    #    number_of_stories_below_ground_source = "Inferred"
     #  end
     #else
       number_of_stories_above_ground = number_of_stories
-      number_of_stories_above_ground_source = "Inferred"
       number_of_stories_below_ground = 0
-      number_of_stories_below_ground_source = "Inferred"
     #end
     
     # DLM: NA for Denver
     #if roof_elevation.nil? && surface_elevation.nil?
     #  surface_elevation = 0
-    #  surface_elevation_source = "Inferred"
     #  roof_elevation = number_of_stories_above_ground * assumed_floor_to_floor_height
-    #  roof_elevation_source = "Inferred"
     #elsif roof_elevation.nil? 
       roof_elevation = surface_elevation + number_of_stories_above_ground * assumed_floor_to_floor_height
-      roof_elevation_source = "Inferred"
     #elsif surface_elevation.nil?
     #  surface_elevation = roof_elevation - number_of_stories_above_ground * assumed_floor_to_floor_height
-    #  surface_elevation_source = "Inferred"
     #end
     
     if floor_area.nil?
       floor_area = footprint_area * number_of_stories
-      floor_area_source = "Inferred" 
     end
     
      data['average_roof_height'] = average_roof_height
-     data['average_roof_height_source'] = average_roof_height_source
      data['floor_area'] = floor_area
-     data['floor_area_source'] = floor_area_source
      data['footprint_area'] = footprint_area
-     data['footprint_area_source'] = footprint_area_source    
      data['maximum_roof_height'] = maximum_roof_height
-     data['maximum_roof_height_source'] = maximum_roof_height_source
      data['minimum_roof_height'] = minimum_roof_height
-     data['minimum_roof_height_source'] = minimum_roof_height_source
      data['number_of_stories'] = number_of_stories
-     data['number_of_stories_source'] = number_of_stories_source
      data['number_of_stories_above_ground'] = number_of_stories_above_ground
-     data['number_of_stories_above_ground_source'] = number_of_stories_above_ground_source
      data['number_of_stories_below_ground'] = number_of_stories_below_ground
-     data['number_of_stories_below_ground_source'] = number_of_stories_below_ground_source
      data['roof_elevation'] = roof_elevation
-     data['roof_elevation_source'] = roof_elevation_source
      data['roof_type'] = roof_type
-     data['roof_type_source'] = roof_type_source
      data['surface_elevation'] = surface_elevation
-     data['surface_elevation_source'] = surface_elevation_source
 
   end
 
-  def infer_space_type(data)
+  def infer_building_type(data)
 
     zoning = data['zoning']
-    zoning_source = data['zoning_source']
     floor_area = data['floor_area']
-    floor_area_source = data['floor_area_source']
     number_of_stories = data['number_of_stories']
-    number_of_stories_source = data['number_of_stories_source']
-    space_type = data['space_type']
-    space_type_source = data['space_type_source']
+    building_type = data['building_type']
     number_of_residential_units = data['number_of_residential_units']
-    number_of_residential_units_source = data['number_of_residential_units_source']
     
     if floor_area.nil?
       fail "Floor area cannot be nil"
@@ -219,68 +170,53 @@ class DenverCleaner < Cleaner
     
     ft2_to_m2 = 0.092903
     
-    if space_type.nil?
+    if building_type.nil?
       if zoning == "Vacant"
-        space_type = "Vacant"
-        space_type_source = "Inferred"
+        building_type = "Vacant"
       elsif zoning == "Mixed"
         if floor_area < 3000*ft2_to_m2
-          space_type = "Single-Family"
-          space_type_source = "Inferred"
+          building_type = "Single-Family"
         elsif floor_area < (4*2000)*ft2_to_m2
-          space_type = "Multifamily (2 to 4 units)"
-          space_type_source = "Inferred"
+          building_type = "Multifamily (2 to 4 units)"
         else
-          space_type = "Multifamily (5 or more units)"
-          space_type_source = "Inferred"
+          building_type = "Multifamily (5 or more units)"
         end
       elsif zoning == "Residential"
         if floor_area < 3000*ft2_to_m2
-          space_type = "Single-Family"
-          space_type_source = "Inferred"
+          building_type = "Single-Family"
         elsif floor_area < (4*2000)*ft2_to_m2
-          space_type = "Multifamily (2 to 4 units)"
-          space_type_source = "Inferred"
+          building_type = "Multifamily (2 to 4 units)"
         else
-          space_type = "Multifamily (5 or more units)"
-          space_type_source = "Inferred"
+          building_type = "Multifamily (5 or more units)"
         end
       elsif zoning == "Commercial"
-        space_type = "Office"
-        space_type_source = "Inferred"
+        building_type = "Office"
       elsif zoning == "OpenSpace"
-        space_type = "Vacant"        
-        space_type_source = "Inferred"
+        building_type = "Vacant"        
       end
     end
     
     if number_of_residential_units.nil?
-      if space_type == "Single-Family"
+      if building_type == "Single-Family"
         number_of_residential_units = 1
-        number_of_residential_units_source = "Inferred"
-      elsif space_type == "Multifamily (2 to 4 units)"
+      elsif building_type == "Multifamily (2 to 4 units)"
         number_of_residential_units = (floor_area / (2000*ft2_to_m2)).to_i
         if number_of_residential_units < 2
           number_of_residential_units = 2
         elsif number_of_residential_units > 4
           number_of_residential_units = 4
         end
-        number_of_residential_units_source = "Inferred"
-      elsif space_type == "Multifamily (5 or more units)"
+      elsif building_type == "Multifamily (5 or more units)"
         number_of_residential_units = (floor_area / (1500*ft2_to_m2)).to_i
         if number_of_residential_units < 5
           number_of_residential_units = 5
         end
-        number_of_residential_units_source = "Inferred"
       end
     end
     
     data['zoning'] = zoning
-    data['zoning_source'] = zoning_source
-    data['space_type'] = space_type
-    data['space_type_source'] = space_type_source
+    data['building_type'] = building_type
     data['number_of_residential_units'] = number_of_residential_units
-    data['number_of_residential_units_source'] = number_of_residential_units_source
     
   end
   
@@ -449,7 +385,7 @@ class DenverCleaner < Cleaner
     #data['footprint_area'] = ft_to_m*data['footprint_area'] if data['footprint_area']
 
     infer_geometry(data)
-    infer_space_type(data) 
+    infer_building_type(data) 
     
     super(data, schema)
   end

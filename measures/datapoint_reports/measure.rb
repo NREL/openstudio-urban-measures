@@ -68,6 +68,14 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     if !runner.validateUserArguments(arguments(), user_arguments)
       return result
     end
+
+    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
+                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
+                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+
+    timeseries.each do |ts|
+      result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},timestep;").get
+    end
     
     return result
   end
@@ -409,6 +417,38 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     aspect_ratio ||= nil
 
     add_result(results, "aspect_ratio", aspect_ratio, "")
+    
+    # get timeseries
+    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
+                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
+                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+    
+    n = nil
+    values = []
+    timeseries.each_index do |i|
+      timeseries_name = timeseries[i]
+      ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, "")
+      if n.nil? 
+        # first timeseries should always be set
+        values[i] = ts.get.values
+        n = values[i].size 
+      elsif ts.is_initialized
+        values[i] = ts.get.values
+      else
+        values[i] = Array.new(n, 0)
+      end
+    end
+
+    File.open("report.csv", 'w') do |file|
+      file.puts(timeseries.join(','))
+      (0...n).each do |i|
+        line = []
+        values.each_index do |j|
+          line << values[j][i]
+        end
+        file.puts(line.join(',')) 
+      end
+    end
 
     #closing the sql file
     sql_file.close

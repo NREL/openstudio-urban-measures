@@ -2,7 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>bar_aspect_ratio_study</name>
   <uid>3dcac94d-8a2e-43b6-8698-a3a4e8f3903f</uid>
-  <version_id>99e06c34-0bad-4075-a278-561c028f30dc</version_id>
+  <version_id>493668d6-98a1-401c-8066-2bb46b5fcb51</version_id>
+  <version_modified>20160713T191905Z</version_modified>
   <xml_checksum>49BEF039</xml_checksum>
   <class_name>BarAspectRatioStudy</class_name>
   <display_name>Bar Aspect Ratio Study</display_name>

@@ -7,99 +7,80 @@
 	"measure_paths": ["./../../../measures/"],
 	"steps": [{
 		"measure_dir_name": "ChangeBuildingLocation",
-		"arguments": [{
-			"name": "weather_directory",
-			"value": "./../../weather"
-		},
-		{
-			"name": "weather_file_name",
-			"value": null
-		}]
+		"arguments": {
+			"weather_directory": "./../../weather",
+			"weather_file_name": null
+		}
 	},
 	{
 		"measure_dir_name": "BarAspectRatioStudy",
-		"arguments": [{
-			"name": "floor_area",
-			"value": null
-		},
-		{
-			"name": "ns_to_ew_ratio",
-			"value": 2.0
-		},
-		{
-			"name": "number_of_stories",
-			"value": 2
-		},
-		{
-			"name": "window_to_wall_ratio",
-			"value": 0.3
-		},    
-		{
-			"name": "floor_to_floor_height",
-			"value": 3.3
-		}]
+		"arguments": {
+			"floor_area": null,
+			"ns_to_ew_ratio": 2.0,
+			"number_of_stories": 2,
+			"window_to_wall_ratio": 0.3,
+			"floor_to_floor_height": 3.3
+		}
 	},
 	{
-		"measure_dir_name": "SetSpaceType",
-		"arguments": [
-    {
-			"name": "space_type",
-			"value": "Office"
-		},
-    {
-			"name": "number_of_residential_units",
-			"value": 0
+		"measure_dir_name": "SetBuildingType",
+		"arguments": {
+			"building_type": "Office",
+      "mixed_type_1": null,
+      "mixed_type_1_percentage": null,
+      "mixed_type_2": null,
+      "mixed_type_2_percentage": null,
+      "mixed_type_3": null,
+      "mixed_type_3_percentage": null,
+      "mixed_type_4": null,
+      "mixed_type_4_percentage": null,   
+			"number_of_residential_units": 0
 		}
-    ]
 	},
 	{
 		"measure_dir_name": "urban_building_type",
-		"arguments": [{
-			"name": "heating_source",
-			"value": "Gas"
-		},
-		{
-			"name": "cooling_source",
-			"value": "Electric"
-		}]
+		"arguments": {
+			"heating_source": "Gas",
+			"cooling_source": "Electric"
+		}
 	},
 	{
 		"measure_dir_name": "urban_building_type_e_plus",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "AedgK12ElectricEquipmentControls",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "ReduceLightingLoadsByPercentage",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "AedgK12InteriorLightingControls",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "AdjustSystemEfficiencies",
-		"arguments": [{
-			"name": "heating_efficiency_multiplier",
-			"value": 1.1
-		},
-		{
-			"name": "cooling_cop_multiplier",
-			"value": 1.3
-		}]
+		"arguments": {
+			"heating_efficiency_multiplier": 1.1,
+		  "cooling_cop_multiplier": 1.3
+		}
 	},
 	{
 		"measure_dir_name": "ImproveFanBeltEfficiency",
-		"arguments": []
+		"arguments": {}
 	},
 	{
 		"measure_dir_name": "ImproveMotorEfficiency",
-		"arguments": []
+		"arguments": {}
+	},
+	{
+		"measure_dir_name": "StandardReports",
+		"arguments": {}
 	}]
 }

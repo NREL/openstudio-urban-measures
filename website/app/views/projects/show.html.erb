@@ -174,7 +174,7 @@
         <td><%= link_to district_system.id, district_system %></td>
         <td><%= district_system.type %></td>
         <td><%= district_system.source_name %> <%= district_system.source_id %></td>
-        <% if can? :update, DistrictSystem %><td><%= link_to 'Edit', edit_district_system_path(building) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+        <% if can? :update, DistrictSystem %><td><%= link_to 'Edit', edit_district_system_path(district_system) %> | <%= link_to 'Destroy', district_system, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
       </tr>
     <% end %>
     </tbody>

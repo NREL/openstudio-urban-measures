@@ -1,0 +1,74 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>import_district_system_loads</name>
+  <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
+  <version_id>34e2d126-d154-44a2-a764-2e9b7845dd10</version_id>
+  <version_modified>20160803T055923Z</version_modified>
+  <xml_checksum>45EB89EB</xml_checksum>
+  <class_name>ImportDistrictSystemLoads</class_name>
+  <display_name>Import District System Loads</display_name>
+  <description>Imports District System Loads as Schedules</description>
+  <modeler_description></modeler_description>
+  <arguments>
+    <argument>
+      <name>city_db_url</name>
+      <display_name>City Database Url</display_name>
+      <description>Url of the City Database</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
+    </argument>
+    <argument>
+      <name>project_id</name>
+      <display_name>Project ID</display_name>
+      <description>Project ID.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>building_workflow_id</name>
+      <display_name>Building Workflow ID</display_name>
+      <description>Building Workflow ID.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>HVAC.Whole System</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Model Articulation</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>import_district_system_loads_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>F184818B</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.12.0</identifier>
+        <min_compatible>1.12.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>2AECCB16</checksum>
+    </file>
+  </files>
+</measure>

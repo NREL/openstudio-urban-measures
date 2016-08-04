@@ -71,7 +71,7 @@ class OpenStudio::Model::Model
       # self.custom_swh_tweaks(building_type, building_vintage, climate_zone, prototype_input)
       self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
       self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
-      self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
+      #self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
       self.set_sizing_parameters(building_type, building_vintage)
       # self.yearDescription.get.setDayofWeekforStartDay('Sunday')
 

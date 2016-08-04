@@ -6,7 +6,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
   # human readable name
   def name
-    return "add_district_system"
+    return "Add district system"
   end
 
   # human readable description

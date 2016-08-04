@@ -49,7 +49,9 @@ class ApiController < ApplicationController
     @types = []
     if params[:types]
       params[:types].each do |type|
-        @types << type.capitalize if @possible_types.include? type.capitalize
+        # DLM: capitalize turns 'District System' into 'District system'
+        #@types << type.capitalize if @possible_types.include? type.capitalize
+        @types << type if @possible_types.include? type
       end
     else
       @types << 'All'
@@ -590,7 +592,7 @@ class ApiController < ApplicationController
       error_messages << "Datapoint #{@datapoint.id} could not be found."
     else
       # save to file_path:
-      if clean_params[:file_data] && clean_params[:file_data][:file_name]
+      if clean_params[:file_data] && clean_params[:file_data][:file_name] && clean_params[:file_data][:file]
         filename = clean_params[:file_data][:file_name]
         file = clean_params[:file_data][:file]
 
@@ -641,12 +643,12 @@ class ApiController < ApplicationController
             @file_data['file'] = encoded_file
           else
             error = true
-            error_message << "No file found."
+            error_messages << "No file found."
           end
         end
       else
         error = true
-        error_message << "No file_name parameter provided."
+        error_messages << "No file_name parameter provided."
       end
     end
     respond_to do |format|

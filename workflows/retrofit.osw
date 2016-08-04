@@ -1,124 +1,75 @@
 {
-  "seed_file": null,
-  "weather_file": null,
-  "root_directory": null,
-  "run_directory": ".",
-  "file_paths": ["./../../../weather/"],
-  "measure_paths": ["./../../../measures/"],
-	"steps": [
-		{
-			"measure_dir_name": "ChangeBuildingLocation",
-			"arguments": [
-        {
-          "name": "weather_directory",
-          "value": "./../../weather"
-        },
-        {
-          "name": "weather_file_name",
-          "value": null
-        }
-      ]
-		},
-		{
-			"measure_dir_name": "urban_geometry_creation",
-			"arguments": [
-        {
-          "name": "city_db_url",
-          "value": "http://insight4.hpc.nrel.gov:8081/"
-        },
-        {
-          "name": "project_name",
-          "value": null
-        },
-        {
-          "name": "source_id",
-          "value": null
-        },
-        {
-          "name": "source_name",
-          "value": null
-        },
-        {
-          "name": "surrounding_buildings",
-          "value": "None"
-        }
-			]
-		}, 
-		{
-			"measure_dir_name": "urban_building_type",
-			"arguments": [
-        {
-          "name": "heating_source",
-          "value": "Gas"
-        },
-        {
-          "name": "cooling_source",
-          "value": "Electric"
-        }
-			]
-		},
-		{
-			"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
-			"arguments": []
-		},   
-		{
-			"measure_dir_name": "AedgK12ElectricEquipmentControls",
-			"arguments": []
-		},    
-		{
-			"measure_dir_name": "ReduceLightingLoadsByPercentage",
-			"arguments": []
-		},       
-		{
-			"measure_dir_name": "AedgK12InteriorLightingControls",
-			"arguments": []
-		},   
-		{
-			"measure_dir_name": "AdjustSystemEfficiencies",
-			"arguments": [
-        {
-          "name": "heating_efficiency_multiplier",
-          "value": 1.1
-        },
-        {
-          "name": "cooling_cop_multiplier",
-          "value": 1.3
-        }
-			]
-		},
-		{
-			"measure_dir_name": "ImproveFanBeltEfficiency",
-			"arguments": []
-		},
-		{
-			"measure_dir_name": "ImproveMotorEfficiency",
-			"arguments": []
-		},
-    
-		{
-			"measure_dir_name": "datapoint_reports",
-			"arguments": [
-        {
-          "name": "city_db_url",
-          "value": "http://insight4.hpc.nrel.gov:8080/"
-        },
-        {
-          "name": "user_name",
-          "value": "test@nrel.gov"
-        },
-        {
-          "name": "password",
-          "value": "testing123"
-        },
-        {
-          "name": "project_id",
-          "value": "0"
-        },
-        {
-          "name": "datapoint_id",
-          "value": "0"
-        }
-			]
+  "feature_type": "Building",
+	"seed_file": null,
+	"weather_file": null,
+	"root_directory": null,
+	"run_directory": ".",
+	"file_paths": ["./../../../weather/"],
+	"measure_paths": ["./../../../measures/"],
+	"steps": [{
+		"measure_dir_name": "ChangeBuildingLocation",
+		"arguments": {
+			"weather_directory": "./../../weather",
+			"weather_file_name": null
 		}
-	]
+	},
+	{
+		"measure_dir_name": "urban_geometry_creation",
+		"arguments": {
+			"city_db_url": "http://insight4.hpc.nrel.gov:8081/",
+			"project_name": null,
+			"source_id": null,
+			"source_name": null,
+			"surrounding_buildings": "None"
+      }
+    },   
+    {
+      "measure_dir_name": "urban_building_type",
+      "arguments": {
+        "heating_source": "Gas",
+        "cooling_source": "Electric"
+      }
+    },
+    {
+      "measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
+      "arguments": {}
+    },   
+    {
+      "measure_dir_name": "AedgK12ElectricEquipmentControls",
+      "arguments": {}
+    },    
+    {
+      "measure_dir_name": "ReduceLightingLoadsByPercentage",
+      "arguments": {}
+    },       
+    {
+      "measure_dir_name": "AedgK12InteriorLightingControls",
+      "arguments": {}
+    },   
+    {
+      "measure_dir_name": "AdjustSystemEfficiencies",
+      "arguments": {
+        "heating_efficiency_multiplier": 1.1,
+        "cooling_cop_multiplier": 1.3
+      }
+    },
+    {
+      "measure_dir_name": "ImproveFanBeltEfficiency",
+      "arguments": {}
+    },
+    {
+      "measure_dir_name": "ImproveMotorEfficiency",
+      "arguments": {}
+    },
+    {
+      "measure_dir_name": "datapoint_reports",
+      "arguments": {
+        "city_db_url": "http: //insight4.hpc.nrel.gov: 8080/",
+        "user_name": "test@nrel.gov",
+        "password": "testing123",
+        "project_id": "0",
+        "datapoint_id": "0"
+      }
+    }
+  ]
 }

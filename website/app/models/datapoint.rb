@@ -60,10 +60,11 @@ class Datapoint
 
     # first check that file_name is unique
     res = datapoint.datapoint_files.where(file_name: filename)
-    if res.size > 0
-      error = true
-      error_message = 'There is already a file uploaded with this file_name.'
-    end
+    res.each {|f| f.destroy}
+    #if res.size > 0
+    #  error = true
+    #  error_message = 'There is already a file uploaded with this file_name.'
+    #end
 
     unless error
 

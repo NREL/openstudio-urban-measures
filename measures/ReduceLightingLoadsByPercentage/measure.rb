@@ -9,6 +9,11 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
   #define the arguments that the user will input
   def arguments(model)
     args = OpenStudio::Ruleset::OSArgumentVector.new
+    
+    skip = OpenStudio::Ruleset::OSArgument::makeBoolArgument("__SKIP__",false)
+    skip.setDisplayName("Skip this measure?")
+    skip.setDefaultValue(false)
+    args << skip
 
     #make a choice argument for model objects
     space_type_handles = OpenStudio::StringVector.new
@@ -100,7 +105,13 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
     if not runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
-
+    
+    skip = runner.getBoolArgumentValue("__SKIP__",user_arguments)
+    if skip
+      runner.registerInfo("Skipping measure.")
+      return true
+    end
+    
     #assign the user inputs to variables
     object = runner.getOptionalWorkspaceObjectChoiceValue("space_type",user_arguments,model)
     lighting_power_reduction_percent = runner.getDoubleArgumentValue("lighting_power_reduction_percent",user_arguments)
@@ -381,7 +392,7 @@ class ReduceLightingLoadsByPercentage < OpenStudio::Ruleset::ModelUserScript
           #clone rename and add to hash
           new_def = exist_def.clone(model)
           new_def_name = new_def.setName("#{new_def.name} - #{lighting_power_reduction_percent} percent reduction")
-          cloned_lights_defs[exist_def.name] = new_def
+          cloned_lights_defs[exist_def.name.to_s] = new_def
           new_def = new_def.to_LightsDefinition.get
 
           #add demo cost of object being removed to one counter for one time demo cost for baseline objects

@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>70450ffb-b194-4154-95c5-14eeffc69ced</version_id>
-  <version_modified>20160606T194201Z</version_modified>
+  <version_id>d7b2eae3-77ab-4bc3-96d2-e505f3b41e01</version_id>
+  <version_modified>20160729T231737Z</version_modified>
   <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
@@ -42,13 +42,13 @@
       <filename>constants.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>9F7D2989</checksum>
+      <checksum>6FEC70C2</checksum>
     </file>
     <file>
       <filename>geometry.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>E1556074</checksum>
+      <checksum>2285CA0B</checksum>
     </file>
     <file>
       <version>
@@ -59,19 +59,19 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>8ED20319</checksum>
-    </file>
-    <file>
-      <filename>apply_residential.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>905EBEA5</checksum>
+      <checksum>40BC94E4</checksum>
     </file>
     <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
-      <checksum>950D2030</checksum>
+      <checksum>5CB83B7C</checksum>
+    </file>
+    <file>
+      <filename>apply_residential_e_plus.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>1EF6268B</checksum>
     </file>
   </files>
 </measure>

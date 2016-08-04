@@ -1,8 +1,9 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>export_time_series_datato_cS_v</name>
+  <name>export_time_series_datato_csv</name>
   <uid>556af0ff-b31e-4767-959a-5e213063e13b</uid>
-  <version_id>bad6a9f9-30d7-4a5e-b724-46b08d443b87</version_id>
+  <version_id>0adfca3b-a618-48cc-9304-140efd88d02a</version_id>
+  <version_modified>20160713T191905Z</version_modified>
   <xml_checksum>2C8A3EEF</xml_checksum>
   <class_name>ExportTimeSeriesDatatoCSV</class_name>
   <display_name>ExportTimeSeriesDatatoCSV</display_name>

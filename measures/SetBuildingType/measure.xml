@@ -1,0 +1,124 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>set_building_type</name>
+  <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
+  <version_id>4cb293bc-5c11-461f-8585-1f7675f1112f</version_id>
+  <version_modified>20160715T192831Z</version_modified>
+  <xml_checksum>49BEF039</xml_checksum>
+  <class_name>SetBuildingType</class_name>
+  <display_name>Set Building Type</display_name>
+  <description>This measure will create a building envelope based on a target floor area, aspect ratio, and floor to floor height.</description>
+  <modeler_description>This is based on the SketchUp Plugin user script to create a rectangular building, but just uses different inputs. The resulting building will have a core and perimeter zoning, unless it is too small, in which case eac floor will have a single zone.</modeler_description>
+  <arguments>
+    <argument>
+      <name>building_type</name>
+      <display_name>Building Type</display_name>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_1</name>
+      <display_name>Mixed Type 1</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_1_percentage</name>
+      <display_name>Mixed Type 1 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_2</name>
+      <display_name>Mixed Type 2</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_2_percentage</name>
+      <display_name>Mixed Type 2 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_3</name>
+      <display_name>Mixed Type 3</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_3_percentage</name>
+      <display_name>Mixed Type 3 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_4</name>
+      <display_name>Mixed Type 4</display_name>
+      <type>String</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>mixed_type_4_percentage</name>
+      <display_name>Mixed Type 4 Percentage</display_name>
+      <type>Double</type>
+      <required>false</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>number_of_residential_units</name>
+      <display_name>Number of Residential Units</display_name>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
+    </argument>
+  </arguments>
+  <provenances/>
+  <tags>
+    <tag>Envelope.Form</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Measure Function</name>
+      <value>Measure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Requires EnergyPlus Results</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+    <attribute>
+      <name>Uses SketchUp API</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.0.4</identifier>
+        <min_compatible>1.0.4</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>8EC512FD</checksum>
+    </file>
+  </files>
+</measure>
