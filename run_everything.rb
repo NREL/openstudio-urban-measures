@@ -6,7 +6,7 @@ require_relative 'runner'
 
 url = 'http://localhost:3000'
 #url = 'http://insight4.hpc.nrel.gov:8081'
-project_id = '57965ea0c44c8d3924000002'
+project_id = '57a409fec44c8d170c000002'
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
 max_datapoints = Float::INFINITY
