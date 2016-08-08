@@ -334,7 +334,11 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "orientation", building_rotation, "deg")
 
     total_occupancy = building.numberOfPeople
-    add_result(results, "total_occupancy", total_occupancy, "people")
+    num_units = 1
+    if building.standardsNumberOfLivingUnits.is_initialized
+      num_units = building.standardsNumberOfLivingUnits.get.to_i
+    end
+    add_result(results, "total_occupancy", total_occupancy * num_units, "people")
 
     occupancy_density = building.peoplePerFloorArea
     add_result(results, "occupant_density", occupancy_density, "people/m2")
@@ -419,15 +423,21 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "aspect_ratio", aspect_ratio, "")
     
     # get timeseries
-    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
-                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
-                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+    timeseries = ["Electricity:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
+                  "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
+                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
     
     n = nil
     values = []
     timeseries.each_index do |i|
       timeseries_name = timeseries[i]
-      ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, "")
+      key_values = sql_file.availableKeyValues("RUN PERIOD 1", "Zone Timestep", timeseries_name)
+      if key_values.empty?
+        key_value = ""
+      else
+        key_value = key_values[0]
+      end
+      ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
       if n.nil? 
         # first timeseries should always be set
         values[i] = ts.get.values

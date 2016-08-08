@@ -620,7 +620,7 @@
 				"building_type": "Mixed use",
 				"surface_elevation": 1584.3504,
 				"type": "Building",
-				"mixed_type_1": "Multifamily (5 or more units)",
+				"mixed_type_1": "Multifamily (2 to 4 units)",
 				"mixed_type_1_percentage": 75.0,
 				"mixed_type_2": "Office",
 				"mixed_type_2_percentage": 25.0        

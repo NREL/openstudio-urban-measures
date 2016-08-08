@@ -119,6 +119,14 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
       result = apply_commercial(model, runner, heating_source, cooling_source)
     end
     
+    timeseries = ["District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
+                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+    timeseries.each do |timeserie|
+      outputVariable = OpenStudio::Model::OutputVariable.new(timeserie, model)
+      outputVariable.setReportingFrequency("timestep")
+      outputVariable.setKeyValue("*")
+    end
+
     return result
 
   end
