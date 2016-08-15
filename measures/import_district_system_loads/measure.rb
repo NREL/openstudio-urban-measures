@@ -157,7 +157,11 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       schedule = OpenStudio::Model::ScheduleConstant.new(model)
       schedule.setValue(maximum)
     else
-      timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values, ts[:units])
+      mult = 1
+      if ts[:name].include? "District Cooling Chilled Water Rate"
+        mult = -1/10.0 # TODO: remove the /10.0
+      end
+      timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values * mult, ts[:units])
       schedule = OpenStudio::Model::ScheduleInterval.fromTimeSeries(timeseries, model)
       if schedule.empty?
         @runner.registerError("Could not create schedule '#{name}'")

@@ -155,8 +155,10 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
   end
   
   def add_result(results, name, value, units)
-    results[name] = value
-    results[name + '_units'] = units
+    if !value.to_f.nan? and !value.to_f.infinite?
+      results[name] = value
+      results[name + '_units'] = units
+    end
   end
 
   #define what happens when the measure is run
@@ -459,7 +461,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
         file.puts(line.join(',')) 
       end
     end
-
+    
     #closing the sql file
     sql_file.close
     
@@ -469,13 +471,11 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       params = {}
       params['project_id'] = project_id
       params['datapoint'] = {'id' => datapoint_id, 'results' => results}
-      
       http = Net::HTTP.new(@city_db_url, @port)
       request = Net::HTTP::Post.new("/api/datapoint.json")
       request.add_field('Content-Type', 'application/json')
       request.add_field('Accept', 'application/json')
       request.body = JSON.generate(params)
-      
       # DLM: todo, get these from environment variables or as measure inputs?
       request.basic_auth(user_name, password)
     
