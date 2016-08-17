@@ -122,23 +122,23 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
       unless schedules.keys.include? building
         schedules[building] = Hash.new
       end
-      schedules[building][schedule_name] = schedule
+      schedules[building][schedule_name] = [schedule, schedule.comment.split(" = ")[1].to_f]
     end
     
     schedules.each do |building, schedule|
 
       load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
       load_profile_plant.setName("#{building} Heating Load Profile")
-      load_profile_plant.setLoadSchedule(schedule["District Heating Hot Water Rate"])
-      # load_profile_plant.setPeakFlowRate(peakFlowRate)
-      load_profile_plant.setFlowRateFractionSchedule(schedule["District Heating Mass Flow Rate"])
+      load_profile_plant.setLoadSchedule(schedule["District Heating Hot Water Rate"][0])
+      load_profile_plant.setPeakFlowRate(schedule["District Heating Mass Flow Rate"][1])
+      load_profile_plant.setFlowRateFractionSchedule(schedule["District Heating Mass Flow Rate"][0])
       hw_loop.addDemandBranchForComponent(load_profile_plant)
     
       load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
       load_profile_plant.setName("#{building} Cooling Load Profile")
-      load_profile_plant.setLoadSchedule(schedule["District Cooling Chilled Water Rate"])
-      # load_profile_plant.setPeakFlowRate(peakFlowRate)
-      load_profile_plant.setFlowRateFractionSchedule(schedule["District Cooling Mass Flow Rate"])
+      load_profile_plant.setLoadSchedule(schedule["District Cooling Chilled Water Rate"][0])
+      load_profile_plant.setPeakFlowRate(schedule["District Cooling Mass Flow Rate"][1])
+      load_profile_plant.setFlowRateFractionSchedule(schedule["District Cooling Mass Flow Rate"][0])
       chw_loop.addDemandBranchForComponent(load_profile_plant)
     
     end

@@ -139,6 +139,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
   def makeSchedule(start_date, time_step, values, model, basename, ts)
   
+    if ts[:name].include? "Mass Flow Rate"
+      values *= 0.001 # kg to m^3 of water, which is 1000 kg/m^3
+    end
+  
     maximum = OpenStudio::maximum(values)
     minimum = OpenStudio::minimum(values)
     if ts[:normalize]
@@ -159,7 +163,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     else
       mult = 1
       if ts[:name].include? "District Cooling Chilled Water Rate"
-        mult = -1/10.0 # TODO: remove the /10.0
+        mult = -1
       end
       timeseries = OpenStudio::TimeSeries.new(start_date, time_step, values * mult, ts[:units])
       schedule = OpenStudio::Model::ScheduleInterval.fromTimeSeries(timeseries, model)
