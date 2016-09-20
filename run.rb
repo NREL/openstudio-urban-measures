@@ -10,8 +10,7 @@ else
   ENV['PATH'] = openstudio_dir + ":" + ENV['PATH']
 end
 
-require 'openstudio.so'
-
+require 'openstudio'
 require 'openstudio-workflow'
 require 'openstudio/workflow/adapters/output_adapter'
 
@@ -40,6 +39,7 @@ project_id = ARGV[4]
 # Run workflow.osw
 run_options = Hash.new
 run_options[:debug] = debug
+run_options[:preserve_run_dir] = true # because we are running in .
 
 if city_db_url && datapoint_id && project_id
 
@@ -147,7 +147,12 @@ if city_db_url && datapoint_id && project_id
           end
 
           # Do nothing on a state transition
-          def communicate_transition(_=nil, _=nil) end
+          def communicate_transition(_=nil, _=nil) 
+          end
+          
+          # Do nothing on E+ std out
+          def communicate_energyplus_stdout(_=nil, _=nil) 
+          end
 
           # Write the measure attributes to the filesystem
           def communicate_measure_attributes(measure_attributes, _=nil)
@@ -178,7 +183,7 @@ if city_db_url && datapoint_id && project_id
     end
   end
 
-  output_options = {output_directory: File.join(osw_dir, 'run'), url: city_db_url, datapoint_id: datapoint_id, project_id: project_id}
+  output_options = {output_directory: File.join(osw_dir, '.'), url: city_db_url, datapoint_id: datapoint_id, project_id: project_id}
   output_adapter = OpenStudio::Workflow::OutputAdapter::CityDB.new(output_options)
   
   run_options[:output_adapter] = output_adapter

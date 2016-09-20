@@ -19,6 +19,8 @@ class Runner
   end
   
   def clear_results(datapoint_ids = [])
+    puts "clear_results, datapoint_ids = #{datapoint_ids}"
+    
     if datapoint_ids.empty?
       datapoint_ids = get_all_datapoint_ids
     end
@@ -41,6 +43,8 @@ class Runner
   end
   
   def get_project()
+    puts "get_project"
+    
     result = []
     
     request = RestClient::Resource.new("#{@url}/projects/#{@project_id}.json", user: @user_name, password: @user_pwd)
@@ -52,6 +56,7 @@ class Runner
   end  
     
   def get_all_feature_ids(feature_type)
+    puts "get_all_feature_ids, feature_type = #{feature_type}"
     result = []
     
     json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
@@ -67,6 +72,7 @@ class Runner
   end
   
   def get_all_workflow_ids(feature_type)
+    puts "get_all_workflow_ids, feature_type = #{feature_type}"
     result = []
     
     request = RestClient::Resource.new("#{@url}/workflows.json", user: @user_name, password: @user_pwd)
@@ -92,6 +98,7 @@ class Runner
   end
   
   def get_all_datapoint_ids()
+    puts "get_all_datapoint_ids"
     result = []
     
     request = RestClient::Resource.new("#{@url}/datapoints.json", user: @user_name, password: @user_pwd)
@@ -113,6 +120,7 @@ class Runner
   end
   
   def get_datapoint(building_id, workflow_id)
+    puts "get_datapoint, building_id = #{building_id}, workflow_id = #{workflow_id}"
     # todo: DLM, needs to be generalized to take feature_id
     json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
@@ -123,6 +131,7 @@ class Runner
   end
 
    def get_datapoint_by_id(datapoint_id)
+    puts "get_datapoint_by_id, datapoint_id = #{datapoint_id}"
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
     
@@ -131,6 +140,7 @@ class Runner
   end
   
   def get_workflow(datapoint_id)
+    puts "get_workflow, datapoint_id = #{datapoint_id}"
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
 
@@ -139,6 +149,7 @@ class Runner
   end
   
   def get_results(workflow_id)
+    puts "get_results, workflow_id = #{workflow_id}"
     request = RestClient::Resource.new("#{@url}/api/workflow_buildings.json?project_id=#{@project_id}&workflow_id=#{workflow_id}", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
 
@@ -148,6 +159,7 @@ class Runner
   
   # return a vector of directories to run
   def create_osws
+    puts "create_osws"
     result = []
     
     # connect to database, get list of all building and workflow ids
@@ -186,7 +198,7 @@ class Runner
             next
           end
         end
-        puts "Saving Datapoint"
+        puts "Saving Datapoint #{datapoint}"
         
         result << create_osw(datapoint_id)
         
@@ -235,7 +247,7 @@ class Runner
   end
 
   def create_osw(datapoint_id)
-
+    puts "create_osw, datapoint_id = #{datapoint_id}"
     datapoint = get_datapoint_by_id(datapoint_id)
     datapoint_id = datapoint[:id]
     
@@ -274,6 +286,7 @@ class Runner
     FileUtils.mkdir_p(osw_dir)
  
     osw_path = "#{osw_dir}/in.osw"
+    puts "saving osw #{osw_path}"
     File.open(osw_path, 'w') do |file|
       file << JSON.pretty_generate(workflow)
     end
@@ -282,7 +295,7 @@ class Runner
   end
   
   def run_osws(dirs)
-  
+    puts "run_osws, dirs = #{dirs}"
     #dirs = Dir.glob("./run/*")
     
     Parallel.each(dirs, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
@@ -294,14 +307,14 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      command = "bundle exec ruby run.rb '#{openstudio_dir}' '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      command = "bundle exec ruby run.rb '#{@openstudio_dir}' '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
       puts command
       system(command)
     end
   end
   
   def save_results
-  
+    puts "save_results"
     all_workflow_ids = get_all_workflow_ids("Building")
     all_workflow_ids.concat(get_all_workflow_ids("District System"))
     

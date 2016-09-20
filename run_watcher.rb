@@ -10,7 +10,7 @@ openstudio_dir = 'E:/openstudio-2-0/core-build/Products/Debug/'
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
 #max_datapoints = Float::INFINITY
-max_datapoints = 2
+max_datapoints = 7
 num_parallel = 7
 
 def get_all_project_ids(url, user_name, user_pwd)
@@ -31,7 +31,7 @@ end
 project_ids = get_all_project_ids(url, user_name, user_pwd)
 project_ids.each do |project_id|
   runner = Runner.new(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
-  runner.clear_results
+  #runner.clear_results
 end
 
 # main loop
@@ -42,10 +42,12 @@ while true
 
     runner = Runner.new(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     dirs = runner.create_osws
+    puts "running dirs #{dirs}"
     runner.run_osws(dirs)
     runner.save_results
   end
   
+  STDOUT.flush
   sleep 1
-  
+
 end
