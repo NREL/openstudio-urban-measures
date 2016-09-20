@@ -34,7 +34,7 @@ module OsLib_Reporting
     results[:model] = model
     # results[:workspace] = workspace
     results[:sqlFile] = sqlFile
-    results[:web_asset_path] = OpenStudio.getSharedResourcesPath / OpenStudio::Path.new('web_assets')
+    results[:web_asset_path] = ''#OpenStudio.getSharedResourcesPath / OpenStudio::Path.new('web_assets')
 
     return results
   end
