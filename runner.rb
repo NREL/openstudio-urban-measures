@@ -5,8 +5,9 @@ require 'json'
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
-  def initialize(url, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  def initialize(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     @url = url
+    @openstudio_dir = openstudio_dir
     @project_id = project_id   
     @user_name = user_name
     @user_pwd = user_pwd
@@ -293,7 +294,7 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      command = "bundle exec ruby run.rb '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      command = "bundle exec ruby run.rb '#{openstudio_dir}' '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
       puts command
       system(command)
     end

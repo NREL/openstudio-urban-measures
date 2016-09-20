@@ -72,7 +72,7 @@ class OpenStudio::Model::Model
       self.add_exterior_lights(building_type, building_vintage, climate_zone, prototype_input)
       self.add_occupancy_sensors(building_type, building_vintage, climate_zone)
       #self.add_design_days_and_weather_file(building_type, building_vintage, climate_zone)
-      self.set_sizing_parameters(building_type, building_vintage)
+      # self.set_sizing_parameters(building_type, building_vintage)
       # self.yearDescription.get.setDayofWeekforStartDay('Sunday')
 
       # set climate zone and building type
@@ -102,16 +102,16 @@ class OpenStudio::Model::Model
       # Apply the prototype HVAC assumptions
       # which include sizing the fan pressure rises based
       # on the flow rate of the system.
-      self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
+      # self.applyPrototypeHVACAssumptions(building_type, building_vintage, climate_zone)
           
       # Apply the HVAC efficiency standard
-      self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
+      # self.applyHVACEfficiencyStandard(building_vintage, climate_zone)
 
       # Add daylighting controls per standard
       # only four zones in large hotel have daylighting controls
       # todo: YXC to merge to the main function
       # if building_type != "LargeHotel"
-      self.addDaylightingControls(building_vintage)
+      # self.addDaylightingControls(building_vintage)
       # else
         # self.add_daylighting_controls(building_vintage)
       # end

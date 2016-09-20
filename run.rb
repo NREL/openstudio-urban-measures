@@ -1,8 +1,19 @@
-require 'openstudio-workflow'
-require 'openstudio/workflow/adapters/output_adapter'
 require 'rest-client'
 require 'base64'
 require 'logger'
+
+openstudio_dir = ARGV[0]
+$:.unshift(openstudio_dir)
+if /win/.match(RUBY_PLATFORM) or /mingw/.match(RUBY_PLATFORM)
+  ENV['PATH'] = openstudio_dir + ";" + ENV['PATH']
+else
+  ENV['PATH'] = openstudio_dir + ":" + ENV['PATH']
+end
+
+require 'openstudio.so'
+
+require 'openstudio-workflow'
+require 'openstudio/workflow/adapters/output_adapter'
 
 $logger = Logger.new(STDOUT)
 $logger.level = Logger::ERROR
@@ -16,14 +27,15 @@ OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
 
 debug = false
 
-osw_path = ARGV[0]
+
+osw_path = ARGV[1]
 osw_dir = File.dirname(osw_path)
 
-city_db_url = ARGV[1]
+city_db_url = ARGV[2]
 
-datapoint_id = ARGV[2]
+datapoint_id = ARGV[3]
 
-project_id = ARGV[3]
+project_id = ARGV[4]
 
 # Run workflow.osw
 run_options = Hash.new
