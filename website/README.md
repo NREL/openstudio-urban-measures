@@ -101,7 +101,7 @@ First time only
 
 ```
 docker run -v /data/urban/db --name citydb_mongodata busybox true
-docker run -v /data/urban/filedata --name citydb_filedata busybox true
+docker run -v /srv/data --name citydb_filedata busybox true
 ```
 
 ### Run Docker Compose 
