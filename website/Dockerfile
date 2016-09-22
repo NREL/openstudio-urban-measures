@@ -111,6 +111,12 @@ RUN chmod +x /usr/bin/start-server
 # Build the assets
 # First add the users model to prevent the error with not finding the User
 ADD /app/models/user.rb /srv/app/models/user.rb
+
+# Remove the srv/tmp files
+RUN rm -rf /srv/tmp
+RUN mkdir -p /srv/tmp
+RUN chmod 777 /srv/tmp
+
 # Now call precompile
 ENV RAILS_ENV docker-dev
 
