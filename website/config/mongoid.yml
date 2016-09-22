@@ -41,7 +41,7 @@ docker:
       # Provides the hosts the default session can connect to. Must be an array
       # of host:port pairs. (required)
       hosts:
-        - db:27017
+        - insight4.hpc.nrel.gov:27018
         #- localhost:27017
       options:
         pool_size: 16
@@ -57,7 +57,7 @@ docker-dev:
       # Provides the hosts the default session can connect to. Must be an array
       # of host:port pairs. (required)
       hosts:
-        - db:27017
+        - insight4.hpc.nrel.gov:27018
         #- localhost:27017
       options:
         pool_size: 16
