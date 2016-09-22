@@ -100,8 +100,8 @@ eval $(docker-machine env urbanbox) # this sets up environment variables in the 
 First time only
 
 ```
-docker run -v /data/urban/db --name citydb_mongodata busybox true
-docker run -v /srv/data --name citydb_filedata busybox true
+docker create -v /data/db --name citydb_mongodata busybox true
+docker create -v /srv/data --name citydb_filedata busybox true
 ```
 
 ### Run Docker Compose 
