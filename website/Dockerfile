@@ -112,9 +112,9 @@ RUN chmod +x /usr/bin/start-server
 # First add the users model to prevent the error with not finding the User
 ADD /app/models/user.rb /srv/app/models/user.rb
 # Now call precompile
-ENV RAILS_ENV docker
+ENV RAILS_ENV docker-dev
 
-RUN bundle exec rake assets:precompile
+#RUN bundle exec rake assets:precompile
 
 # Bundle app source
 ADD / /srv

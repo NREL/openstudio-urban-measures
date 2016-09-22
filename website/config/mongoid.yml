@@ -46,6 +46,22 @@ docker:
       options:
         pool_size: 16
   options:
+docker-dev:
+  # Configure available database sessions. (required)
+  sessions:
+    # Defines the default session. (required)
+    default:
+      # Defines the name of the default database that Mongoid can connect to.
+      # (required).
+      database: openstudio_urban_modeling_prod
+      # Provides the hosts the default session can connect to. Must be an array
+      # of host:port pairs. (required)
+      hosts:
+        - db:27017
+        #- localhost:27017
+      options:
+        pool_size: 16
+  options:
 test:
   sessions:
     default:
