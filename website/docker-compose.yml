@@ -10,7 +10,7 @@ web:
     - CITYDB_HOST_URL=WhateverYourKeyIs
     - CITYDB_SECRET_KEY_BASE
   volumes_from:
-    - filedata
+    - citydb_filedata
 db:
   image: mongo
   volumes_from:
