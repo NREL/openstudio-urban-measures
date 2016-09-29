@@ -1,0 +1,65 @@
+{
+  "region_type": {
+    "enum": [
+      "State",
+      "County",
+      "CensusTract"
+    ],
+    "type": "string"
+  },
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "type": "FeatureCollection",
+  "features": [
+  {
+      "geometry": {
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                -122.417045134092,
+                37.8030075184001
+              ],
+              [
+                -122.417060148968,
+                37.803082097469
+              ],
+              [
+                -122.416590315536,
+                37.8031423161595
+              ],
+              [
+                -122.416575301143,
+                37.8030677379325
+              ],
+              [
+                -122.417045134092,
+                37.8030075184001
+              ]
+            ]
+          ]
+        ]
+      },
+      "type": "Feature",
+      "properties": {
+        "census_tract": "10300",
+        "region_source_ids": [
+          "06",
+          "075",
+          "010300"
+        ],
+        "region_source_name": "Test Kat",
+        "source_id": "0000",
+        "source_name": "Test Kat 2",
+        "type": "Taxlot",
+        "zoning": "Residential 123",
+        "zoning_source": "Assessor"
+      }
+    }
+  ]
+}  

@@ -1,6 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :instance_workflow, :download_file, :delete_file]
+  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :download_file, :delete_file]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -18,17 +18,15 @@ class DatapointsController < ApplicationController
   # GET /datapoints/new
   def new
     @datapoint = Datapoint.new
-    @datapoint.building = params[:building]
-    @datapoint.project = @datapoint.building.project
+    @datapoint.feature = params[:feature]
+    @datapoint.project = @datapoint.feature.project
     
-    # DLM: datapoint should have 0-1 workflows, is this setting @datapoint.workflows?
-    @workflows = get_workflows
+    @option_sets = get_option_sets
 
   end
 
   # GET /datapoints/1/edit
   def edit
-    @workflows = get_workflows
 
   end
 
@@ -37,14 +35,13 @@ class DatapointsController < ApplicationController
   def create
 
     @datapoint = Datapoint.new
-    @workflows = get_workflows
+    @option_sets = get_option_sets
 
-    logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
+    logger.info("DATAPOINT PARAMS: #{params.inspect}")
 
     error = false
     @error_message = ''
 
-    # DLM: does this hook the datapoint up to the project?  should we do the same for building and workflow?
     if params[:datapoint][:project_id] && !params[:datapoint][:project_id].nil?
       @project_id = params[:datapoint][:project_id]
     else
@@ -70,7 +67,7 @@ class DatapointsController < ApplicationController
         format.json { render action: 'show', status: :created, location: @datapoint }
       else
         flash[:error] = @error_message
-        format.html { render action: 'new', :locals => { building: params[:datapoint][:building_id]}  }
+        format.html { render action: 'new', :locals => { feature: params[:datapoint][:feature_id]}  }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end
@@ -80,8 +77,8 @@ class DatapointsController < ApplicationController
   # PATCH/PUT /datapoints/1.json
   def update
 
-    logger.info("DATAPOINT PARAMS: #{datapoint_params.inspect}")
-    @workflows = get_workflows
+    logger.info("DATAPOINT PARAMS: #{params.inspect}")
+    @option_sets = get_option_sets
 
     error = false
     @error_message = ''
@@ -127,103 +124,6 @@ class DatapointsController < ApplicationController
     end
   end
 
-  # create datapoints for workflow
-  # GET /datapoints/1/instance_workflow
-  # GET /datapoints/1/instance_workflow.json
-  def instance_workflow
-
-    @error_message = ''
-    error = false
-
-    result = Workflow.get_clean_hash(@datapoint.workflow)
-    
-    building_hash = {}
-    region_hash = {}
-    project_hash = {}
-    
-    if @datapoint.building
-      building_hash = Workflow.get_clean_hash(@datapoint.building)
-      
-      if building_hash[:region_source_name] && building_hash[:region_source_ids]
-        building_hash[:region_source_ids].each do |region_source_id|
-          region = Region.where(source_id: region_source_id, source_name: building_hash[:region_source_name]).first
-          region_hash = Workflow.get_clean_hash(region)
-        end
-      end
-    end
-    
-    if @datapoint.project
-      project_hash = Workflow.get_clean_hash(@datapoint.project)
-      
-      if region_hash.empty?
-        region = @datapoint.project.regions.first
-        region_hash = Workflow.get_clean_hash(region)
-      end
-    end    
-    
-    if result && result[:steps]
-      result[:steps].each do |step|
-        if step[:arguments]
-          arguments = step[:arguments]
-          arguments.each_key do |name|
-            name = name.parameterize.underscore.to_sym
-            #puts "name = #{name}"
-            
-            if name == 'project_id'.to_sym
-              arguments[name] = project_hash[:id]
-            elsif name == 'project_name'.to_sym
-              arguments[name] = project_hash[:name]
-            end
-            
-            value = project_hash[name]
-            if value
-              #puts "Setting '#{name}' to '#{value}' based on project level properties" 
-              arguments[name] = value
-            end
-            
-            if name == 'region_id'.to_sym
-              arguments[name] = region_hash[:id]
-            elsif name == 'region_name'.to_sym
-              arguments[name] = region_hash[:name]              
-            end
-            
-            value = region_hash[name]
-            if value
-              #puts "Setting '#{name}' to '#{value}' based on region level properties" 
-              arguments[name] = value
-            end
-            
-            if name == 'building_id'.to_sym
-              arguments[name] = building_hash[:id]
-            elsif name == 'building_name'.to_sym
-              arguments[name] = building_hash[:name]               
-            end
-            
-            value = building_hash[name]
-            if value
-              #puts "Setting '#{name}' to '#{value}' based on building level properties" 
-              arguments[name] = value
-            end
-            
-            if name == 'datapoint_id'.to_sym
-              arguments[name] = @datapoint.id.to_s         
-            end
-          end
-        end
-      end
-    end
-    
-    respond_to do |format|
-      if !error
-        format.html { render json: result }
-        format.json { render json: result }
-      else
-        format.html { render json: { error: @error_message }, status: :unprocessable_entity }
-        format.json { render json: { error: @error_message }, status: :unprocessable_entity }
-      end
-    end
-  end
-
   # download a related datapoint file
   def download_file
     file = @datapoint.datapoint_files.find(params[:file_id])
@@ -264,18 +164,19 @@ class DatapointsController < ApplicationController
     logger.info("@datapoint = #{@datapoint}")
   end
 
-  # Get Workflows
-  def get_workflows
-    @workflows = @datapoint.project.workflows.only(:id)
-    if @workflows.empty?
-      @workflows = []
+  # Get Option Sets
+  def get_option_sets
+    @option_sets = @datapoint.project.option_sets.only(:id)
+    if @option_sets.empty?
+      @option_sets = []
     else
-      @workflows = @workflows.map(&:id)
+      @option_sets = @option_sets.map(&:id)
     end
   end
 
   # Never trust parameters from the scary internet, only allow the white list through.
   def datapoint_params
-    params.require(:datapoint).permit(:file, :project_id, :building_id, :workflow_id, :timestamp_started, :timestamp_completed, :status, results: {} )
+    params.require(:datapoint).permit(:file, :project_id, :feature_id, :option_set_id, :timestamp_started, :timestamp_completed, :status, results: {} )
   end
+
 end

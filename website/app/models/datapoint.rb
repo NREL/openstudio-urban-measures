@@ -15,9 +15,10 @@ class Datapoint
   attr_accessor :file
 
   # Relations
-  belongs_to :building
-  belongs_to :workflow
+  belongs_to :feature
+  belongs_to :option_set
   belongs_to :project
+  has_and_belongs_to_many :scenario, autosave: true
 
   # Relations
   embeds_many :datapoint_files do
@@ -39,6 +40,7 @@ class Datapoint
           break
         end
       else
+        # TODO: should make sure there is a feature_id and an option_set_id (unique keys)
         datapoint[key] = value
       end
     end

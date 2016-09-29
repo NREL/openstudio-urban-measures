@@ -4,12 +4,10 @@ class AdminController < ApplicationController
   end
 
   def clear_data
-    Building.delete_all
-    Taxlot.delete_all
-    DistrictSystem.delete_all
-    Region.delete_all
+    Feature.delete_all
     Datapoint.delete_all
     Workflow.delete_all
+    OptionSet.delete_all
     Geometry.delete_all
     Scenario.delete_all
     Project.delete_all

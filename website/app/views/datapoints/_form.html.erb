@@ -1,6 +1,8 @@
-<%= bootstrap_form_for(@datapoint, layout: :horizontal, control_col: 'col-sm-4') do |f| %>
+<%= bootstrap_form_tag url: (@datapoint.new_record? ? '/datapoints' : "/datapoints/#{@datapoint.id}"),  method: (@datapoint.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4'  do |f| %>
 
-  <% if @datapoint.building %><h3 class="edit-name">Building: <%=link_to @datapoint.building.id, @datapoint.building %></h3><% end %>
+  <% if @datapoint.project %><h3 class="edit-name">Project: <%=link_to @datapoint.project.id, @datapoint.project %></h3><% end %>
+  <% if @datapoint.feature %><h3 class="edit-name">Feature: <%=link_to @datapoint.feature.id, @datapoint.feature %></h3><% end %>
+  <% if @datapoint.option_set %><h3 class="edit-name">Option Set: <%= link_to @datapoint.option_set.id, @datapoint.option_set %></h3><% end %>
   <% if @datapoint.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@datapoint.errors.count, "error") %> prohibited this datapoint from being saved:</h2>
@@ -12,17 +14,16 @@
       </ul>
     </div>
   <% end %>
+
+  <%= f.hidden_field 'datapoint[project_id]', value: @datapoint.project.id %>
+  <%= f.hidden_field 'datapoint[feature_id]', value: @datapoint.feature.id %>
+
   <fieldset>
-    <%= f.text_field :building_id, {label: 'Building ID', disabled: true} %>
+    <%= f.text_field 'datapoint[status]', {label: 'Status', value: @datapoint.status } %>
   </fieldset>
-  <fieldset>
-    <%= f.text_field :status, label: 'Status' %>
-  </fieldset>
-  <fieldset>
-    <%= f.text_field :workflow_id, {label: 'Workflow ID', disabled: true} %>
-  </fieldset>
+ 
   <fieldset class="pad-top-30 pad-bot-30">
-    <%= f.file_field :file, label: 'Add a file' %>
+    <%= f.file_field 'datapoint[file]', label: 'Add a file' %>
   </fieldset>
 
   <%= f.form_group do %>

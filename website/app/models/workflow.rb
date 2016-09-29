@@ -4,8 +4,7 @@ class Workflow
   include Mongoid::Timestamps
 
   field :name, type: String
-  field :display_name, type: String
-  field :feature_type, type: String
+  field :feature_type, type: String #Building, District System
 
   # Relations
   embeds_one :workflow_file do
@@ -16,12 +15,17 @@ class Workflow
 
   belongs_to :project
   has_many :datapoints, dependent: :destroy
+  has_many :option_sets, dependent: :destroy
 
-  def self.create_update_workflow(data, workflow, project_id, name, display_name)
+  # Validations
+  validates_presence_of :name
+  validates_presence_of :feature_type
+
+  def self.create_update_workflow(data, workflow, project_id, name)
     error = false
     error_message = ''
 
-    data.each do |key, value|
+    data.each do |key, value|  # this should include type and feature_type
       if key == 'id'
         # in case there's an ID in the file, and an id already defined on workflow
         if workflow.id.to_s != value
@@ -35,8 +39,7 @@ class Workflow
     end
     workflow.project_id = project_id
     workflow.name = name if name
-    workflow.display_name = display_name if display_name
-    
+       
     unless error
 
       unless workflow.save!

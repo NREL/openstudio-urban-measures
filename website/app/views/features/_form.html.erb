@@ -1,0 +1,12 @@
+<%= bootstrap_form_tag url: (@feature.new_record? ? '/features' : "/features/#{@feature.id}"),  method: (@feature.new_record? ? :post : :put), layout: :horizontal do |f| %>
+
+  <%= f.hidden_field :project_id, value: @project_id %>
+  <fieldset>
+    <%= f.file_field :geojson_file, control_col: 'col-sm-4' %>
+  </fieldset>
+
+  <%= f.form_group do %>
+    <%= f.primary @feature.new_record? ? 'Create' : 'Update' %>
+  <% end %>
+<% end %>
+

@@ -39,6 +39,7 @@ GEM
     apipie-rails (0.3.6)
       json
     arel (6.0.3)
+    bcrypt (3.1.11)
     bcrypt (3.1.11-x64-mingw32)
     bootstrap-sass (3.1.1.1)
       sass (~> 3.2)
@@ -78,6 +79,7 @@ GEM
       actionpack (>= 3.0.0)
       activesupport (>= 3.0.0)
     leaflet-rails (0.7.7)
+    libv8 (3.16.14.15)
     loofah (2.0.3)
       nokogiri (>= 1.5.9)
     mail (2.6.4)
@@ -98,6 +100,9 @@ GEM
       optionable (~> 0.2.0)
     multi_json (1.12.1)
     netrc (0.11.0)
+    nokogiri (1.6.8)
+      mini_portile2 (~> 2.1.0)
+      pkg-config (~> 1.1.7)
     nokogiri (1.6.8-x64-mingw32)
       mini_portile2 (~> 2.1.0)
       pkg-config (~> 1.1.7)
@@ -134,8 +139,13 @@ GEM
       rake (>= 0.8.7)
       thor (>= 0.18.1, < 2.0)
     rake (11.3.0)
+    ref (2.0.0)
     responders (2.3.0)
       railties (>= 4.2.0, < 5.1)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rest-client (2.0.0-x64-mingw32)
       ffi (~> 1.9)
       http-cookie (>= 1.0.2, < 2.0)
@@ -157,6 +167,9 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    therubyracer (0.12.2)
+      libv8 (~> 3.16.14.0)
+      ref
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (1.4.1)
@@ -171,11 +184,13 @@ GEM
       execjs (>= 0.3.0, < 3)
     unf (0.1.4)
       unf_ext
+    unf_ext (0.0.7.2)
     unf_ext (0.0.7.2-x64-mingw32)
     warden (1.2.6)
       rack (>= 1.0)
 
 PLATFORMS
+  ruby
   x64-mingw32
 
 DEPENDENCIES

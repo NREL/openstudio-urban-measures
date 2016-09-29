@@ -1,0 +1,25 @@
+<h2>Features</h2>
+
+<table class="tablesorter table table-striped">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Type</th>
+    <th>Source Name & ID</th>  
+    <% if can? :update, Feature %><th>Actions</th><% end %>
+
+  </tr>
+  </thead>
+  <tbody>
+  <% @features.each do |feature| %>
+    <tr>
+      <td><%= link_to feature.id, feature %></td>
+      <td><%= feature.type %></td>
+      <td><%= feature.source_name %> <%= feature.source_id %></td>
+      <% if can? :update, Feature %><td><%= link_to 'Edit', edit_feature_path(feature) %> | <%= link_to 'Destroy', feature, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= paginate @features %>
