@@ -1,6 +1,6 @@
 class WorkflowsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_workflow, only: [:show, :edit, :update, :destroy, :create_datapoints, :delete_datapoints, :datapoints]
+  before_action :set_workflow, only: [:show, :edit, :update, :destroy]
 
   # GET /workflows
   # GET /workflows.json
@@ -123,20 +123,6 @@ class WorkflowsController < ApplicationController
       format.json { head :no_content }
     end
   end
-
-  # delete all datapoints associated with workflow
-  # def delete_datapoints
-  #   datapoints = Datapoint.where(workflow_id: @workflow.id)
-  #   datapoints.each do |d|
-  #     d.destroy
-  #   end
-
-  #   respond_to do |format|
-  #     format.html { redirect_to @workflow, notice: "Datapoints were successfully deleted." }
-  #     format.json { head :no_content }
-  #   end
-
-  # end
 
   # download a related workflowfile
   def download_zipfile

@@ -141,7 +141,7 @@ class ApiController < ApplicationController
       page = params[:page] ? params[:page] : 1
       @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
       @regions = @project.features.where(type: 'Region').only(:id).asc(:id).map { |x| [x.id.to_s] }
-      @building_id = nil
+      @feature_id = nil
       @distance = nil
       @proximity_feature_types = ['Building']
       @region_id = nil
@@ -283,62 +283,62 @@ class ApiController < ApplicationController
 
   # POST/GET /api/datapoint.json
   # expects project_id and datapoint params
-  def datapoint
-    error = false
-    error_message = ''
-    created_flag = false
+  # def datapoint
+  #   error = false
+  #   error_message = ''
+  #   created_flag = false
 
-    if params[:project_id]
-      @project = Project.find(params[:project_id])
-    else
-      error = false
-      error_message = 'Project ID is not provided.'
-    end
+  #   if params[:project_id]
+  #     @project = Project.find(params[:project_id])
+  #   else
+  #     error = false
+  #     error_message = 'Project ID is not provided.'
+  #   end
 
-    unless error 
-      if params[:datapoint]
-        data = params[:datapoint]
-        # update or create
-        if data[:id]
-          datapoints = @project.datapoints.where(id: data[:id])
-          if datapoints.count > 0
-            @datapoint = datapoints.first
-            logger.info('DATAPOINT FOUND: UPDATING')
-          else
-            error = true
-            error_message = "No datapoints match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
-            logger.info('DATAPOINT NOT FOUND!')
-          end
-        else
-          # DLM: should also have an option set and building id
-          @datapoint = Datapoint.new
-          created_flag = true
-          logger.info('NEW DATAPOINT: CREATING')
-        end
-        unless error
-          # DLM: should also have a workflow and building id
-          @datapoint, error, error_message = Datapoint.create_update_datapoint(data, @datapoint, @project.id)
-        end
-      else
-        error = true
-        error_message += 'No datapoint parameter provided.'
-      end
+  #   unless error 
+  #     if params[:datapoint]
+  #       data = params[:datapoint]
+  #       # update or create
+  #       if data[:id]
+  #         datapoints = @project.datapoints.where(id: data[:id])
+  #         if datapoints.count > 0
+  #           @datapoint = datapoints.first
+  #           logger.info('DATAPOINT FOUND: UPDATING')
+  #         else
+  #           error = true
+  #           error_message = "No datapoints match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
+  #           logger.info('DATAPOINT NOT FOUND!')
+  #         end
+  #       else
+  #         # DLM: should also have an option set and building id
+  #         @datapoint = Datapoint.new
+  #         created_flag = true
+  #         logger.info('NEW DATAPOINT: CREATING')
+  #       end
+  #       unless error
+  #         # DLM: should also have a workflow and building id
+  #         @datapoint, error, error_message = Datapoint.create_update_datapoint(data, @datapoint, @project.id)
+  #       end
+  #     else
+  #       error = true
+  #       error_message += 'No datapoint parameter provided.'
+  #     end
      
-    end
+  #   end
 
-    respond_to do |format|
-      if error
-        format.json { render json: { error: error_message, datapoint: @datapoint}, status: :unprocessable_entity }
-      else
-        status = if created_flag
-                   :created
-                 else
-                   :ok
-                 end
-        format.json { render 'datapoints/show', status: status, location: datapoints_url(@datapoint) }
-      end
-    end
-  end
+  #   respond_to do |format|
+  #     if error
+  #       format.json { render json: { error: error_message, datapoint: @datapoint}, status: :unprocessable_entity }
+  #     else
+  #       status = if created_flag
+  #                  :created
+  #                else
+  #                  :ok
+  #                end
+  #       format.json { render 'datapoints/show', status: status, location: datapoints_url(@datapoint) }
+  #     end
+  #   end
+  # end
 
   # POST /api/retrieve_datapoint.json
   def retrieve_datapoint
@@ -472,16 +472,81 @@ class ApiController < ApplicationController
     end
   end
 
-  # GET workflow_buildings
-  def workflow_buildings
+  # POST option_set
+  def option_set
+    
+    # expects project_id, workflow_id, name, and steps as params
+    # param id is optional (to update)
+    error = false
+    error_message = ''
+    created_flag = false
+
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+      if params[:workflow_id]
+        @workflow = @project.workflows.find(params[:workflow_id])
+      else
+        error = true
+        error_message  'Workflow ID is not provided'
+      end
+    else
+      error = true
+      error_message = 'Project ID is not provided.'
+    end
+
+    unless error
+      # update if option_set_id is passed
+      if params[:id]
+        option_sets = @project.option_sets.where(id: data[:id])
+        if option_sets.count > 0
+            @option_set = option_sets.first
+            logger.info('Option Set FOUND: UPDATING')
+        else
+          error = true
+          error_message = "No option sets match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
+          logger.info('Option Set NOT FOUND!')
+        end
+      else
+        @option_set = OptionSet.new
+        logger.info("Option Set: CREATING")
+        created_flag = true
+      end
+      unless error
+        @option_set.project_id = @project.id
+        @option_set.workflow_id = @workflow.id
+        @option_set.name = params[:name] ? params[:name] : ''
+        @option_set[:steps] = params[:steps] ? params[:steps] : []
+        @option_set.save
+
+        logger.info("$$$$ OPTION: #{@option_set.inspect}")
+      end
+
+      respond_to do |format|
+        if error
+          format.json { render json: { error: error_message, option_set: @option_set}, status: :unprocessable_entity }
+        else
+          status = if created_flag
+                     :created
+                   else
+                     :ok
+                   end
+          format.json { render 'option_sets/show', status: status, location: option_sets_url(@option_set) }
+        end
+      end
+    end
+  end
+
+  # GET scenario_datapoints
+  # get all datapoints associated with a given scenario
+  def scenario_features
     # params are project_id and workflow_id
     error = false
     error_messages = []
 
     if params[:project_id]
       @project = Project.find(params[:project_id])
-      if params[:workflow_id]
-        @wf = @project.workflows.where(id: params[:workflow_id]).first
+      if params[:scenario_id]
+        @scenario = @project.scenarios.where(id: params[:scenario_id]).first
       else
         error = true
         error_messages << "No workflow_id parameter provided."
@@ -492,7 +557,7 @@ class ApiController < ApplicationController
     end
     
     unless error
-      @datapoints = @wf.datapoints
+      @datapoints = @scenario.datapoints
       json_data = Geometry.build_geojson_from_datapoints(@datapoints)
     end
 
@@ -503,8 +568,6 @@ class ApiController < ApplicationController
         format.json { render json: json_data, status: :ok }
       end
     end
-
-
   end
 
   # GET workflow file by workflow_id or datapoint
@@ -724,7 +787,7 @@ class ApiController < ApplicationController
     params.permit(:workflow_id, file_data: [:file_name, :file])
   end
 
-    def datapoint_file_params
+  def datapoint_file_params
     params.require(:datapoint_id)
     params.permit(:datapoint_id, file_data: [:file_name, :file])
   end

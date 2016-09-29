@@ -153,7 +153,7 @@ class ScenariosController < ApplicationController
   # GET all datapoints associated with a scenario
   # For GEOJSON, return as geojson object (like workflow_buildings api)
   def datapoints
-
+    @scenario = Scenario.find(params[:scenario_id])
     @datapoints = @scenario.datapoints
     @json_data = Geometry.build_geojson_from_datapoints(@datapoints)
 

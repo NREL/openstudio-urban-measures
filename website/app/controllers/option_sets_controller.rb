@@ -13,6 +13,7 @@ class OptionSetsController < ApplicationController
   # GET /option_sets/1.json
   def show
      @datapoints = Datapoint.where(option_set_id: @option_set.id)
+     logger.info("$$$ OPTION SET: @option_set.inspect")
   end
 
   # GET /option_sets/new
@@ -31,7 +32,6 @@ class OptionSetsController < ApplicationController
   def edit
     @data = read_workflow(@option_set.workflow_id)
     @option_data = @option_set[:steps]
-    logger.info("OPTION DATA: #{@option_data}")
 
     # merge as much as possible of what's saved
     @data.each do |measure|
@@ -165,7 +165,6 @@ class OptionSetsController < ApplicationController
     def read_workflow(id)
       workflow = Workflow.find(id)
       data = {}
-      logger.info("WORKFLOW: #{workflow.attributes}")
       if (workflow[:steps])
         data = workflow[:steps]
       end

@@ -55,7 +55,8 @@
 	    <thead>
 	      <tr>
 	        <th>ID</th>
-	        <th>Workflow</th>
+	        <th>Option Set</th>
+          <th>Workflow</th>
 	        <th>Status</th>  
 	        <% if can? :update, Datapoint %><th>Actions</th><% end %>
 	      </tr>
@@ -64,7 +65,8 @@
 	      <% @feature.datapoints.each do |datapoint| %>
 	        <tr>
 	          <td><%= link_to datapoint.id, datapoint %></td>
-	          <td><%= link_to datapoint.workflow.name, datapoint.workflow if datapoint.workflow %></td>
+	          <td><%= link_to datapoint.option_set.name, datapoint.option_set if datapoint.option_set %></td>
+            <td><%= link_to datapoint.option_set.workflow.name, datapoint.option_set.workflow if datapoint.option_set.workflow %></td>
 	          <td><%= datapoint.status %></td>
 	          <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
 	        </tr>
