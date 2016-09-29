@@ -324,6 +324,11 @@ class Runner
       if !File.exists?(results_path)
         results = get_results(workflow_id)
         
+        results_dir = File.dirname(results_path)
+        if !File.exists?(results_dir)
+          FileUtils.mkdir_p(results_dir)
+        end
+        
         File.open(results_path, 'w') do |file|
           file << JSON.pretty_generate(results)
         end
