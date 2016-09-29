@@ -17,8 +17,8 @@
       <td><%= link_to opt.id, opt %></td>
       <td><%= link_to opt.project.name, opt.project %></td>
       <td><%= opt.name %></td>
-      <td><%= link_to opt.workflow.name, opt.workflow %></td>
-      <% if can? :update, OptionSet %><td><%= link_to 'Edit', edit_opt_path(opt) %> | <%= link_to 'Destroy', opt, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      <td><% if opt.workflow %><%= link_to opt.workflow.name, opt.workflow %><% end %></td>
+      <% if can? :update, OptionSet %><td><%= link_to 'Edit', edit_option_set_path(opt) %> | <%= link_to 'Destroy', opt, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
     </tr>
   <% end %>
   </tbody>

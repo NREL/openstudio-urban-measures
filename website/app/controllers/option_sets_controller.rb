@@ -22,11 +22,34 @@ class OptionSetsController < ApplicationController
     @workflow_id = params[:workflow_id] ? params[:workflow_id] : nil
     @option_set.project = @project_id
     @option_set.workflow = @workflow_id
+
+    @data = read_workflow(@option_set.workflow_id)
+
   end
 
   # GET /option_sets/1/edit
   def edit
-    @workflows = @option_set.project.workflows
+    @data = read_workflow(@option_set.workflow_id)
+    @option_data = @option_set[:steps]
+    logger.info("OPTION DATA: #{@option_data}")
+
+    # merge as much as possible of what's saved
+    @data.each do |measure|
+      @option_data.each do |saved_measure|
+        if saved_measure[:measure_dir_name] == measure[:measure_dir_name]
+          # same measure
+          measure[:arguments].each do |arg|
+            saved_measure[:arguments].each do |saved_arg|
+              # same arg name
+              if saved_arg[:name] == arg[:name]
+                arg[:value] = saved_arg[:value]
+                next
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   # POST /option_sets
@@ -51,6 +74,21 @@ class OptionSetsController < ApplicationController
         @option_set.workflow_id = params[:workflow_id]
         @option_set.project_id = @project_id
         @option_set.name = params[:name]
+
+        # store values
+        @data = read_workflow(@option_set.workflow_id)
+
+        @new_data = @data.dup
+        @new_data.each do |measure|
+          measure[:arguments].each do |arg|
+            logger.info("MEASURE: #{measure[:measure_dir_name]}, #{arg[:name]}")
+            name = "#{measure['measure_dir_name']}_#{arg['name']}"
+            if params[name]
+              arg['value'] = params[name]
+            end
+          end
+        end
+        @option_set[:steps] = @new_data 
         @option_set.save
       else
         error = true
@@ -79,6 +117,20 @@ class OptionSetsController < ApplicationController
     if params[:workflow_id] && !params[:workflow_id].nil?
       @option_set.workflow_id = params[:workflow_id]
       @option_set.name = params[:name]
+      # store values
+      @data = read_workflow(@option_set.workflow_id)
+
+      @new_data = @data.dup
+      @new_data.each do |measure|
+        measure[:arguments].each do |arg|
+          logger.info("MEASURE: #{measure[:measure_dir_name]}, #{arg[:name]}")
+          name = "#{measure['measure_dir_name']}_#{arg['name']}"
+          if params[name]
+            arg['value'] = params[name]
+          end
+        end
+      end
+      @option_set[:steps] = @new_data 
       @option_set.save
     else
       error = true
@@ -109,6 +161,16 @@ class OptionSetsController < ApplicationController
   end
 
   private
+
+    def read_workflow(id)
+      workflow = Workflow.find(id)
+      data = {}
+      logger.info("WORKFLOW: #{workflow.attributes}")
+      if (workflow[:steps])
+        data = workflow[:steps]
+      end
+      data
+    end
     # Use callbacks to share common setup or constraints between actions.
     def set_option_set
       @option_set = OptionSet.find(params[:id])
