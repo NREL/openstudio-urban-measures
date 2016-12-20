@@ -4,7 +4,7 @@ require_relative '../resources/geometry'
 def apply_weather(model, runner)
 
   runner.registerInfo("Applying weather.")
-  require './resources/measures/SetResidentialEPWFile/measure.rb'
+  require './resources/measures/ResidentialLocation/measure.rb'
   
   measure = SetResidentialEPWFile.new
   args_hash = default_args_hash(model, measure)
@@ -17,7 +17,7 @@ end
 def apply_residential_occupancy(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential occupancy.")  
-  require './resources/measures/AddResidentialBedroomsAndBathrooms/measure.rb'
+  require './resources/measures/ResidentialGeometryNumBedsAndBaths/measure.rb'
     
   case standards_space_type
   when "Single-Family"
@@ -52,8 +52,8 @@ end
 def apply_residential_foundations(model, standards_space_type, basement_thermal_zone, runner)
 
   runner.registerInfo("Applying residential foundation constructions.")
-  require './resources/measures/ProcessConstructionsFoundationsFloorsSlab/measure.rb'
-  require './resources/measures/ProcessConstructionsFoundationsFloorsBasementFinished/measure.rb'
+  require './resources/measures/ResidentialConstructionsFoundationsFloorsSlab/measure.rb'
+  require './resources/measures/ResidentialConstructionsFoundationsFloorsBasementFinished/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -106,8 +106,8 @@ end
 def apply_residential_floors(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential floor constructions.")
-  require './resources/measures/ProcessConstructionsFoundationsFloorsCovering/measure.rb'
-  require './resources/measures/ProcessConstructionsFoundationsFloorsThermalMass/measure.rb'
+  require './resources/measures/ResidentialConstructionsFoundationsFloorsCovering/measure.rb'
+  require './resources/measures/ResidentialConstructionsFoundationsFloorsThermalMass/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -154,9 +154,9 @@ end
 def apply_residential_ceilings(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential ceiling constructions.")
-  require './resources/measures/ProcessConstructionsCeilingsRoofsFinishedRoof/measure.rb'
-  require './resources/measures/ProcessConstructionsCeilingsRoofsRoofingMaterial/measure.rb'
-  require './resources/measures/ProcessConstructionsCeilingsRoofsThermalMass/measure.rb'
+  require './resources/measures/ResidentialConstructionsCeilingsRoofsFinishedRoof/measure.rb'
+  require './resources/measures/ResidentialConstructionsCeilingsRoofsRoofingMaterial/measure.rb'
+  require './resources/measures/ResidentialConstructionsCeilingsRoofsThermalMass/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -215,12 +215,12 @@ end
 def apply_residential_walls(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential wall constructions.")
-  require './resources/measures/ProcessConstructionsWallsExteriorWoodStud/measure.rb'
-  require './resources/measures/ProcessConstructionsWallsExteriorCMU/measure.rb'
-  require './resources/measures/ProcessConstructionsWallsSheathing/measure.rb'
-  require './resources/measures/ProcessConstructionsWallsExteriorFinish/measure.rb'
-  require './resources/measures/ProcessConstructionsWallsExteriorThermalMass/measure.rb'
-  require './resources/measures/ProcessConstructionsWallsPartitionThermalMass/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsExteriorWoodStud/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsExteriorCMU/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsSheathing/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsExteriorFinish/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsExteriorThermalMass/measure.rb'
+  require './resources/measures/ResidentialConstructionsWallsPartitionThermalMass/measure.rb'
   
   case standards_space_type
   when "Single-Family"
@@ -303,7 +303,7 @@ end
 def apply_residential_uninsulated_surfaces(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential uninsulated surface constructions.")
-  require './resources/measures/ProcessConstructionsUninsulatedSurfaces/measure.rb'
+  require './resources/measures/ResidentialConstructionsUninsulatedSurfaces/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -338,7 +338,7 @@ end
 def apply_residential_fenestration(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential window constructions.")
-  require './resources/measures/ProcessConstructionsWindows/measure.rb'
+  require './resources/measures/ResidentialConstructionsWindows/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -373,11 +373,11 @@ end
 def apply_residential_appliances(model, standards_space_type, space, units_per_space, runner)
 
   runner.registerInfo("Applying residential appliances.")
-  require './resources/measures/AddResidentialRefrigerator/measure.rb'
-  require './resources/measures/ResidentialCookingRange/measure.rb'
-  require './resources/measures/ResidentialDishwasher/measure.rb'
-  require './resources/measures/ResidentialClothesWasher/measure.rb'
-  require './resources/measures/ResidentialClothesDryer/measure.rb'
+  require './resources/measures/ResidentialApplianceRefrigerator/measure.rb'
+  require './resources/measures/ResidentialApplianceCookingRangeFuel/measure.rb'
+  require './resources/measures/ResidentialApplianceDishwasher/measure.rb'
+  require './resources/measures/ResidentialApplianceClothesWasher/measure.rb'
+  require './resources/measures/ResidentialApplianceClothesDryerFuel/measure.rb'
   
   case standards_space_type
   when "Single-Family"
@@ -509,7 +509,7 @@ end
 def apply_residential_mels(model, standards_space_type, units_per_space, runner)
 
   runner.registerInfo("Applying residential MELs.")
-  require './resources/measures/ResidentialMiscellaneousElectricLoads/measure.rb'
+  require './resources/measures/ResidentialMiscPlugsLoads/measure.rb'
   # require './resources/measures/AddResidentialExtraRefrigerator/measure.rb'
   # require './resources/measures/AddResidentialFreezer/measure.rb'
   # require './resources/measures/AddResidentialGasFireplace/measure.rb'
@@ -558,22 +558,21 @@ end
 def apply_residential_hvac(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential HVAC.")
-  require './resources/measures/ProcessBoiler/measure.rb'
-  require './resources/measures/ProcessFurnace/measure.rb'
-  require './resources/measures/ProcessCentralAirConditioner/measure.rb'
-  require './resources/measures/ProcessRoomAirConditioner/measure.rb'
-  require './resources/measures/ProcessHeatingSetpoints/measure.rb'
-  require './resources/measures/ProcessCoolingSetpoints/measure.rb'
-  # require './resources/measures/AddResidentialDehumidifier/measure.rb'
+  require './resources/measures/ResidentialHVACBoilerFuel/measure.rb'
+  require './resources/measures/ResidentialHVACFurnaceFuel/measure.rb'
+  require './resources/measures/ResidentialHVACCentralAirConditionerSingleSpeed/measure.rb'
+  require './resources/measures/ResidentialHVACRoomAirConditioner/measure.rb'
+  require './resources/measures/ResidentialHVACHeatingSetpoints/measure.rb'
+  require './resources/measures/ResidentialHVACCoolingSetpoints/measure.rb'
   
   case standards_space_type
   when "Single-Family"
     
-    measure = ProcessFurnace.new
+    measure = ProcessFurnaceFuel.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 	
-    measure = ProcessCentralAirConditioner.new
+    measure = ProcessSingleSpeedCentralAirConditioner.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)	
     
@@ -587,7 +586,7 @@ def apply_residential_hvac(model, standards_space_type, runner)
     
   when "Multifamily (2 to 4 units)"
 
-    measure = ProcessFurnace.new
+    measure = ProcessFurnaceFuel.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 
@@ -605,7 +604,7 @@ def apply_residential_hvac(model, standards_space_type, runner)
   
   when "Multifamily (5 or more units)"
 
-    measure = ProcessBoiler.new
+    measure = ProcessBoilerFuel.new
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
 
@@ -635,28 +634,28 @@ end
 def apply_residential_dhw(model, standards_space_type, living_thermal_zone, runner)
 
   runner.registerInfo("Applying residential DHW.")
-  require './resources/measures/AddOSWaterHeaterMixedStorageGas/measure.rb'
+  require './resources/measures/ResidentialHotWaterHeaterTankFuel/measure.rb'
 
   living_thermal_zone_name = living_thermal_zone.name.get
   
   case standards_space_type
   when "Single-Family"
   
-    measure = AddOSWaterHeaterMixedStorageGas.new
+    measure = ResidentialHotWaterHeaterTankFuel.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
   
   when "Multifamily (2 to 4 units)"
  
-    measure = AddOSWaterHeaterMixedStorageGas.new
+    measure = ResidentialHotWaterHeaterTankFuel.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
  
   when "Multifamily (5 or more units)"
   
-    measure = AddOSWaterHeaterMixedStorageGas.new
+    measure = ResidentialHotWaterHeaterTankFuel.new
     args_hash = default_args_hash(model, measure)
     args_hash["water_heater_location"] = living_thermal_zone_name
     run_measure(model, measure, args_hash, runner)  
@@ -670,6 +669,53 @@ def apply_residential_dhw(model, standards_space_type, living_thermal_zone, runn
   
   return true
 
+end
+
+def apply_residential_airflow(workspace, standards_space_type, control_zone, slave_zones, runner)
+
+  runner.registerInfo("Applying residential airflow.")  
+  require './resources/measures/ResidentialAirflow/measure.rb'
+  
+  living_thermal_zone_name = control_zone.name.get
+  fbasement_thermal_zone_name = nil
+  unless slave_zones.empty?
+    fbasement_thermal_zone_name = slave_zones[0].name.get
+  end
+  
+  case standards_space_type
+  when "Single-Family"	
+    
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    unless fbasement_thermal_zone_name.nil?
+      args_hash["fbasement_thermal_zone"] = fbasement_thermal_zone_name
+    end
+    run_measure(workspace, measure, args_hash, runner)
+	
+  when "Multifamily (2 to 4 units)"	
+
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    run_measure(workspace, measure, args_hash, runner)
+  
+  when "Multifamily (5 or more units)"
+
+    measure = ProcessAirflow.new
+    args_hash = default_args_hash(workspace, measure)
+    args_hash["living_thermal_zone"] = living_thermal_zone_name
+    run_measure(workspace, measure, args_hash, runner)
+  
+  when "Mobile Home"
+    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
+    return false          
+  else
+    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
+  end
+  
+  return true	
+	
 end
 
 def run_measure(model, measure, args_hash, runner)
@@ -1059,6 +1105,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
   end
   result = result && apply_residential_lighting(model, runner)
   result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
+  result = result && apply_residential_airflow(model, standards_building_type, control_zone, slave_zones, runner)
   
   applicable = true
   if heating_source == "NA" and cooling_source == "NA"

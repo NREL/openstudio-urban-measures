@@ -5,7 +5,7 @@ require 'fileutils'
 desc 'update residential measures'
 task :update_residential_measures do
 
-      ["urban_building_type", "urban_building_type_e_plus"].each do |measure|
+      ["urban_building_type"].each do |measure|
       
         ["resources", "measures"].each do |folder|
   
@@ -33,6 +33,8 @@ def update_residential_resources(measure_name)
 
   measures = Dir.entries(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__)).select {|entry| File.directory? File.join(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__), entry) and !(entry =='.' || entry == '..') }
   measures.each do |m|
+    next if m == ".svn"
+    puts m
     measurerb = File.expand_path("../measures/#{measure_name}/resources/measures/#{m}/measure.rb", __FILE__)
     
     # Get recursive list of resources required based on looking for 'require FOO' in rb files
@@ -40,7 +42,7 @@ def update_residential_resources(measure_name)
 
     # Add any additional resources specified in resources.csv
     subdir_resources = {} # Handle resources in subdirs
-    File.open(File.expand_path("../measures/#{measure_name}/resources/resources/resources.csv", __FILE__)) do |file|
+    File.open(File.expand_path("../measures/#{measure_name}/resources/resources/resource_to_measure_mapping.csv", __FILE__)) do |file|
       file.each do |line|
         line = line.chomp.split(',').reject { |l| l.empty? }
         measure = line.delete_at(0)
