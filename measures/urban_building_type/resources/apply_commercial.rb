@@ -1,6 +1,4 @@
   
-require_relative '../resources/util'
-  
 # open the class to add methods to size all HVAC equipment
 class OpenStudio::Model::Model  
   
@@ -1138,17 +1136,13 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     end
   end
   
-  applicable = true
-  if heating_source == "NA" and cooling_source == "NA"
-    applicable = false
-  end
-  if applicable
+  if heating_source != "NA" or cooling_source != "NA"
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     HelperMethods.remove_all_hvac_equipment(model, runner)
     floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area.round}' ft^2.")
     result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
-  end  
+  end
   
   runner.registerValue('bldg_use', building_type)
   runner.registerValue('num_spaces', num_spaces, 'spaces')

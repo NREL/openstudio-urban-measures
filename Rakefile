@@ -5,36 +5,32 @@ require 'fileutils'
 desc 'update residential measures'
 task :update_residential_measures do
 
-      ["urban_building_type"].each do |measure|
-      
-        ["resources", "measures"].each do |folder|
+  ["urban_building_type"].each do |measure|
   
-          command = "svn checkout https://github.com/NREL/OpenStudio-Beopt/trunk/#{folder} ./measures/#{measure}/resources/#{folder}"
-          system(command)
-          if folder == "measures"
-            update_residential_resources(measure)
-            measures_dir = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures")
-            measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures.zip")
-            zip_file = OpenStudio::ZipFile.new(measures_zip, false)
-            zip_file.addDirectory(measures_dir, OpenStudio::toPath("/"))
-          end
-            
-        end
-        FileUtils.rm_rf("./measures/#{measure}/resources/measures")
-        FileUtils.rm_rf("./measures/#{measure}/resources/resources")
-        
+    ["resources", "measures"].each do |folder|
+
+      command = "svn checkout https://github.com/NREL/OpenStudio-BEopt/trunk/#{folder} ./measures/#{measure}/resources/#{folder}"
+      system(command)
+      if folder == "measures"
+        update_residential_resources(measure)
+        measures_dir = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures")
+        measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures.zip")
+        zip_file = OpenStudio::ZipFile.new(measures_zip, false)
+        zip_file.addDirectory(measures_dir, OpenStudio::toPath("/"))
       end
+        
+    end
+    FileUtils.rm_rf("./measures/#{measure}/resources/measures")
+    
+  end
       
 end
 
 def update_residential_resources(measure_name)
 
-  require 'openstudio'
-
-  measures = Dir.entries(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__)).select {|entry| File.directory? File.join(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__), entry) and !(entry =='.' || entry == '..') }
+  measures = Dir.entries(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__)).select {|entry| File.directory? File.join(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__), entry) and !(entry == '.' || entry == '..') }
   measures.each do |m|
-    next if m == ".svn"
-    puts m
+
     measurerb = File.expand_path("../measures/#{measure_name}/resources/measures/#{m}/measure.rb", __FILE__)
     
     # Get recursive list of resources required based on looking for 'require FOO' in rb files

@@ -59,7 +59,7 @@ class SetBuildingType < OpenStudio::Ruleset::ModelUserScript
     number_of_residential_units = OpenStudio::Ruleset::OSArgument::makeIntegerArgument("number_of_residential_units",true)
     number_of_residential_units.setDisplayName("Number of Residential Units")
     number_of_residential_units.setDefaultValue(0)
-    args << number_of_residential_units  
+    args << number_of_residential_units
 
     return args
   end #end the arguments method

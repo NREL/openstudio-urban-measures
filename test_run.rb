@@ -7,7 +7,7 @@ require 'fileutils'
 openstudio_dir = 'E:/openstudio-2-0/core-build/Products/Debug/'
 
 run_retrofit = false
-num_parallel = 7
+num_parallel = 1
 
 buildings = [
    # {name: "Large-Office",             building_type: "Office",                        floor_area: 46320,  number_of_stories: 12},
@@ -37,6 +37,8 @@ buildings = [
 buildings.each do |building|
   building[:heating_source] = "Gas" # Gas, Electric, District Hot Water, District Ambient Water
   building[:cooling_source] = "Electric" # Electric, District Chilled Water, District Ambient Water
+  # building[:heating_source] = "NA" # Gas, Electric, District Hot Water, District Ambient Water
+  # building[:cooling_source] = "NA" # Electric, District Chilled Water, District Ambient Water  
 end
 
 def merge(workflow, properties)
@@ -87,7 +89,7 @@ buildings.each do |building|
   # configure jsons
   datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}
-  region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
+  region_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw"}}
 
   name = building[:name]
 

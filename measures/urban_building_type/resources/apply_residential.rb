@@ -1,10 +1,7 @@
-require_relative '../resources/util'
-require_relative '../resources/geometry'
 
-def apply_weather(model, runner)
+def apply_residential_location(model, runner)
 
-  runner.registerInfo("Applying weather.")
-  require './resources/measures/ResidentialLocation/measure.rb'
+  runner.registerInfo("Applying residential location.")
   
   measure = SetResidentialEPWFile.new
   args_hash = default_args_hash(model, measure)
@@ -14,36 +11,13 @@ def apply_weather(model, runner)
 
 end
 
-def apply_residential_occupancy(model, standards_space_type, runner)
+def apply_residential_occupancy(model, runner)
 
   runner.registerInfo("Applying residential occupancy.")  
-  require './resources/measures/ResidentialGeometryNumBedsAndBaths/measure.rb'
-    
-  case standards_space_type
-  when "Single-Family"
 	
-    measure = AddResidentialBedroomsAndBathrooms.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-    
-  when "Multifamily (2 to 4 units)"	
-
-    measure = AddResidentialBedroomsAndBathrooms.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-  
-  when "Multifamily (5 or more units)"
-
-    measure = AddResidentialBedroomsAndBathrooms.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = AddResidentialBedroomsAndBathrooms.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
@@ -52,8 +26,6 @@ end
 def apply_residential_foundations(model, standards_space_type, basement_thermal_zone, runner)
 
   runner.registerInfo("Applying residential foundation constructions.")
-  require './resources/measures/ResidentialConstructionsFoundationsFloorsSlab/measure.rb'
-  require './resources/measures/ResidentialConstructionsFoundationsFloorsBasementFinished/measure.rb'
 
   case standards_space_type
   when "Single-Family"
@@ -94,7 +66,7 @@ def apply_residential_foundations(model, standards_space_type, basement_thermal_
   
   when "Mobile Home"
     runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
+    return false
   else
     runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
   end
@@ -103,49 +75,17 @@ def apply_residential_foundations(model, standards_space_type, basement_thermal_
 	
 end
 
-def apply_residential_floors(model, standards_space_type, runner)
+def apply_residential_floors(model, runner)
 
   runner.registerInfo("Applying residential floor constructions.")
-  require './resources/measures/ResidentialConstructionsFoundationsFloorsCovering/measure.rb'
-  require './resources/measures/ResidentialConstructionsFoundationsFloorsThermalMass/measure.rb'
-
-  case standards_space_type
-  when "Single-Family"
     
-    measure = ProcessConstructionsFoundationsFloorsCovering.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
+  measure = ProcessConstructionsFoundationsFloorsCovering.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)    
-	
-  when "Multifamily (2 to 4 units)"
-
-    measure = ProcessConstructionsFoundationsFloorsCovering.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)    
-  
-  when "Multifamily (5 or more units)"
-    
-    measure = ProcessConstructionsFoundationsFloorsCovering.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ProcessConstructionsFoundationsFloorsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)    
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ProcessConstructionsFoundationsFloorsThermalMass.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
@@ -154,14 +94,11 @@ end
 def apply_residential_ceilings(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential ceiling constructions.")
-  require './resources/measures/ResidentialConstructionsCeilingsRoofsFinishedRoof/measure.rb'
-  require './resources/measures/ResidentialConstructionsCeilingsRoofsRoofingMaterial/measure.rb'
-  require './resources/measures/ResidentialConstructionsCeilingsRoofsThermalMass/measure.rb'
 
   case standards_space_type
   when "Single-Family"
 	
-    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
+    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new # TODO: this should be unfinished attic
     args_hash = default_args_hash(model, measure)
     run_measure(model, measure, args_hash, runner)
     
@@ -215,12 +152,6 @@ end
 def apply_residential_walls(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential wall constructions.")
-  require './resources/measures/ResidentialConstructionsWallsExteriorWoodStud/measure.rb'
-  require './resources/measures/ResidentialConstructionsWallsExteriorCMU/measure.rb'
-  require './resources/measures/ResidentialConstructionsWallsSheathing/measure.rb'
-  require './resources/measures/ResidentialConstructionsWallsExteriorFinish/measure.rb'
-  require './resources/measures/ResidentialConstructionsWallsExteriorThermalMass/measure.rb'
-  require './resources/measures/ResidentialConstructionsWallsPartitionThermalMass/measure.rb'
   
   case standards_space_type
   when "Single-Family"
@@ -300,194 +231,53 @@ def apply_residential_walls(model, standards_space_type, runner)
 	
 end
 
-def apply_residential_uninsulated_surfaces(model, standards_space_type, runner)
+def apply_residential_uninsulated_surfaces(model, runner)
 
   runner.registerInfo("Applying residential uninsulated surface constructions.")
-  require './resources/measures/ResidentialConstructionsUninsulatedSurfaces/measure.rb'
-
-  case standards_space_type
-  when "Single-Family"
 	
-    measure = ProcessConstructionsUninsulatedSurfaces.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)    
-	
-  when "Multifamily (2 to 4 units)"
-
-    measure = ProcessConstructionsUninsulatedSurfaces.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)     
-  
-  when "Multifamily (5 or more units)"
-
-    measure = ProcessConstructionsUninsulatedSurfaces.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)    
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ProcessConstructionsUninsulatedSurfaces.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)    
   
   return true	  
   
 end
 
-def apply_residential_fenestration(model, standards_space_type, runner)
+def apply_residential_fenestration(model, runner)
 
   runner.registerInfo("Applying residential window constructions.")
-  require './resources/measures/ResidentialConstructionsWindows/measure.rb'
-
-  case standards_space_type
-  when "Single-Family"
 	
-    measure = ProcessConstructionsWindows.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-	
-  when "Multifamily (2 to 4 units)"
-
-    measure = ProcessConstructionsWindows.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner) 	
-  
-  when "Multifamily (5 or more units)"
-
-    measure = ProcessConstructionsWindows.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ProcessConstructionsWindows.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
 end
 
-def apply_residential_appliances(model, standards_space_type, space, units_per_space, runner)
+def apply_residential_appliances(model, runner)
 
   runner.registerInfo("Applying residential appliances.")
-  require './resources/measures/ResidentialApplianceRefrigerator/measure.rb'
-  require './resources/measures/ResidentialApplianceCookingRangeFuel/measure.rb'
-  require './resources/measures/ResidentialApplianceDishwasher/measure.rb'
-  require './resources/measures/ResidentialApplianceClothesWasher/measure.rb'
-  require './resources/measures/ResidentialApplianceClothesDryerFuel/measure.rb'
-  
-  case standards_space_type
-  when "Single-Family"
 	
-    measure = ResidentialRefrigerator.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialCookingRange.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialDishwasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult_e"] = units_per_space
-    args_hash["mult_hw"] = units_per_space    
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialClothesWasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["cw_mult_e"] = units_per_space
-    args_hash["cw_mult_hw"] = units_per_space     
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialClothesDryer.new
-    args_hash = default_args_hash(model, measure)    
-    args_hash["space"] = space.name.get
-    args_hash["cd_mult"] = units_per_space    
-    run_measure(model, measure, args_hash, runner)      
-
-  when "Multifamily (2 to 4 units)"	
-
-    measure = ResidentialRefrigerator.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialCookingRange.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-        
-    measure = ResidentialDishwasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult_e"] = units_per_space
-    args_hash["mult_hw"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ResidentialClothesWasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["cw_mult_e"] = units_per_space
-    args_hash["cw_mult_hw"] = units_per_space  
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ResidentialClothesDryer.new
-    args_hash = default_args_hash(model, measure)    
-    args_hash["space"] = space.name.get
-    args_hash["cd_mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)    
+  measure = ResidentialRefrigerator.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
-  when "Multifamily (5 or more units)"
-
-    measure = ResidentialRefrigerator.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialCookingRange.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult"] = units_per_space    
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ResidentialDishwasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["mult_e"] = units_per_space
-    args_hash["mult_hw"] = units_per_space    
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ResidentialClothesWasher.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["space"] = space.name.get
-    args_hash["cw_mult_e"] = units_per_space
-    args_hash["cw_mult_hw"] = units_per_space     
-    run_measure(model, measure, args_hash, runner)
-
-    measure = ResidentialClothesDryer.new
-    args_hash = default_args_hash(model, measure)    
-    args_hash["space"] = space.name.get
-    args_hash["cd_mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)
+  measure = ResidentialCookingRange.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ResidentialDishwasher.new
+  args_hash = default_args_hash(model, measure)  
+  run_measure(model, measure, args_hash, runner)
+  
+  measure = ResidentialClothesWasher.new
+  args_hash = default_args_hash(model, measure)   
+  run_measure(model, measure, args_hash, runner)
+  
+  measure = ResidentialClothesDryer.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 
@@ -496,7 +286,6 @@ end
 def apply_residential_lighting(model, runner)
 
   runner.registerInfo("Applying residential lighting.")
-  require './resources/measures/ResidentialLighting/measure.rb'
 
   measure = ResidentialLighting.new
   args_hash = default_args_hash(model, measure)
@@ -506,50 +295,13 @@ def apply_residential_lighting(model, runner)
 
 end
 
-def apply_residential_mels(model, standards_space_type, units_per_space, runner)
+def apply_residential_plugloads(model, runner)
 
-  runner.registerInfo("Applying residential MELs.")
-  require './resources/measures/ResidentialMiscPlugsLoads/measure.rb'
-  # require './resources/measures/AddResidentialExtraRefrigerator/measure.rb'
-  # require './resources/measures/AddResidentialFreezer/measure.rb'
-  # require './resources/measures/AddResidentialGasFireplace/measure.rb'
-  # require './resources/measures/AddResidentialGasGrill/measure.rb'
-  # require './resources/measures/AddResidentialGasLighting/measure.rb'
-  # require './resources/measures/AddResidentialHotTubHeaterElec/measure.rb'
-  # require './resources/measures/AddResidentialHotTubHeaterGas/measure.rb'
-  # require './resources/measures/AddResidentialHotTubPump/measure.rb'
-  # require './resources/measures/AddResidentialPoolHeaterElec/measure.rb'
-  # require './resources/measures/AddResidentialPoolHeaterGas/measure.rb'
-  # require './resources/measures/AddResidentialPoolHeaterPump/measure.rb'
-  # require './resources/measures/AddResidentialWellPump/measure.rb'
-  
-  case standards_space_type
-  when "Single-Family"	
+  runner.registerInfo("Applying residential plug loads.")
 
-    measure = ResidentialMiscellaneousElectricLoads.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-	
-  when "Multifamily (2 to 4 units)"	
-
-    measure = ResidentialMiscellaneousElectricLoads.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)	
-    
-    when "Multifamily (5 or more units)"
-
-    measure = ResidentialMiscellaneousElectricLoads.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["mult"] = units_per_space
-    run_measure(model, measure, args_hash, runner)	
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ResidentialMiscellaneousElectricLoads.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true
 
@@ -558,12 +310,6 @@ end
 def apply_residential_hvac(model, standards_space_type, runner)
 
   runner.registerInfo("Applying residential HVAC.")
-  require './resources/measures/ResidentialHVACBoilerFuel/measure.rb'
-  require './resources/measures/ResidentialHVACFurnaceFuel/measure.rb'
-  require './resources/measures/ResidentialHVACCentralAirConditionerSingleSpeed/measure.rb'
-  require './resources/measures/ResidentialHVACRoomAirConditioner/measure.rb'
-  require './resources/measures/ResidentialHVACHeatingSetpoints/measure.rb'
-  require './resources/measures/ResidentialHVACCoolingSetpoints/measure.rb'
   
   case standards_space_type
   when "Single-Family"
@@ -631,88 +377,25 @@ def apply_residential_hvac(model, standards_space_type, runner)
   
 end
 
-def apply_residential_dhw(model, standards_space_type, living_thermal_zone, runner)
+def apply_residential_dhw(model, runner)
 
   runner.registerInfo("Applying residential DHW.")
-  require './resources/measures/ResidentialHotWaterHeaterTankFuel/measure.rb'
-
-  living_thermal_zone_name = living_thermal_zone.name.get
   
-  case standards_space_type
-  when "Single-Family"
-  
-    measure = ResidentialHotWaterHeaterTankFuel.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["water_heater_location"] = living_thermal_zone_name
-    run_measure(model, measure, args_hash, runner)  
-  
-  when "Multifamily (2 to 4 units)"
- 
-    measure = ResidentialHotWaterHeaterTankFuel.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["water_heater_location"] = living_thermal_zone_name
-    run_measure(model, measure, args_hash, runner)  
- 
-  when "Multifamily (5 or more units)"
-  
-    measure = ResidentialHotWaterHeaterTankFuel.new
-    args_hash = default_args_hash(model, measure)
-    args_hash["water_heater_location"] = living_thermal_zone_name
-    run_measure(model, measure, args_hash, runner)  
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false  
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ResidentialHotWaterHeaterTankFuel.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true
 
 end
 
-def apply_residential_airflow(workspace, standards_space_type, control_zone, slave_zones, runner)
+def apply_residential_airflow(model, runner)
 
-  runner.registerInfo("Applying residential airflow.")  
-  require './resources/measures/ResidentialAirflow/measure.rb'
-  
-  living_thermal_zone_name = control_zone.name.get
-  fbasement_thermal_zone_name = nil
-  unless slave_zones.empty?
-    fbasement_thermal_zone_name = slave_zones[0].name.get
-  end
-  
-  case standards_space_type
-  when "Single-Family"	
+  runner.registerInfo("Applying residential airflow.")
     
-    measure = ProcessAirflow.new
-    args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    unless fbasement_thermal_zone_name.nil?
-      args_hash["fbasement_thermal_zone"] = fbasement_thermal_zone_name
-    end
-    run_measure(workspace, measure, args_hash, runner)
-	
-  when "Multifamily (2 to 4 units)"	
-
-    measure = ProcessAirflow.new
-    args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    run_measure(workspace, measure, args_hash, runner)
-  
-  when "Multifamily (5 or more units)"
-
-    measure = ProcessAirflow.new
-    args_hash = default_args_hash(workspace, measure)
-    args_hash["living_thermal_zone"] = living_thermal_zone_name
-    run_measure(workspace, measure, args_hash, runner)
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ResidentialAirflow.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
@@ -772,12 +455,10 @@ def get_thermal_zones(model)
 
   living_thermal_zones = []
   basement_thermal_zone = nil
-  model.getSpaces.each do |space|
-    if space.name.to_s.include? "Story 0 Space"
-      thermal_zone = space.thermalZone.get
+  model.getThermalZones.each do |thermal_zone|
+    if thermal_zone.name.to_s.include? "Story 0 Space"
       basement_thermal_zone = thermal_zone
     else
-      thermal_zone = space.thermalZone.get
       living_thermal_zones << thermal_zone
     end
   end  
@@ -1061,12 +742,39 @@ end
 
 def apply_residential(model, runner, heating_source, cooling_source)
   
-  result = true
+  measures = Dir.entries("./resources/measures/").select {|entry| !(entry == '.' || entry == '..')}
+  measures.each do |measure|
+    require "./resources/measures/#{measure}/measure.rb"
+  end
   
   building_space_type = model.getBuilding.standardsBuildingType.get
   number_of_residential_units = model.getBuilding.standardsNumberOfLivingUnits.get.to_i
   num_spaces = model.getSpaces.length.to_i
   units_per_space = number_of_residential_units.to_f / num_spaces.to_f
+  
+  # puts building_space_type, number_of_residential_units, num_spaces, units_per_space
+  
+  if building_space_type == "Single-Family"
+    living_zone = nil
+    model.getThermalZones.each do |thermal_zone|
+      if thermal_zone.name.to_s.include? "Story 1"
+        living_zone = thermal_zone
+      end
+    end
+    model.getSpaces.each do |space|
+      if !space.thermalZone.get.name.to_s.include? "Story 0" and !space.thermalZone.get.name.to_s.include? "Story 1"
+        space.setThermalZone(living_zone) # Set all above-grade spaces to the same thermal zone since this is a single unit, single-family house
+      end
+    end  
+    unit = OpenStudio::Model::BuildingUnit.new(model)
+    unit.setBuildingUnitType(Constants.BuildingUnitTypeResidential)
+    unit.setName(Constants.ObjectNameBuildingUnit)
+    model.getSpaces.each do |space|
+      space.setBuildingUnit(unit)
+    end
+  else
+    # TODO: how to split up spaces and assign units to multi-family geometry?
+  end
   
   living_thermal_zones, basement_thermal_zone = get_thermal_zones(model)
   
@@ -1082,46 +790,43 @@ def apply_residential(model, runner, heating_source, cooling_source)
     end
   end  
   
-  result = result && apply_weather(model, runner)
-  result = result && apply_residential_occupancy(model, building_space_type, runner)
+  result = true
+  result = result && apply_residential_location(model, runner)
+  result = result && apply_residential_occupancy(model, runner)
   result = result && apply_residential_foundations(model, building_space_type, basement_thermal_zone, runner)
-  result = result && apply_residential_floors(model, building_space_type, runner)
+  result = result && apply_residential_floors(model, runner)
   result = result && apply_residential_ceilings(model, building_space_type, runner)
   result = result && apply_residential_walls(model, building_space_type, runner)
-  result = result && apply_residential_uninsulated_surfaces(model, building_space_type, runner)
-  result = result && apply_residential_fenestration(model, building_space_type, runner)
+  result = result && apply_residential_uninsulated_surfaces(model, runner)
+  result = result && apply_residential_fenestration(model, runner)
   result = result && apply_residential_hvac(model, building_space_type, runner)
-  control_slave_zones_hash = Geometry.get_control_and_slave_zones(model)
+  result = result && apply_residential_dhw(model, runner)
+  result = result && apply_residential_appliances(model, runner)
+  result = result && apply_residential_lighting(model, runner)
+  result = result && apply_residential_plugloads(model, runner)
+  result = result && apply_residential_airflow(model, runner)
+  
+  control_slave_zones_hash = HVAC.get_control_and_slave_zones(model.getThermalZones)
   all_slave_zones = []
   control_slave_zones_hash.each do |control_zone, slave_zones|
-    result = result && apply_residential_dhw(model, building_space_type, control_zone, runner)
-    unless slave_zones.empty?
-      all_slave_zones += slave_zones
+    next if slave_zones.empty?
+    slave_zones.each do |slave_zone|
+      all_slave_zones << slave_zone
     end
   end
   puts "#{building_space_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)."
-  model.getSpaces.each do |space|
-    result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
-  end
-  result = result && apply_residential_lighting(model, runner)
-  result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
-  result = result && apply_residential_airflow(model, standards_building_type, control_zone, slave_zones, runner)
   
-  applicable = true
-  if heating_source == "NA" and cooling_source == "NA"
-    applicable = false
-  end
-  if applicable
+  if heating_source != "NA" or cooling_source != "NA"
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     HelperMethods.remove_all_hvac_equipment(model, runner)
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type)
   end
   
-  runner.registerValue('bldg_use', building_space_type)
-  runner.registerValue('res_units', number_of_residential_units, 'count')
-  runner.registerValue('num_spaces', num_spaces, 'spaces')
-  runner.registerValue('units_per_space', units_per_space, 'unitsperspace')
+  runner.registerValue("bldg_use", building_space_type)
+  runner.registerValue("res_units", number_of_residential_units, "count")
+  runner.registerValue("num_spaces", num_spaces, "spaces")
+  runner.registerValue("units_per_space", units_per_space, "unitsperspace")
   
   return result
     

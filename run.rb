@@ -26,7 +26,6 @@ OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
 
 debug = false
 
-
 osw_path = ARGV[1]
 osw_dir = File.dirname(osw_path)
 

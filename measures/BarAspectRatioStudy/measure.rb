@@ -133,6 +133,8 @@ class BarAspectRatioStudy < OpenStudio::Ruleset::ModelUserScript
     starting_spaces = model.getSpaces
     runner.registerInitialCondition("The building started with #{starting_spaces.size} spaces.")
 
+    model.getBuilding.setStandardsNumberOfAboveGroundStories(number_of_stories)
+    
     #Loop through the number of floors
     for floor in (0..number_of_stories-1)
 
