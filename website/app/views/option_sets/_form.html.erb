@@ -8,10 +8,10 @@
   </fieldset>
 
   <% @data.each do |measure| %>
-    <p>Argument values for measure: <%= measure[:measure_dir_name] %></p>
-    <% measure[:arguments].each do |arg| %>
+    <p>Argument values for measure: <%= measure['measure_dir_name'] %></p>
+    <% measure['arguments'].each_pair do |key, value| %>
       <fieldset>
-        <%= f.text_field "#{measure[:measure_dir_name]}_#{arg[:name]}", value: "#{arg[:value]}", label: "#{arg[:name]}" %>
+        <%= f.text_field "#{measure['measure_dir_name']}_#{key}", value: "#{value}", label: "#{key}" %>
       </fieldset>
     <% end %>
   <% end %>

@@ -25,7 +25,7 @@ class OptionSetsController < ApplicationController
     @option_set.workflow = @workflow_id
 
     @data = read_workflow(@option_set.workflow_id)
-
+    puts "@data = #{@data}"
   end
 
   # GET /option_sets/1/edit
@@ -38,11 +38,11 @@ class OptionSetsController < ApplicationController
       @option_data.each do |saved_measure|
         if saved_measure[:measure_dir_name] == measure[:measure_dir_name]
           # same measure
-          measure[:arguments].each do |arg|
-            saved_measure[:arguments].each do |saved_arg|
+          measure[:arguments].each_pair do |key, value|
+            saved_measure[:arguments].each_pair do |saved_key, saved_value|
               # same arg name
-              if saved_arg[:name] == arg[:name]
-                arg[:value] = saved_arg[:value]
+              if saved_key == key
+                measure[:arguments][key] = saved_value
                 next
               end
             end
@@ -80,11 +80,11 @@ class OptionSetsController < ApplicationController
 
         @new_data = @data.dup
         @new_data.each do |measure|
-          measure[:arguments].each do |arg|
-            logger.info("MEASURE: #{measure[:measure_dir_name]}, #{arg[:name]}")
-            name = "#{measure['measure_dir_name']}_#{arg['name']}"
+          measure[:arguments].each_pair do |key, value|
+            logger.info("MEASURE: #{measure[:measure_dir_name]}, #{key}")
+            name = "#{measure['measure_dir_name']}_#{key}"
             if params[name]
-              arg['value'] = params[name]
+              measure[:arguments][key] = params[name]
             end
           end
         end
@@ -122,11 +122,11 @@ class OptionSetsController < ApplicationController
 
       @new_data = @data.dup
       @new_data.each do |measure|
-        measure[:arguments].each do |arg|
-          logger.info("MEASURE: #{measure[:measure_dir_name]}, #{arg[:name]}")
-          name = "#{measure['measure_dir_name']}_#{arg['name']}"
+        measure[:arguments].each_pair do |key, value|
+          logger.info("MEASURE: #{measure[:measure_dir_name]}, #{key}")
+          name = "#{measure['measure_dir_name']}_#{key}"
           if params[name]
-            arg['value'] = params[name]
+            measure[:arguments][key] = params[name]
           end
         end
       end
