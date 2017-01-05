@@ -1144,8 +1144,8 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
   end
   
-  runner.registerValue('bldg_use', building_type)
-  runner.registerValue('num_spaces', num_spaces, 'spaces')
+  runner.registerValue("bldg_use", building_type)
+  runner.registerValue("num_spaces", num_spaces, "spaces")
   
   return result
     

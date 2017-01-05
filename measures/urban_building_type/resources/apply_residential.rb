@@ -23,53 +23,17 @@ def apply_residential_occupancy(model, runner)
 	
 end
 
-def apply_residential_foundations(model, standards_space_type, basement_thermal_zone, runner)
+def apply_residential_foundations(model, runner)
 
   runner.registerInfo("Applying residential foundation constructions.")
-
-  case standards_space_type
-  when "Single-Family"
   
-    if not basement_thermal_zone.nil?
-      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)		
-    else
-      measure = ProcessConstructionsFoundationsFloorsSlab.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)
-    end  
-	
-  when "Multifamily (2 to 4 units)"   
+  measure = ProcessConstructionsFoundationsFloorsSlab.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)  
   
-    if not basement_thermal_zone.nil?
-      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)		
-    else
-      measure = ProcessConstructionsFoundationsFloorsSlab.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)
-    end   
-  
-  when "Multifamily (5 or more units)"  
-  
-    if not basement_thermal_zone.nil?
-      measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)		
-    else
-      measure = ProcessConstructionsFoundationsFloorsSlab.new
-      args_hash = default_args_hash(model, measure)
-      run_measure(model, measure, args_hash, runner)
-    end    
-  
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ProcessConstructionsFoundationsFloorsBasementFinished.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
@@ -91,59 +55,25 @@ def apply_residential_floors(model, runner)
 	
 end
 
-def apply_residential_ceilings(model, standards_space_type, runner)
+def apply_residential_ceilings(model, runner)
 
   runner.registerInfo("Applying residential ceiling constructions.")
 
-  case standards_space_type
-  when "Single-Family"
-	
-    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new # TODO: this should be unfinished attic
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)     
-	
-  when "Multifamily (2 to 4 units)"
+  measure = ProcessConstructionsCeilingsRoofsUnfinishedAttic.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
 
-    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner) 
-
-    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)     
+  measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
-  when "Multifamily (5 or more units)"
-
-    measure = ProcessConstructionsCeilingsRoofsFinishedRoof.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)
-    
-    measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner) 
-    
-    measure = ProcessConstructionsCeilingsRoofsThermalMass.new
-    args_hash = default_args_hash(model, measure)
-    run_measure(model, measure, args_hash, runner)     
+  measure = ProcessConstructionsCeilingsRoofsRoofingMaterial.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
-  when "Mobile Home"
-    runner.registerError("Have not defined measures and inputs for #{standards_space_type}.")
-    return false          
-  else
-    runner.registerWarning("Unknown standards space type '#{standards_space_type}'.")
-  end
+  measure = ProcessConstructionsCeilingsRoofsThermalMass.new
+  args_hash = default_args_hash(model, measure)
+  run_measure(model, measure, args_hash, runner)
   
   return true	
 	
@@ -263,7 +193,7 @@ def apply_residential_appliances(model, runner)
   args_hash = default_args_hash(model, measure)
   run_measure(model, measure, args_hash, runner)
   
-  measure = ResidentialCookingRange.new
+  measure = ResidentialCookingRangeFuel.new
   args_hash = default_args_hash(model, measure)
   run_measure(model, measure, args_hash, runner)
   
@@ -275,7 +205,7 @@ def apply_residential_appliances(model, runner)
   args_hash = default_args_hash(model, measure)   
   run_measure(model, measure, args_hash, runner)
   
-  measure = ResidentialClothesDryer.new
+  measure = ResidentialClothesDryerFuel.new
   args_hash = default_args_hash(model, measure)
   run_measure(model, measure, args_hash, runner)
   
@@ -453,21 +383,21 @@ end
 
 def get_thermal_zones(model)
 
+  basement_thermal_zones = []
   living_thermal_zones = []
-  basement_thermal_zone = nil
   model.getThermalZones.each do |thermal_zone|
-    if thermal_zone.name.to_s.include? "Story 0 Space"
-      basement_thermal_zone = thermal_zone
+    if thermal_zone.name.to_s.include? "Story 0"
+      basement_thermal_zones << thermal_zone
     else
       living_thermal_zones << thermal_zone
     end
   end  
   
-  return living_thermal_zones, basement_thermal_zone
+  return living_thermal_zones, basement_thermal_zones
   
 end
 
-def apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_type)
+def apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type)
 
     heating_cooling = "#{heating_source}_#{cooling_source}"
     
@@ -734,7 +664,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       return false    
     end
 
-    puts "#{equip_applied} applied to #{building_type}."
+    puts "#{equip_applied} applied to #{building_space_type}"
     
     return true
     
@@ -748,21 +678,28 @@ def apply_residential(model, runner, heating_source, cooling_source)
   end
   
   building_space_type = model.getBuilding.standardsBuildingType.get
-  number_of_residential_units = model.getBuilding.standardsNumberOfLivingUnits.get.to_i
+  num_of_res_units = model.getBuilding.standardsNumberOfLivingUnits.get.to_i
   num_spaces = model.getSpaces.length.to_i
-  units_per_space = number_of_residential_units.to_f / num_spaces.to_f
-  
-  # puts building_space_type, number_of_residential_units, num_spaces, units_per_space
   
   if building_space_type == "Single-Family"
+    basement_zone = nil
     living_zone = nil
     model.getThermalZones.each do |thermal_zone|
-      if thermal_zone.name.to_s.include? "Story 1"
+      if basement_zone.nil? and thermal_zone.name.to_s.include? "Story 0"
+        basement_zone = thermal_zone
+      end
+      if living_zone.nil? and thermal_zone.name.to_s.include? "Story 1"
         living_zone = thermal_zone
       end
+      break if !basement_zone.nil? and !living_zone.nil?
     end
     model.getSpaces.each do |space|
-      if !space.thermalZone.get.name.to_s.include? "Story 0" and !space.thermalZone.get.name.to_s.include? "Story 1"
+      if space.thermalZone.get.name.to_s.include? "Story 0"
+        puts "Setting space '#{space.name}' to thermal zone '#{basement_zone.name}'"
+        space.setThermalZone(basement_zone) # Set all below-grade spaces to the same thermal zone since this is a single unit, single-family house
+      end    
+      if !space.thermalZone.get.name.to_s.include? "Story 0"
+         puts "Setting space '#{space.name}' to thermal zone '#{living_zone.name}'"
         space.setThermalZone(living_zone) # Set all above-grade spaces to the same thermal zone since this is a single unit, single-family house
       end
     end  
@@ -770,13 +707,12 @@ def apply_residential(model, runner, heating_source, cooling_source)
     unit.setBuildingUnitType(Constants.BuildingUnitTypeResidential)
     unit.setName(Constants.ObjectNameBuildingUnit)
     model.getSpaces.each do |space|
+      next unless Geometry.space_is_finished(space)
       space.setBuildingUnit(unit)
     end
-  else
-    # TODO: how to split up spaces and assign units to multi-family geometry?
+  else # multifamily
+    # TODO
   end
-  
-  living_thermal_zones, basement_thermal_zone = get_thermal_zones(model)
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
@@ -788,33 +724,26 @@ def apply_residential(model, runner, heating_source, cooling_source)
     if space_type.spaces.empty?
       space_type.remove
     end
-  end  
+  end
+  
+  living_thermal_zones, basement_thermal_zones = get_thermal_zones(model)
+  puts "#{building_space_type} building has #{living_thermal_zones.length} living zone(s) and #{basement_thermal_zones.length} basement zone(s)"  
   
   result = true
   result = result && apply_residential_location(model, runner)
   result = result && apply_residential_occupancy(model, runner)
-  result = result && apply_residential_foundations(model, building_space_type, basement_thermal_zone, runner)
+  result = result && apply_residential_foundations(model, runner)
   result = result && apply_residential_floors(model, runner)
-  result = result && apply_residential_ceilings(model, building_space_type, runner)
+  result = result && apply_residential_ceilings(model, runner)
   result = result && apply_residential_walls(model, building_space_type, runner)
   result = result && apply_residential_uninsulated_surfaces(model, runner)
   result = result && apply_residential_fenestration(model, runner)
   result = result && apply_residential_hvac(model, building_space_type, runner)
   result = result && apply_residential_dhw(model, runner)
-  result = result && apply_residential_appliances(model, runner)
+  result = result && apply_residential_appliances(model, runner)   
   result = result && apply_residential_lighting(model, runner)
   result = result && apply_residential_plugloads(model, runner)
   result = result && apply_residential_airflow(model, runner)
-  
-  control_slave_zones_hash = HVAC.get_control_and_slave_zones(model.getThermalZones)
-  all_slave_zones = []
-  control_slave_zones_hash.each do |control_zone, slave_zones|
-    next if slave_zones.empty?
-    slave_zones.each do |slave_zone|
-      all_slave_zones << slave_zone
-    end
-  end
-  puts "#{building_space_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)."
   
   if heating_source != "NA" or cooling_source != "NA"
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
@@ -824,11 +753,9 @@ def apply_residential(model, runner, heating_source, cooling_source)
   end
   
   runner.registerValue("bldg_use", building_space_type)
-  runner.registerValue("res_units", number_of_residential_units, "count")
+  runner.registerValue("res_units", num_of_res_units, "count")
   runner.registerValue("num_spaces", num_spaces, "spaces")
-  runner.registerValue("units_per_space", units_per_space, "unitsperspace")
   
   return result
     
 end
-
