@@ -1,5 +1,8 @@
 source 'http://rubygems.org'
 
+# there is an issue with higher versions of nokogiri
+gem 'nokogiri', '1.6.8.1'
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.5'
 

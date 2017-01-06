@@ -43,6 +43,11 @@ Create the mongo indexes:
 bundle exec rake db:mongoid:create_indexes
 ```
 
+Add database seeds:
+```
+bundle exec rake db:seed
+```
+
 then add default data:
 
 ```
