@@ -687,20 +687,22 @@ def apply_residential(model, runner, heating_source, cooling_source)
     model.getThermalZones.each do |thermal_zone|
       if basement_zone.nil? and thermal_zone.name.to_s.include? "Story 0"
         basement_zone = thermal_zone
+        basement_zone.setName(Constants.FinishedBasementZone(Constants.ObjectNameBuildingUnit))
       end
       if living_zone.nil? and thermal_zone.name.to_s.include? "Story 1"
         living_zone = thermal_zone
+        living_zone.setName(Constants.LivingZone(Constants.ObjectNameBuildingUnit))
       end
       break if !basement_zone.nil? and !living_zone.nil?
     end
     model.getSpaces.each do |space|
       if space.thermalZone.get.name.to_s.include? "Story 0"
-        puts "Setting space '#{space.name}' to thermal zone '#{basement_zone.name}'"
-        space.setThermalZone(basement_zone) # Set all below-grade spaces to the same thermal zone since this is a single unit, single-family house
+        puts "Assigning space '#{space.name}' to thermal zone '#{basement_zone.name}'"
+        space.setThermalZone(basement_zone) # Set all below-grade spaces to the same thermal zone since this is a single unit, single-family building
       end    
       if !space.thermalZone.get.name.to_s.include? "Story 0"
-         puts "Setting space '#{space.name}' to thermal zone '#{living_zone.name}'"
-        space.setThermalZone(living_zone) # Set all above-grade spaces to the same thermal zone since this is a single unit, single-family house
+         puts "Assigning space '#{space.name}' to thermal zone '#{living_zone.name}'"
+        space.setThermalZone(living_zone) # Set all above-grade spaces to the same thermal zone since this is a single unit, single-family building
       end
     end  
     unit = OpenStudio::Model::BuildingUnit.new(model)
@@ -708,10 +710,39 @@ def apply_residential(model, runner, heating_source, cooling_source)
     unit.setName(Constants.ObjectNameBuildingUnit)
     model.getSpaces.each do |space|
       next unless Geometry.space_is_finished(space)
+      space.setName(Constants.LivingSpace(/Story (\d+)/.match(space.name.to_s)[1].to_i, unit.name.to_s))
       space.setBuildingUnit(unit)
     end
   else # multifamily
-    # TODO
+    spaces_per_unit = (model.getSpaces.length / num_of_res_units).floor
+    (1..num_of_res_units).to_a.each do |unit_num|
+      unit = OpenStudio::Model::BuildingUnit.new(model)
+      unit.setBuildingUnitType(Constants.BuildingUnitTypeResidential)
+      unit.setName(Constants.ObjectNameBuildingUnit(unit_num))
+      model.getSpaces.each do |space|
+        next unless Geometry.space_is_finished(space)
+        next if space.buildingUnit.is_initialized
+        space.setName(Constants.LivingSpace(/Story (\d+)/.match(space.name.to_s)[1].to_i, unit.name.to_s))
+        space.setBuildingUnit(unit)
+        break if unit.spaces.length == spaces_per_unit
+      end
+    end
+    model.getBuildingUnits.each do |unit|
+      model.getSpaces.each do |space|
+        next if space.buildingUnit.is_initialized
+        space.setName(Constants.LivingSpace(/Story (\d+)/.match(space.name.to_s)[1].to_i, unit.name.to_s))
+        space.setBuildingUnit(unit) # Assign any remaining spaces to an arbitrary building unit
+      end
+      living_zone = nil
+      unit.spaces.each do |space|
+        if living_zone.nil?
+          living_zone = space.thermalZone.get
+          living_zone.setName(Constants.LivingZone(unit.name.to_s))
+        end        
+        puts "Assigning space '#{space.name}' to thermal zone '#{living_zone.name}'"
+        space.setThermalZone(living_zone) # Set all spaces in the unit to the same thermal zone since this is a multi unit, multi-family building
+      end
+    end
   end
   
   model.getThermalZones.each do |thermal_zone|
@@ -727,7 +758,11 @@ def apply_residential(model, runner, heating_source, cooling_source)
   end
   
   living_thermal_zones, basement_thermal_zones = get_thermal_zones(model)
-  puts "#{building_space_type} building has #{living_thermal_zones.length} living zone(s) and #{basement_thermal_zones.length} basement zone(s)"  
+  puts "#{building_space_type} building has #{living_thermal_zones.length} living zone(s) and #{basement_thermal_zones.length} basement zone(s)"
+  if living_thermal_zones.length != num_of_res_units
+    puts "Building with #{num_of_res_units} residential unit(s) should have #{num_of_res_units} living zone(s)"
+    return true
+  end
   
   result = true
   result = result && apply_residential_location(model, runner)

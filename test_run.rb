@@ -7,7 +7,7 @@ require 'fileutils'
 openstudio_dir = 'E:/openstudio-2-0/core-build/Products/Debug/'
 
 run_retrofit = false
-num_parallel = 1
+num_parallel = 3
 
 buildings = [
    # {name: "Large-Office",             building_type: "Office",                        floor_area: 46320,  number_of_stories: 12},
@@ -26,9 +26,13 @@ buildings = [
    # {name: "Small-Hotel",              building_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4},
    # {name: "Large-Hotel",              building_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6},
    # {name: "Midrise-Apartment",        building_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  number_of_residential_units: 24},
-   # {name: "Single-Family",              building_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  number_of_residential_units: 1},
-   {name: "Single-Family-2",            building_type: "Single-Family",                 floor_area: 500,    number_of_stories: 2,  number_of_residential_units: 1},
-   # {name: "Multifamily-4",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   # {name: "Single-Family",            building_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  number_of_residential_units: 1},
+   # {name: "Single-Family-2",          building_type: "Single-Family",                 floor_area: 500,    number_of_stories: 2,  number_of_residential_units: 1},
+   {name: "Multifamily-4",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   {name: "Multifamily-4-2",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   {name: "Multifamily-4-3",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   {name: "Multifamily-4-4",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   {name: "Multifamily-4-5",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
    # {name: "Multifamily-8",            building_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  number_of_residential_units: 8},
    # {name: "Mobile-Home",              building_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  number_of_residential_units: 1},
    # {name: "Mixed-use",                building_type: "Mixed use",                     floor_area: 4013,   number_of_stories: 4,  number_of_residential_units: 15, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 75, mixed_type_2: "Retail other than mall", mixed_type_2_percentage: 25}, 
@@ -144,3 +148,4 @@ buildings.each do |building|
     system(command)
   end
 end
+#end

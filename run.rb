@@ -2,13 +2,13 @@ require 'rest-client'
 require 'base64'
 require 'logger'
 
-openstudio_dir = ARGV[0]
-$:.unshift(openstudio_dir)
-if /win/.match(RUBY_PLATFORM) or /mingw/.match(RUBY_PLATFORM)
-  ENV['PATH'] = openstudio_dir + ";" + ENV['PATH']
-else
-  ENV['PATH'] = openstudio_dir + ":" + ENV['PATH']
-end
+# openstudio_dir = ARGV[0]
+# $:.unshift(openstudio_dir)
+# if /win/.match(RUBY_PLATFORM) or /mingw/.match(RUBY_PLATFORM)
+  # ENV['PATH'] = openstudio_dir + ";" + ENV['PATH']
+# else
+  # ENV['PATH'] = openstudio_dir + ":" + ENV['PATH']
+# end
 
 require 'openstudio'
 require 'openstudio-workflow'
