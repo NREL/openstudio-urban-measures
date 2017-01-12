@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>view_model</name>
   <uid>f4669f10-fda5-489d-8e1c-7ca3c2d40378</uid>
-  <version_id>47911149-8fdc-49e1-878c-76871f67f56f</version_id>
-  <version_modified>20160713T191910Z</version_modified>
+  <version_id>c177c6b0-b5bc-4d56-bf63-6f34da109448</version_id>
+  <version_modified>20170112T181501Z</version_modified>
   <xml_checksum>1E1F8B97</xml_checksum>
   <class_name>ViewModel</class_name>
   <display_name>ViewModel</display_name>

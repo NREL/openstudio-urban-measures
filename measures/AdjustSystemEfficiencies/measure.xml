@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>adjust_system_efficiencies</name>
   <uid>edeaff3d-3ae4-4487-b4a4-5cf08ea14510</uid>
-  <version_id>b64eea95-a1a6-46a4-8661-f84b4c052a8c</version_id>
-  <version_modified>20160713T191905Z</version_modified>
+  <version_id>e7f45229-558e-4ea6-aedf-c9340ca4139a</version_id>
+  <version_modified>20170112T181459Z</version_modified>
   <xml_checksum>4435983D</xml_checksum>
   <class_name>AdjustSystemEfficiencies</class_name>
   <display_name>AdjustSystemEfficiencies</display_name>

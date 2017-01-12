@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>aedg_k_12_electric_equipment_controls</name>
   <uid>285bc263-7429-4049-a0ce-f60fabf46eec</uid>
-  <version_id>f57b6916-960f-4b9d-8770-73544e98dd74</version_id>
-  <version_modified>20160713T191905Z</version_modified>
+  <version_id>a4439355-93e0-46aa-bf5e-47ae670a2a30</version_id>
+  <version_modified>20170112T181459Z</version_modified>
   <xml_checksum>1F21832E</xml_checksum>
   <class_name>AedgK12ElectricEquipmentControls</class_name>
   <display_name>AedgK12ElectricEquipmentControls</display_name>

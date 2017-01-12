@@ -782,7 +782,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
   
   if heating_source != "NA" or cooling_source != "NA"
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    HelperMethods.remove_all_hvac_equipment(model, runner)
+    HelperMethods.remove_all_hvac_equipment(model, runner) # TODO: remove any existing ducts? again, why are we removing the residential defaults (when no district sources) and replacing with apply_new_residential_hvac(...)?
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type)
   end

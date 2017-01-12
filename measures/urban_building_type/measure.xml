@@ -2,12 +2,12 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>7b4a6dc1-4f47-498d-ac51-1b075c1f5124</version_id>
-  <version_modified>20160713T191909Z</version_modified>
+  <version_id>20933430-1de1-452f-b84a-35744f4c82cb</version_id>
+  <version_modified>20170112T201630Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
-  <description>This measure addings space type, constructions, and schedules as well as HVAC systems based on building type.</description>
+  <description>This measure adds space type, constructions, and schedules as well as HVAC systems based on building type.</description>
   <modeler_description></modeler_description>
   <arguments>
     <argument>
@@ -18,6 +18,10 @@
       <model_dependent>false</model_dependent>
       <default_value>Gas</default_value>
       <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
         <choice>
           <value>Gas</value>
           <display_name>Gas</display_name>
@@ -44,6 +48,10 @@
       <model_dependent>false</model_dependent>
       <default_value>Electric</default_value>
       <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
         <choice>
           <value>Electric</value>
           <display_name>Electric</display_name>
@@ -115,6 +123,24 @@
       <checksum>C48B2E8F</checksum>
     </file>
     <file>
+      <filename>util.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>2AA47E53</checksum>
+    </file>
+    <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>7C9C4DA1</checksum>
+    </file>
+    <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>76D0DE10</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -123,43 +149,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>AC0AFF3D</checksum>
-    </file>
-    <file>
-      <filename>util.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>DDAD47EF</checksum>
+      <checksum>A36921B3</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>11EAC933</checksum>
-    </file>
-    <file>
-      <filename>apply_commercial.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>1E32686F</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>C7E4FC19</checksum>
-    </file>
-    <file>
-      <filename>geometry.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>2285CA0B</checksum>
-    </file>
-    <file>
-      <filename>constants.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>6FEC70C2</checksum>
+      <checksum>0ABDC114</checksum>
     </file>
   </files>
 </measure>

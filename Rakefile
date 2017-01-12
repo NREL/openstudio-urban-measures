@@ -12,11 +12,14 @@ task :update_residential_measures do
       command = "svn checkout https://github.com/NREL/OpenStudio-BEopt/trunk/#{folder} ./measures/#{measure}/resources/#{folder}"
       system(command)
       if folder == "measures"
+        FileUtils.rm_rf("./measures/#{measure}/resources/measures/.svn")
         update_residential_resources(measure)
         measures_dir = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures")
         measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/measures/#{measure}/resources/measures.zip")
         zip_file = OpenStudio::ZipFile.new(measures_zip, false)
         zip_file.addDirectory(measures_dir, OpenStudio::toPath("/"))
+      else
+        FileUtils.rm_rf("./measures/#{measure}/resources/resources/.svn")
       end
         
     end
@@ -30,6 +33,8 @@ def update_residential_resources(measure_name)
 
   measures = Dir.entries(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__)).select {|entry| File.directory? File.join(File.expand_path("../measures/#{measure_name}/resources/measures/", __FILE__), entry) and !(entry == '.' || entry == '..') }
   measures.each do |m|
+  
+    FileUtils.rm_rf("./measures/#{measure_name}/resources/measures/#{m}/tests") # We don't need the unit tests for URBANopt
 
     measurerb = File.expand_path("../measures/#{measure_name}/resources/measures/#{m}/measure.rb", __FILE__)
     

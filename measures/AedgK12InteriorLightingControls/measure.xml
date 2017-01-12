@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>aedg_k_12_interior_lighting_controls</name>
   <uid>9f395ee4-5f82-4ca6-8a50-cb854893827e</uid>
-  <version_id>9303f89e-39ca-428c-b0fc-18efb68d8713</version_id>
-  <version_modified>20160713T191905Z</version_modified>
+  <version_id>2636df90-f527-4a2d-b09c-f05202663ce4</version_id>
+  <version_modified>20170112T181459Z</version_modified>
   <xml_checksum>9B7BB4D8</xml_checksum>
   <class_name>AedgK12InteriorLightingControls</class_name>
   <display_name>AedgK12InteriorLightingControls</display_name>

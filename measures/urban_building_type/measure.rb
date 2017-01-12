@@ -7,8 +7,6 @@ require 'fileutils'
 require_relative 'resources/apply_residential'
 require_relative 'resources/apply_commercial'
 require_relative 'resources/util'
-require_relative 'resources/resources/constants'
-require_relative 'resources/resources/hvac'
 
 module OpenStudio
   module Model
