@@ -15,25 +15,25 @@ buildings = [
    {name: "Large-Office",             building_type: "Office",                        floor_area: 46320,  number_of_stories: 12},
    {name: "Medium-Office",            building_type: "Office",                        floor_area: 4982,   number_of_stories: 3},
    {name: "Small-Office",             building_type: "Office",                        floor_area: 511,    number_of_stories: 1},
-   #{name: "Warehouse",                building_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1},
-   #{name: "StandaloneRetail",         building_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1},
-   #{name: "Strip-Mall",               building_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1},
-   #{name: "Primary-School",           building_type: "Education",                     floor_area: 6871,   number_of_stories: 1},
-   #{name: "Secondary-School",         building_type: "Education",                     floor_area: 19592,  number_of_stories: 2},
-   #{name: "Supermarket",              building_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1},
-   #{name: "Quick-Service-Restaurant", building_type: "Food service",                  floor_area: 232,    number_of_stories: 1},
-   #{name: "Full-Service-Restaurant",  building_type: "Food service",                  floor_area: 511,    number_of_stories: 1},
-   #{name: "Hospital",                 building_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5},
-   #{name: "Outpatient-Health-Care",   building_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3},
-   #{name: "Small-Hotel",              building_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4},
-   #{name: "Large-Hotel",              building_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6},
-   #{name: "Midrise-Apartment",        building_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  number_of_residential_units: 24},
-   #{name: "Single-Family",            building_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  number_of_residential_units: 1},
-   #{name: "Multifamily-4",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
-   #{name: "Multifamily-8",            building_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  number_of_residential_units: 8},
-   #{name: "Mobile-Home",              building_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  number_of_residential_units: 1},
-   #{name: "Mixed-use",                building_type: "Mixed use",                     floor_area: 4013,   number_of_stories: 4,  number_of_residential_units: 15, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 75, mixed_type_2: "Retail other than mall", mixed_type_2_percentage: 25}, 
-   #{name: "Mixed-use-2",              building_type: "Mixed use",                     floor_area: 4013,   number_of_stories: 4,  number_of_residential_units: 12, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 60, mixed_type_2: "Food service", mixed_type_2_percentage: 40} 
+   {name: "Warehouse",                building_type: "Nonrefrigerated warehouse",     floor_area: 4835,   number_of_stories: 1},
+   {name: "StandaloneRetail",         building_type: "Retail other than mall",        floor_area: 2319,   number_of_stories: 1},
+   {name: "Strip-Mall",               building_type: "Strip shopping mall",           floor_area: 2090,   number_of_stories: 1},
+   {name: "Primary-School",           building_type: "Education",                     floor_area: 6871,   number_of_stories: 1},
+   {name: "Secondary-School",         building_type: "Education",                     floor_area: 19592,  number_of_stories: 2},
+   {name: "Supermarket",              building_type: "Food sales",                    floor_area: 4180,   number_of_stories: 1},
+   {name: "Quick-Service-Restaurant", building_type: "Food service",                  floor_area: 232,    number_of_stories: 1},
+   {name: "Full-Service-Restaurant",  building_type: "Food service",                  floor_area: 511,    number_of_stories: 1},
+   {name: "Hospital",                 building_type: "Inpatient health care",         floor_area: 22422,  number_of_stories: 5},
+   {name: "Outpatient-Health-Care",   building_type: "Outpatient health care",        floor_area: 3804,   number_of_stories: 3},
+   {name: "Small-Hotel",              building_type: "Lodging",                       floor_area: 4013,   number_of_stories: 4},
+   {name: "Large-Hotel",              building_type: "Lodging",                       floor_area: 11345,  number_of_stories: 6},
+   {name: "Midrise-Apartment",        building_type: "Multifamily (5 or more units)", floor_area: 3134,   number_of_stories: 4,  number_of_residential_units: 24},
+   {name: "Single-Family",            building_type: "Single-Family",                 floor_area: 200,    number_of_stories: 2,  number_of_residential_units: 1},
+   {name: "Multifamily-4",            building_type: "Multifamily (2 to 4 units)",    floor_area: 800,    number_of_stories: 2,  number_of_residential_units: 4},
+   {name: "Multifamily-8",            building_type: "Multifamily (5 or more units)", floor_area: 1600,   number_of_stories: 3,  number_of_residential_units: 8},
+   {name: "Mobile-Home",              building_type: "Mobile Home",                   floor_area: 80,     number_of_stories: 1,  number_of_residential_units: 1},
+   {name: "Mixed-use",                building_type: "Mixed use",                     floor_area: 4013,   number_of_stories: 4,  number_of_residential_units: 15, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 75, mixed_type_2: "Retail other than mall", mixed_type_2_percentage: 25}, 
+   {name: "Mixed-use-2",              building_type: "Mixed use",                     floor_area: 4013,   number_of_stories: 4,  number_of_residential_units: 12, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 60, mixed_type_2: "Food service", mixed_type_2_percentage: 40} 
 ]
 
 buildings.each do |building|
@@ -47,7 +47,7 @@ def merge(workflow, properties)
     arguments.each_key do |name|
       if properties[name]
         value = properties[name]
-        puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
+        #puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
         arguments[name] = value
       end
     end
@@ -74,9 +74,8 @@ def configure(workflow, datapoint, building, region, skip_value)
   workflow[:steps].each do |step|
     arguments = step[:arguments]
     arguments.each_key do |name|
-      puts name
-      puts name.class
       if name == :__SKIP__
+        puts "setting skip #{skip_value}"
         arguments[name] = skip_value
       elsif arguments[name].nil?
         arguments.delete(name)
@@ -101,9 +100,17 @@ buildings.each do |building|
   File.open(File.join(File.dirname(__FILE__), "/workflows/testing_workflow.osw"), 'r') do |f|
     baseline_osw = JSON::parse(f.read, :symbolize_names => true)
   end
-  retrofit_osw = baseline_osw.clone
-
+  
+  if run_retrofit
+    # easier than deep cloning baseline_osw
+    retrofit_osw = nil
+    File.open(File.join(File.dirname(__FILE__), "/workflows/testing_workflow.osw"), 'r') do |f|
+      retrofit_osw = JSON::parse(f.read, :symbolize_names => true) # easier than deep cloning
+    end
+  end
+  
   # configure the osws with jsons
+  puts name
   baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json, true)
   retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json, false)
 
@@ -139,6 +146,7 @@ buildings.each do |building|
   end
 end
 
+# run the jobs
 Parallel.each(jobs, in_threads: num_parallel) do |job|
   puts job
   system(job)
