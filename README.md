@@ -28,8 +28,12 @@ The OpenStudio Urban Modeling platform is built around the OpenStudio City Datab
 # General Installation
 
 1. Install git.  On Windows we use [Git for Windows](https://git-scm.com/download/win).
-1. Install Ruby 2.0.0.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
+1. Install Ruby 2.2.0.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
 1. On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit follow the [instructions here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit] to install it.
+1. Set the environment variable GEM_HOME to a location where you will want to install gems.
+1. Install 'rest-client' and 'parallel' gems, `gem install rest-client` and `gem install parallel`.
+
+
 
 # OpenStudio City Database
 

@@ -4,10 +4,12 @@ require 'json'
 require 'parallel'
 require 'fileutils'
 
-openstudio_dir = 'E:/openstudio-2-0/core-build/Products/Debug/'
+openstudio_exe = 'C:/Program Files/OpenStudio 2.0.0/bin/openstudio.exe'
+ENV['ENERGYPLUS_EXE_PATH'] = 'C:/Program Files/OpenStudio 2.0.0/EnergyPlus/energyplus.exe'
 
-run_retrofit = false
+run_retrofit = true
 num_parallel = 7
+jobs = []
 
 buildings = [
    {name: "Large-Office",             building_type: "Office",                        floor_area: 46320,  number_of_stories: 12},
@@ -54,7 +56,7 @@ def merge(workflow, properties)
 end
 
 # configure a workflow with building data
-def configure(workflow, datapoint, building, region)
+def configure(workflow, datapoint, building, region, skip_value)
 
   # configure with region first
   workflow = merge(workflow, region[:properties])
@@ -72,7 +74,11 @@ def configure(workflow, datapoint, building, region)
   workflow[:steps].each do |step|
     arguments = step[:arguments]
     arguments.each_key do |name|
-      if arguments[name].nil?
+      puts name
+      puts name.class
+      if name == :__SKIP__
+        arguments[name] = skip_value
+      elsif arguments[name].nil?
         arguments.delete(name)
       end 
     end
@@ -81,7 +87,6 @@ def configure(workflow, datapoint, building, region)
   return workflow
 end
 
-#Parallel.each(buildings, in_threads: num_parallel) do |building|
 buildings.each do |building|
 
   # configure jsons
@@ -93,18 +98,14 @@ buildings.each do |building|
 
   # load the workflows
   baseline_osw = nil
-  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_baseline.osw"), 'r') do |f|
+  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_workflow.osw"), 'r') do |f|
     baseline_osw = JSON::parse(f.read, :symbolize_names => true)
   end
-    
-  retrofit_osw = nil
-  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_retrofit.osw"), 'r') do |f|
-    retrofit_osw = JSON::parse(f.read, :symbolize_names => true)
-  end
+  retrofit_osw = baseline_osw.clone
 
   # configure the osws with jsons
-  baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json)
-  retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json)
+  baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json, true)
+  retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json, false)
 
   # set up the directories
   baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/baseline/")
@@ -118,26 +119,27 @@ buildings.each do |building|
   # save the configured osws
   baseline_osw_path = "#{baseline_osw_dir}/in.osw"
   File.open(baseline_osw_path, 'w') do |f|
-    f << JSON.generate(baseline_osw)
+    f << JSON.pretty_generate(baseline_osw)
   end
     
   if run_retrofit
     retrofit_osw_path = "#{retrofit_osw_dir}/in.osw"
     File.open(retrofit_osw_path, 'w') do |f|
-      f << JSON.generate(retrofit_osw)
+      f << JSON.pretty_generate(retrofit_osw)
     end
   end
     
   # run them
   run_script = File.join(File.dirname(__FILE__), "run.rb")
 
-  command = "bundle exec '#{RbConfig.ruby}' '#{run_script}' '#{openstudio_dir}' '#{baseline_osw_path}'"
-  puts command
-  system(command)
+  jobs << "'#{openstudio_exe}' run -w '#{baseline_osw_path}'"
 
   if run_retrofit
-    command = "bundle exec '#{RbConfig.ruby}' '#{run_script}' '#{openstudio_dir}'  '#{retrofit_osw_path}'"
-    puts command
-    system(command)
+    jobs << "'#{openstudio_exe}' run -w '#{retrofit_osw_path}'"
   end
+end
+
+Parallel.each(jobs, in_threads: num_parallel) do |job|
+  puts job
+  system(job)
 end

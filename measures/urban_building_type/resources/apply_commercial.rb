@@ -14,7 +14,7 @@ class OpenStudio::Model::Model
     # @return [Bool] returns true if successful, false if not
     # @example Create a Small Office, 90.1-2010, in ASHRAE Climate Zone 5A (Chicago)
     #   model.create_prototype_building('SmallOffice', '90.1-2010', 'ASHRAE 169-2006-5A')
-    def apply_standard(runner, building_type, building_vintage, climate_zone, sizing_run_dir = Dir.pwd, debug = false)
+    def apply_standard(runner, building_type, building_vintage, climate_zone, heating_source, cooling_source, num_floors, floor_area, sizing_run_dir = Dir.pwd, debug = false)
       
       # There are no reference models for HighriseApartment at vintages Pre-1980 and 1980-2004. This is a quick check.
       if building_type == "HighriseApartment"
@@ -80,7 +80,19 @@ class OpenStudio::Model::Model
       if climate_zone.include? 'ASHRAE 169-2006-'
         self.getClimateZones.setClimateZone("ASHRAE",climate_zone.gsub('ASHRAE 169-2006-',''))
       end
-
+  
+      applicable = true
+      if heating_source == "NA" and cooling_source == "NA"
+        applicable = false
+      else
+        runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
+        HelperMethods.remove_all_hvac_equipment(self, runner)
+        floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
+        runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area.round}' ft^2.")
+        result = apply_new_commercial_hvac(self, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
+        return false if !result
+      end  
+  
       # Perform a sizing run
       if self.runSizingRun("#{sizing_run_dir}/SizingRun1") == false
         return false
@@ -90,7 +102,8 @@ class OpenStudio::Model::Model
       # and perform a second sizing run
       has_multizone_systems = false
       self.getAirLoopHVACs.sort.each do |air_loop|
-        if air_loop.is_multizone_vav_system
+        # DLM: fix this, what happened to is_multizone_vav_system
+        if air_loop.multizone_vav_system?
           self.apply_multizone_vav_outdoor_air_sizing(building_vintage)
           if self.runSizingRun("#{sizing_run_dir}/SizingRun2") == false
             return false
@@ -1109,7 +1122,7 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     map_space_type(space_type, runner)
   end
   
-  result = model.apply_standard(runner, building_type, building_vintage, climate_zone)
+  result = model.apply_standard(runner, building_type, building_vintage, climate_zone, heating_source, cooling_source, num_floors, floor_area)
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
@@ -1138,17 +1151,7 @@ def apply_commercial(model, runner, heating_source, cooling_source)
     end
   end
   
-  applicable = true
-  if heating_source == "NA" and cooling_source == "NA"
-    applicable = false
-  end
-  if applicable
-    runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    HelperMethods.remove_all_hvac_equipment(model, runner)
-    floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
-    runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area.round}' ft^2.")
-    result = result && apply_new_commercial_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
-  end  
+  
   
   runner.registerValue('bldg_use', building_type)
   runner.registerValue('num_spaces', num_spaces, 'spaces')
