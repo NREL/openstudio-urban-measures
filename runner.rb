@@ -167,85 +167,42 @@ class Runner
     puts "create_osws"
     result = []
     
-    # connect to database, get list of all building and workflow ids
-    all_building_ids = get_all_feature_ids("Building")
-    all_building_workflow_ids = get_all_workflow_ids("Building")
-    
-    all_district_system_ids = get_all_feature_ids("District System")
-    all_district_system_workflow_ids = get_all_workflow_ids("District System")
-    
+    # connect to database, get list of all datapoint ids
+    all_datapoint_ids = get_all_datapoint_ids()
+
     puts "Project #{@project_name}"
-    puts "#{all_building_ids.size} buildings"
-    puts "#{all_building_workflow_ids.size} building workflows"
-    puts "#{all_district_system_ids.size} district systems"
-    puts "#{all_district_system_workflow_ids.size} district systems workflows"
+    puts "#{all_datapoint_ids.size} datapoints"
     
     # loop over all combinations
     num_datapoints = 1
-    all_building_ids.each do |building_id|
-      all_building_workflow_ids.each do |workflow_id|
-
-        # get data point for each pair of building_id, workflow_id
-        # data point is created if it doesn't already exist
-        datapoint = get_datapoint(building_id, workflow_id)
-        datapoint_id = datapoint[:id]
-        
-        # see if datapoint needs to be run
-        if datapoint[:status] 
-          if datapoint[:status] == "Started"
-            puts "Skipping Started Datapoint"
-            next
-          elsif datapoint[:status] == "Complete"
-            puts "Skipping Complete Datapoint"
-            next
-          elsif datapoint[:status] == "Failed"
-            puts "Skipping Failed Datapoint"
-            next
-          end
-        end
-        puts "Saving Datapoint #{datapoint}"
-        
-        result << create_osw(datapoint_id)
-        
-        num_datapoints += 1
-        if @max_datapoints < num_datapoints
-          return result
-        end
-        
-      end
-    end
+    all_datapoint_ids.each do |datapoint_id|
     
-    all_district_system_ids.each do |district_system_id|
-      all_district_system_workflow_ids.each do |workflow_id|
-
-        # get data point for each pair of building_id, workflow_id
-        # data point is created if it doesn't already exist
-        datapoint = get_datapoint(district_system_id, workflow_id)
-        datapoint_id = datapoint[:id]
-        
-        # see if datapoint needs to be run
-        if datapoint[:status] 
-          if datapoint[:status] == "Started"
-            puts "Skipping Started Datapoint"
-            next
-          elsif datapoint[:status] == "Complete"
-            puts "Skipping Complete Datapoint"
-            next
-          elsif datapoint[:status] == "Failed"
-            puts "Skipping Failed Datapoint"
-            next
-          end
+      datapoint = get_datapoint_by_id(datapoint_id)
+      
+      # DLM: TODO: skipp running district system datapoints until all buildings are run
+      
+      # see if datapoint needs to be run
+      if datapoint[:status] 
+        if datapoint[:status] == "Started"
+          puts "Skipping Started Datapoint"
+          next
+        elsif datapoint[:status] == "Complete"
+          puts "Skipping Complete Datapoint"
+          next
+        elsif datapoint[:status] == "Failed"
+          puts "Skipping Failed Datapoint"
+          next
         end
-        puts "Saving District Datapoint #{datapoint_id}"
-        
-        result << create_osw(datapoint_id)
-        
-        num_datapoints += 1
-        if @max_datapoints < num_datapoints
-          return result
-        end
-        
       end
+      puts "Saving Datapoint #{datapoint}"
+      
+      result << create_osw(datapoint_id)
+      
+      num_datapoints += 1
+      if @max_datapoints < num_datapoints
+        return result
+      end
+      
     end
     
     return result
