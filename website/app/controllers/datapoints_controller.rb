@@ -1,6 +1,6 @@
 class DatapointsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_datapoint, only: [:show, :edit, :update, :destroy, :download_file, :delete_file]
+  before_action :set_datapoint, only: [:show, :edit, :update, :instance_workflow, :destroy, :download_file, :delete_file]
 
   # GET /datapoints
   # GET /datapoints.json
@@ -109,6 +109,78 @@ class DatapointsController < ApplicationController
       else
         flash[:error] = @error_message
         format.html { render action: 'edit' }
+        format.json { render json: { error: @error_message }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  # get workflow for datapoint
+  # GET /datapoints/1/instance_workflow
+  # GET /datapoints/1/instance_workflow.json
+  def instance_workflow
+
+    @error_message = ''
+    error = false
+
+    result = Workflow.get_clean_hash(@datapoint.option_set)
+   
+    feature_hash = {}
+    project_hash = {}
+    
+    if @datapoint.feature
+      feature_hash = Workflow.get_clean_hash(@datapoint.feature)
+    end
+    
+    if @datapoint.project
+      project_hash = Workflow.get_clean_hash(@datapoint.project)
+    end    
+    
+    if result && result[:steps]
+      result[:steps].each do |step|
+        if step[:arguments]
+          arguments = step[:arguments]
+          arguments.each_key do |name|
+            name = name.parameterize.underscore.to_sym
+            #puts "name = #{name}"
+            
+            if name == 'project_id'.to_sym
+              arguments[name] = project_hash[:id]
+            elsif name == 'project_name'.to_sym
+              arguments[name] = project_hash[:name]
+            end
+            
+            value = project_hash[name]
+            if value
+              #puts "Setting '#{name}' to '#{value}' based on project level properties" 
+              arguments[name] = value
+            end
+          
+            if name == 'feature_id'.to_sym
+              arguments[name] = feature_hash[:id]
+            elsif name == 'feature_name'.to_sym
+              arguments[name] = feature_hash[:name]               
+            end
+            
+            value = feature_hash[name]
+            if value
+              #puts "Setting '#{name}' to '#{value}' based on building level properties" 
+              arguments[name] = value
+            end
+            
+            if name == 'datapoint_id'.to_sym
+              arguments[name] = @datapoint.id.to_s         
+            end
+          end
+        end
+      end
+    end
+
+    respond_to do |format|
+      if !error
+        format.html { render json: result }
+        format.json { render json: result }
+      else
+        format.html { render json: { error: @error_message }, status: :unprocessable_entity }
         format.json { render json: { error: @error_message }, status: :unprocessable_entity }
       end
     end

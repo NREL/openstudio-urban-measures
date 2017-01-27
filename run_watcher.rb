@@ -6,7 +6,10 @@ require_relative 'runner'
 
 url = 'http://localhost:3000'
 #url = 'http://insight4.hpc.nrel.gov:8081'
-openstudio_dir = 'E:/openstudio-2-0/core-build/Products/Debug/'
+
+#openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
+openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
+
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
 #max_datapoints = Float::INFINITY
@@ -40,7 +43,7 @@ while true
   project_ids = get_all_project_ids(url, user_name, user_pwd)
   project_ids.each do |project_id|
 
-    runner = Runner.new(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+    runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     dirs = runner.create_osws
     puts "running dirs #{dirs}"
     runner.run_osws(dirs)

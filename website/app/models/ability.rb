@@ -48,6 +48,7 @@ class Ability
       can :search, :api
       # temporary:  need to 'check_auth' for access via API method for authenticated users only to have access to these methods:
       can :datapoints, Scenario
+      can :instance_workflow, Datapoint
     end
   end
 end

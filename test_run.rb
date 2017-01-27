@@ -4,7 +4,9 @@ require 'json'
 require 'parallel'
 require 'fileutils'
 
-openstudio_exe = 'C:/Program Files/OpenStudio 2.0.0/bin/openstudio.exe'
+#openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
+openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
+
 ENV['ENERGYPLUS_EXE_PATH'] = 'C:/Program Files/OpenStudio 2.0.0/EnergyPlus/energyplus.exe'
 
 run_retrofit = true
@@ -97,14 +99,14 @@ buildings.each do |building|
 
   # load the workflows
   baseline_osw = nil
-  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_workflow.osw"), 'r') do |f|
+  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_building.osw"), 'r') do |f|
     baseline_osw = JSON::parse(f.read, :symbolize_names => true)
   end
   
   if run_retrofit
     # easier than deep cloning baseline_osw
     retrofit_osw = nil
-    File.open(File.join(File.dirname(__FILE__), "/workflows/testing_workflow.osw"), 'r') do |f|
+    File.open(File.join(File.dirname(__FILE__), "/workflows/testing_building.osw"), 'r') do |f|
       retrofit_osw = JSON::parse(f.read, :symbolize_names => true) # easier than deep cloning
     end
   end

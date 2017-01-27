@@ -283,62 +283,65 @@ class ApiController < ApplicationController
 
   # POST/GET /api/datapoint.json
   # expects project_id and datapoint params
-  # def datapoint
-  #   error = false
-  #   error_message = ''
-  #   created_flag = false
+  def datapoint
+    error = false
+    error_message = ''
+    created_flag = false
 
-  #   if params[:project_id]
-  #     @project = Project.find(params[:project_id])
-  #   else
-  #     error = false
-  #     error_message = 'Project ID is not provided.'
-  #   end
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+    else
+      error = false
+      error_message = 'Project ID is not provided.'
+    end
 
-  #   unless error 
-  #     if params[:datapoint]
-  #       data = params[:datapoint]
-  #       # update or create
-  #       if data[:id]
-  #         datapoints = @project.datapoints.where(id: data[:id])
-  #         if datapoints.count > 0
-  #           @datapoint = datapoints.first
-  #           logger.info('DATAPOINT FOUND: UPDATING')
-  #         else
-  #           error = true
-  #           error_message = "No datapoints match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
-  #           logger.info('DATAPOINT NOT FOUND!')
-  #         end
-  #       else
-  #         # DLM: should also have an option set and building id
-  #         @datapoint = Datapoint.new
-  #         created_flag = true
-  #         logger.info('NEW DATAPOINT: CREATING')
-  #       end
-  #       unless error
-  #         # DLM: should also have a workflow and building id
-  #         @datapoint, error, error_message = Datapoint.create_update_datapoint(data, @datapoint, @project.id)
-  #       end
-  #     else
-  #       error = true
-  #       error_message += 'No datapoint parameter provided.'
-  #     end
+    unless error 
+      if params[:datapoint]
+        data = params[:datapoint]
+        # update or create
+        if data[:id]
+          datapoints = @project.datapoints.where(id: data[:id])
+          if datapoints.count > 0
+            @datapoint = datapoints.first
+            logger.info('DATAPOINT FOUND: UPDATING')
+          else
+            error = true
+            error_message = "No datapoints match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
+            logger.info('DATAPOINT NOT FOUND!')
+          end
+        else
+          # DLM: should also have an option set and building id
+          #@datapoint = Datapoint.new
+          #created_flag = true
+          #logger.info('NEW DATAPOINT: CREATING')
+          error = true
+          error_message = "Datapoint ID is not provided.  Cannot update."
+          logger.info('DATAPOINT ID NOT PROVIDED!')
+        end
+        unless error
+          # DLM: should also have a workflow and building id
+          @datapoint, error, error_message = Datapoint.create_update_datapoint(data, @datapoint, @project.id)
+        end
+      else
+        error = true
+        error_message += 'No datapoint parameter provided.'
+      end
      
-  #   end
+    end
 
-  #   respond_to do |format|
-  #     if error
-  #       format.json { render json: { error: error_message, datapoint: @datapoint}, status: :unprocessable_entity }
-  #     else
-  #       status = if created_flag
-  #                  :created
-  #                else
-  #                  :ok
-  #                end
-  #       format.json { render 'datapoints/show', status: status, location: datapoints_url(@datapoint) }
-  #     end
-  #   end
-  # end
+    respond_to do |format|
+      if error
+        format.json { render json: { error: error_message, datapoint: @datapoint}, status: :unprocessable_entity }
+      else
+        status = if created_flag
+                   :created
+                 else
+                   :ok
+                 end
+        format.json { render 'datapoints/show', status: status, location: datapoints_url(@datapoint) }
+      end
+    end
+  end
 
   # POST /api/retrieve_datapoint.json
   def retrieve_datapoint

@@ -4,12 +4,8 @@
 
 <table class="table table-striped">
   <tr>
-    <th>ID</th>
-    <td><%= @feature.id.to_s %></td>
-  </tr>
-  <tr>
-    <th>Project ID</th>
-    <td><%= link_to @feature.project_id, @feature.project %></td>
+    <th>Project</th>
+    <td><%= link_to @feature.project.name, @feature.project %></td>
   </tr>
   <tr>
   	<th>Type</th>

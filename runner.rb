@@ -5,9 +5,9 @@ require 'json'
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
-  def initialize(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  def initialize(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     @url = url
-    @openstudio_dir = openstudio_dir
+    @openstudio_exe = openstudio_exe
     @project_id = project_id   
     @user_name = user_name
     @user_pwd = user_pwd
@@ -37,7 +37,7 @@ class Runner
       params[:project_id] = @project_id
       params[:datapoint] = datapoint
 
-      request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
+      request = RestClient::Resource.new("#{@url}/api/datapoint.json", user: @user_name, password: @user_pwd)
       response = request.post(params, content_type: :json, accept: :json)    
     end
   end
@@ -141,8 +141,13 @@ class Runner
   
   def get_workflow(datapoint_id)
     puts "get_workflow, datapoint_id = #{datapoint_id}"
+    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    begin
+      response = request.get(content_type: :json, accept: :json)
+    rescue => e
+      puts e.response
+    end
 
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
@@ -249,8 +254,7 @@ class Runner
   def create_osw(datapoint_id)
     puts "create_osw, datapoint_id = #{datapoint_id}"
     datapoint = get_datapoint_by_id(datapoint_id)
-    datapoint_id = datapoint[:id]
-    
+
     # datapoint is not run, get the workflow
     # this is the merged workflow with the building properties merged in to the template workflow
     workflow = get_workflow(datapoint_id)
@@ -279,6 +283,10 @@ class Runner
         end
       end
     end
+    
+    workflow[:file_paths] = ["./../../../files", "./../../../adapters", "./../../../weather"]
+    workflow[:measure_paths] = ["./../../../measures"]
+    workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow
     osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
@@ -307,7 +315,7 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      command = "bundle exec ruby run.rb '#{@openstudio_dir}' '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
       puts command
       system(command)
     end
