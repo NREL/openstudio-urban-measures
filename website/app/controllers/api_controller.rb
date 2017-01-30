@@ -542,7 +542,7 @@ class ApiController < ApplicationController
   # GET scenario_datapoints
   # get all datapoints associated with a given scenario
   def scenario_features
-    # params are project_id and workflow_id
+    # params are project_id and scenario_id
     error = false
     error_messages = []
 
@@ -552,7 +552,7 @@ class ApiController < ApplicationController
         @scenario = @project.scenarios.where(id: params[:scenario_id]).first
       else
         error = true
-        error_messages << "No workflow_id parameter provided."
+        error_messages << "No scenario_id parameter provided."
       end
     else
       error = true

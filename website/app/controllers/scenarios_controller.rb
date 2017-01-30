@@ -5,8 +5,10 @@ class ScenariosController < ApplicationController
   # GET /scenarios
   # GET /scenarios.json
   def index
-    page = params[:page] ? params[:page] : 1
-    @scenarios = Scenario.all.page(page)
+    #page = params[:page] ? params[:page] : 1
+    #@scenarios = Scenario.all.page(page)
+    
+    @scenarios = Scenario.all
   end
 
   # GET /scenarios/1
@@ -153,10 +155,10 @@ class ScenariosController < ApplicationController
   # GET all datapoints associated with a scenario
   # For GEOJSON, return as geojson object (like workflow_buildings api)
   def datapoints
-    @scenario = Scenario.find(params[:scenario_id])
-    @datapoints = @scenario.datapoints
+    @scenario = Scenario.find(params[:scenario_id])   
+    @datapoints = @scenario.datapoints  
     @json_data = Geometry.build_geojson_from_datapoints(@datapoints)
-
+File.open('E:\openstudio-urban-measures\json_data.json', 'w') {|f| f.puts @json_data}
     respond_to do |format|
       format.html {render action: 'datapoints'} # todo: rename results
       format.json {render json: @json_data, status: :ok}

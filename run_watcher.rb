@@ -12,8 +12,8 @@ openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
 
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
-#max_datapoints = Float::INFINITY
-max_datapoints = 7
+max_datapoints = Float::INFINITY
+#max_datapoints = 7
 num_parallel = 7
 
 def get_all_project_ids(url, user_name, user_pwd)
@@ -33,7 +33,7 @@ end
 
 project_ids = get_all_project_ids(url, user_name, user_pwd)
 project_ids.each do |project_id|
-  runner = Runner.new(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
   #runner.clear_results
 end
 

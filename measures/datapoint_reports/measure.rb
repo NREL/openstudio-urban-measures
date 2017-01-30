@@ -158,6 +158,15 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     if !value.to_f.nan? and !value.to_f.infinite?
       results[name] = value
       results[name + '_units'] = units
+      if name.nil?
+        @runner.registerWarning("Name is nil")
+      elsif value.nil?
+        @runner.registerWarning("Value for #{name}' is nil")
+      elsif units.nil?
+        @runner.registerValue(name, value)
+      else
+        @runner.registerValue(name, value, units)
+      end
     end
   end
 
@@ -188,6 +197,8 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     elsif /http:\/\/([^:\/]*)/.match(city_db_url)
       @city_db_url = md[1]
     end
+    
+    @runner = runner
     
     # get the last model and sql file
     model = runner.lastOpenStudioModel

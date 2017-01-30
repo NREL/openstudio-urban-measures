@@ -10,12 +10,12 @@ url = 'http://localhost:3000'
 #openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
 openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
 
-project_id = '588b65a86eeb882780000002'
+project_id = '588f77696eeb8818ac0000c5'
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
 max_datapoints = Float::INFINITY
-max_datapoints = 2
-num_parallel = 1
+#max_datapoints = 2
+num_parallel = 7
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.clear_results

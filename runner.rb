@@ -97,6 +97,28 @@ class Runner
     return result
   end
   
+  def get_all_scenario_ids()
+    puts "get_all_scenario_ids"
+    result = []
+    
+    request = RestClient::Resource.new("#{@url}/scenarios.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+  
+    scenarios = JSON.parse(response.body, :symbolize_names => true)
+    scenarios.each do |scenario|
+      
+      project_id = scenario[:project_id]
+      if project_id == @project_id
+        result << scenario[:id]
+      else
+        puts "skipping scenario #{scenario[:id]} since it is not associated with project #{@project_id}"
+      end
+    end
+  
+    puts "get_all_scenario_ids = #{result.join(',')}"
+    return result
+  end
+  
   def get_all_datapoint_ids()
     puts "get_all_datapoint_ids"
     result = []
@@ -152,10 +174,24 @@ class Runner
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
   end
+
+  def get_scenario(scenario_id)
+    puts "get_scenario, scenario_id = #{scenario_id}"
+    puts "#{@url}/scenarios/#{scenario_id}.json"
+    request = RestClient::Resource.new("#{@url}/scenarios/#{scenario_id}.json", user: @user_name, password: @user_pwd)
+    begin
+      response = request.get(content_type: :json, accept: :json)
+    rescue => e
+      puts e.response
+    end
+
+    scenario = JSON.parse(response.body, :symbolize_names => true)
+    return scenario[:scenario]
+  end
   
-  def get_results(workflow_id)
-    puts "get_results, workflow_id = #{workflow_id}"
-    request = RestClient::Resource.new("#{@url}/api/workflow_buildings.json?project_id=#{@project_id}&workflow_id=#{workflow_id}", user: @user_name, password: @user_pwd)
+  def get_results(scenario_id)
+    puts "get_results, scenario_id = #{scenario_id}"
+    request = RestClient::Resource.new("#{@url}/api/scenario_features.json?project_id=#{@project_id}&scenario_id=#{scenario_id}", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
 
     results = JSON.parse(response.body, :symbolize_names => true)
@@ -280,14 +316,15 @@ class Runner
   
   def save_results
     puts "save_results"
-    all_workflow_ids = get_all_workflow_ids("Building")
-    all_workflow_ids.concat(get_all_workflow_ids("District System"))
+    all_scenario_ids = get_all_scenario_ids()
     
-    all_workflow_ids.each do |workflow_id|
-      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/workflow_#{workflow_id}.geojson")
+    all_scenario_ids.each do |scenario_id|
+      scenario = get_scenario(scenario_id)
+      scenario_name = scenario[:name]
+      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
       
       if !File.exists?(results_path)
-        results = get_results(workflow_id)
+        results = get_results(scenario_id)
         
         File.open(results_path, 'w') do |file|
           file << JSON.pretty_generate(results)

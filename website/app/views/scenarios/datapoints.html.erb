@@ -42,7 +42,7 @@ $(function() {
       $( "#render-min" ).html(property.min.toPrecision(5));
       $( "#render-max" ).html(property.max.toPrecision(5));
       $( "#render-units" ).html(property.units);
-      color_scale = d3.scale.linear().domain([property.min, property.max]).range(['blue', 'red']);
+      color_scale = d3.scaleLinear().domain([property.min, property.max]).range(['blue', 'red']);
     }
       
     var values = baseline_datasource.entities.values;
@@ -89,6 +89,7 @@ $(function() {
   
   // GeoJSON data including results
   var json_data = <%= raw @json_data %>;
+  console.log(json_data)
   var baseline_datasource = new Cesium.GeoJsonDataSource();
  
   var allProperties = {};
@@ -207,8 +208,9 @@ $(function() {
 
   loadingIndicator.style.display = 'none';
   
-  var bounds = d3.geo.bounds(json_data);
-
+  var bounds = d3.geoPath().bounds(json_data)
+  
+console.log(bounds);
   var ellipsoid = Cesium.Ellipsoid.WGS84;
   var west = Cesium.Math.toRadians(bounds[0][0]);
   var south = Cesium.Math.toRadians(bounds[0][1]);
