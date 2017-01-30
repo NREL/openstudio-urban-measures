@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>add_district_system</name>
   <uid>5c781ee3-b77c-4a71-ac0d-5ad19863c96b</uid>
-  <version_id>21d36928-9cd8-451e-8ac4-8cc4faa421cc</version_id>
-  <version_modified>20160729T231736Z</version_modified>
-  <xml_checksum>A7890DC7</xml_checksum>
+  <version_id>03a4dfa5-ffd6-4ca5-8c17-e6769a3b5f61</version_id>
+  <version_modified>20170130T220728Z</version_modified>
+  <xml_checksum>F2B10865</xml_checksum>
   <class_name>AddDistrictSystem</class_name>
   <display_name>Add district system</display_name>
   <description>Add district system</description>
@@ -34,6 +34,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>
@@ -97,7 +98,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>ECDAAC37</checksum>
+      <checksum>F7E6EDD4</checksum>
     </file>
   </files>
 </measure>

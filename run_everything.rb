@@ -18,6 +18,7 @@ max_datapoints = Float::INFINITY
 num_parallel = 7
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+runner.update_measures
 runner.clear_results
 dirs = runner.create_osws
 runner.run_osws(dirs)

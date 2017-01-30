@@ -19,7 +19,7 @@
       "arguments": {
         "city_db_url": "http://insight4.hpc.nrel.gov:8081/",
         "project_id": null,
-        "building_workflow_id": null
+        "scenario_id": null
       }
     },
     {

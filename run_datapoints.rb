@@ -19,6 +19,7 @@ project_id = "588b65a86eeb882780000002"
 datapoint_ids = ["588b68ec6eeb882780000021"]
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+runner.update_measures
 runner.clear_results(datapoint_ids)
 
 dirs = []

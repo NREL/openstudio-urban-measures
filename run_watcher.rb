@@ -34,6 +34,7 @@ end
 project_ids = get_all_project_ids(url, user_name, user_pwd)
 project_ids.each do |project_id|
   runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  runner.update_measures
   #runner.clear_results
 end
 

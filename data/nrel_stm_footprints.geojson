@@ -1314,16 +1314,11 @@
 				"fill": "#929292",
 				"fill-opacity": 0.5,
 				"name": "Solar Industrial Mesa Test Area",
-				"name": "East Entrance",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Solar Industrial Mesa Test Area",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -1617,15 +1612,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Mesa PV A",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Mesa PV A",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -1683,15 +1674,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Mesa PV B",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Mesa PV B",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -1729,15 +1716,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Mesa PV C",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Mesa PV C",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -1819,15 +1802,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Central PV A",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Central PV A",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -1865,15 +1844,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Outdoor Test PV",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Outdoor Test PV",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -2099,15 +2074,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Outdoor Test PV B",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Outdoor Test PV ",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -2529,15 +2500,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "Vehicle Testing PV",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "Vehicle Testing PV",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
@@ -2759,15 +2726,11 @@
 				"fill": "#ff8000",
 				"fill-opacity": 0.5,
 				"name": "High Flux PV",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 5,
-				"number_of_stories_above_ground": 5,
 				"source_id": "High Flux PV",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"district_system_type": "Community Photovoltaic",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",

@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>adjust_system_efficiencies</name>
   <uid>edeaff3d-3ae4-4487-b4a4-5cf08ea14510</uid>
-  <version_id>b64eea95-a1a6-46a4-8661-f84b4c052a8c</version_id>
-  <version_modified>20160713T191905Z</version_modified>
-  <xml_checksum>4435983D</xml_checksum>
+  <version_id>a48521bc-8a0f-414a-9563-d16af1f3fb56</version_id>
+  <version_modified>20170130T220728Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>AdjustSystemEfficiencies</class_name>
   <display_name>AdjustSystemEfficiencies</display_name>
   <description>Updates heating and cooling efficiencies of all equipment in a model by a multiplier.</description>
@@ -45,6 +45,7 @@
       <default_value>1</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>

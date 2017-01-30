@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>34e2d126-d154-44a2-a764-2e9b7845dd10</version_id>
-  <version_modified>20160803T055923Z</version_modified>
-  <xml_checksum>45EB89EB</xml_checksum>
+  <version_id>07fdc631-0326-4d77-929c-cbb4cb9bec62</version_id>
+  <version_modified>20170130T220728Z</version_modified>
+  <xml_checksum>B5C31114</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
   <description>Imports District System Loads as Schedules</description>
@@ -36,6 +36,7 @@
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>
@@ -68,7 +69,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>2AECCB16</checksum>
+      <checksum>8A6DB92A</checksum>
     </file>
   </files>
 </measure>

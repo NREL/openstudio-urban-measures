@@ -30,7 +30,7 @@
 <% if @scenario.datapoints.count <= 0 %>
   <p>There are no datapoints associated with this scenario.</p>
 <% else %>
-  <%#= link_to 'Show GeoJSON Results', datapoints_scenario_path(id: @scenario, format: :html), class: "btn btn-primary" %>
+  <%= link_to 'Show GeoJSON Results', scenario_datapoints_path(@scenario), class: "btn btn-primary" %>
   <table class="tablesorter table table-striped">
     <thead>
     <tr>

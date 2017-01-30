@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>improve_motor_efficiency</name>
   <uid>52013ba9-7b9b-4ffd-bc67-d4c0fa05d7ae</uid>
-  <version_id>0dcb0b51-9017-44d8-9b56-7a34cfb8a83e</version_id>
-  <version_modified>20160713T191905Z</version_modified>
-  <xml_checksum>F78494F2</xml_checksum>
+  <version_id>e0d66e1c-c814-46f4-978f-f09ff0b63a5e</version_id>
+  <version_modified>20170130T220728Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>ImproveMotorEfficiency</class_name>
   <display_name>Improve Motor Efficiency in Selected Fans and Pumps</display_name>
   <description>The assessment team observed opportunities for motor efficiency improvements on HVAC systems. These motors are asynchronous induction motors.&#xd;There are currently motors on the market that are far superior to standard efficiency motors. These come in both premium efficiency and ultra-efficiency which exceed NEMA Premium standards. These motors utilize a die cast copper rotor which reduces the energy requirements of the motor and allows the motor to run cooler. The motor also features an improved heat dissipation system and new low-friction bearings; both of which help extend the life of the motor. The motor also has a smaller weight and size compared to the standard efficiency motors. These high efficiency motors are showing efficiency improvements on the order of 3-10% more efficient than current standard efficiency motors.&#xd;For all of the three-phase, asynchronous induction motors feeding AHU supply fans, specify premium or ultra-efficiency motors. The belts associated with the largest motors, longest run times, and that run closest to full load should be given priority when making replacements.</description>
@@ -36,10 +36,10 @@ The cost arguments are user arguments that start with a default of $0. Operation
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>{bf46f340-679f-4367-8fe2-8c79caefa16c}</default_value>
+      <default_value>*All Plant and Air Loops*</default_value>
       <choices>
         <choice>
-          <value>{bf46f340-679f-4367-8fe2-8c79caefa16c}</value>
+          <value>{59ddc197-0497-49a2-9982-0607b558d1b4}</value>
           <display_name>*All Plant and Air Loops*</display_name>
         </choice>
       </choices>
@@ -137,6 +137,7 @@ The cost arguments are user arguments that start with a default of $0. Operation
       <default_value>1</default_value>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Distribution</tag>

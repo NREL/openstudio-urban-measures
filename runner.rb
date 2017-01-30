@@ -18,6 +18,13 @@ class Runner
     @project_name = @project[:name]
   end
   
+  def update_measures
+    measure_dir = File.join(File.dirname(__FILE__), "/measures")
+    command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
+    puts command
+    system(command)
+  end
+  
   def clear_results(datapoint_ids = [])
     puts "clear_results, datapoint_ids = #{datapoint_ids}"
     
