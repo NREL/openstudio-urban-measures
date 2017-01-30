@@ -158,7 +158,7 @@ class ScenariosController < ApplicationController
     @scenario = Scenario.find(params[:scenario_id])   
     @datapoints = @scenario.datapoints  
     @json_data = Geometry.build_geojson_from_datapoints(@datapoints)
-File.open('E:\openstudio-urban-measures\json_data.json', 'w') {|f| f.puts @json_data}
+
     respond_to do |format|
       format.html {render action: 'datapoints'} # todo: rename results
       format.json {render json: @json_data, status: :ok}
