@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>07fdc631-0326-4d77-929c-cbb4cb9bec62</version_id>
-  <version_modified>20170130T220728Z</version_modified>
+  <version_id>90e89878-e08d-4fd8-a533-f2e52235ee2e</version_id>
+  <version_modified>20170131T170730Z</version_modified>
   <xml_checksum>B5C31114</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
@@ -28,9 +28,17 @@
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>building_workflow_id</name>
-      <display_name>Building Workflow ID</display_name>
-      <description>Building Workflow ID.</description>
+      <name>scenario_id</name>
+      <display_name>Scenario ID</display_name>
+      <description>Scenario ID.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>feature_id</name>
+      <display_name>Feature ID</display_name>
+      <description>Feature ID.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -69,7 +77,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>8A6DB92A</checksum>
+      <checksum>C8CABB57</checksum>
     </file>
   </files>
 </measure>

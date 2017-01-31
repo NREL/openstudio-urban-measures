@@ -15,8 +15,8 @@ user_pwd = 'testing123'
 #max_datapoints = Float::INFINITY
 max_datapoints = 2
 num_parallel = 7
-project_id = "588b65a86eeb882780000002"
-datapoint_ids = ["588b68ec6eeb882780000021"]
+project_id = '588f77696eeb8818ac0000c5'
+datapoint_ids = ['588fd1bf6eeb8818ac0003d3', '588fd1bf6eeb8818ac0003e2']
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.update_measures

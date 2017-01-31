@@ -18,6 +18,8 @@ class Datapoint
   belongs_to :feature
   belongs_to :option_set
   belongs_to :project
+  
+  # DLM: for district system datapoints we want to ensure that they are in only one scenario
   has_and_belongs_to_many :scenario, autosave: true
 
   # Relations

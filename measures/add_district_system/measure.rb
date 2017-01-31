@@ -26,9 +26,10 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     # the type of system to add to the building
     systems = OpenStudio::StringVector.new
     systems << "None"
+    systems << "Community Photovoltaic"
     systems << "Central Hot and Chilled Water"
     systems << "Ambient Loop"
-    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('system_type', systems, true)
+    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('district_system_type', systems, true)
     system_type.setDisplayName("System Type")
     system_type.setDefaultValue("None")
     system_type.setDescription("Type of central system.")
@@ -155,11 +156,13 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     end
 
     # assign the user inputs to variables
-    system_type = runner.getStringArgumentValue("system_type", user_arguments)
+    system_type = runner.getStringArgumentValue('district_system_type', user_arguments)
     
-    if system_type == "None"
+    if system_type == 'None'
       runner.registerAsNotApplicable("NA.")
-    elsif system_type == "Central Hot and Chilled Water"
+    elsif system_type == 'Community Photovoltaic'
+      runner.registerAsNotApplicable('NA.')
+    elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)
     end

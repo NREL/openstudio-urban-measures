@@ -128,9 +128,20 @@ class DatapointsController < ApplicationController
    
     feature_hash = {}
     project_hash = {}
+    scenario_hash = {} # only for district systems
     
     if @datapoint.feature
       feature_hash = Workflow.get_clean_hash(@datapoint.feature)
+    
+      if @datapoint.feature.type == 'District System'
+        if @datapoint.scenario.size == 1
+          scenario_hash = Workflow.get_clean_hash(@datapoint.scenario[0])
+        elsif @datapoint.scenario.size == 0
+          # DLM: error?
+        else
+          # DLM: error?
+        end
+      end
     end
     
     if @datapoint.project
@@ -157,6 +168,18 @@ class DatapointsController < ApplicationController
               arguments[name] = value
             end
           
+            if name == 'scenario_id'.to_sym
+              arguments[name] = scenario_hash[:id]
+            elsif name == 'scenario_name'.to_sym
+              arguments[name] = scenario_hash[:name]
+            end
+            
+            value = scenario_hash[name]
+            if value
+              #puts "Setting '#{name}' to '#{value}' based on scenario level properties" 
+              arguments[name] = value
+            end
+            
             if name == 'feature_id'.to_sym
               arguments[name] = feature_hash[:id]
             elsif name == 'feature_name'.to_sym
