@@ -22,6 +22,11 @@
 
 <%= javascript_tag do %>
 
+// globals for testing
+var global_json_data = {};
+var global_baseline_datasource = {};
+var global_viewer = {};
+
 // on document ready
 $(function() {
   
@@ -48,7 +53,7 @@ $(function() {
     var values = baseline_datasource.entities.values;
     for (var i = 0; i < values.length; i++) {
       var value = values[i];
-      
+      console.log(value);
       var surface_elevation = value.properties["surface_elevation"];
       var roof_elevation = value.properties["roof_elevation"];
       if (!roof_elevation){
@@ -89,8 +94,10 @@ $(function() {
   
   // GeoJSON data including results
   var json_data = <%= raw @json_data %>;
-  console.log(json_data)
+  global_json_data = json_data;
+  
   var baseline_datasource = new Cesium.GeoJsonDataSource();
+  global_baseline_datasource = baseline_datasource;
  
   var allProperties = {};
   var loadingIndicator = document.getElementById('loadingIndicator');
@@ -118,6 +125,7 @@ $(function() {
             baseLayerPicker: false
           });
     viewer._geocoder._viewModel._url = 'http://dev.virtualearth.net/';
+    global_viewer = viewer;
   } catch (exception) {
     var message = Cesium.formatError(exception);
     console.error(message);
@@ -245,7 +253,7 @@ console.log(bounds);
     var values = baseline_datasource.entities.values;
     for (var i = 0; i < values.length; i++) {
       var value = values[i];
-      
+
       var surface_elevation = value.properties["surface_elevation"];
       var roof_elevation = value.properties["roof_elevation"];
       if (!roof_elevation){
@@ -259,7 +267,7 @@ console.log(bounds);
       value.polygon.extrudedHeight = height;
       
       value.polygon.fill = true;
-      
+
       var positions = value.polygon.hierarchy['_value'].positions;
       var center = Cesium.BoundingSphere.fromPoints(positions).center;
       ellipsoid.scaleToGeodeticSurface(center, center);
@@ -294,7 +302,7 @@ console.log(bounds);
           }
         }
       }
-
+console.log(1);
       // populate all properties from the results
       if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
         var results = value.properties["datapoint"]["results"];
@@ -320,7 +328,7 @@ console.log(bounds);
         }
       }
     } 
-    
+  console.log(2);  
     var dropdown = $('#render-dropdown');
     dropdown.change(onDropdownChange);
     
@@ -338,10 +346,11 @@ console.log(bounds);
       }
     });
     onDropdownChange();
-
+console.log(3);
   })
   
-  scene.camera.flyTo({destination : extent});
+  //scene.camera.flyTo({destination : extent});
+  scene.camera.zoomTo(extent);
   viewer.render();
 });
 <% end %>
