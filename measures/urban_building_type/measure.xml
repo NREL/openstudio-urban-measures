@@ -1,10 +1,9 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <error>Unable to extract OpenStudio::Measure::OSMeasure object from E:/openstudio-urban-measures/measures/urban_building_type/measure.rb. The script should contain a class that derives from OpenStudio::Measure::OSMeasure and should close with a line stating the class name followed by .new.registerWithApplication.</error>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>35067380-cd54-4a37-88d4-de6bd283dabf</version_id>
-  <version_modified>20170201T025954Z</version_modified>
+  <version_id>76642ca6-d63b-4822-97d0-c5d34b397cae</version_id>
+  <version_modified>20170201T172906Z</version_modified>
   <xml_checksum>612457D2</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -152,16 +151,16 @@
       <checksum>D908E1D8</checksum>
     </file>
     <file>
-      <filename>apply_commercial.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>519CDFC2</checksum>
-    </file>
-    <file>
       <filename>measures.zip</filename>
       <filetype>zip</filetype>
       <usage_type>resource</usage_type>
       <checksum>AE0D16F8</checksum>
+    </file>
+    <file>
+      <filename>apply_commercial.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>AE9959EA</checksum>
     </file>
   </files>
 </measure>

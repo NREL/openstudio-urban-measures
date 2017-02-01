@@ -873,7 +873,7 @@
 				"number_of_stories_above_ground": 5,
 				"source_id": "NREL Employee Parking Garage",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"building_type": "Vacant",
 				"surface_elevation": 1584.3504,
 				"type": "Building"
 			},
@@ -1362,7 +1362,7 @@
 				"number_of_stories_above_ground": 5,
 				"source_id": "East Parking",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"building_type": "Vacant",
 				"surface_elevation": 1584.3504,
 				"type": "Building"
 			},
@@ -2774,7 +2774,7 @@
 				"number_of_stories_above_ground": 5,
 				"source_id": "South Parking",
 				"source_name": "NREL_GDS",
-				"building_type": "Office",
+				"building_type": "Vacant",
 				"surface_elevation": 1584.3504,
 				"type": "Building"
 			},

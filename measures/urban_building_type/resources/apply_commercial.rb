@@ -945,8 +945,8 @@ def prototype_building_type(model, runner)
   
   case standards_building_type
   when "Vacant"
-    runner.registerError("Have not defined measures and inputs for #{standards_building_type}.")
-    return false, building_type, num_floors, floor_area
+    # DLM: temporary
+    building_type = 'Warehouse'
   when "Office"
     size = office_size(floor_area, runner)
     if size == 'Large'
@@ -1032,6 +1032,10 @@ def map_space_type(space_type, runner)
 
   floor_area = space_type.model.getBuilding.floorArea
   case standards_building_type
+  when "Vacant"
+    # DLM: temp
+    new_space_type = 'Bulk'
+    new_building_type = 'Warehouse'
   when "Office"
     size = office_size(floor_area, runner)
     if size == 'Large'

@@ -520,7 +520,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
-    result = []
+    shading_surfaces = []
     floor_prints.each do |floor_print|
       shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
       
@@ -528,10 +528,28 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       shading_surface.setShadingSurfaceGroup(shading_group)
       shading_surface.setName("Photovoltaic Panel")
      
-      result << shading_surface 
+      shading_surfaces << shading_surface 
     end
     
-    return result
+    # create the inverter
+    inverter = OpenStudio::Model::ElectricLoadCenterInverterSimple.new(model)
+    inverter.setInverterEfficiency(0.95)
+
+    # create the distribution system
+    elcd = OpenStudio::Model::ElectricLoadCenterDistribution.new(model)
+    elcd.setInverter(inverter)
+    
+    shading_surfaces.each do |shading_surface|
+      panel = OpenStudio::Model::GeneratorPhotovoltaic::simple(model)
+      panel.setSurface(shading_surface)
+      performance = panel.photovoltaicPerformance.to_PhotovoltaicPerformanceSimple.get
+      performance.setFractionOfSurfaceAreaWithActiveSolarCells(1.0)
+      performance.setFixedEfficiency(0.3)
+      
+      elcd.addGenerator(panel)
+    end
+    
+    return shading_surfaces
   end
   
   def get_min_lon_lat(building_json)
@@ -770,6 +788,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         return false
       end
       
+      # DLM: temp hack
+      building_type = feature[:properties][:building_type]
+      if building_type == 'Vacant'
+        max_z = 0
+        spaces.each do |space|
+          bb = space.boundingBox
+          max_z = [max_z, bb.maxZ.get].max
+        end
+        shading_surfaces = create_photovoltaics(feature, max_z + 1, model)
+      end
+      
       # make other buildings to convert to shading
       convert_to_shades = []
       if surrounding_buildings == "None"
@@ -837,26 +866,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       district_system_type = feature[:properties][:district_system_type]
       
       if district_system_type == 'Community Photovoltaic'
-      
-        # create the inverter
-        inverter = OpenStudio::Model::ElectricLoadCenterInverterSimple.new(model)
-        inverter.setInverterEfficiency(0.95)
-
-        # create the distribution system
-        elcd = OpenStudio::Model::ElectricLoadCenterDistribution.new(model)
-        elcd.setInverter(inverter)
-    
         shading_surfaces = create_photovoltaics(feature, 0, model)
-        
-        shading_surfaces.each do |shading_surface|
-          panel = OpenStudio::Model::GeneratorPhotovoltaic::simple(model)
-          panel.setSurface(shading_surface)
-          performance = panel.photovoltaicPerformance.to_PhotovoltaicPerformanceSimple.get
-          performance.setFractionOfSurfaceAreaWithActiveSolarCells(1.0)
-          performance.setFixedEfficiency(0.3)
-          
-          elcd.addGenerator(panel)
-        end
       end
 
     else
