@@ -53,7 +53,7 @@ $(function() {
     var values = baseline_datasource.entities.values;
     for (var i = 0; i < values.length; i++) {
       var value = values[i];
-      console.log(value);
+
       var surface_elevation = value.properties["surface_elevation"];
       var roof_elevation = value.properties["roof_elevation"];
       if (!roof_elevation){
@@ -62,7 +62,10 @@ $(function() {
       }
       
       var height = roof_elevation - surface_elevation;
- 
+      if (isNaN(height) || (height < 1)){
+        height = 1;
+      }
+      
       //var average_roof_height = value.properties["average_roof_height"];
       value.polygon.extrudedHeight = height;
 
@@ -120,9 +123,14 @@ $(function() {
             imageryProvider : imageryProvider,
             baseLayerPicker : true,
             scene3DOnly : true,
-            sceneModePicker: false,
-            homeButton: false,
-            baseLayerPicker: false
+            sceneModePicker : false,
+            homeButton : false,
+            infoBox : true,
+            baseLayerPicker : false,
+            timeline : false,
+            animation : false,
+            navigationHelpButton : false,
+            showRenderLoopErrors : true
           });
     viewer._geocoder._viewModel._url = 'http://dev.virtualearth.net/';
     global_viewer = viewer;
@@ -218,7 +226,6 @@ $(function() {
   
   var bounds = d3.geoPath().bounds(json_data)
   
-console.log(bounds);
   var ellipsoid = Cesium.Ellipsoid.WGS84;
   var west = Cesium.Math.toRadians(bounds[0][0]);
   var south = Cesium.Math.toRadians(bounds[0][1]);
@@ -262,6 +269,9 @@ console.log(bounds);
       }
       
       var height = roof_elevation - surface_elevation;
+      if (isNaN(height) || (height < 1)){
+        height = 1;
+      }
  
       //var average_roof_height = value.properties["average_roof_height"];
       value.polygon.extrudedHeight = height;
@@ -302,7 +312,7 @@ console.log(bounds);
           }
         }
       }
-console.log(1);
+
       // populate all properties from the results
       if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
         var results = value.properties["datapoint"]["results"];
@@ -328,7 +338,7 @@ console.log(1);
         }
       }
     } 
-  console.log(2);  
+
     var dropdown = $('#render-dropdown');
     dropdown.change(onDropdownChange);
     
@@ -346,11 +356,11 @@ console.log(1);
       }
     });
     onDropdownChange();
-console.log(3);
+
   })
   
-  //scene.camera.flyTo({destination : extent});
-  scene.camera.zoomTo(extent);
+  scene.camera.flyTo({destination : extent, duration : 0});
+  //viewer.zoomTo(extent);
   viewer.render();
 });
 <% end %>
