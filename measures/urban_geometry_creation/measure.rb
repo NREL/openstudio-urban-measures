@@ -156,7 +156,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       
       if mixed_types.empty?
         @runner.registerError("'Mixed use' building type requested but 'mixed_types' argument is empty")
-        return false
+        return nil
       end
      
       mixed_types.sort! {|x,y| x[:percentage] <=> y[:percentage]}
@@ -288,7 +288,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   
     geometry = building_json[:geometry] 
     properties = building_json[:properties]
-    source_id = properties[:source_id]
+    name = properties[:name]
     
     floor_prints = []
     multi_polygons = get_multi_polygons(building_json)
@@ -303,7 +303,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         if floor_print
           floor_prints << floor_print
         else 
-          @runner.registerWarning("Cannot building #{source_id}")
+          @runner.registerWarning("Cannot get floor print for building '#{name}'")
         end
           
         # subsequent polygons are holes, we do not support them
@@ -320,7 +320,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         next
       end
       space = space.get
-      space.setName("Building Story #{source_id} Space")
+      space.setName("Building #{name} Space")
       
       #story_space_type = create_space_type(building[:space_type], story[:space_type], model)
       #space.setSpaceType(story_space_type)
@@ -351,7 +351,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       #space.setBuildingStory(building_story)
       
       thermal_zone = OpenStudio::Model::ThermalZone.new(model)
-      thermal_zone.setName("Building #{source_id} ThermalZone")
+      thermal_zone.setName("Building #{name} ThermalZone")
       space.setThermalZone(thermal_zone)
       
       result << space 
@@ -455,7 +455,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
      
       other_spaces = create_building(other_building, :space_per_building, model)
       if other_spaces.nil? || other_spaces.empty?
-        @runner.registerWarning("Failed to create spaces for other building #{other_source_id}")
+        @runner.registerWarning("Failed to create spaces for other building '#{name}'")
       end
       
       convert_to_shades.concat(other_spaces)
@@ -497,7 +497,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def create_photovoltaics(feature_json, height, model)
    
     properties = feature_json[:properties]
-    feature_id = feature_json[:properties]
+    feature_id = properties[:properties]
+    name = properties[:name]
 
     floor_prints = []
     multi_polygons = get_multi_polygons(feature_json)
@@ -512,7 +513,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         if floor_print
           floor_prints << OpenStudio::reverse(floor_print)
         else 
-          @runner.registerWarning("Cannot create footprint #{source_id}")
+          @runner.registerWarning("Cannot create footprint for '#{name}'")
         end
           
         # subsequent polygons are holes, we do not support them
@@ -743,6 +744,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @runner.registerError("No properties found in '#{feature}'")
       return false
     end
+    
+    name = feature[:properties][:name]
+    model.getBuilding.setName(name)
 
     geometry_type = feature[:geometry][:type]
     if geometry_type == "Polygon"
@@ -783,8 +787,8 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
       # make requested building
       spaces = create_building(feature, :space_per_floor, model)
-      if spaces.nil? || spaces.empty?
-        @runner.registerError("Failed to create spaces for building #{source_id}")
+      if spaces.nil? 
+        @runner.registerError("Failed to create spaces for building '#{name}'")
         return false
       end
       

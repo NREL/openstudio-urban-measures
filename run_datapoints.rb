@@ -16,7 +16,7 @@ user_pwd = 'testing123'
 max_datapoints = 2
 num_parallel = 7
 project_id = '58914d416eeb8814e0000034'
-datapoint_ids = ['58914dc06eeb8814e00000ac']
+datapoint_ids = ['58914dc06eeb8814e00000bf', '58914dc06eeb8814e00000c0', '58914dc06eeb8814e00000c5', '58914dc06eeb8814e00000c6', '58914dc06eeb8814e00000d0']
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.update_measures

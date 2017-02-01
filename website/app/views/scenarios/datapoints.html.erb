@@ -71,12 +71,12 @@ $(function() {
 
       if (color_scale){
         var x = value.properties[renderProperty];
-        if (!x){
+        if (x == null){
           if (value.properties["datapoint"] && value.properties["datapoint"]["results"]){
             x = value.properties["datapoint"]["results"][renderProperty];
           }
         }
-        if (x){
+        if (x != null){
           var y = color_scale(x);
           var c = Cesium.Color.fromCssColorString(y);
           value.label.text = x.toPrecision(5);
