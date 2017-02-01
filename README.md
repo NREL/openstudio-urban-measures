@@ -16,7 +16,7 @@ The OpenStudio Urban Modeling platform is built around the OpenStudio City Datab
 
 1.  Simulation workflows are specified in OpenStudio Workflow (OSW) format and uploaded to a project in the City Database.  Each workflow specifies a series of OpenStudio Measures to apply in order to simulate a given building.  A datapoint is created for each building, workflow pair (that is a datapoint is the result of simulating a particular building with a particular workflow).  When a datapoint is simulated, building properties are applied to any OpenStudio Measure arguments with the same name.  For example, if a measure in the workflow takes an argument named `space_type` and the building's properties specify `space_type: "Office"` then the value `"Office"` will be passed to the measure argument named `space_type`.  Example workflows can be found in the [workflows](./workflows/) directory.
 
-     * Typically, building analyses will include the Urban Geometry Creation Measure.  This measure pulls GeoJSON data from the city database's API to creates geometry for a given building (including adjacent buildings for heat transfer and surrounding buildings for shading).   This measure also assigns stub space types with names that match CBECS PBA codes for commercial buildings or RECS Structure codes for residential buildings.  Mixed-use buildings may have difference space types per floor, the primary building space type will be assigned at the building level.  
+    * Typically, building analyses will include the Urban Geometry Creation Measure.  This measure pulls GeoJSON data from the city database's API to creates geometry for a given building (including adjacent buildings for heat transfer and surrounding buildings for shading).   This measure also assigns stub space types with names that match CBECS PBA codes for commercial buildings or RECS Structure codes for residential buildings.  Mixed-use buildings may have difference space types per floor, the primary building space type will be assigned at the building level.  
     * A reporting measure will also push results back to the database.  High level simulation results can be added to the datapoint directly.  Larger results (such as timeseries data) can be attached to the datapoint as related files.
     * In the future, complete OpenStudio Analyses (OSA) files will be uploaded to the City Database.
 
@@ -28,29 +28,20 @@ The OpenStudio Urban Modeling platform is built around the OpenStudio City Datab
 # General Installation
 
 1. Install git.  On Windows we use [Git for Windows](https://git-scm.com/download/win).
-1. Install Ruby 2.2.0.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
+1. Install Ruby.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  
 1. On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit follow the [instructions here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit] to install it.
-1. Set the environment variable GEM_HOME to a location where you will want to install gems.
-1. Install 'rest-client' and 'parallel' gems, `gem install rest-client` and `gem install parallel`.
-
-
 
 # OpenStudio City Database
 
-If you want to develop or run the OpenStudio City Database, follow these [installation instructions](./website/README.md).
-
-# Prototype URBANOpt Application
-
-This is a prototype application only, you can try it out using these [installation instructions](./electron_appp/README.md).
+If you want to develop or run the OpenStudio City Database locally, follow these [installation instructions](./website/README.md).  Otherwise you will need access to an instance of the URBANopt website.
 
 # Running an Analysis
 
 1. Upload  buildings and workflows to a project in an OpenStudio City Database.
-1. Install OpenStudio (version 1.11.0 is tested to work). Ensure that you install 64-bit Openstudio if you are using 64-bit Ruby or the same for 32-bit.
-1. Add OpenStudio to your Ruby environment by adding `require 'C:\Program Files\OpenStudio 1.11.0\Ruby\openstudio.rb'` to the file `\lib\ruby\site_ruby\openstudio.rb`
-1. Open a command prompt (must have git commands available) in the root directory.
+1. Install OpenStudio. 
 1. Edit the [run_everything](./run_everything.rb) script to point to your project and edit other configurations.
  in your Ruby installation.  
+1. Open a command prompt (must have git commands available) in the root directory.
 1. `bundle install`
 1. `bundle exec ruby run_everything.rb`
 1. This will generate simulation results in the `run` directory as well as push results to the City Database and download GeoJSON files including results.
