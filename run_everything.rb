@@ -10,7 +10,7 @@ url = 'http://localhost:3000'
 #openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
 openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
 
-project_id = '588f77696eeb8818ac0000c5'
+project_id = '58914d416eeb8814e0000034'
 user_name = 'test@nrel.gov'
 user_pwd = 'testing123'
 max_datapoints = Float::INFINITY

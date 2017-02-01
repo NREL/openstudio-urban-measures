@@ -37,23 +37,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     args << city_db_url
     
     # project name of the building to create
-    project_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_name", true)
-    project_name.setDisplayName("Project Name")
-    project_name.setDescription("Project Name.")
-    args << project_name
+    project_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_id", true)
+    project_id.setDisplayName("Project ID")
+    project_id.setDescription("Project ID.")
+    args << project_id
     
     # source id of the building to create
-    source_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_id", true)
-    source_id.setDisplayName("Building Source ID")
-    source_id.setDescription("Building Source ID to generate geometry for.")
-    args << source_id
-    
-    # source name of the building to create
-    source_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("source_name", true)
-    source_name.setDisplayName("Building Source Name")
-    source_name.setDescription("Building Source Name to generate geometry for.")
-    source_name.setDefaultValue("NREL_GDS")
-    args << source_name
+    feature_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("feature_id", true)
+    feature_id.setDisplayName("Feature ID")
+    feature_id.setDescription("Feature ID.")
+    args << feature_id
     
     # which surrounding buildings to include
     chs = OpenStudio::StringVector.new
@@ -135,7 +128,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     properties = building_json[:properties]
     surface_elevation	= properties[:surface_elevation]
-    roof_elevation	= properties[:roof_elevation]
     number_of_stories = properties[:number_of_stories]
     number_of_stories_above_ground = properties[:number_of_stories_above_ground]
     number_of_stories_below_ground = properties[:number_of_stories_below_ground]
@@ -181,8 +173,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       number_of_stories_below_ground = number_of_stories - number_of_stories_above_ground
     end
     
-    # DLM: todo, set this by space type
-    floor_to_floor_height = 3.6
+    if floor_to_floor_height.nil?
+      # DLM: todo, set this by space type
+      floor_to_floor_height = 3.6
+    end
     
     if create_method == :space_per_floor
       if space_type
@@ -366,6 +360,111 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
+  def create_other_buildings(building_json, surrounding_buildings, model)
+    
+    project_id = building_json[:properties][:project_id]
+    feature_id = building_json[:properties][:id]
+    
+    # nearby buildings to conver to shading
+    convert_to_shades = []
+
+    # query database for nearby buildings
+    params = {}
+    params[:commit] = 'Proximity Search'
+    params[:project_id] = project_id
+    params[:feature_id] = feature_id
+    params[:distance] = 100
+    params[:proximity_feature_types] = ['Building']
+
+    feature_collection = get_feature_collection(params)
+    
+    if feature_collection[:features].nil?
+      @runner.registerWarning("No features found in #{feature_collection}")
+      return []
+    end
+    
+    # get first floor footprint points
+    building_points = []
+    multi_polygons = get_multi_polygons(building_json)
+    multi_polygons.each do |multi_polygon|
+      multi_polygon.each do |polygon|
+        elevation = 0
+        floor_print = floor_print_from_polygon(polygon, elevation)
+        floor_print.each do |point|
+          building_points << point
+        end
+        
+        # subsequent polygons are holes, we do not support them
+        break
+      end
+    end
+    
+    @runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
+    
+    count = 0
+    feature_collection[:features].each do |other_building|
+    
+      other_id = other_building[:properties][:id]
+      next if other_id == feature_id
+    
+      if surrounding_buildings == "ShadingOnly"
+      
+        # check if any building point is shaded by any other building point
+        surface_elevation	= other_building[:properties][:surface_elevation]
+        roof_elevation	= other_building[:properties][:roof_elevation]
+        number_of_stories = other_building[:properties][:number_of_stories]
+        number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
+        floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+        
+        if number_of_stories_above_ground.nil?
+          if number_of_stories_below_ground.nil?
+            number_of_stories_above_ground = number_of_stories
+            number_of_stories_below_ground = 0
+          else
+            number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
+          end
+        end
+        
+        if floor_to_floor_height.nil?
+          # DLM: todo, set this by space type
+          floor_to_floor_height = 3.6
+        end
+        
+        other_height = number_of_stories_above_ground * floor_to_floor_height
+        
+        # get first floor footprint points
+        other_building_points = []
+        multi_polygons = get_multi_polygons(other_building)
+        multi_polygons.each do |multi_polygon|
+          multi_polygon.each do |polygon|
+            floor_print = floor_print_from_polygon(polygon, other_height)
+            floor_print.each do |point|
+              other_building_points << point
+            end
+            
+            # subsequent polygons are holes, we do not support them
+            break
+          end
+        end
+      
+        shadowed = is_shadowed(building_points, other_building_points)
+        if !shadowed
+          next
+        end
+      end
+     
+      other_spaces = create_building(other_building, :space_per_building, model)
+      if other_spaces.nil? || other_spaces.empty?
+        @runner.registerWarning("Failed to create spaces for other building #{other_source_id}")
+      end
+      
+      convert_to_shades.concat(other_spaces)
+    end
+    
+    return convert_to_shades
+
+  end
+  
   def convert_to_shading_surface_group(space)
     
     name = space.name.to_s
@@ -395,6 +494,45 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return [shading_group]
   end  
   
+  def create_photovoltaics(feature_json, height, model)
+   
+    properties = feature_json[:properties]
+    feature_id = feature_json[:properties]
+
+    floor_prints = []
+    multi_polygons = get_multi_polygons(feature_json)
+    multi_polygons.each do |multi_polygon|
+      
+      if multi_polygon.size > 1
+        @runner.registerWarning("Ignoring holes in polygon")
+      end
+      
+      multi_polygon.each do |polygon|
+        floor_print = floor_print_from_polygon(polygon, height)
+        if floor_print
+          floor_prints << OpenStudio::reverse(floor_print)
+        else 
+          @runner.registerWarning("Cannot create footprint #{source_id}")
+        end
+          
+        # subsequent polygons are holes, we do not support them
+        break
+      end
+    end
+    
+    result = []
+    floor_prints.each do |floor_print|
+      shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
+      
+      shading_surface = OpenStudio::Model::ShadingSurface.new(floor_print, model)
+      shading_surface.setShadingSurfaceGroup(shading_group)
+      shading_surface.setName("Photovoltaic Panel")
+     
+      result << shading_surface 
+    end
+    
+    return result
+  end
   
   def get_min_lon_lat(building_json)
     min_lon = Float::MAX
@@ -478,16 +616,12 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   end
   
   # get the project from the database
-  def get_project(project_name)
+  def get_project(project_id)
 
-    params = {}
-    params[:name] = project_name
-    
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Post.new("/api/project_search.json")
+    request = Net::HTTP::Get.new("/projects/#{project_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    request.body = JSON.generate(params)
     
     # DLM: todo, get these from environment variables or as measure inputs?
     request.basic_auth("test@nrel.gov", "testing123")
@@ -496,10 +630,35 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
       @runner.registerError(response.body)
+      @result = false
       return {}
     end
     
-    return JSON.parse(response.body, :symbolize_names => true)
+    result = JSON.parse(response.body, :symbolize_names => true)
+    return result
+  end
+  
+  # get the feature from the database
+  def get_feature(feature_id)
+    
+    http = Net::HTTP.new(@city_db_url, @port)
+    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    
+    # DLM: todo, get these from environment variables or as measure inputs?
+    request.basic_auth("test@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      @runner.registerError("Bad response #{response.code}")
+      @runner.registerError(response.body)
+      @result = false
+      return {}
+    end
+    
+    result = JSON.parse(response.body, :symbolize_names => true)
+    return result
   end
   
   # get the feature collection from the database
@@ -535,11 +694,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
      
     # assign the user inputs to variables
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
-    project_name = runner.getStringArgumentValue("project_name", user_arguments)
-    source_id = runner.getStringArgumentValue("source_id", user_arguments)
-    source_name = runner.getStringArgumentValue("source_name", user_arguments)
+    project_id = runner.getStringArgumentValue("project_id", user_arguments)
+    feature_id = runner.getStringArgumentValue("feature_id", user_arguments)
     surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
-    
     
     # instance variables
     @runner = runner
@@ -553,53 +710,34 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    project = get_project(project_name)
-    
-    if project.nil? || project.empty?
-      @runner.registerError("Could not find project '#{project_name}")
+    feature = get_feature(feature_id)
+    if feature.nil? || feature.empty?
+      @runner.registerError("Feature '#{feature_id}' could not be found")
       return false
     end
-    project_id = project.first[:id]
     
-    params = {}
-    params[:commit] = 'Search'
-    params[:project_id] = project_id
-    params[:source_id] = source_id
-    params[:source_name] = source_name
-    params[:feature_types] = ['Building']
+    if feature[:geometry].nil?
+      @runner.registerError("No geometry found in '#{feature}'")
+      return false
+    end
     
-    feature_collection = get_feature_collection(params)
+    if feature[:properties].nil?
+      @runner.registerError("No properties found in '#{feature}'")
+      return false
+    end
 
-    if feature_collection[:features].nil?
-      @runner.registerError("No features found in #{feature_collection}")
-      return false
-    elsif feature_collection[:features].empty?
-      @runner.registerError("No features found in #{feature_collection}")
-      return false
-    elsif feature_collection[:features].size > 1
-      @runner.registerError("Multiple features found in #{feature_collection}")
-      return false
-    end
-    
-    building_json = feature_collection[:features][0]
-    
-    if building_json[:geometry].nil?
-      @runner.registerError("No geometry found in #{building_json}")
-      return false
-    end
-    
-    geometry_type = building_json[:geometry][:type]
+    geometry_type = feature[:geometry][:type]
     if geometry_type == "Polygon"
       # ok
     elsif geometry_type == "MultiPolygon"
       # ok
     else
-      @runner.registerError("Unknown geometry type #{geometry_type}")
+      @runner.registerError("Unknown geometry type '#{geometry_type}'")
       return false
     end
 
     # find min and max x coordinate
-    min_lon_lat = get_min_lon_lat(building_json)
+    min_lon_lat = get_min_lon_lat(feature)
     min_lon = min_lon_lat[0]
     min_lat = min_lon_lat[1]
 
@@ -616,172 +754,114 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     site.setLatitude(@origin_lat_lon.lat)
     site.setLongitude(@origin_lat_lon.lon)
     
-    if building_json[:properties][:surface_elevation]
-      surface_elevation = building_json[:properties][:surface_elevation].to_f
+    if feature[:properties][:surface_elevation]
+      surface_elevation = feature[:properties][:surface_elevation].to_f
       site.setElevation(surface_elevation)
     end
     
-    # make requested building
-    spaces = create_building(building_json, :space_per_floor, model)
-    if spaces.nil? || spaces.empty?
-      @runner.registerError("Failed to create spaces for building #{source_id}")
-      return false
-    end
+    feature_type = feature[:properties][:type]
     
-    # get first floor footprint points
-    building_points = []
-    multi_polygons = get_multi_polygons(building_json)
-    multi_polygons.each do |multi_polygon|
-      multi_polygon.each do |polygon|
-        elevation = 0
-        floor_print = floor_print_from_polygon(polygon, elevation)
-        floor_print.each do |point|
-          building_points << point
-        end
-        
-        # subsequent polygons are holes, we do not support them
-        break
-      end
-    end
-      
-    # nearby buildings to conver to shading
-    convert_to_shades = []
+    if feature_type == 'Building'
     
-    if surrounding_buildings == "None"
-      # no-op
-    else
-
-      # query database for nearby buildings
-      params = {}
-      params[:commit] = 'Proximity Search'
-      params[:project_id] = project_id
-      params[:building_id] = building_json[:properties][:id]
-      params[:distance] = 100
-      params[:proximity_feature_types] = ['Building']
-
-      feature_collection = get_feature_collection(params)
-      
-      if feature_collection[:features].nil?
-        @runner.registerError("No features found in #{feature_collection}")
+      # make requested building
+      spaces = create_building(feature, :space_per_floor, model)
+      if spaces.nil? || spaces.empty?
+        @runner.registerError("Failed to create spaces for building #{source_id}")
         return false
       end
-
-      @runner.registerInfo("#{feature_collection[:features].size} nearby buildings found")
       
-      count = 0
-      feature_collection[:features].each do |other_building|
+      # make other buildings to convert to shading
+      convert_to_shades = []
+      if surrounding_buildings == "None"
+        # no-op
+      else
+        convert_to_shades = create_other_buildings(feature, surrounding_buildings, model)
+      end
       
-        other_source_id = other_building[:properties][:source_id]
-        next if other_source_id == source_id
+      # intersect surfaces in this building with others
+      @runner.registerInfo("Intersecting surfaces")
+      spaces.each do |space|
+        convert_to_shades.each do |other_space|
+          space.intersectSurfaces(other_space)
+        end
+      end
+
+      # match surfaces
+      @runner.registerInfo("Matching surfaces")
+      all_spaces = OpenStudio::Model::SpaceVector.new
+      model.getSpaces.each do |space|
+        all_spaces << space
+      end
+      OpenStudio::Model.matchSurfaces(all_spaces)
       
-        if surrounding_buildings == "ShadingOnly"
-        
-          # check if any building point is shaded by any other building point
-          surface_elevation	= other_building[:properties][:surface_elevation]
-          roof_elevation	= other_building[:properties][:roof_elevation]
-          number_of_stories = other_building[:properties][:number_of_stories]
-          number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
-          floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
-          
-          if number_of_stories_above_ground.nil?
-            if number_of_stories_below_ground.nil?
-              number_of_stories_above_ground = number_of_stories
-              number_of_stories_below_ground = 0
-            else
-              number_of_stories_above_ground = number_of_stories - number_of_stories_above_ground
-            end
-          end
-          
-          if floor_to_floor_height.nil?
-            floor_to_floor_height = (roof_elevation - surface_elevation) / number_of_stories_above_ground
-          end
-          
-          other_height = number_of_stories_above_ground * floor_to_floor_height
-          
-          # get first floor footprint points
-          other_building_points = []
-          multi_polygons = get_multi_polygons(other_building)
-          multi_polygons.each do |multi_polygon|
-            multi_polygon.each do |polygon|
-              floor_print = floor_print_from_polygon(polygon, other_height)
-              floor_print.each do |point|
-                other_building_points << point
-              end
-              
-              # subsequent polygons are holes, we do not support them
-              break
-            end
-          end
-        
-          shadowed = is_shadowed(building_points, other_building_points)
-          if !shadowed
-            next
-          end
-        end
-       
-        other_spaces = create_building(other_building, :space_per_building, model)
-        if other_spaces.nil? || other_spaces.empty?
-          @runner.registerError("Failed to create spaces for other building #{other_source_id}")
-          return false
-        end
-        
-        convert_to_shades.concat(other_spaces)
+      # make windows
+      window_to_wall_ratio = feature[:properties][:window_to_wall_ratio]
+      if window_to_wall_ratio.nil?
+        window_to_wall_ratio = 0.3
       end
-    end
-    
-    # intersect surfaces in this building with others
-    @runner.registerInfo("Intersecting surfaces")
-    spaces.each do |space|
-      convert_to_shades.each do |other_space|
-        space.intersectSurfaces(other_space)
-      end
-    end
 
-    # match surfaces
-    @runner.registerInfo("Matching surfaces")
-    all_spaces = OpenStudio::Model::SpaceVector.new
-    model.getSpaces.each do |space|
-      all_spaces << space
-    end
-    OpenStudio::Model.matchSurfaces(all_spaces)
+      spaces.each do |space|
+        space.surfaces.each do |surface|
+          if surface.surfaceType == "Wall" && surface.outsideBoundaryCondition == "Outdoors"
+            surface.setWindowToWallRatio(window_to_wall_ratio)
+          end
+        end
+      end
+      
+      # change adjacent surfaces to adiabatic
+      @runner.registerInfo("Changing adjacent surfaces to adiabatic")
+      model.getSurfaces.each do |surface|
+        adjacent_surface = surface.adjacentSurface
+        if !adjacent_surface.empty?
+          surface_construction = surface.construction
+          if !surface_construction.empty?
+            surface.setConstruction(surface_construction.get)
+          end
+          surface.setOutsideBoundaryCondition('Adiabatic')
+          
+          adjacent_surface_construction = adjacent_surface.get.construction
+          if !adjacent_surface_construction.empty?
+            adjacent_surface.get.setConstruction(adjacent_surface_construction.get)
+          end
+          adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
+        end
+      end
     
-    # make windows
-    window_to_wall_ratio = building_json[:properties][:window_to_wall_ratio]
-    
-    if window_to_wall_ratio.nil?
-      window_to_wall_ratio = 0.3
-    end
+      # convert other buildings to shading surfaces
+      convert_to_shades.each do |space|
+        convert_to_shading_surface_group(space)
+      end
 
-    spaces.each do |space|
-      space.surfaces.each do |surface|
-        if surface.surfaceType == "Wall" && surface.outsideBoundaryCondition == "Outdoors"
-          surface.setWindowToWallRatio(window_to_wall_ratio)
-        end
-      end
-    end
+    elsif feature_type == 'District System'
     
-    # change adjacent surfaces to adiabatic
-    @runner.registerInfo("Changing adjacent surfaces to adiabatic")
-    model.getSurfaces.each do |surface|
-      adjacent_surface = surface.adjacentSurface
-      if !adjacent_surface.empty?
-        surface_construction = surface.construction
-        if !surface_construction.empty?
-          surface.setConstruction(surface_construction.get)
-        end
-        surface.setOutsideBoundaryCondition('Adiabatic')
+      district_system_type = feature[:properties][:district_system_type]
+      
+      if district_system_type == 'Community Photovoltaic'
+      
+        # create the inverter
+        inverter = OpenStudio::Model::ElectricLoadCenterInverterSimple.new(model)
+        inverter.setInverterEfficiency(0.95)
+
+        # create the distribution system
+        elcd = OpenStudio::Model::ElectricLoadCenterDistribution.new(model)
+        elcd.setInverter(inverter)
+    
+        shading_surfaces = create_photovoltaics(feature, 0, model)
         
-        adjacent_surface_construction = adjacent_surface.get.construction
-        if !adjacent_surface_construction.empty?
-          adjacent_surface.get.setConstruction(adjacent_surface_construction.get)
+        shading_surfaces.each do |shading_surface|
+          panel = OpenStudio::Model::GeneratorPhotovoltaic::simple(model)
+          panel.setSurface(shading_surface)
+          performance = panel.photovoltaicPerformance.to_PhotovoltaicPerformanceSimple.get
+          performance.setFractionOfSurfaceAreaWithActiveSolarCells(1.0)
+          performance.setFixedEfficiency(0.3)
+          
+          elcd.addGenerator(panel)
         end
-        adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
       end
-    end
-    
-    # convert other buildings to shading surfaces
-    convert_to_shades.each do |space|
-      convert_to_shading_surface_group(space)
+
+    else
+      @runner.registerError("Unknown feature type '#{feature_type}'")
+      return false
     end
 
     return true

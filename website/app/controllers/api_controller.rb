@@ -213,6 +213,7 @@ class ApiController < ApplicationController
             #   end
             # end
             query = query.geo_near(centroid).max_distance(@distance)
+            query = query.reject {|q| !@types.include?(q.feature.type)}
             @results = query
             @total_count = @results.count
 

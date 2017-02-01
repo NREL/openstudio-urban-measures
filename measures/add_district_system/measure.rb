@@ -161,7 +161,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     if system_type == 'None'
       runner.registerAsNotApplicable("NA.")
     elsif system_type == 'Community Photovoltaic'
-      runner.registerAsNotApplicable('NA.')
+      # already done?
     elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)

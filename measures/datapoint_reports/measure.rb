@@ -300,7 +300,19 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
 
     unconditioned_area = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Building Area' AND RowName='Unconditioned Building Area' AND ColumnName='Area'")
     add_result(results, "unconditioned_area", unconditioned_area, "m2")
-
+    
+    total_site_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Site Energy' AND ColumnName='Total Energy'")
+    add_result(results, "total_site_energy", total_site_energy, "GJ")
+    
+    net_site_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Net Site Energy' AND ColumnName='Total Energy'")
+    add_result(results, "net_site_energy", net_site_energy, "GJ")
+    
+    total_source_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Source Energy' AND ColumnName='Total Energy'")
+    add_result(results, "total_source_energy", total_source_energy, "GJ")
+    
+    net_source_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Net Source Energy' AND ColumnName='Total Energy'")
+    add_result(results, "net_source_energy", net_source_energy, "GJ")
+    
     total_site_eui = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Site Energy' AND ColumnName='Energy Per Conditioned Building Area'")
     add_result(results, "total_site_eui", total_site_eui, "MJ/m2")
 

@@ -16,9 +16,8 @@
 			"measure_dir_name": "urban_geometry_creation",
 			"arguments": {
 				"city_db_url": "http://insight4.hpc.nrel.gov:8081/",
-				"project_name": null,
-				"source_id": null,
-				"source_name": null,
+				"project_id": null,
+				"feature_id": null,
 				"surrounding_buildings": "None"
 			}
 		}, {
