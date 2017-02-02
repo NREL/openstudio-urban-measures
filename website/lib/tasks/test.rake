@@ -9,7 +9,7 @@ namespace :testing do
       # DLM you could make a new user here?
       fail if user.nil?
       
-      project = Project.new(name: name, display_name: name, user: user)
+      project = Project.new(name: name, user: user)
       project.save
     end
     return project
@@ -44,13 +44,14 @@ namespace :testing do
   end
 
   # Test export
+  # TODO: deprecate
   desc 'Export features (api/export)'
   task export_features: :environment do
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123'
 
     # set array of types to return. Choices:  All, Building, Region, Taxlot, District System
-    types = ['all']
+    types = ['All']
     
     # set this for testing
     project = get_or_create_project
@@ -109,10 +110,40 @@ namespace :testing do
     project_id = project.id.to_s
 
     json_file = MultiJson.load(File.read(filename))
-    json_request = JSON.generate('workflow' => json_file, 'project_id' => project_id)
+    json_request = JSON.generate('workflow' => json_file, 'project_id' => project_id, 'name' => 'Test Workflow')
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/workflow', user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      puts "Status: #{response.code}"
+      puts "SUCCESS: #{response.body}"
+    rescue => e
+      puts "ERROR: #{e.response}"
+    end
+  end
+
+  # Test import option_set
+  desc 'POST option set'
+  task post_option_set: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123'
+
+    project = get_or_create_project
+    project_id = project.id.to_s
+    workflow_id = project.workflows.first.id.to_s
+
+    # pass in id to update
+    # id = ''
+
+    # expecting an array of hashes like the 'steps' part of a workflow (strip this out of baseline.osw)
+    filename = "#{Rails.root}/data/baseline.osw"
+    json_file = MultiJson.load(File.read(filename))
+    steps = json_file['steps']  
+    name = 'Test Option Set'
+    json_request = JSON.generate('project_id' => project_id, 'workflow_id' => workflow_id, 'name' => name, 'steps' => steps)
+
+    begin
+      request = RestClient::Resource.new('http://localhost:3000/api/option_set', user: @user_name, password: @user_pwd)
       response = request.post(json_request, content_type: :json, accept: :json)
       puts "Status: #{response.code}"
       puts "SUCCESS: #{response.body}"
@@ -161,71 +192,34 @@ namespace :testing do
     end
   end
 
-  # Test create datapoints
-  desc 'GET create_datapoints'
-  task create_datapoints: :environment do
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123'
 
-    # set this for testing
+  # get workflow file by workflow_id (or datapoint_id)
+  desc 'GET workflow file'
+  task retrieve_workflow_file: :environment do
+    @user_name = 'test@nrel.gov'
+    @user_pwd = 'testing123' 
+
+     # set this for testing
     project = get_or_create_project
-    project_id = project.id.to_s
-    
+    project_id = project.id.to_s  
+
     workflow = project.workflows.first
-    workflow_id = workflow.id
+    workflow_id = workflow.id.to_s
 
     begin
-      request = RestClient::Resource.new("http://localhost:3000/workflows/#{workflow_id}/create_datapoints", user: @user_name, password: @user_pwd)
-      response = request.get(content_type: :json, accept: :json)
+      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
+      response = request["api/retrieve_workflow_file?workflow_id=#{workflow_id.to_s}"].get(content_type: :json, accept: :json)
+
       puts "Status: #{response.code}"
       puts "SUCCESS: #{response.body}"
     rescue => e
       puts "ERROR: #{e.response}"
     end
-    
-    datapoint = workflow.datapoints.first
-    datapoint_id = datapoint.id
-    
-    begin
-      request = RestClient::Resource.new("http://localhost:3000/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
-      response = request.get(content_type: :json, accept: :json)
-      puts "Status: #{response.code}"
-      puts "SUCCESS: #{response.body}"
-    rescue => e
-      puts "ERROR: #{e.response}"
-    end
-    
-  end
-  
-# Test import datapoint
-  desc 'POST datapoint'
-  task post_datapoint: :environment do
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123'
 
-    # set this for testing
-    project = Project.first_or_create
-    workflow = project.workflows.first_or_create
-    building = project.buildings.first_or_create
-
-    datapoint = {}
-    datapoint[:workflow_id] = workflow.id.to_s
-    datapoint[:building_id] = building.id.to_s
-    datapoint[:status] = 'test api'
-
-    json_request = JSON.generate('datapoint' => datapoint, 'project_id' => project.id.to_s)
-
-    begin
-      request = RestClient::Resource.new('http://localhost:3000/api/datapoint', user: @user_name, password: @user_pwd)
-      response = request.post(json_request, content_type: :json, accept: :json)
-      puts "Status: #{response.code}"
-      puts "SUCCESS: #{response.body}"
-    rescue => e
-      puts "ERROR: #{e.response}"
-    end
   end
 
   # Test retrieve (or create) datapoint
+  # Retrieve by feature_id and option_set_id
   desc 'GET datapoint'
   task retrieve_datapoint: :environment do
     @user_name = 'test@nrel.gov'
@@ -233,10 +227,11 @@ namespace :testing do
 
     # set this for testing
     project = Project.first_or_create
-    workflow = project.workflows.first_or_create
-    building = project.buildings.first_or_create
+    dp = project.datapoints.first
+    option_set_id = dp.option_set_id.to_s
+    feature_id = dp.feature_id.to_s
 
-    json_request = JSON.generate('workflow_id' => workflow.id.to_s, 'building_id' => building.id.to_s, 'project_id' => project.id.to_s)
+    json_request = JSON.generate('option_set_id' => option_set_id, 'feature_id' => feature_id, 'project_id' => project.id.to_s)
 
     begin
       request = RestClient::Resource.new('http://localhost:3000/api/retrieve_datapoint', user: @user_name, password: @user_pwd)
@@ -248,7 +243,7 @@ namespace :testing do
     end
   end
 
-  # Test import workflow_file
+  # Test import datapoint_file
   desc 'POST datapoint_file'
   task post_datapoint_file: :environment do
     @user_name = 'test@nrel.gov'
@@ -293,8 +288,7 @@ namespace :testing do
     @user_pwd = 'testing123' 
 
     proj = Project.first
-
-    dp = Datapoint.find('57156befb02c3075270001a9')
+    dp = proj.datapoints.first
     filename = 'datapoint_file_test.csv'
 
     begin
@@ -317,7 +311,7 @@ namespace :testing do
 
     proj = Project.first
 
-    dp = Datapoint.find('57156befb02c3075270001a9')
+    dp = proj.datapoints.first
     filename = 'datapoint_file_test.csv'
 
     begin
@@ -333,17 +327,18 @@ namespace :testing do
   end
 
 
-  # get instance workflow for a datapoint
-  desc 'GET instance_workflow'
-  task instance_workflow: :environment do
+  # get scenario datapoints
+  desc 'GET scenario datapoints'
+  task retrieve_scenario_datapoints: :environment do 
     @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123'
+    @user_pwd = 'testing123' 
 
-    datapoint = Datapoint.first
-    puts "Datapoint: #{datapoint.id.to_s}"
+    proj = Project.first
+    scenario = proj.scenarios.first
+
     begin
       request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
-      response = request["datapoints/#{datapoint.id.to_s}/instance_workflow"].get(content_type: :json, accept: :json)
+      response = request["scenarios/#{scenario.id.to_s}/datapoints"].get(content_type: :json, accept: :json)
 
       puts "Status: #{response.code}"
       puts "SUCCESS: #{response.body}"
@@ -352,68 +347,24 @@ namespace :testing do
     end
   end
 
-  # get workflow file by datapoint_id or workflow_id
-  desc 'GET workflow file'
-  task retrieve_workflow_file: :environment do
+  # get datapoints by scenario (in geojson format)
+  desc 'GET scenario datapoints'
+  task scenario_datapoints: :environment do
     @user_name = 'test@nrel.gov'
     @user_pwd = 'testing123' 
 
     proj = Project.first
-
-    dp = proj.datapoints.first
-
-    wf = dp.workflow
+    scenario = proj.scenarios.first
+    puts "Request: api/scenario_datapoints?project_id=#{proj.id.to_s}&scenario_id=#{scenario.id.to_s}"
 
     begin
       request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
-      response = request["api/retrieve_workflow_file?datapoint_id=#{dp.id.to_s}"].get(content_type: :json, accept: :json)
+      response = request["api/scenario_datapoints?project_id=#{proj.id.to_s}&scenario_id=#{scenario.id.to_s}"].get(content_type: :json, accept: :json)
 
       puts "Status: #{response.code}"
       puts "SUCCESS: #{response.body}"
     rescue => e
-      puts "ERROR: #{e.response}"
-    end
-
-  end
-
-  # get workflow datapoints
-  desc 'GET workflow datapoints'
-  task retrieve_workflow_datapoints: :environment do 
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123' 
-
-    proj = Project.first
-    wf = proj.workflows.first
-
-    begin
-      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
-      response = request["workflows/#{wf.id.to_s}/datapoints"].get(content_type: :json, accept: :json)
-
-      puts "Status: #{response.code}"
-      puts "SUCCESS: #{response.body}"
-    rescue => e
-      puts "ERROR: #{e.response}"
-    end
-  end
-
-  # get buildings by workflow
-  desc 'GET workflow buildings'
-  task workflow_buildings: :environment do
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123' 
-
-    proj = Project.first
-    wf = proj.workflows.first
-    puts "Request: api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"
-
-    begin
-      request = RestClient::Resource.new("http://localhost:3000", user: @user_name, password: @user_pwd)
-      response = request["api/workflow_buildings?project_id=#{proj.id.to_s}&workflow_id=#{wf.id.to_s}"].get(content_type: :json, accept: :json)
-
-      puts "Status: #{response.code}"
-      puts "SUCCESS: #{response.body}"
-    rescue => e
-      puts "ERROR: #{e.response}"
+      puts "ERROR: #{e.inspect}"
     end
 
   end
@@ -433,7 +384,7 @@ namespace :testing do
     
     params = {}
     params[:commit] = 'Region Search'
-    params[:region_id] = project.regions.first.id.to_s
+    params[:region_id] = project.features.where(type: 'Region').first.id.to_s
     params[:region_feature_types] = ['Building']
     params[:project_id] = project_id
 
@@ -470,9 +421,9 @@ namespace :testing do
     
     params = {}
     params[:commit] = 'Proximity Search'
-    params[:building_id] = project.buildings.first.id.to_s
+    params[:feature_id] = project.features.first.id.to_s
     params[:distance] = 100
-    params[:proximity_feature_types] = ['Taxlot']
+    params[:proximity_feature_types] = ['Building']
     params[:project_id] = project_id
 
     json_request = JSON.generate(params)
@@ -506,12 +457,12 @@ namespace :testing do
     project_id = project.id.to_s
 
     # possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-    bldg = project.buildings.first
+    feature = project.features.where(type: 'Building').first
 
     params = {}
     params[:commit] = 'Search'
-    params[:source_id] = bldg.source_id.to_s
-    params[:source_name] = bldg.source_name
+    params[:source_id] = feature.source_id.to_s
+    params[:source_name] = feature.source_name
     params[:feature_types] = ['Building']
     params[:project_id] = project_id
 

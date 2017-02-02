@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>34e2d126-d154-44a2-a764-2e9b7845dd10</version_id>
-  <version_modified>20160803T055923Z</version_modified>
-  <xml_checksum>45EB89EB</xml_checksum>
+  <version_id>ecdb7431-7253-4ff4-b163-3561b8dca3c3</version_id>
+  <version_modified>20170201T233510Z</version_modified>
+  <xml_checksum>B5C31114</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
   <description>Imports District System Loads as Schedules</description>
@@ -28,14 +28,23 @@
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>building_workflow_id</name>
-      <display_name>Building Workflow ID</display_name>
-      <description>Building Workflow ID.</description>
+      <name>scenario_id</name>
+      <display_name>Scenario ID</display_name>
+      <description>Scenario ID.</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+    </argument>
+    <argument>
+      <name>feature_id</name>
+      <display_name>Feature ID</display_name>
+      <description>Feature ID.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>
@@ -68,7 +77,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>2AECCB16</checksum>
+      <checksum>64C18E2B</checksum>
     </file>
   </files>
 </measure>

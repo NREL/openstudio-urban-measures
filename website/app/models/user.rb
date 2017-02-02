@@ -53,10 +53,7 @@ class User
   roles :admin
 
   # Relations
-  has_many :buildings
-  has_many :taxlots
-  has_many :regions
-  has_many :district_systems
+  has_many :projects
   has_many :datapoints
   has_many :workflows
 end

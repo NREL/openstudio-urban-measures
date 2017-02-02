@@ -3,57 +3,50 @@
 ## Local Development
 
 Install bundler and rails at a command prompt:
-
 ```
 gem install bundler
 gem install rails
 ```
 
-Download and install [MongoDB](https://www.mongodb.org).  Open a command propmpt and go to the MongoDB bin directory (on Windows this is 'C:\Program Files\MongoDB\Server\3.0\bin').  Start Mongo with the following command 
-
+Download and install [MongoDB](https://www.mongodb.org).  Create the default MongoDB database directory, on Windows this is 'c:\data\db' on Mac this is '/data/db/. Open a command propmpt and go to the MongoDB bin directory (on Windows this is 'C:\Program Files\MongoDB\Server\3.0\bin').  Start Mongo with the following command 
 ```
 mongod
 ```
 
-Create the default MongoDB database directory, on Windows this is  'c:\data\db'.
-
-
 Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and install the gem dependencies:
-
 ```
 bundle install
 ```
 
-then start the Rails server
+initialize the database:
+```
+bundle exec rake db:setup
+```
 
+add database seeds:
+```
+bundle exec rake db:seed
+```
+
+create the mongo indexes:
+```
+bundle exec rake db:mongoid:create_indexes
+```
+
+then start the Rails server
 ```
 bundle exec rails s
 ```
 
 View the app in your browser at http://localhost:3000
 
-Open a separate console, change directories to the '\openstudio-urban-measures\website\' directory and initialize the database:
-
-```
-bundle exec rake db:setup
-```
-
-Create the mongo indexes:
-```
-bundle exec rake db:mongoid:create_indexes
-```
-
-then add default data:
-
-```
-bundle exec rake testing:batch_upload_features
-```
 
 To reset the database at any time use:
-
 ```
 bundle exec rake db:reset
 ```
+
+# Advanced Instructions, Not Working
 
 ## Deployment with Docker, Docker Machine, and Docker Compose
 

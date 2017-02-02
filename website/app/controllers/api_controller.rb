@@ -66,12 +66,7 @@ class ApiController < ApplicationController
     project_id = params[:project_id]
 
     # retrieve each type
-    @results = []
-    @types.each do |type|
-      type = type.delete(' ')
-      model = type.constantize
-      @results += model.where(project_id: project_id).includes(:geometry)
-    end
+    @results = Feature.where(project_id: project_id).in(type: @types).includes(:geometry)
 
     json_data = Geometry.build_geojson(@results)
 
@@ -145,8 +140,8 @@ class ApiController < ApplicationController
 
       page = params[:page] ? params[:page] : 1
       @possible_types = ['All', 'Building', 'District System', 'Region', 'Taxlot']
-      @regions = @project.regions.all.only(:id).asc(:id).map { |x| [x.id.to_s] }
-      @building_id = nil
+      @regions = @project.features.where(type: 'Region').only(:id).asc(:id).map { |x| [x.id.to_s] }
+      @feature_id = nil
       @distance = nil
       @proximity_feature_types = ['Building']
       @region_id = nil
@@ -168,25 +163,17 @@ class ApiController < ApplicationController
           @source_name = (params[:source_name] && !params[:source_name].empty?) ? params[:source_name] : ''
           @feature_types = (params[:feature_types] && !params[:feature_types].empty?) ? params[:feature_types] : @feature_types
 
-          @types = []
-
-          @feature_types.each do |type|
-            @types << type.capitalize if @possible_types.include? type.capitalize
-          end
+          @types = @feature_types
 
           if @types.include? 'All'
             @types = @possible_types.dup
             @types.delete('All')
           end
 
+          res = Feature.where(project_id: @project.id, source_id: @source_id, source_name: @source_name).in(type: @types)
           @results = []
-          @types.each do |type|
-            model = type.tr(' ', '').constantize
-            res = model.where(project_id: @project.id, source_id: @source_id, source_name: @source_name)
-            # this is weird but it needs to match the other searches
-            res.each do |r|
-              @results << r.geometry
-            end
+          res.each do |r|
+            @results << r.geometry
           end
 
           @total_count = @results.count
@@ -197,37 +184,36 @@ class ApiController < ApplicationController
 
         # GEO NEAR SEARCH
         elsif params[:commit] == 'Proximity Search'
-          @building_id = (params[:building_id] && !params[:building_id].empty?) ? params[:building_id] : ''
+          @feature_id = (params[:feature_id] && !params[:feature_id].empty?) ? params[:feature_id] : ''
           @distance = (params[:distance] && !params[:distance].nil?) ? params[:distance].to_i : 100
           @proximity_feature_types = (params[:proximity_feature_types] && !params[:proximity_feature_types].empty?) ? params[:proximity_feature_types] : @proximity_feature_types
 
-          @types = []
-
-          @proximity_feature_types.each do |type|
-            @types << type.capitalize if @possible_types.include? type.capitalize
-          end
+          @types = @proximity_feature_types
 
           if @types.include? 'All'
             @types = @possible_types.dup
             @types.delete('All')
           end
 
-          bldgs = @project.buildings.where(id: @building_id)
-          unless bldgs.count == 0
-            bldg = bldgs.first
-            centroid = bldg.geometry.centroid
+          features = @project.features.where(id: @feature_id)
+          unless features.count == 0
+            feature = features.first
+            centroid = feature.geometry.centroid
 
             query = Mongoid::Criteria.new(Geometry)
             query = query.where(project_id: @project.id)
-            unless @types.count == 4
-              # add the feature types to the query 
-              # TODO: this is an 'and' but should work like an 'or'... FIX IT
-              @types.each do |type|
-                field = type.downcase.tr(' ', '_') + '_id'
-                query = query.exists(field.to_sym => true)
-              end
-            end
+
+            # TODO: figure out how to restrict to only the 4 types (and not other geojson features)
+            # unless @types.count == 4
+            #   # add the feature types to the query 
+            #   # TODO: this is an 'and' but should work like an 'or'... FIX IT
+            #   @types.each do |type|
+            #     field = type.downcase.tr(' ', '_') + '_id'
+            #     query = query.exists(field.to_sym => true)
+            #   end
+            # end
             query = query.geo_near(centroid).max_distance(@distance)
+            query = query.reject {|q| !@types.include?(q.feature.type)}
             @results = query
             @total_count = @results.count
 
@@ -245,18 +231,14 @@ class ApiController < ApplicationController
           @region_feature_types = (params[:region_feature_types] && !params[:region_feature_types].empty?) ? params[:region_feature_types] : @region_feature_types
 
           # figure out what types
-          @types = []
-
-          @region_feature_types.each do |type|
-            @types << type.capitalize if @possible_types.include? type.titleize
-          end
+          @types = @region_feature_types
 
           if @types.include? 'All'
             @types = @possible_types.dup
             @types.delete('All')
           end
 
-          the_region = Region.find(@region_id)
+          the_region = Feature.find(@region_id)
 
           # test_coords = [[[[-109.05029296875,41.00477542222949],[-102.06298828125,41.00477542222949],[-102.052001953125,36.99377838872517],[-109.072265625,37.020098201368114],[-109.05029296875,41.00477542222949]]]];
 
@@ -269,13 +251,14 @@ class ApiController < ApplicationController
                                       }
                                     })
 
-          unless @types.count == 4
-            # add the feature types to the query
-            @types.each do |type|
-              field = type.downcase.tr(' ', '_') + '_id'
-              query = query.exists(field.to_sym => true)
-            end
-          end
+          # TODO: figure out how to restrict to only the 4 types (and not other geojson features)
+          # unless @types.count == 4
+          #   # add the feature types to the query
+          #   @types.each do |type|
+          #     field = type.downcase.tr(' ', '_') + '_id'
+          #     query = query.exists(field.to_sym => true)
+          #   end
+          # end
 
           @results = query
           @total_count = @results.count
@@ -328,10 +311,13 @@ class ApiController < ApplicationController
             logger.info('DATAPOINT NOT FOUND!')
           end
         else
-          # DLM: should also have a workflow and building id
-          @datapoint = Datapoint.new
-          created_flag = true
-          logger.info('NEW DATAPOINT: CREATING')
+          # DLM: should also have an option set and building id
+          #@datapoint = Datapoint.new
+          #created_flag = true
+          #logger.info('NEW DATAPOINT: CREATING')
+          error = true
+          error_message = "Datapoint ID is not provided.  Cannot update."
+          logger.info('DATAPOINT ID NOT PROVIDED!')
         end
         unless error
           # DLM: should also have a workflow and building id
@@ -374,8 +360,8 @@ class ApiController < ApplicationController
     unless error
 
       # GET
-      if params[:workflow_id] && params[:building_id]
-        @datapoint = @project.datapoints.find_or_create_by(workflow_id: params[:workflow_id], building_id: params[:building_id])
+      if params[:option_set_id] && params[:feature_id]
+        @datapoint = @project.datapoints.find_or_create_by(option_set_id: params[:option_set_id], feature_id: params[:feature_id])
       else
         error = true
         error_message += 'Missing parameters to retrieve datapoint.'  
@@ -434,7 +420,7 @@ class ApiController < ApplicationController
           logger.info('NEW WORKFLOW: CREATING')
         end
         unless error
-          @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow, @project.id, params[:name], params[:display_name])
+          @workflow, error, error_message = Workflow.create_update_workflow(data, @workflow, @project.id, params[:name])
         end
       else
         error = true
@@ -490,19 +476,84 @@ class ApiController < ApplicationController
     end
   end
 
-  # GET workflow_buildings
-  def workflow_buildings
-    # params are project_id and workflow_id
+  # POST option_set
+  def option_set
+    
+    # expects project_id, workflow_id, name, and steps as params
+    # param id is optional (to update)
+    error = false
+    error_message = ''
+    created_flag = false
+
+    if params[:project_id]
+      @project = Project.find(params[:project_id])
+      if params[:workflow_id]
+        @workflow = @project.workflows.find(params[:workflow_id])
+      else
+        error = true
+        error_message  'Workflow ID is not provided'
+      end
+    else
+      error = true
+      error_message = 'Project ID is not provided.'
+    end
+
+    unless error
+      # update if option_set_id is passed
+      if params[:id]
+        option_sets = @project.option_sets.where(id: data[:id])
+        if option_sets.count > 0
+            @option_set = option_sets.first
+            logger.info('Option Set FOUND: UPDATING')
+        else
+          error = true
+          error_message = "No option sets match ID #{data[:id]} for project #{@project.id.to_s}.  Cannot update."
+          logger.info('Option Set NOT FOUND!')
+        end
+      else
+        @option_set = OptionSet.new
+        logger.info("Option Set: CREATING")
+        created_flag = true
+      end
+      unless error
+        @option_set.project_id = @project.id
+        @option_set.workflow_id = @workflow.id
+        @option_set.name = params[:name] ? params[:name] : ''
+        @option_set[:steps] = params[:steps] ? params[:steps] : []
+        @option_set.save
+
+        logger.info("$$$$ OPTION: #{@option_set.inspect}")
+      end
+
+      respond_to do |format|
+        if error
+          format.json { render json: { error: error_message, option_set: @option_set}, status: :unprocessable_entity }
+        else
+          status = if created_flag
+                     :created
+                   else
+                     :ok
+                   end
+          format.json { render 'option_sets/show', status: status, location: option_sets_url(@option_set) }
+        end
+      end
+    end
+  end
+
+  # GET scenario_datapoints
+  # get all datapoints associated with a given scenario
+  def scenario_features
+    # params are project_id and scenario_id
     error = false
     error_messages = []
 
     if params[:project_id]
       @project = Project.find(params[:project_id])
-      if params[:workflow_id]
-        @wf = @project.workflows.where(id: params[:workflow_id]).first
+      if params[:scenario_id]
+        @scenario = @project.scenarios.where(id: params[:scenario_id]).first
       else
         error = true
-        error_messages << "No workflow_id parameter provided."
+        error_messages << "No scenario_id parameter provided."
       end
     else
       error = true
@@ -510,7 +561,7 @@ class ApiController < ApplicationController
     end
     
     unless error
-      @datapoints = @wf.datapoints
+      @datapoints = @scenario.datapoints
       json_data = Geometry.build_geojson_from_datapoints(@datapoints)
     end
 
@@ -521,11 +572,9 @@ class ApiController < ApplicationController
         format.json { render json: json_data, status: :ok }
       end
     end
-
-
   end
 
-  # GET workflow file by workflow_id or datapoint_id
+  # GET workflow file by workflow_id or datapoint
   def retrieve_workflow_file
     error = false
     error_messages = []
@@ -533,7 +582,8 @@ class ApiController < ApplicationController
     if params[:datapoint_id]
       @dp = Datapoint.where(id: params[:datapoint_id]).first
       if !@dp.nil? 
-        @wf = @dp.workflow
+        # get workflow through option set
+        @wf = @dp.option_set.workflow
       else
         error = true
         error_messages << "No datapoint found matching id: #{params[:datapoint_id]}."
@@ -728,14 +778,8 @@ class ApiController < ApplicationController
     @new_results = []
 
     @results.each do |res|
-      if res.building_id
-        @new_results << res.building
-      elsif res.taxlot_id
-        @new_results << res.taxlot
-      elsif res.region_id
-        @new_results << res.region
-      elsif res.district_system_id
-        @new_results << res.district_system
+      if ['Building', 'District System', 'Region', 'Taxlot'].include? res.feature.type 
+        @new_results << res.feature
       end
     end
     @new_results
@@ -747,7 +791,7 @@ class ApiController < ApplicationController
     params.permit(:workflow_id, file_data: [:file_name, :file])
   end
 
-    def datapoint_file_params
+  def datapoint_file_params
     params.require(:datapoint_id)
     params.permit(:datapoint_id, file_data: [:file_name, :file])
   end

@@ -1,0 +1,22 @@
+<%= bootstrap_form_tag url: (@option_set.new_record? ? '/option_sets' : "/option_sets/#{@option_set.id}"),  method: (@option_set.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4' do |f| %>
+  <% if @option_set.project %><h3 class="edit-name">Project: <%=link_to @option_set.project.id, @option_set.project %></h3><% end %>
+  <% if @option_set.workflow %><h3 class="edit-name">Workflow: <%=link_to @option_set.workflow.id, @option_set.workflow %></h3><% end %>
+  <%= f.hidden_field :project_id, value: @option_set.project_id %>
+  <%= f.hidden_field :workflow_id, value: @option_set.workflow_id %>
+  <fieldset>
+    <%= f.text_field :name, value: @option_set.name %>
+  </fieldset>
+
+  <% @data.each do |measure| %>
+    <p>Argument values for measure: <%= measure['measure_dir_name'] %></p>
+    <% measure['arguments'].each_pair do |key, value| %>
+      <fieldset>
+        <%= f.text_field "#{measure['measure_dir_name']}_#{key}", value: "#{value}", label: "#{key}" %>
+      </fieldset>
+    <% end %>
+  <% end %>
+ 
+  <%= f.form_group do %>
+    <%= f.primary @option_set.new_record? ? 'Create' : 'Update' %>
+  <% end %>
+<% end %>

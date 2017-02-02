@@ -2,16 +2,16 @@
   <schema_version>3.0</schema_version>
   <name>add_district_system</name>
   <uid>5c781ee3-b77c-4a71-ac0d-5ad19863c96b</uid>
-  <version_id>21d36928-9cd8-451e-8ac4-8cc4faa421cc</version_id>
-  <version_modified>20160729T231736Z</version_modified>
-  <xml_checksum>A7890DC7</xml_checksum>
+  <version_id>6c727915-5c98-4681-8dfc-01229f187982</version_id>
+  <version_modified>20170202T000003Z</version_modified>
+  <xml_checksum>F2B10865</xml_checksum>
   <class_name>AddDistrictSystem</class_name>
   <display_name>Add district system</display_name>
   <description>Add district system</description>
   <modeler_description>Add district system</modeler_description>
   <arguments>
     <argument>
-      <name>system_type</name>
+      <name>district_system_type</name>
       <display_name>System Type</display_name>
       <description>Type of central system.</description>
       <type>Choice</type>
@@ -24,6 +24,10 @@
           <display_name>None</display_name>
         </choice>
         <choice>
+          <value>Community Photovoltaic</value>
+          <display_name>Community Photovoltaic</display_name>
+        </choice>
+        <choice>
           <value>Central Hot and Chilled Water</value>
           <display_name>Central Hot and Chilled Water</display_name>
         </choice>
@@ -34,6 +38,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>HVAC.Whole System</tag>
@@ -97,7 +102,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>ECDAAC37</checksum>
+      <checksum>8D01A829</checksum>
     </file>
   </files>
 </measure>

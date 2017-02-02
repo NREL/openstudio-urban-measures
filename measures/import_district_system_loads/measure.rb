@@ -42,21 +42,49 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     project_id.setDescription("Project ID.")
     args << project_id
     
-    # building workflow id
-    # todo: DLM, this should be scenario ID
-    building_workflow_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("building_workflow_id", true)
-    building_workflow_id.setDisplayName("Building Workflow ID")
-    building_workflow_id.setDescription("Building Workflow ID.")
-    args << building_workflow_id
-
+    # scenario id
+    scenario_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("scenario_id", true)
+    scenario_id.setDisplayName("Scenario ID")
+    scenario_id.setDescription("Scenario ID.")
+    args << scenario_id
+    
+    # feature id
+    feature_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("feature_id", true)
+    feature_id.setDisplayName("Feature ID")
+    feature_id.setDescription("Feature ID.")
+    args << feature_id
+    
     return args
   end
   
-  # get the project from the database
-  def get_datapoint_ids(project_id, building_workflow_id)
+  # get the feature from the database
+  def get_feature(feature_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/datapoints.json")
+    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    
+    # DLM: todo, get these from environment variables or as measure inputs?
+    request.basic_auth("test@nrel.gov", "testing123")
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      @runner.registerError("Bad response #{response.code}")
+      @runner.registerError(response.body)
+      @result = false
+      return {}
+    end
+    
+    result = JSON.parse(response.body, :symbolize_names => true)
+    return result
+  end
+  
+  # get the project from the database
+  def get_datapoint_ids(project_id, scenario_id)
+  
+    http = Net::HTTP.new(@city_db_url, @port)
+    request = Net::HTTP::Get.new("/scenarios/#{scenario_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     
@@ -70,12 +98,16 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @result = false
     end
     
-    datapoints = JSON.parse(response.body, :symbolize_names => true)
+    scenario = JSON.parse(response.body, :symbolize_names => true)
+    datapoints = scenario[:scenario][:datapoints]
     
     result = []
-    datapoints.each do |datapoint|
-      if datapoint[:project_id] == project_id
-        if datapoint[:workflow_id] == building_workflow_id
+    if datapoints.nil?
+      @runner.registerError("Scenario #{scenario_id} has no datapoints")
+      @result = false
+    else
+      datapoints.each do |datapoint|
+        if datapoint[:feature_type] == 'Building'
           result << datapoint[:id]
         end
       end
@@ -192,7 +224,8 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     # assign the user inputs to variables
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
     project_id = runner.getStringArgumentValue("project_id", user_arguments)
-    building_workflow_id = runner.getStringArgumentValue("building_workflow_id", user_arguments)
+    scenario_id = runner.getStringArgumentValue("scenario_id", user_arguments)
+    feature_id = runner.getStringArgumentValue("feature_id", user_arguments)
     
     @runner = runner
     @result = true
@@ -205,8 +238,30 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    # DLM: this should be all datapoints for buildings on this system in this scenario
-    datapoint_ids = get_datapoint_ids(project_id, building_workflow_id)
+    feature = get_feature(feature_id)
+    if feature[:properties].nil? || feature[:properties][:district_system_type].nil?
+      runner.registerError("Cannot feature #{feature_id} missing required property district_system_type")
+      return false
+    end
+    
+    district_system_type = feature[:properties][:district_system_type]
+    if district_system_type == 'Community Photovoltaic'
+      # add in geometry for PV, maybe this should happen in add geometry measure?  add to this workflow?
+      vertices = OpenStudio::Point3dVector.new
+      vertices << OpenStudio::Point3d.new(0, 1, 0)
+      vertices << OpenStudio::Point3d.new(0, 0, 0)
+      vertices << OpenStudio::Point3d.new(1, 0, 0)
+      vertices << OpenStudio::Point3d.new(1, 1, 0)
+      surface = OpenStudio::Model::ShadingSurface.new(vertices, model)
+      
+      shading_group = OpenStudio::Model::ShadingSurfaceGroup.new(model)
+      surface.setShadingSurfaceGroup(shading_group)
+      
+      runner.registerInfo("No need to import loads for district system type '#{district_system_type}'")
+      return true
+    end
+    
+    datapoint_ids = get_datapoint_ids(project_id, scenario_id)
     
     datapoint_files = []
     datapoint_ids.each do |datapoint_id|

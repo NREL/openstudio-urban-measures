@@ -1,0 +1,31 @@
+<h2>Option Set</h2>
+
+<h3 class="edit-name"><%= @option_set.id %> <% if can? :update, OptionSet %><%= link_to "[ edit ]", edit_option_set_path(@option_set), class: "edit-link" %><% end %></h3>
+
+<table class="table table-striped">
+  <tr>
+  	<th>Name</th>
+  	<td><%= @option_set.name %></td>
+  </tr>	
+  <tr>
+    <th>Project</th>
+    <td><%= link_to @option_set.project.name, @option_set.project if @option_set.project %></td>
+  </tr>
+  <tr>
+  	<th>Workflow</th>
+  	<td><%= link_to @option_set.workflow.name, @option_set.workflow if @option_set.workflow%></td>
+  </tr> 
+  <tr>
+    <th>Feature Type</th>
+    <td><%= @option_set.workflow.feature_type if @option_set.workflow %></td>
+  </tr>
+  <% @option_set.attributes.keys.sort.each do |key| %>
+    <% unless %w(_id workflow_id project_id name).include? key %>
+	  <tr>
+        <th><%= key.humanize %></th>
+        <td><%= @option_set[key] %></td>
+	  </tr>
+	<% end %>
+  <% end %>
+</table>
+

@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>967bb6b5-5439-4d48-91ad-0b06b5f502e6</version_id>
-  <version_modified>20160803T053042Z</version_modified>
-  <xml_checksum>D254E772</xml_checksum>
+  <version_id>ae67421c-bac4-47fb-8e14-28b2fa30fe28</version_id>
+  <version_modified>20170201T211857Z</version_modified>
+  <xml_checksum>612457D2</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
   <description>This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures.</description>
@@ -20,29 +20,20 @@
       <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
     </argument>
     <argument>
-      <name>project_name</name>
-      <display_name>Project Name</display_name>
-      <description>Project Name.</description>
+      <name>project_id</name>
+      <display_name>Project ID</display_name>
+      <description>Project ID.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
     </argument>
     <argument>
-      <name>source_id</name>
-      <display_name>Building Source ID</display_name>
-      <description>Building Source ID to generate geometry for.</description>
+      <name>feature_id</name>
+      <display_name>Feature ID</display_name>
+      <description>Feature ID.</description>
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-    </argument>
-    <argument>
-      <name>source_name</name>
-      <display_name>Building Source Name</display_name>
-      <description>Building Source Name to generate geometry for.</description>
-      <type>String</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>NREL_GDS</default_value>
     </argument>
     <argument>
       <name>surrounding_buildings</name>
@@ -68,6 +59,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Envelope.Form</tag>
@@ -109,7 +101,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>052A42F6</checksum>
+      <checksum>349028F7</checksum>
     </file>
     <file>
       <version>
@@ -120,7 +112,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E97F7986</checksum>
+      <checksum>1EEB6C5F</checksum>
     </file>
   </files>
 </measure>

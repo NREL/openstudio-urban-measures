@@ -1,10 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <name>open_studio_results</name>
+  <name>openstudio_results</name>
   <uid>8430de5b-f66d-4d63-81ef-1a147b5077d3</uid>
-  <version_id>c6531f00-52f8-4943-a4e2-cecf9f5cd826</version_id>
-  <version_modified>20160713T212922Z</version_modified>
-  <xml_checksum>557BF06F</xml_checksum>
+  <version_id>ed8c2361-e86c-4d54-9acd-e0038b1cc113</version_id>
+  <version_modified>20170130T220728Z</version_modified>
+  <xml_checksum>A94354BA</xml_checksum>
   <class_name>OpenStudioResults</class_name>
   <display_name>OpenStudio Results</display_name>
   <description>This measure creates high level tables and charts pulling both from model inputs and EnergyPlus results. It has building level information as well as detail on space types, thermal zones, HVAC systems, envelope characteristics, and economics. Click the heading above a chart to view a table of the chart data.</description>
@@ -389,6 +389,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Reporting.QAQC</tag>
@@ -439,12 +440,6 @@
       <checksum>A6430141</checksum>
     </file>
     <file>
-      <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
-      <filetype>epw</filetype>
-      <usage_type>test</usage_type>
-      <checksum>BDF687C1</checksum>
-    </file>
-    <file>
       <filename>OpenStudioResults_Test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
@@ -468,40 +463,22 @@
       <checksum>463388F8</checksum>
     </file>
     <file>
-      <filename>EmptyModel.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>A597C804</checksum>
-    </file>
-    <file>
-      <filename>NoRunPeriod.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>32622D37</checksum>
-    </file>
-    <file>
-      <filename>EdgeCaseModel.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>5B277247</checksum>
-    </file>
-    <file>
       <filename>ExampleModel.osm</filename>
       <filetype>osm</filetype>
       <usage_type>test</usage_type>
       <checksum>E7812BB5</checksum>
     </file>
     <file>
-      <filename>os_lib_reporting.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>DCCD722E</checksum>
-    </file>
-    <file>
       <filename>report.html.in</filename>
       <filetype>in</filetype>
       <usage_type>resource</usage_type>
       <checksum>DEB83B8D</checksum>
+    </file>
+    <file>
+      <filename>os_lib_reporting.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>6D20BAB1</checksum>
     </file>
   </files>
 </measure>

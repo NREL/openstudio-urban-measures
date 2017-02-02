@@ -1,17 +1,34 @@
-<%= form_for(@scenario) do |f| %>
-  <% if @scenario.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@scenario.errors.count, "error") %> prohibited this scenario from being saved:</h2>
+<%= bootstrap_form_tag url: (@scenario.new_record? ? '/scenarios' : "/scenarios/#{@scenario.id}"),  method: (@scenario.new_record? ? :post : :put), layout: :horizontal, control_col: 'col-sm-4' do |f| %>
+  <% if @scenario.project %><h3 class="edit-name">Project: <%=link_to @scenario.project.id, @scenario.project %></h3><% end %>
+  <%= f.hidden_field :project_id, value: @scenario.project.id %>
+  <fieldset>
+    <%= f.text_field :name, value: @scenario.name %>
+  </fieldset>
+  <p class="pad-top-20 pad-bot-20">Select an option set for each building and district system in your project:</p>
+  <% if @scenario.new_record? %>
+    <% @features.each do |feature| %>
+      <fieldset>
+        <% if feature.type == 'Building' %>
+          <%= f.select "feature_#{feature.id}", options_for_select(@bld_options), {label: "Building #{feature.id}"}, {id: "feature_#{feature.id}"} %>
+        <% else %>
+          <%= f.select "feature_#{feature.id}", options_for_select(@ds_options), {label: "District System #{feature.id}"}, {id: "feature_#{feature.id}"} %>
+        <% end %>
+      </fieldset>
+    <% end %>
+  <% else %>
+    <% @scenario.datapoints.each do |dp| %>
+    <fieldset>
+      <% if dp.feature.type == 'Building' %>
+        <%= f.select "feature_#{dp.feature.id}", options_for_select(@bld_options, dp.option_set_id), {label: "Building #{dp.feature.id}"}, {id: "feature_#{dp.feature.id}"} %>
+      <% else %>
+        <%= f.select "feature_#{dp.feature.id}", options_for_select(@ds_options, dp.option_set_id), {label: "District System #{dp.feature.id}"}, {id: "feature_#{dp.feature.id}"} %>
+      <% end %>  
+    </fieldset>
+    <% end %>  
+  <% end %>  
 
-      <ul>
-      <% @scenario.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
+  <%= f.form_group do %>
+    <%= f.primary @scenario.new_record? ? 'Create' : 'Update' %>
   <% end %>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
 <% end %>
+

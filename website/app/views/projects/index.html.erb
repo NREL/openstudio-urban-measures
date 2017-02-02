@@ -5,9 +5,7 @@
   <tr>
     <th>Name</th>
     <th>ID</th>
-    <th>Regions</th>
-    <th>Buildings</th>
-    <th>District<br>Systems</th>
+    <th>Features</th>
     <th>Workflows</th>
     <th>Datapoints</th>
     <th>Date<br>Created</th>
@@ -20,11 +18,9 @@
   <tbody>
   <% @projects.each do |p| %>
     <tr>
-      <td><%= link_to p.display_name, p %></td>
+      <td><%= link_to p.name, p %></td>
       <td><%= p.id %></td>
-      <td><%= p.regions.count %></td>
-      <td><%= p.buildings.count %></td>
-      <td><%= p.district_systems.count %></td>
+      <td><%= p.features.count %></td>
       <td><%= p.workflows.count %></td>
       <td><%= p.datapoints.count %></td>
       <td><%= p.created_at.strftime('%_m/%-d/%Y') %></td>

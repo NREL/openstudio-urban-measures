@@ -1,3 +1,7 @@
+
+fail "THIS IS DEPRECATED"
+
+
 require 'rest-client'
 require 'base64'
 require 'logger'

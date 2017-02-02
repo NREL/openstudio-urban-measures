@@ -11,10 +11,7 @@ class Geometry
   # Validation
 
   # Relations
-  belongs_to :building
-  belongs_to :taxlot
-  belongs_to :district_system
-  belongs_to :region
+  belongs_to :feature
   belongs_to :project
 
   # Indexes
@@ -83,49 +80,10 @@ class Geometry
         # instantiate object
         if is_bulk
           # check type parameter
-          if properties[:type] && properties[:type] != 'null'
-            case properties[:type]
-            when 'Building'
-              # ID provided?
-              if properties[:id] && properties[:id] != 'null'
-                object = Building.find_or_create_by(id: properties[:id])
-              else
-                # TODO: find_or_create by source_id & source_name
-                # object = Building.find_or_create_by(bldg_fid: properties[:bldg_fid])
-                object = Building.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
-              end
-            when 'Taxlot'
-              # ID provided?
-              if properties[:id] && properties[:id] != 'null'
-                object = Taxlot.find_or_create_by(id: properties[:id])
-              else
-                # TODO: find_or_create by source_id & source_name
-                # object = Taxlot.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = Taxlot.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
-              end
-            when 'Region'
-              # ID provided
-              if properties[:id] && properties[:id] != 'null'
-                object = Region.find_or_create_by(id: properties[:id])
-              else
-                # TODO: find_or_create by source_id & source_name
-                # object = Region.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = Region.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
-              end
-            when 'District System'
-              # ID provided
-              if properties[:id] && properties[:id] != 'null'
-                object = DistrictSystem.find_or_create_by(id: properties[:id])
-              else
-                # TODO: find_or_create by source_id & source_name
-                # object = DistrictSystem.find_or_create_by(lot_fid: properties[:lot_fid])
-                object = DistrictSystem.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
-              end
-            else
-              # don't process
-              error = true
-              message += 'No structure indicator (Building, Region...) in properties.'
-            end
+          if properties[:id] && properties[:id] != 'null'
+            object = Feature.find_or_create_by(id: properties[:id])
+          else
+            object = Feature.find_or_create_by(source_id: properties[:source_id], source_name: properties[:source_name])
           end
         end
 
@@ -200,9 +158,9 @@ class Geometry
     # iterate through results
     json_hash[:features] = []
     datapoints.each do |dp|
-      # only datapoints attached to buildings for now
-      if dp.building
-        res_hash = build_feature(dp.building)
+      # datapoints attached to buildings or district systems
+      if ['Building', 'District System'].include? dp.feature.type
+        res_hash = build_feature(dp.feature)
         json_hash[:features] << add_datapoint_to_feature(dp, res_hash)
       end
     end
@@ -238,7 +196,7 @@ class Geometry
     datapoint.attributes.each do |key, value|
       if key == '_id'
         res_hash[:properties][:datapoint][:id] = value.to_s
-      elsif key != 'project_id' && key != 'building_id'
+      elsif key != 'project_id' && key != 'feature_id'
         if key.include? '_id'
           res_hash[:properties][:datapoint][key] = value.to_s
         else

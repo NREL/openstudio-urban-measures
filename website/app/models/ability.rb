@@ -37,18 +37,18 @@ class Ability
 
     # authenticated user
     elsif !user.new_record?
-      can :manage, [Project, Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry]
+      can :manage, [Project, Feature, Workflow, Datapoint, Scenario, OptionSet, Geometry]
       can :home, AdminController
       can :manage, :api
       can :manage, User, :id => user.id
     # unauthenticated
     else
-      can :read, [Building, Taxlot, DistrictSystem, Region, Workflow, Datapoint, Geometry, Project]
+      can :read, [Feature, Workflow, Datapoint, Geometry, Project, OptionSet, Scenario]
       can :home, AdminController
       can :search, :api
       # temporary:  need to 'check_auth' for access via API method for authenticated users only to have access to these methods:
+      can :datapoints, Scenario
       can :instance_workflow, Datapoint
-      can :datapoints, Workflow
     end
   end
 end

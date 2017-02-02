@@ -4,24 +4,33 @@
 
 <table class="table table-striped">
   <tr>
-  	<th>ID</th>
-  	<td><%= @datapoint.id %></td>
-  <tr>
-  	<th>Building</th>
-  	<td><%= link_to @datapoint.building.id, @datapoint.building if @datapoint.building %></td>
+  	<th>Feature</th>
+  	<td><%= link_to @datapoint.feature.id, @datapoint.feature if @datapoint.feature %></td>
   </tr>
   <tr>
-  	<th>Workflow</th>
-  	<td><%= link_to @datapoint.workflow.id, @datapoint.workflow if @datapoint.workflow%></td>
-  </tr> 
+    <th>Feature Type</th>
+    <td><%= @datapoint.feature.type if @datapoint.feature %></td>
+  </tr>  
+  <tr>
+    <th>Option Set</th>
+    <td><%= link_to @datapoint.option_set.name, @datapoint.option_set if @datapoint.option_set %></td>
+  </tr>    
+   <tr>
+    <th>Scenarios</th>
+    <td><%= @datapoint.scenario.map{|s| link_to s.name, s}.join(', ').html_safe %></td>
+  </tr>    
+  <tr>
+    <th>Project</th>
+    <td><%= link_to @datapoint.project.name, @datapoint.project if @datapoint.project %></td>
+  </tr>      
   <% @datapoint.attributes.keys.sort.each do |key| %>
-    <% unless %w(_id workflow_id building_id).include? key %>
+    <% unless %w(_id workflow_id feature_id option_set_id project_id scenario_ids).include? key %>
 	    <tr>
         <% if key == 'datapoint_files' %>
           <th>Related Files</th>
           <td>
             <% @datapoint.datapoint_files.each do |df| %>
-              <%= link_to df.file_name, download_file_datapoint_path(file_id: df) %><br/>
+              <%= link_to df.file_name, download_file_datapoint_path(file_id: df), { data: { turbolinks: false }} %><br/>
             <% end %>
           </td>
         <% else %>

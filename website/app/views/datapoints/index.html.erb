@@ -4,8 +4,9 @@
   <thead>
   <tr>
     <th>ID</th>
-    <th>Building</th>
-    <th>Workflow</th>  
+    <th>Feature</th>
+    <th>Feature Type</th>
+    <th>Option Set</th>  
     <th>Status</th>  
     <% if can? :update, Datapoint %><th>Actions</th><% end %>
 
@@ -15,8 +16,9 @@
   <% @datapoints.each do |datapoint| %>
     <tr>
       <td><%= link_to datapoint.id, datapoint %></td>
-      <td><%= link_to datapoint.building.id, datapoint.building if datapoint.building %></td>
-      <td><%= link_to datapoint.workflow.id, datapoint.workflow if datapoint.workflow %></td>
+      <td><%= link_to datapoint.feature.id, datapoint.feature if datapoint.feature %></td>
+      <td><%= datapoint.feature.type %></td>
+      <td><%= link_to datapoint.option_set.id, datapoint.option_set if datapoint.option_set %></td>
       <td><%= datapoint.status %></td>
       <td></td>
       <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
@@ -25,4 +27,4 @@
   </tbody>
 </table>
 
-<%= paginate @datapoints %>
+<%#= paginate @datapoints %>

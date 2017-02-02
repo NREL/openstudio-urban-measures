@@ -1,4 +1,57 @@
-<p id="notice"><%= notice %></p>
+<h2>Scenario</h2>
 
-<%= link_to 'Edit', edit_scenario_path(@scenario) %> |
-<%= link_to 'Back', scenarios_path %>
+<h3 class="edit-name"><%= @scenario.id %> <% if can? :update, Scenario %><%= link_to "[ edit ]", edit_scenario_path(@scenario), class: "edit-link" %><% end %></h3>
+
+<table class="table table-striped">
+  <tr>
+    <th>Name</th>
+    <td><%= @scenario.name.to_s %></td>
+  </tr>
+  <tr>
+    <th>Project</th>
+    <td><%= link_to @scenario.project.name, @scenario.project if @scenario.project %></td>
+  </tr>
+
+  <% @scenario.attributes.keys.sort.each do |key| %>
+    <% unless key == '_id' || key == 'project_id' || key == 'name' || key == 'datapoint_ids' %>
+      <tr>
+  	    <th> <%= key.humanize%></th>
+        <td><%= @scenario[key] %></td>
+      </tr>
+    <% end %>
+   <% end %>
+</table>
+
+
+<h3>Datapoints (<%= @scenario.datapoints.count %>)</h3>
+<div class="pad-top-20 pad-bot-20">
+  <%#= link_to 'Create Datapoints for All ' + @workflow.feature_type.pluralize, create_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> <%#= link_to 'Delete Datapoints for this workflow', delete_datapoints_workflow_path(id: @workflow), class: "btn btn-primary" %> 
+</div>
+<% if @scenario.datapoints.count <= 0 %>
+  <p>There are no datapoints associated with this scenario.</p>
+<% else %>
+  <%= link_to 'Show GeoJSON Results', scenario_datapoints_path(@scenario), class: "btn btn-primary" %>
+  <table class="tablesorter table table-striped">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Associated Feature</th>
+      <th>Option Set</th>
+      <th>Status</th>  
+      <% if can? :update, Datapoint %><th>Actions</th><% end %>
+
+    </tr>
+    </thead>
+    <tbody>
+    <% @scenario.datapoints.each do |datapoint| %>
+      <tr>
+        <td><%= link_to datapoint.id, datapoint %></td>
+        <td><%= link_to datapoint.feature.id, datapoint.feature if datapoint.feature %></td>
+        <td><%= link_to datapoint.option_set.name, datapoint.option_set if datapoint.option_set %></td>
+        <td><%= datapoint.status %></td>
+        <% if can? :update, Datapoint %><td><%= link_to 'Edit', edit_datapoint_path(datapoint) %> | <%= link_to 'Destroy', datapoint, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>

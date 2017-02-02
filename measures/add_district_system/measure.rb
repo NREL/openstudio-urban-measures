@@ -26,9 +26,10 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     # the type of system to add to the building
     systems = OpenStudio::StringVector.new
     systems << "None"
+    systems << "Community Photovoltaic"
     systems << "Central Hot and Chilled Water"
     systems << "Ambient Loop"
-    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('system_type', systems, true)
+    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('district_system_type', systems, true)
     system_type.setDisplayName("System Type")
     system_type.setDefaultValue("None")
     system_type.setDescription("Type of central system.")
@@ -126,21 +127,23 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     end
     
     schedules.each do |building, schedule|
-
-      load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
-      load_profile_plant.setName("#{building} Heating Load Profile")
-      load_profile_plant.setLoadSchedule(schedule["District Heating Hot Water Rate"][0])
-      load_profile_plant.setPeakFlowRate(schedule["District Heating Mass Flow Rate"][1])
-      load_profile_plant.setFlowRateFractionSchedule(schedule["District Heating Mass Flow Rate"][0])
-      hw_loop.addDemandBranchForComponent(load_profile_plant)
+      if schedule["District Heating Hot Water Rate"]
+        load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
+        load_profile_plant.setName("#{building} Heating Load Profile")
+        load_profile_plant.setLoadSchedule(schedule["District Heating Hot Water Rate"][0])
+        load_profile_plant.setPeakFlowRate(schedule["District Heating Mass Flow Rate"][1])
+        load_profile_plant.setFlowRateFractionSchedule(schedule["District Heating Mass Flow Rate"][0])
+        hw_loop.addDemandBranchForComponent(load_profile_plant)
+      end
     
-      load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
-      load_profile_plant.setName("#{building} Cooling Load Profile")
-      load_profile_plant.setLoadSchedule(schedule["District Cooling Chilled Water Rate"][0])
-      load_profile_plant.setPeakFlowRate(schedule["District Cooling Mass Flow Rate"][1])
-      load_profile_plant.setFlowRateFractionSchedule(schedule["District Cooling Mass Flow Rate"][0])
-      chw_loop.addDemandBranchForComponent(load_profile_plant)
-    
+      if schedule["District Cooling Chilled Water Rate"]
+        load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
+        load_profile_plant.setName("#{building} Cooling Load Profile")
+        load_profile_plant.setLoadSchedule(schedule["District Cooling Chilled Water Rate"][0])
+        load_profile_plant.setPeakFlowRate(schedule["District Cooling Mass Flow Rate"][1])
+        load_profile_plant.setFlowRateFractionSchedule(schedule["District Cooling Mass Flow Rate"][0])
+        chw_loop.addDemandBranchForComponent(load_profile_plant)
+      end
     end
     
   end
@@ -155,11 +158,13 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     end
 
     # assign the user inputs to variables
-    system_type = runner.getStringArgumentValue("system_type", user_arguments)
+    system_type = runner.getStringArgumentValue('district_system_type', user_arguments)
     
-    if system_type == "None"
+    if system_type == 'None'
       runner.registerAsNotApplicable("NA.")
-    elsif system_type == "Central Hot and Chilled Water"
+    elsif system_type == 'Community Photovoltaic'
+      # already done?
+    elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)
     end

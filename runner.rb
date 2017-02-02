@@ -5,9 +5,9 @@ require 'json'
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
-  def initialize(url, openstudio_dir, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  def initialize(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     @url = url
-    @openstudio_dir = openstudio_dir
+    @openstudio_exe = openstudio_exe
     @project_id = project_id   
     @user_name = user_name
     @user_pwd = user_pwd
@@ -16,6 +16,13 @@ class Runner
     
     @project = get_project
     @project_name = @project[:name]
+  end
+  
+  def update_measures
+    measure_dir = File.join(File.dirname(__FILE__), "/measures")
+    command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
+    puts command
+    system(command)
   end
   
   def clear_results(datapoint_ids = [])
@@ -37,7 +44,7 @@ class Runner
       params[:project_id] = @project_id
       params[:datapoint] = datapoint
 
-      request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
+      request = RestClient::Resource.new("#{@url}/api/datapoint.json", user: @user_name, password: @user_pwd)
       response = request.post(params, content_type: :json, accept: :json)    
     end
   end
@@ -97,6 +104,28 @@ class Runner
     return result
   end
   
+  def get_all_scenario_ids()
+    puts "get_all_scenario_ids"
+    result = []
+    
+    request = RestClient::Resource.new("#{@url}/scenarios.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+  
+    scenarios = JSON.parse(response.body, :symbolize_names => true)
+    scenarios.each do |scenario|
+      
+      project_id = scenario[:project_id]
+      if project_id == @project_id
+        result << scenario[:id]
+      else
+        puts "skipping scenario #{scenario[:id]} since it is not associated with project #{@project_id}"
+      end
+    end
+  
+    puts "get_all_scenario_ids = #{result.join(',')}"
+    return result
+  end
+  
   def get_all_datapoint_ids()
     puts "get_all_datapoint_ids"
     result = []
@@ -105,6 +134,11 @@ class Runner
     response = request.get(content_type: :json, accept: :json)
   
     datapoints = JSON.parse(response.body, :symbolize_names => true)
+    
+    # sort building datapoints before district system ones
+    feature_types = ['Building', 'District System']
+    datapoints.sort!{|a,b| feature_types.index(a[:feature_type]) <=> feature_types.index(b[:feature_type])}
+    
     datapoints.each do |datapoint|
 
       project_id = datapoint[:project_id]
@@ -141,16 +175,35 @@ class Runner
   
   def get_workflow(datapoint_id)
     puts "get_workflow, datapoint_id = #{datapoint_id}"
+    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
     request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    begin
+      response = request.get(content_type: :json, accept: :json)
+    rescue => e
+      puts e.response
+    end
 
     workflow = JSON.parse(response.body, :symbolize_names => true)
     return workflow
   end
+
+  def get_scenario(scenario_id)
+    puts "get_scenario, scenario_id = #{scenario_id}"
+    puts "#{@url}/scenarios/#{scenario_id}.json"
+    request = RestClient::Resource.new("#{@url}/scenarios/#{scenario_id}.json", user: @user_name, password: @user_pwd)
+    begin
+      response = request.get(content_type: :json, accept: :json)
+    rescue => e
+      puts e.response
+    end
+
+    scenario = JSON.parse(response.body, :symbolize_names => true)
+    return scenario[:scenario]
+  end
   
-  def get_results(workflow_id)
-    puts "get_results, workflow_id = #{workflow_id}"
-    request = RestClient::Resource.new("#{@url}/api/workflow_buildings.json?project_id=#{@project_id}&workflow_id=#{workflow_id}", user: @user_name, password: @user_pwd)
+  def get_results(scenario_id)
+    puts "get_results, scenario_id = #{scenario_id}"
+    request = RestClient::Resource.new("#{@url}/api/scenario_features.json?project_id=#{@project_id}&scenario_id=#{scenario_id}", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
 
     results = JSON.parse(response.body, :symbolize_names => true)
@@ -162,85 +215,42 @@ class Runner
     puts "create_osws"
     result = []
     
-    # connect to database, get list of all building and workflow ids
-    all_building_ids = get_all_feature_ids("Building")
-    all_building_workflow_ids = get_all_workflow_ids("Building")
-    
-    all_district_system_ids = get_all_feature_ids("District System")
-    all_district_system_workflow_ids = get_all_workflow_ids("District System")
-    
+    # connect to database, get list of all datapoint ids
+    all_datapoint_ids = get_all_datapoint_ids()
+
     puts "Project #{@project_name}"
-    puts "#{all_building_ids.size} buildings"
-    puts "#{all_building_workflow_ids.size} building workflows"
-    puts "#{all_district_system_ids.size} district systems"
-    puts "#{all_district_system_workflow_ids.size} district systems workflows"
+    puts "#{all_datapoint_ids.size} datapoints"
     
     # loop over all combinations
     num_datapoints = 1
-    all_building_ids.each do |building_id|
-      all_building_workflow_ids.each do |workflow_id|
-
-        # get data point for each pair of building_id, workflow_id
-        # data point is created if it doesn't already exist
-        datapoint = get_datapoint(building_id, workflow_id)
-        datapoint_id = datapoint[:id]
-        
-        # see if datapoint needs to be run
-        if datapoint[:status] 
-          if datapoint[:status] == "Started"
-            puts "Skipping Started Datapoint"
-            next
-          elsif datapoint[:status] == "Complete"
-            puts "Skipping Complete Datapoint"
-            next
-          elsif datapoint[:status] == "Failed"
-            puts "Skipping Failed Datapoint"
-            next
-          end
-        end
-        puts "Saving Datapoint #{datapoint}"
-        
-        result << create_osw(datapoint_id)
-        
-        num_datapoints += 1
-        if @max_datapoints < num_datapoints
-          return result
-        end
-        
-      end
-    end
+    all_datapoint_ids.each do |datapoint_id|
     
-    all_district_system_ids.each do |district_system_id|
-      all_district_system_workflow_ids.each do |workflow_id|
-
-        # get data point for each pair of building_id, workflow_id
-        # data point is created if it doesn't already exist
-        datapoint = get_datapoint(district_system_id, workflow_id)
-        datapoint_id = datapoint[:id]
-        
-        # see if datapoint needs to be run
-        if datapoint[:status] 
-          if datapoint[:status] == "Started"
-            puts "Skipping Started Datapoint"
-            next
-          elsif datapoint[:status] == "Complete"
-            puts "Skipping Complete Datapoint"
-            next
-          elsif datapoint[:status] == "Failed"
-            puts "Skipping Failed Datapoint"
-            next
-          end
+      datapoint = get_datapoint_by_id(datapoint_id)
+      
+      # DLM: TODO: skipp running district system datapoints until all buildings are run
+      
+      # see if datapoint needs to be run
+      if datapoint[:status] 
+        if datapoint[:status] == "Started"
+          puts "Skipping Started Datapoint"
+          next
+        elsif datapoint[:status] == "Complete"
+          puts "Skipping Complete Datapoint"
+          next
+        elsif datapoint[:status] == "Failed"
+          puts "Skipping Failed Datapoint"
+          next
         end
-        puts "Saving District Datapoint #{datapoint_id}"
-        
-        result << create_osw(datapoint_id)
-        
-        num_datapoints += 1
-        if @max_datapoints < num_datapoints
-          return result
-        end
-        
       end
+      puts "Saving Datapoint #{datapoint}"
+      
+      result << create_osw(datapoint_id)
+      
+      num_datapoints += 1
+      if @max_datapoints < num_datapoints
+        return result
+      end
+      
     end
     
     return result
@@ -249,8 +259,7 @@ class Runner
   def create_osw(datapoint_id)
     puts "create_osw, datapoint_id = #{datapoint_id}"
     datapoint = get_datapoint_by_id(datapoint_id)
-    datapoint_id = datapoint[:id]
-    
+
     # datapoint is not run, get the workflow
     # this is the merged workflow with the building properties merged in to the template workflow
     workflow = get_workflow(datapoint_id)
@@ -279,6 +288,10 @@ class Runner
         end
       end
     end
+    
+    workflow[:file_paths] = ["./../../../files", "./../../../adapters", "./../../../weather"]
+    workflow[:measure_paths] = ["./../../../measures"]
+    workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow
     osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
@@ -307,7 +320,7 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      command = "bundle exec ruby run.rb '#{@openstudio_dir}' '#{osw_path}' '#{@url}' '#{datapoint_id}' '#{@project_id}'"
+      command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
       puts command
       system(command)
     end
@@ -315,14 +328,15 @@ class Runner
   
   def save_results
     puts "save_results"
-    all_workflow_ids = get_all_workflow_ids("Building")
-    all_workflow_ids.concat(get_all_workflow_ids("District System"))
+    all_scenario_ids = get_all_scenario_ids()
     
-    all_workflow_ids.each do |workflow_id|
-      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/workflow_#{workflow_id}.geojson")
+    all_scenario_ids.each do |scenario_id|
+      scenario = get_scenario(scenario_id)
+      scenario_name = scenario[:name]
+      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
       
       if !File.exists?(results_path)
-        results = get_results(workflow_id)
+        results = get_results(scenario_id)
         
         results_dir = File.dirname(results_path)
         if !File.exists?(results_dir)

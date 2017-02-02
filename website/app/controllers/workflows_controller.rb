@@ -1,6 +1,6 @@
 class WorkflowsController < ApplicationController
   load_and_authorize_resource
-  before_action :set_workflow, only: [:show, :edit, :update, :destroy, :create_datapoints, :delete_datapoints, :datapoints]
+  before_action :set_workflow, only: [:show, :edit, :update, :destroy]
 
   # GET /workflows
   # GET /workflows.json
@@ -12,7 +12,7 @@ class WorkflowsController < ApplicationController
   # GET /workflows/1
   # GET /workflows/1.json
   def show
-    @datapoints = Datapoint.where(workflow_id: @workflow.id)
+   
   end
 
   # GET /workflows/new
@@ -48,7 +48,7 @@ class WorkflowsController < ApplicationController
           error = true
           @error_message += 'No data to process'
         else
-          @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @project_id, params[:name], params[:display_name])
+          @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @project_id, params[:name])
         end
       else
         error = true
@@ -88,11 +88,12 @@ class WorkflowsController < ApplicationController
         error = true
         @error_message += 'No data to process'
       else
-        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @workflow.project.id.to_s, params[:name], params[:display_name])
+        @workflow, error, @error_message = Workflow.create_update_workflow(data, @workflow, @workflow.project.id.to_s, params[:name])
       end
     else
-      error = true
-      @error_message += 'No file was uploaded'
+      # just update name
+      @workflow.name = params[:name]
+      @workflow.save
     end
 
     # TODO: zipfile
@@ -123,67 +124,6 @@ class WorkflowsController < ApplicationController
     end
   end
 
-  # create datapoints for workflow
-  def create_datapoints
-    @error_message = ''
-    error = false
-    
-    # todo: DLM, this needs to check the type of feature that this workflow is for, only create datapoints for the right type of features
-
-    @project = @workflow.project
-    buildings = @project.buildings.all
-
-    buildings.each do |bld|
-      d = Datapoint.find_or_create_by(building_id: bld.id, workflow_id: @workflow.id)
-      d.building = bld
-      d.project = @project
-      d.workflow = @workflow
-      d.save!
-    end
-
-    @datapoints = Datapoint.where(workflow_id: @workflow.id)
-
-    respond_to do |format|
-      if !error
-        format.html { redirect_to @workflow, notice: "Datapoints were successfully created." }
-        format.json { head :no_content }
-      else
-        format.html { render action: 'show' }
-        format.json { render json: { error: @error_message }, status: :unprocessable_entity }
-      end
-    end
-  end
-
-  # GET all datapoints associated with a workflow
-  # For GEOJSON, return as geojson object (like workflow_buildings api)
-  def datapoints
-
-    @datapoints = @workflow.datapoints
-
-    @json_data = Geometry.build_geojson_from_datapoints(@datapoints)
-
-    respond_to do |format|
-      format.html {render action: 'datapoints'} # todo: rename results
-      format.json {render json: @json_data, status: :ok}
-    end
-
-
-  end
-
-  # delete all datapoints associated with workflow
-  def delete_datapoints
-    datapoints = Datapoint.where(workflow_id: @workflow.id)
-    datapoints.each do |d|
-      d.destroy
-    end
-
-    respond_to do |format|
-      format.html { redirect_to @workflow, notice: "Datapoints were successfully deleted." }
-      format.json { head :no_content }
-    end
-
-  end
-
   # download a related workflowfile
   def download_zipfile
     file = @workflow.workflow_file
@@ -191,7 +131,7 @@ class WorkflowsController < ApplicationController
 
     file_data = Workflow.get_file_data(file)
     if file_data
-      send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment'
+      send_data file_data, filename: File.basename(file.uri), type: 'application/octet-stream; header=present', disposition: 'attachment', data: { turbolinks: false }
     else
       raise 'file not found in database'
     end

@@ -1,27 +1,27 @@
 Rails.application.routes.draw do
+  
   resources :projects do
     member do
       match 'batch_upload_features' => 'projects#batch_upload_features', :via => [:get, :post]
     end
   end
 
-  resources :scenarios
   # apipie
   root 'projects#index'
   match 'search' => 'api#search', :via => [:get, :post]
 
   devise_for :users
   resources :users
-
   devise_scope :user do
     get '/login' => 'devise/sessions#new'
     get '/logout' => 'devise/sessions#destroy'
   end
 
-  resources :regions
-  resources :district_systems
-  resources :taxlots
-  resources :buildings
+  resources :scenarios do
+    get 'datapoints'
+  end
+  resources :features
+  resources :option_sets
   resources :datapoints do
     member do
       get 'instance_workflow'
@@ -32,9 +32,7 @@ Rails.application.routes.draw do
   resources :workflows do
     member do
       get 'download_zipfile'
-      get 'create_datapoints'
-      get 'delete_datapoints'
-      get 'datapoints'
+      #get 'delete_datapoints'
     end
   end
 
@@ -42,13 +40,14 @@ Rails.application.routes.draw do
     post 'batch_upload' => 'api#batch_upload'
     post 'workflow' => 'api#workflow'
     post 'workflow_file' => 'api#workflow_file'
+    post 'option_set' => 'api#option_set'
     match 'search' => 'api#search', :via => [:get, :post]
     post 'export' => 'api#export'
     post 'project_search' => 'api#project_search'
     post 'datapoint' => 'api#datapoint'
     post 'retrieve_datapoint' => 'api#retrieve_datapoint'
     get 'retrieve_workflow_file' => 'api#retrieve_workflow_file'
-    get 'workflow_buildings' => 'api#workflow_buildings'
+    get 'scenario_features' => 'api#scenario_features'
     post 'datapoint_file' => 'api#datapoint_file'
     get 'retrieve_datapoint_file' => 'api#retrieve_datapoint_file'
     get 'delete_datapoint_file' => 'api#delete_datapoint_file'

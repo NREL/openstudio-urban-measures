@@ -2,14 +2,15 @@
   <schema_version>3.0</schema_version>
   <name>view_model</name>
   <uid>f4669f10-fda5-489d-8e1c-7ca3c2d40378</uid>
-  <version_id>47911149-8fdc-49e1-878c-76871f67f56f</version_id>
-  <version_modified>20160713T191910Z</version_modified>
-  <xml_checksum>1E1F8B97</xml_checksum>
+  <version_id>94246493-7db3-4324-968d-09de9174426a</version_id>
+  <version_modified>20170130T220729Z</version_modified>
+  <xml_checksum>BCB7218E</xml_checksum>
   <class_name>ViewModel</class_name>
   <display_name>ViewModel</display_name>
   <description>Visualize an OpenStudio model in a web based viewer</description>
   <modeler_description>Converts the OpenStudio model to vA3C JSON format and renders using Three.js</modeler_description>
   <arguments/>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Reporting.QAQC</tag>

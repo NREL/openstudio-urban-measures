@@ -55,17 +55,13 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     city_db_url = "http://localhost:3000"
     #city_db_url = "http://insight4.hpc.nrel.gov:8081/"
     
-    project_name = "san_francisco"
-    source_id = "98628"
-    source_name = "NREL_GDS"
+    project_id = "5890e14c6eeb881368000002"
+    #feature_id = "5890e1566eeb881368000003"
+    feature_id = "5890e1566eeb881368000021"
     
-    #project_name = "denver"
-    #source_id = "15251" 	
-    #source_name = "NREL_GDS"
-    
-    #surrounding_buildings = "None"
+    surrounding_buildings = "None"
     #surrounding_buildings = "ShadingOnly"
-    surrounding_buildings = "All"
+    #surrounding_buildings = "All"
    
     # get arguments
     arguments = measure.arguments(model)
@@ -75,9 +71,8 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # If the argument has a default that you want to use, you don't need it in the hash
     args_hash = {}
     args_hash["city_db_url"] = city_db_url
-    args_hash["project_name"] = project_name
-    args_hash["source_id"] = source_id
-    args_hash["source_name"] = source_name
+    args_hash["project_id"] = project_id
+    args_hash["feature_id"] = feature_id
     args_hash["surrounding_buildings"] = surrounding_buildings
 
     # populate argument with specified hash value if specified
@@ -94,7 +89,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     result = runner.result
     
     # save the model to test output directory
-    output_file_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/output/#{source_id}.osm")
+    output_file_path = OpenStudio::Path.new(File.dirname(__FILE__) + "/output/#{feature_id}.osm")
     model.save(output_file_path,true)
     
     # show the output

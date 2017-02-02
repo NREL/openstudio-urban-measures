@@ -1,25 +1,25 @@
-<p id="notice"><%= notice %></p>
+<h2>Scenarios</h2>
 
-<h1>Listing Scenarios</h1>
-
-<table>
+<table class="tablesorter table table-striped">
   <thead>
-    <tr>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+  <tr>
+    <th>ID</th>
+    <th>Project Name</th>
+    <th>Scenario Name</th>
+    <% if can? :update, Scenario %><th>Actions</th><% end %>
 
+  </tr>
+  </thead>
   <tbody>
-    <% @scenarios.each do |scenario| %>
-      <tr>
-        <td><%= link_to 'Show', scenario %></td>
-        <td><%= link_to 'Edit', edit_scenario_path(scenario) %></td>
-        <td><%= link_to 'Destroy', scenario, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
+  <% @scenarios.each do |scenario| %>
+    <tr>
+      <td><%= link_to scenario.id, scenario %></td>
+      <td><%= link_to scenario.project.name, scenario.project if scenario.project %></td>
+      <td><%= scenario.name %></td>
+      <% if can? :update, Scenario %><td><%= link_to 'Edit', edit_scenario_path(scenario) %> | <%= link_to 'Destroy', scenario, method: :delete, data: { confirm: 'Are you sure?' } %></td><% end %>
+    </tr>
+  <% end %>
   </tbody>
 </table>
 
-<br>
-
-<%= link_to 'New Scenario', new_scenario_path %>
+<%#= paginate @scenarios %>

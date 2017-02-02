@@ -1,0 +1,77 @@
+{
+	"feature_type": "Building",
+	"seed_file": null,
+	"weather_file": null,
+	"root_directory": null,
+	"run_directory": ".",
+	"file_paths": ["./../../../weather/"],
+	"measure_paths": ["./../../../measures/"],
+	"steps": [{
+			"measure_dir_name": "ChangeBuildingLocation",
+			"arguments": {
+				"weather_directory": "./../../weather",
+				"weather_file_name": null
+			}
+		}, {
+			"measure_dir_name": "urban_geometry_creation",
+			"arguments": {
+				"city_db_url": "http://insight4.hpc.nrel.gov:8081/",
+				"project_id": null,
+				"feature_id": null,
+				"surrounding_buildings": "None"
+			}
+		}, {
+			"measure_dir_name": "urban_building_type",
+			"arguments": {
+				"heating_source": "Gas",
+				"cooling_source": "Electric"
+			}
+		}, {
+			"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "AedgK12ElectricEquipmentControls",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "ReduceLightingLoadsByPercentage",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "AedgK12InteriorLightingControls",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "AdjustSystemEfficiencies",
+			"arguments": {
+				"__SKIP__": true,
+				"heating_efficiency_multiplier": 1.0,
+				"cooling_cop_multiplier": 1.0
+			}
+		}, {
+			"measure_dir_name": "ImproveFanBeltEfficiency",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "ImproveMotorEfficiency",
+			"arguments": {
+				"__SKIP__": true
+			}
+		}, {
+			"measure_dir_name": "datapoint_reports",
+			"arguments": {
+				"city_db_url": "http: //insight4.hpc.nrel.gov: 8080/",
+				"user_name": "test@nrel.gov",
+				"password": "testing123",
+				"project_id": "0",
+				"datapoint_id": "0"
+			}
+		}
+	]
+}
