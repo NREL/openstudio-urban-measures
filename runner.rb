@@ -136,7 +136,8 @@ class Runner
     datapoints = JSON.parse(response.body, :symbolize_names => true)
     
     # sort building datapoints before district system ones
-    datapoints.sort!{|a,b| a[:feature_type] <=> b[:feature_type]}
+    feature_types = ['Building', 'District System']
+    datapoints.sort!{|a,b| feature_types.index(a[:feature_type]) <=> feature_types.index(b[:feature_type])}
     
     datapoints.each do |datapoint|
 

@@ -1,5 +1,4 @@
 require 'rest-client'
-require 'parallel'
 require 'json'
 
 require_relative 'runner'

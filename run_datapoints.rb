@@ -1,7 +1,3 @@
-require 'rest-client'
-require 'parallel'
-require 'json'
-
 require_relative 'runner'
 
 url = 'http://localhost:3000'
@@ -15,8 +11,8 @@ user_pwd = 'testing123'
 #max_datapoints = Float::INFINITY
 max_datapoints = 2
 num_parallel = 7
-project_id = '589268cb6eeb88268c000380'
-datapoint_ids = ['58926ccd6eeb88268c00042f']
+project_id = '5892921f6eeb88268c000441'
+datapoint_ids = ['589293036eeb88268c0004ea']
 
 runner = Runner.new(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.update_measures
