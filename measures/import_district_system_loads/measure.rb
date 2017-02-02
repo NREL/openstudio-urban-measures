@@ -84,7 +84,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def get_datapoint_ids(project_id, scenario_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/datapoints.json")
+    request = Net::HTTP::Get.new("/scenarios/#{scenario_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     
@@ -98,12 +98,16 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @result = false
     end
     
-    datapoints = JSON.parse(response.body, :symbolize_names => true)
+    scenario = JSON.parse(response.body, :symbolize_names => true)
+    datapoints = scenario[:scenario][:datapoints]
     
     result = []
-    datapoints.each do |datapoint|
-      if datapoint[:project_id] == project_id
-        if datapoint[:workflow_id] == building_workflow_id
+    if datapoints.nil?
+      @runner.registerError("Scenario #{scenario_id} has no datapoints")
+      @result = false
+    else
+      datapoints.each do |datapoint|
+        if datapoint[:feature_type] == 'Building'
           result << datapoint[:id]
         end
       end

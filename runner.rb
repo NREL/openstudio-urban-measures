@@ -134,6 +134,10 @@ class Runner
     response = request.get(content_type: :json, accept: :json)
   
     datapoints = JSON.parse(response.body, :symbolize_names => true)
+    
+    # sort building datapoints before district system ones
+    datapoints.sort!{|a,b| a[:feature_type] <=> b[:feature_type]}
+    
     datapoints.each do |datapoint|
 
       project_id = datapoint[:project_id]

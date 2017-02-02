@@ -814,16 +814,12 @@
 				"stroke-opacity": 1,
 				"fill": "#ffffff",
 				"fill-opacity": 0.5,
-				"name": "Unknown East C",
-				"maximum_roof_height": 18.25,
-				"floor_area": 3612.20773786886,
-				"number_of_stories": 1,
-				"number_of_stories_above_ground": 1,
-				"source_id": "Unknown East C",
+				"name": "Central Chiller",
+				"source_id": "Central Chiller",
 				"source_name": "NREL_GDS",
-				"building_type": "Nonrefrigerated warehouse",
+				"district_system_type": "Central Hot and Chilled Water",
 				"surface_elevation": 1584.3504,
-				"type": "Building"
+				"type": "District System"
 			},
 			"geometry": {
 				"type": "Polygon",
