@@ -132,6 +132,10 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
   # Do nothing on E+ std out
   def communicate_energyplus_stdout(_=nil, _=nil) 
   end
+  
+  # Do nothing on Measure result
+  def communicate_measure_result(_ = nil, _ = nil)
+  end
 
   # Write the measure attributes to the filesystem
   def communicate_measure_attributes(measure_attributes, _=nil)
