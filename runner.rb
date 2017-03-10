@@ -290,7 +290,7 @@ class Runner
     end
     
     workflow[:file_paths] = ["./../../../files", "./../../../adapters", "./../../../weather"]
-    workflow[:measure_paths] = ["./../../../measures"]
+    workflow[:measure_paths] = ["./../../../measures", "./../../../openstudio-measures/"]
     workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow

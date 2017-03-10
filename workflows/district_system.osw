@@ -10,8 +10,8 @@
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": {
 				"weather_directory": "./../../weather",
-				"weather_file_name": null,
-        "climate_zone": null
+				"weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5C"
 			}
 		}, {
 			"measure_dir_name": "urban_geometry_creation",
