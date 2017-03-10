@@ -6,3 +6,6 @@ analysis/
 urban_building_type/resources/beopt-measures/
 .bundle/
 data/co_tracts/
+config.rb
+Gemfile.lock
+openstudio-measures

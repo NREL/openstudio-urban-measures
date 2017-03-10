@@ -2,18 +2,14 @@ require 'rest-client'
 require 'json'
 
 require_relative 'runner'
+require_relative 'config'
 
-url = 'http://localhost:3000'
-#url = 'http://insight4.hpc.nrel.gov:8081'
-
-#openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
-openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
-
-user_name = 'test@nrel.gov'
-user_pwd = 'testing123'
-max_datapoints = Float::INFINITY
-#max_datapoints = 7
-num_parallel = 7
+url = UrbanOptConfig::URL
+openstudio_exe = UrbanOptConfig::OPENSTUDIO_EXE
+user_name = UrbanOptConfig::USER_NAME
+user_pwd = UrbanOptConfig::USER_PWD
+max_datapoints = UrbanOptConfig::MAX_DATAPOINTS
+num_parallel = UrbanOptConfig::NUM_PARALLEL
 
 def get_all_project_ids(url, user_name, user_pwd)
   result = []

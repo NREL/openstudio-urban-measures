@@ -5,12 +5,13 @@
 	"root_directory": null,
 	"run_directory": ".",
 	"file_paths": ["./../../../weather/"],
-	"measure_paths": ["./../../../measures/"],
+	"measure_paths": ["./../../../measures/", "./../../../openstudio-measures/"],
 	"steps": [{
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": {
 				"weather_directory": "./../../weather",
-				"weather_file_name": null
+				"weather_file_name": null,
+        "climate_zone": null
 			}
 		}, {
 			"measure_dir_name": "urban_geometry_creation",

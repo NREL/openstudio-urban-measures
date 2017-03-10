@@ -1,0 +1,34 @@
+module UrbanOpt
+
+  # url of urbanopt website
+  URL = 'http://localhost:3000'
+  #URL = 'http://insight4.hpc.nrel.gov:8081'
+
+  # location of openstudio CLI
+  #OPENSTUDIO_EXE = 'E:/openstudio/build/Products/Debug/openstudio.exe'
+  #OPENSTUDIO_EXE = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
+  OPENSTUDIO_EXE = 'C:/openstudio-2.0.4/bin/openstudio.exe'
+  
+  # locations add, leave nil if none
+  OPENSTUDIO_MEASURES = 'E:/openstudio-measures/NREL working measures/'
+
+  # user name
+  USER_NAME = 'test@nrel.gov'
+  
+  # password
+  USER_PWD = 'testing123'
+  
+  # max number of datapoints to run
+  #MAX_DATAPOINTS = Float::INFINITY
+  MAX_DATAPOINTS = 2
+  
+  # number of parallel jobs
+  NUM_PARALLEL = 7
+  
+  # used by run_datapoints and run_everything
+  PROJECT_ID = '58c18ff06eeb883348000002'
+  
+  # used by run_datapoints
+  DATAPOINT_IDS = ['58c195646eeb883348000012', '58c195646eeb883348000013']
+  
+end

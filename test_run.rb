@@ -3,11 +3,9 @@
 require 'json'
 require 'parallel'
 require 'fileutils'
+require_relative 'config'
 
-#openstudio_exe = 'E:/openstudio/build/Products/Debug/openstudio.exe'
-openstudio_exe = 'C:/Program Files/OpenStudio 2.0.1/bin/openstudio.exe'
-
-ENV['ENERGYPLUS_EXE_PATH'] = 'C:/Program Files/OpenStudio 2.0.0/EnergyPlus/energyplus.exe'
+openstudio_exe = UrbanOptConfig::OPENSTUDIO_EXE
 
 run_retrofit = true
 num_parallel = 7
@@ -77,7 +75,7 @@ def configure(workflow, datapoint, building, region, skip_value)
     arguments = step[:arguments]
     arguments.each_key do |name|
       if name == :__SKIP__
-        puts "setting skip #{skip_value}"
+        #puts "setting skip #{skip_value}"
         arguments[name] = skip_value
       elsif arguments[name].nil?
         arguments.delete(name)
@@ -93,7 +91,7 @@ buildings.each do |building|
   # configure jsons
   datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}
-  region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw"}}
+  region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
 
   name = building[:name]
 
