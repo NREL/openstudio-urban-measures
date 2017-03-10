@@ -19,8 +19,8 @@ module UrbanOpt
   USER_PWD = 'testing123'
   
   # max number of datapoints to run
-  #MAX_DATAPOINTS = Float::INFINITY
-  MAX_DATAPOINTS = 2
+  MAX_DATAPOINTS = Float::INFINITY
+  #MAX_DATAPOINTS = 2
   
   # number of parallel jobs
   NUM_PARALLEL = 7
