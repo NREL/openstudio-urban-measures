@@ -5,8 +5,10 @@ class ProjectsController < ApplicationController
   # GET /projects
   # GET /projects.json
   def index
-    page = params[:page] ? params[:page] : 1
-    @projects = Project.all.page(page)
+    #page = params[:page] ? params[:page] : 1
+    #@projects = Project.all.page(page)
+    
+    @projects = Project.all
   end
 
   # GET /projects/1

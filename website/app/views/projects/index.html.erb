@@ -32,6 +32,7 @@
   </tbody>
 </table>
 
-<%= paginate @projects %>
+<%# DLM: Pagination seemed broken after updating bundler?%>
+<%# <%= paginate @projects %>
 
 <% if can? :update, Project %><%= link_to 'New Project', new_project_path, class: "btn btn-primary" %><% end %>
