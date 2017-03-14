@@ -1,3 +1,4 @@
+
 require_relative '../resources/util'
 require_relative '../resources/geometry'
 
@@ -740,32 +741,20 @@ def get_thermal_zones(model)
   
 end
 
-def apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_type)
+def apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_type, num_floors)
 
     heating_cooling = "#{heating_source}_#{cooling_source}"
     
     case heating_cooling
     when "Gas_Electric"
-    
-      # [1] PLANT LOOPS
-          # [1] Hot Water Plant Loop with:
-              # [1] Boiler on Supply Side
-              # [1] Coil Heating Water on Demand Side
-          # [0] Chilled Water Plant Loop
-      # [1] ZONE EQUIPMENT
-          # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
-              # [1] Coil Heating Water
-              # [1] Coil Cooling DX Single Speed
       
       fan_type = "ConstantVolume" # ConstantVolume, Cycling
       heating_type = "Water" # Gas, Electric, Water
       cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
-      
-      hot_water_loop = model.add_hw_loop('NaturalGas')
-      
+            
       model.add_ptac(nil, 
                      nil,
-                     hot_water_loop,
+                     model.add_hw_loop('NaturalGas'),
                      HelperMethods.zones_with_thermostats(model.getThermalZones),
                      fan_type,
                      heating_type,
@@ -774,50 +763,28 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       equip_applied = "PTAC"
     
     when "Electric_Electric"
-    
-      # [0] PLANT LOOPS
-          # [0] Hot Water Plant Loop
-          # [0] Chilled Water Plant Loop
-      # [1] ZONE EQUIPMENT
-          # [1] Packaged Terminal Heat Pump on each zone (Living/Basement) with:
-              # [1] Coil Heating DX Single Speed
-              # [1] Coil Cooling DX Single Speed
-              # [1] Supplemental Coil Heating Electric
   
       fan_type = "ConstantVolume" # ConstantVolume, Cycling
       heating_type = nil
       cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
   
-      HelperMethods.add_pthp(model, 
-                             HelperMethods.zones_with_thermostats(model.getThermalZones),
-                             fan_type,
-                             heating_type,
-                             cooling_type)
+      model.add_pthp(model, 
+                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                     fan_type,
+                     heating_type,
+                     cooling_type)
                              
       equip_applied = "PTHP"
     
-    when "District Hot Water_Electric"
-    
-      # [1] PLANT LOOPS
-          # [1] Hot Water Plant Loop with:
-              # [1] District on Supply Side
-              # [1] Coil Heating Water on Demand Side
-          # [0] Chilled Water Plant Loop
-      # [1] ZONE EQUIPMENT
-          # [1] Packaged Terminal Air Conditioner on each zone (Living/Basement) with:
-              # [1] Coil Heating Water
-              # [1] Coil Cooling DX Single Speed            
+    when "District Hot Water_Electric"          
   
       fan_type = "ConstantVolume" # ConstantVolume, Cycling
       heating_type = "Water" # Gas, Electric, Water
       cooling_type = "Single Speed DX AC" # Two Speed DX AC, Single Speed DX AC
       
-      hot_water_loop = model.add_hw_loop('NaturalGas')
-      hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
-      
       model.add_ptac(nil, 
                      nil,
-                     hot_water_loop,
+                     model.add_district_hot_water_loop(model, runner, 'NaturalGas'),
                      HelperMethods.zones_with_thermostats(model.getThermalZones),
                      fan_type,
                      heating_type,
@@ -826,43 +793,56 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       equip_applied = "PTAC"
   
     when "District Ambient Water_District Ambient Water"
-  
-      # [1] PLANT LOOPS
-          # [1] Heat Pump Loop with:
-              # [1] District Heating on Supply Side
-              # [1] District Cooling on Supply Side
-              # [1] Coil Heating Water To Air Heat Pump Equation Fit on Demand Side
-              # [1] Coil Cooling Water To Air Heat Pump Equation Fit on Demand Side
-          # [0] Hot Water Plant Loop
-          # [0] Chilled Water Plant Loop
-      # [1] ZONE EQUIPMENT
-          # [1] Water To Air Heat Pump on each zone (Living/Basement) with:
-              # [1] Coil Heating Water To Air Heat Pump Equation Fit
-              # [1] Coil Cooling Water To Air Heat Pump Equation Fit
-              # [1] Supplemental Coil Heating Electric
       
-      heat_pump_loop = model.add_hp_loop()
-      heat_pump_loop = HelperMethods.make_district_heat_pump_loop(model, runner, heat_pump_loop)    
-  
-      HelperMethods.add_watertoairhp(model,
-                                     heat_pump_loop,
-                                     HelperMethods.zones_with_thermostats(model.getThermalZones))
+      if num_floors < 3
+        
+        lower_loop_temp_f = 80.0
+        upper_loop_temp_f = 40.0
+        ambient_loop = model.add_district_ambient_loop(lower_loop_temp_f, upper_loop_temp_f)
     
-      equip_applied = "Water-to-Air HP"
+        model.add_zone_water_to_air_hp(ambient_loop, HelperMethods.zones_with_thermostats(model.getThermalZones))
+      
+        model.add_zone_erv(HelperMethods.zones_with_thermostats(model.getThermalZones))
+      
+        equip_applied = "Zone Water-to-Air HP w/ERV"        
+        
+      else
+      
+        chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
+        chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
+        chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
+        chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
+        chiller_capacity_guess = nil
+      
+        lower_loop_temp_f = 80.0
+        upper_loop_temp_f = 40.0
+        ambient_loop = model.add_district_ambient_loop(lower_loop_temp_f, upper_loop_temp_f)
     
-    when "Gas_District Chilled Water"
+        model.add_zone_water_to_air_hp(ambient_loop, HelperMethods.zones_with_thermostats(model.getThermalZones))
+      
+        vav_operation_schedule = nil
+        doas_oa_damper_schedule = nil
+        doas_fan_maximum_flow_rate = nil
+        doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
+        energy_recovery = true
+                     
+        model.add_doas(nil, 
+                       nil,
+                       model.add_hw_loop('HeatPump', nil, ambient_loop), 
+                       model.add_chw_loop(nil, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess, ambient_loop),
+                       HelperMethods.zones_with_thermostats(model.getThermalZones),
+                       vav_operation_schedule,
+                       doas_oa_damper_schedule,
+                       doas_fan_maximum_flow_rate,
+                       doas_economizer_control_type,
+                       nil,
+                       energy_recovery)
+      
+        equip_applied = "Zone Water-to-Air HP w/DOAS"       
+      
+      end
     
-      # [2] PLANT LOOPS
-          # [1] Hot Water Plant Loop with:
-              # [1] Boiler on Supply Side
-              # [1] Coil Heating Water on Demand Side
-          # [1] Chilled Water Plant Loop with:
-              # [1] District on Supply Side
-              # [1] Coil Cooling Water on Demand Side
-      # [1] ZONE EQUIPMENT
-          # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
-              # [1] Coil Heating Water
-              # [1] Coil Cooling Water      
+    when "Gas_District Chilled Water"     
       
       chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
       chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
@@ -874,39 +854,23 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       doas_oa_damper_schedule = nil
       doas_fan_maximum_flow_rate = nil
       doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
-      
-      hot_water_loop = model.add_hw_loop('NaturalGas')
-      chilled_water_loop = model.add_chw_loop(nil,
-                                              chw_pumping_type,
-                                              chiller_cooling_type,
-                                              chiller_condenser_type,
-                                              chiller_compressor_type,
-                                              chiller_capacity_guess)
-      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
+      energy_recovery = false
                                               
       model.add_doas(nil, 
                      nil,
-                     hot_water_loop, 
-                     chilled_water_loop,
+                     model.add_hw_loop('NaturalGas'), 
+                     model.add_district_chilled_water_loop(chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess),
                      HelperMethods.zones_with_thermostats(model.getThermalZones),
                      vav_operation_schedule,
                      doas_oa_damper_schedule,
                      doas_fan_maximum_flow_rate,
-                     doas_economizer_control_type)
+                     doas_economizer_control_type,
+                     nil,
+                     energy_recovery)
     
       equip_applied = "DOAS"
     
     when "Electric_District Chilled Water"
-    
-      # [1] PLANT LOOPS
-          # [0] Hot Water Plant Loop
-          # [1] Chilled Water Plant Loop with:
-              # [1] District on Supply Side
-              # [1] Coil Cooling Water on Demand Side
-      # [1] ZONE EQUIPMENT
-          # [1] PSZ-AC on each zone (Living/Basement) with:
-              # [1] Coil Heating Electric
-              # [1] Coil Cooling Water
   
       chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
       chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
@@ -920,18 +884,10 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       supplemental_heating_type = "Electric" # Electric, Gas
       cooling_type = "Water" # Water, Two Speed DX AC, Single Speed DX AC, Single Speed Heat Pump, Water To Air Heat Pump
   
-      chilled_water_loop = model.add_chw_loop(nil,
-                                              chw_pumping_type,
-                                              chiller_cooling_type,
-                                              chiller_condenser_type,
-                                              chiller_compressor_type,
-                                              chiller_capacity_guess)
-      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)    
-  
       model.add_psz_ac(nil, 
                        nil, 
                        nil, # Typically nil unless water source hp
-                       chilled_water_loop, # Typically nil unless water source hp
+                       model.add_district_chilled_water_loop(model, runner, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess), # Typically nil unless water source hp
                        HelperMethods.zones_with_thermostats(model.getThermalZones), 
                        nil,
                        nil,
@@ -943,19 +899,7 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
     
       equip_applied = "PSZ-AC"
     
-    when "District Hot Water_District Chilled Water"
-    
-      # [2] PLANT LOOPS
-          # [1] Hot Water Plant Loop with:
-              # [1] District on Supply Side
-              # [1] Coil Heating Water on Demand Side
-          # [1] Chilled Water Plant Loop with:
-              # [1] District on Supply Side
-              # [1] Coil Cooling Water on Demand Side
-      # [1] ZONE EQUIPMENT
-          # [1] Four Pipe Fan Coil on each zone (Living/Basement) with:
-              # [1] Coil Heating Water
-              # [1] Coil Cooling Water      
+    when "District Hot Water_District Chilled Water"    
       
       chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
       chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
@@ -967,26 +911,19 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
       doas_oa_damper_schedule = nil
       doas_fan_maximum_flow_rate = nil
       doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
-      
-      hot_water_loop = model.add_hw_loop('NaturalGas')
-      hot_water_loop = HelperMethods.make_district_hot_water_loop(model, runner, hot_water_loop)
-      chilled_water_loop = model.add_chw_loop(nil,
-                                              chw_pumping_type,
-                                              chiller_cooling_type,
-                                              chiller_condenser_type,
-                                              chiller_compressor_type,
-                                              chiller_capacity_guess)
-      chilled_water_loop = HelperMethods.make_district_chilled_water_loop(model, runner, chilled_water_loop)
-                                              
+      energy_recovery = false
+                   
       model.add_doas(nil, 
                      nil,
-                     hot_water_loop, 
-                     chilled_water_loop,
+                     model.add_district_hot_water_loop(model, runner, 'NaturalGas'), 
+                     model.add_district_chilled_water_loop(model, runner, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess),
                      HelperMethods.zones_with_thermostats(model.getThermalZones),
                      vav_operation_schedule,
                      doas_oa_damper_schedule,
                      doas_fan_maximum_flow_rate,
-                     doas_economizer_control_type)
+                     doas_economizer_control_type,
+                     nil,
+                     energy_recovery)
                      
       equip_applied = "DOAS"
 
@@ -1021,6 +958,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
   number_of_residential_units = model.getBuilding.standardsNumberOfLivingUnits.get.to_i
   num_spaces = model.getSpaces.length.to_i
   units_per_space = number_of_residential_units.to_f / num_spaces.to_f
+  num_floors = model.getBuildingStorys.length
   
   living_thermal_zones, basement_thermal_zone = get_thermal_zones(model)
   
@@ -1068,7 +1006,7 @@ def apply_residential(model, runner, heating_source, cooling_source)
     runner.registerInfo("Removing existing HVAC and replacing with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
     HelperMethods.remove_all_hvac_equipment(model, runner)
     runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}'.")
-    result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type)
+    result = result && apply_new_residential_hvac(model, runner, heating_source, cooling_source, building_space_type, num_floors)
   end
   
   runner.registerValue('bldg_use', building_space_type)

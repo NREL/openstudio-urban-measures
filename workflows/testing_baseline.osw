@@ -1,0 +1,43 @@
+{
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": "./run",
+  "file_paths": ["./../../../weather/"],
+  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL working measures/"],
+  "steps": [{
+    "measure_dir_name": "BarAspectRatioStudy",
+    "arguments": {
+      "total_bldg_area_ip": null,
+      "ns_to_ew_ratio": 2.0,
+      "num_floors": 2,
+      "floor_to_floor_height_ip": 3.3
+    }
+  },
+  {
+    "measure_dir_name": "set_building_type",
+    "arguments": {
+      "building_type": "Office",
+      "mixed_type_1": null,
+      "mixed_type_1_percentage": null,
+      "mixed_type_2": null,
+      "mixed_type_2_percentage": null,
+      "mixed_type_3": null,
+      "mixed_type_3_percentage": null,
+      "mixed_type_4": null,
+      "mixed_type_4_percentage": null,   
+      "number_of_residential_units": 0
+    }
+  },
+  {
+    "measure_dir_name": "urban_building_type",
+    "arguments": {
+      "heating_source": "Gas",
+      "cooling_source": "Electric"
+    }
+  },
+  {
+    "measure_dir_name": "openstudio_results",
+    "arguments": {}
+  }]
+}
