@@ -26,7 +26,7 @@ class OpenStudio::Model::Model
       htg_coil.setHeatingPowerConsumptionCoefficient4(-0.177653510577989)
       htg_coil.setHeatingPowerConsumptionCoefficient5(-0.103079864171839)
 
-      loop.addDemandBranchForComponent(htg_coil)        
+      loop.addDemandBranchForComponent(htg_coil)
 
       clg_coil = OpenStudio::Model::CoilCoolingWaterToAirHeatPumpEquationFit.new(self)
       clg_coil.setName("Water-to-Air HP Clg Coil")
@@ -57,15 +57,11 @@ class OpenStudio::Model::Model
       fan_static_pressure_pa = OpenStudio.convert(fan_static_pressure_in_h2o, "inH_{2}O","Pa").get
       fan.setPressureRise(fan_static_pressure_pa)
       fan.setFanEfficiency(0.52)
-      fan.setMotorEfficiency(0.8)  
+      fan.setMotorEfficiency(0.8)
   
-      water_to_air_hp_system = OpenStudio::Model::ZoneHVACWaterToAirHeatPump.new(self, 
-                                                                                 self.alwaysOnDiscreteSchedule, 
-                                                                                 fan, 
-                                                                                 htg_coil, 
-                                                                                 clg_coil,
-                                                                                 supplemental_htg_coil)
-                                                                              
+      water_to_air_hp_system = OpenStudio::Model::ZoneHVACWaterToAirHeatPump.new(self, self.alwaysOnDiscreteSchedule, fan, htg_coil, clg_coil, supplemental_htg_coil)
+      water_to_air_hp_system.setOutdoorAirFlowRateDuringHeatingOperation(OpenStudio::OptionalDouble.new(0)) 
+      water_to_air_hp_system.setOutdoorAirFlowRateDuringCoolingOperation(OpenStudio::OptionalDouble.new(0))
       water_to_air_hp_system.addToThermalZone(zone)
 
       water_to_air_hp_systems << water_to_air_hp_system
@@ -78,42 +74,47 @@ class OpenStudio::Model::Model
   
   def add_zone_erv(thermal_zones)
   
-    OpenStudio::logFree(OpenStudio::Info, 'openstudio.Model.Model', "Adding zone erv.")
+    OpenStudio::logFree(OpenStudio::Info, 'openstudio.Model.Model', "Adding zone erv for #{thermal_zones.size} zones.")
+    thermal_zones.each do |zone|
+      OpenStudio::logFree(OpenStudio::Debug, 'openstudio.Model.Model', "---#{zone.name}")
+    end    
   
     erv_systems = []
     thermal_zones.each do |zone|
 
       supply_fan = OpenStudio::Model::FanOnOff.new(self)
-      supply_fan.setFanEfficiency(OpenStudio::convert(300.0 / 0.3,"cfm","m^3/s").get)
-      supply_fan.setPressureRise(300.0)
+      # supply_fan.setFanEfficiency(OpenStudio::convert(300.0 / 0.3,"cfm","m^3/s").get)
+      # supply_fan.setPressureRise(300.0)
       # supply_fan.setMaximumFlowRate(OpenStudio::convert(mech_vent.whole_house_vent_rate,"cfm","m^3/s").get)
-      supply_fan.setMotorEfficiency(1)
-      supply_fan.setMotorInAirstreamFraction(1)
+      # supply_fan.setMotorEfficiency(1)
+      # supply_fan.setMotorInAirstreamFraction(1)
 
       exhaust_fan = OpenStudio::Model::FanOnOff.new(self)
-      exhaust_fan.setFanEfficiency(OpenStudio::convert(300.0 / 0.3,"cfm","m^3/s").get)
-      exhaust_fan.setPressureRise(300.0)
+      # exhaust_fan.setFanEfficiency(OpenStudio::convert(300.0 / 0.3,"cfm","m^3/s").get)
+      # exhaust_fan.setPressureRise(300.0)
       # exhaust_fan.setMaximumFlowRate(OpenStudio::convert(mech_vent.whole_house_vent_rate,"cfm","m^3/s").get)
-      exhaust_fan.setMotorEfficiency(1)
-      exhaust_fan.setMotorInAirstreamFraction(0)
+      # exhaust_fan.setMotorEfficiency(1)
+      # exhaust_fan.setMotorInAirstreamFraction(0)
 
       erv_controller = OpenStudio::Model::ZoneHVACEnergyRecoveryVentilatorController.new(self)
-      erv_controller.setExhaustAirTemperatureLimit("NoExhaustAirTemperatureLimit")
-      erv_controller.setExhaustAirEnthalpyLimit("NoExhaustAirEnthalpyLimit")
-      erv_controller.setTimeofDayEconomizerFlowControlSchedule(self.alwaysOnDiscreteSchedule)
-      erv_controller.setHighHumidityControlFlag(false)
+      # erv_controller.setExhaustAirTemperatureLimit("NoExhaustAirTemperatureLimit")
+      # erv_controller.setExhaustAirEnthalpyLimit("NoExhaustAirEnthalpyLimit")
+      # erv_controller.setTimeofDayEconomizerFlowControlSchedule(self.alwaysOnDiscreteSchedule)
+      # erv_controller.setHighHumidityControlFlag(false)
 
       heat_exchanger = OpenStudio::Model::HeatExchangerAirToAirSensibleAndLatent.new(self)
-      # heat_exchanger.setNominalSupplyAirFlowRate(OpenStudio::convert(mech_vent.whole_house_vent_rate,"cfm","m^3/s").get)
-      # heat_exchanger.setSensibleEffectivenessat100HeatingAirFlow(mech_vent.MechVentHXCoreSensibleEffectiveness)
-      # heat_exchanger.setLatentEffectivenessat100HeatingAirFlow(mech_vent.MechVentLatentEffectiveness)
-      # heat_exchanger.setSensibleEffectivenessat75HeatingAirFlow(mech_vent.MechVentHXCoreSensibleEffectiveness)
-      # heat_exchanger.setLatentEffectivenessat75HeatingAirFlow(mech_vent.MechVentLatentEffectiveness)
-      # heat_exchanger.setSensibleEffectivenessat100CoolingAirFlow(mech_vent.MechVentHXCoreSensibleEffectiveness)
-      # heat_exchanger.setLatentEffectivenessat100CoolingAirFlow(mech_vent.MechVentLatentEffectiveness)
-      # heat_exchanger.setSensibleEffectivenessat75CoolingAirFlow(mech_vent.MechVentHXCoreSensibleEffectiveness)
-      # heat_exchanger.setLatentEffectivenessat75CoolingAirFlow(mech_vent.MechVentLatentEffectiveness)        
-
+      # heat_exchanger.setHeatExchangerType("Rotary")
+      # heat_exchanger.setEconomizerLockout(true)
+      # heat_exchanger.setSupplyAirOutletTemperatureControl(false)      
+      # heat_exchanger.setSensibleEffectivenessat100HeatingAirFlow(0.76)
+      # heat_exchanger.setSensibleEffectivenessat75HeatingAirFlow(0.81)
+      # heat_exchanger.setLatentEffectivenessat100HeatingAirFlow(0.68)
+      # heat_exchanger.setLatentEffectivenessat75HeatingAirFlow(0.73)      
+      # heat_exchanger.setSensibleEffectivenessat100CoolingAirFlow(0.76)
+      # heat_exchanger.setSensibleEffectivenessat75CoolingAirFlow(0.81)
+      # heat_exchanger.setLatentEffectivenessat100CoolingAirFlow(0.68)
+      # heat_exchanger.setLatentEffectivenessat75CoolingAirFlow(0.73)      
+      
       zone_hvac = OpenStudio::Model::ZoneHVACEnergyRecoveryVentilator.new(self, heat_exchanger, supply_fan, exhaust_fan)
       zone_hvac.setController(erv_controller)
       # zone_hvac.setSupplyAirFlowRate(OpenStudio::convert(mech_vent.whole_house_vent_rate,"cfm","m^3/s").get)
@@ -194,7 +195,11 @@ class OpenStudio::Model::Model
     sizing_system.setSizingOption("Coincident")
     # load specification
     sizing_system.setSystemOutdoorAirMethod("ZoneSum")                #ML OS default is ZoneSum
-    sizing_system.setTypeofLoadtoSizeOn("Ventilation")      # DOAS
+    if energy_recovery
+      sizing_system.setTypeofLoadtoSizeOn("VentilationRequirement")   # DOAS
+    else
+      sizing_system.setTypeofLoadtoSizeOn("Sensible")
+    end
     sizing_system.setAllOutdoorAirinCooling(true)           # DOAS
     sizing_system.setAllOutdoorAirinHeating(true)           # DOAS
     sizing_system.setMinimumSystemAirFlowRatio(0.3)         # No DCV
@@ -248,14 +253,19 @@ class OpenStudio::Model::Model
     controller_OA.resetEconomizerMaximumLimitEnthalpy
     controller_OA.resetMaximumFractionofOutdoorAirSchedule
     controller_OA.resetEconomizerMinimumLimitDryBulbTemperature
+    controller_OA.setMaximumFractionofOutdoorAirSchedule(add_schedule('HotelSmall SAC_Econ_MaxOAFrac_Sch')) # TODO: took this from the add_split_ac method
 
     # create ventilation schedules and assign to OA controller
     controller_OA.setHeatRecoveryBypassControlType("BypassWhenWithinEconomizerLimits")
 
+    controller_mv = controller_OA.controllerMechanicalVentilation
+    controller_mv.setName("DOAS Vent Controller")
+    
     # create outdoor air system
     system_OA = OpenStudio::Model::AirLoopHVACOutdoorAirSystem.new(self, controller_OA)
+    system_OA.setName("DOAS OA Sys")
     system_OA.addToNode(airloop_supply_inlet)
-
+    
     if energy_recovery
       # Get the OA system and its outboard OA node
       oa_system = air_loop.airLoopHVACOutdoorAirSystem.get
@@ -274,7 +284,7 @@ class OpenStudio::Model::Model
       erv.setSensibleEffectivenessat100HeatingAirFlow(0.76)
       erv.setSensibleEffectivenessat75HeatingAirFlow(0.81)
       erv.setLatentEffectivenessat100HeatingAirFlow(0.68)
-      erv.setLatentEffectivenessat75HeatingAirFlow(0.73)      
+      erv.setLatentEffectivenessat75HeatingAirFlow(0.73)
       
       erv.setSensibleEffectivenessat100CoolingAirFlow(0.76)
       erv.setSensibleEffectivenessat75CoolingAirFlow(0.81)
@@ -342,8 +352,7 @@ class OpenStudio::Model::Model
       fan_coil_fan.setMotorInAirstreamFraction(1.0)
       fan_coil_fan.setEndUseSubcategory("FCU Fans")
 
-      fan_coil = OpenStudio::Model::ZoneHVACFourPipeFanCoil.new(self, self.alwaysOnDiscreteSchedule,
-                                                            fan_coil_fan, fan_coil_cooling_coil, fan_coil_heating_coil)
+      fan_coil = OpenStudio::Model::ZoneHVACFourPipeFanCoil.new(self, self.alwaysOnDiscreteSchedule, fan_coil_fan, fan_coil_cooling_coil, fan_coil_heating_coil)
       fan_coil.setName(zone_name + "FCU")
       fan_coil.setCapacityControlMethod("CyclingFan")
       fan_coil.autosizeMaximumSupplyAirFlowRate
@@ -593,31 +602,6 @@ class OpenStudio::Model::Model
     
     return loop  
   
-  end 
-  
-  # Modify add_hw_loop in Prototype.hvac_systems.rb
-  # to add a new boiler type called "HeatPump"
-  # Add a new optional arugment ambient_loop=nil at the end
-  # If boiler_fuel_type == 'HeatPump'
-  # Add a HeatPumpWaterToWaterEquationFitHeating in place of the boiler
-  # Connect the other side of the heat upmp to the ambient loop 
-
-  # For the water-cooled chiller, just use the add_chw method
-  # and pass the ambient_loop into the condenser_loop argument
-  def add_forced_air_on_ambient_loop(type)
-    case type
-    when 'Zone Water to Air HP w/ ERV'
-      add_zone_water_to_air_hp
-      add_zone_erv
-    when 'Zone Water to Air HP w/ DOAS'
-      add_zone_water_to_air_hp
-      add_doas
-    when 'VAV w/ Heat Pumps'
-      hw_loop = add_hw_loop('HeatPump', ambient_loop)
-      chw_loop = add_chw_loop(ambient_loop)
-      add_vav_reheat(hw_loop, chw_loop)
-    end
-
   end
   
   # Creates a VAV system with parallel fan powered boxes and adds it to the model.

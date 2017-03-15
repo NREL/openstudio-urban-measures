@@ -451,7 +451,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
         end    
     
     when "District Ambient Water_District Ambient Water"
-    
+        
         if num_floors < 3 or floor_area < 75000    
     
           chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
@@ -459,8 +459,7 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
           chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
           chiller_compressor_type = nil # Centrifugal, Reciprocating, Rotary Screw, Scroll, nil
           chiller_capacity_guess = nil
-          energy_recovery = true
-  
+          
           lower_loop_temp_f = 80.0
           upper_loop_temp_f = 40.0
           ambient_loop = model.add_district_ambient_loop(lower_loop_temp_f, upper_loop_temp_f)
@@ -469,18 +468,19 @@ def apply_new_commercial_hvac(model, runner, building_type, building_vintage, he
           doas_oa_damper_schedule = nil
           doas_fan_maximum_flow_rate = nil
           doas_economizer_control_type = "FixedDryBulb" # FixedDryBulb
+          energy_recovery = true
                        
           model.add_doas(nil, 
                          nil,
-                         model.add_hw_loop('HeatPump', nil, ambient_loop), 
-                         model.add_chw_loop(nil, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess, ambient_loop),
+                         ambient_loop, 
+                         ambient_loop,
                          HelperMethods.zones_with_thermostats(model.getThermalZones),
                          vav_operation_schedule,
                          doas_oa_damper_schedule,
                          doas_fan_maximum_flow_rate,
                          doas_economizer_control_type,
                          nil,
-                         energy_recovery)   
+                         energy_recovery)
                            
           equip_applied = "Zone Water-to-Air HP w/DOAS"
 

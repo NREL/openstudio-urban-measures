@@ -828,8 +828,8 @@ def apply_new_residential_hvac(model, runner, heating_source, cooling_source, bu
                      
         model.add_doas(nil, 
                        nil,
-                       model.add_hw_loop('HeatPump', nil, ambient_loop), 
-                       model.add_chw_loop(nil, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess, ambient_loop),
+                       ambient_loop, 
+                       ambient_loop,
                        HelperMethods.zones_with_thermostats(model.getThermalZones),
                        vav_operation_schedule,
                        doas_oa_damper_schedule,
