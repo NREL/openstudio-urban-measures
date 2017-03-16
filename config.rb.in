@@ -1,4 +1,4 @@
-module UrbanOpt
+module UrbanOptConfig
 
   # url of urbanopt website
   URL = 'http://localhost:3000'
