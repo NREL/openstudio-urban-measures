@@ -4,8 +4,8 @@
 	"weather_file": null,
 	"root_directory": null,
 	"run_directory": ".",
-	"file_paths": ["./../../../weather/"],
-	"measure_paths": ["./../../../i_get_replaced/"],
+	"file_paths": null,
+	"measure_paths": null,
 	"steps": [{
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": {
