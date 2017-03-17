@@ -986,14 +986,14 @@ def apply_residential(model, runner, heating_source, cooling_source)
   control_slave_zones_hash = Geometry.get_control_and_slave_zones(model)
   all_slave_zones = []
   control_slave_zones_hash.each do |control_zone, slave_zones|
-    result = result && apply_residential_dhw(model, building_space_type, control_zone, runner)
+    # result = result && apply_residential_dhw(model, building_space_type, control_zone, runner)
     unless slave_zones.empty?
       all_slave_zones += slave_zones
     end
   end
   puts "#{building_space_type} has #{control_slave_zones_hash.keys.length} control zone(s) and #{all_slave_zones.length} slave zone(s)."
   model.getSpaces.each do |space|
-    result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
+    # result = result && apply_residential_appliances(model, building_space_type, space, units_per_space, runner)
   end
   result = result && apply_residential_lighting(model, runner)
   result = result && apply_residential_mels(model, building_space_type, units_per_space, runner)
