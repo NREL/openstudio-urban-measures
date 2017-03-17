@@ -9,9 +9,8 @@
 	"steps": [{
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": {
-				"weather_directory": "./../../NREL_integration_testing/weather",
 				"weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
-        "climate_zone": "5C"
+        "climate_zone": "Lookup From Known Locations"
 			}
 		}, {
 			"measure_dir_name": "urban_geometry_creation",
