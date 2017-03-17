@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type_e_plus</name>
   <uid>129fb231-9fb6-485a-87d0-4ad61f75af95</uid>
-  <version_id>04fbb46b-b4e4-4fc4-bced-f4476152ed94</version_id>
-  <version_modified>20170130T220729Z</version_modified>
-  <xml_checksum>FF4FCBE9</xml_checksum>
+  <version_id>ed544da6-2e7a-49c0-826f-a1b81faf2a8b</version_id>
+  <version_modified>20170316T213617Z</version_modified>
+  <xml_checksum>EF866DD5</xml_checksum>
   <class_name>UrbanBuildingTypeEPlus</class_name>
   <display_name>UrbanBuildingTypeEPlus</display_name>
   <description></description>

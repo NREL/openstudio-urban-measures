@@ -5,9 +5,10 @@ require 'json'
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
-  def initialize(url, openstudio_exe, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  def initialize(url, openstudio_exe, openstudio_measures, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     @url = url
     @openstudio_exe = openstudio_exe
+    @openstudio_measures = openstudio_measures
     @project_id = project_id   
     @user_name = user_name
     @user_pwd = user_pwd
@@ -290,7 +291,7 @@ class Runner
     end
     
     workflow[:file_paths] = ["./../../../files", "./../../../adapters", "./../../../weather"]
-    workflow[:measure_paths] = ["./../../../measures", "./../../../openstudio-measures/"]
+    workflow[:measure_paths] = @openstudio_measures
     workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow

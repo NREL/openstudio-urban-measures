@@ -5,11 +5,11 @@
 	"root_directory": null,
 	"run_directory": ".",
 	"file_paths": ["./../../../weather/"],
-	"measure_paths": ["./../../../measures/", "./../../../openstudio-measures/"],
+	"measure_paths": ["./../../../i_get_replaced/"],
 	"steps": [{
 			"measure_dir_name": "ChangeBuildingLocation",
 			"arguments": {
-				"weather_directory": "./../../weather",
+				"weather_directory": "./../../NREL_integration_testing/weather",
 				"weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
         "climate_zone": "5C"
 			}

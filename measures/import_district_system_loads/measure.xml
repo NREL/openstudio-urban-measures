@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>ecdb7431-7253-4ff4-b163-3561b8dca3c3</version_id>
-  <version_modified>20170201T233510Z</version_modified>
-  <xml_checksum>B5C31114</xml_checksum>
+  <version_id>9152b19e-84a8-4bcf-b0b0-30c9cf0da50d</version_id>
+  <version_modified>20170316T213615Z</version_modified>
+  <xml_checksum>45EB89EB</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
   <description>Imports District System Loads as Schedules</description>
