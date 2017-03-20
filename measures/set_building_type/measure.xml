@@ -2,9 +2,9 @@
   <schema_version>3.0</schema_version>
   <name>set_building_type</name>
   <uid>7453acdf-d0b6-4ec6-9bea-2c73d950b2f0</uid>
-  <version_id>00df05d6-7218-49a1-8df6-6f040f4f26c1</version_id>
-  <version_modified>20170130T220728Z</version_modified>
-  <xml_checksum>E8A47F56</xml_checksum>
+  <version_id>ce3b506e-45be-4bfe-99e7-75b96580bdd5</version_id>
+  <version_modified>20170316T213615Z</version_modified>
+  <xml_checksum>49BEF039</xml_checksum>
   <class_name>SetBuildingType</class_name>
   <display_name>Set Building Type</display_name>
   <description>This measure will create a building envelope based on a target floor area, aspect ratio, and floor to floor height.</description>
