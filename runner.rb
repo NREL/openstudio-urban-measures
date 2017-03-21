@@ -8,7 +8,9 @@ class Runner
   def initialize(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     @url = url
     @openstudio_exe = openstudio_exe
-    @project_id = project_id   
+    @openstudio_measures = openstudio_measures
+    @openstudio_files = openstudio_files
+    @project_id = project_id
     @user_name = user_name
     @user_pwd = user_pwd
     @max_datapoints = max_datapoints

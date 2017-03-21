@@ -1,0 +1,857 @@
+{
+    "crs": {
+        "type": "name",
+        "properties": {
+        "name": "EPSG:4326"
+        }
+    },
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97268348932266,
+                            39.782336662662814
+                        ],
+                        [
+                            -104.97229993343353,
+                            39.7827262333098
+                        ],
+                        [
+                            -104.9726942181587,
+                            39.78293853807783
+                        ],
+                        [
+                            -104.97307509183882,
+                            39.78256133595064
+                        ],
+                        [
+                            -104.97268348932266,
+                            39.782336662662814
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff0000",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 12,
+                "name": "Livestock Exchange Building",
+                "number_of_stories": 2,
+                "number_of_stories_above_ground": 2,
+                "source_id": "11 - Phase 2",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97374296188354,
+                            39.78134520572331
+                        ],
+                        [
+                            -104.97308850288391,
+                            39.781947089810274
+                        ],
+                        [
+                            -104.97357666492461,
+                            39.782260397251534
+                        ],
+                        [
+                            -104.97393608093262,
+                            39.781938844858345
+                        ],
+                        [
+                            -104.97371077537537,
+                            39.78178631306946
+                        ],
+                        [
+                            -104.97401118278503,
+                            39.781518351000024
+                        ],
+                        [
+                            -104.97374296188354,
+                            39.78134520572331
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff0000",
+                "fill-opacity": 0.5,
+                "floor_area": 4087.6,
+                "maximum_roof_height": 4,
+                "name": "NWSS Maintenance Facility",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "11 - Phase 2",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.96950507164001,
+                            39.78472970465585
+                        ],
+                        [
+                            -104.97059941291809,
+                            39.78538102639662
+                        ],
+                        [
+                            -104.97202098369598,
+                            39.78412372256295
+                        ],
+                        [
+                            -104.97225970029831,
+                            39.78425769865528
+                        ],
+                        [
+                            -104.97275590896606,
+                            39.78376507758586
+                        ],
+                        [
+                            -104.97272372245789,
+                            39.78353422465769
+                        ],
+                        [
+                            -104.97187614440918,
+                            39.78294059928596
+                        ],
+                        [
+                            -104.97151136398315,
+                            39.782973578607624
+                        ],
+                        [
+                            -104.96950507164001,
+                            39.78472970465585
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff0000",
+                "fill-opacity": 0.5,
+                "floor_area": 35003.791,
+                "maximum_roof_height": 8,
+                "name": "Livestock Center",
+                "number_of_stories": 2,
+                "number_of_stories_above_ground": 2,
+                "source_id": "7 - Phase 2",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#4c4c4c",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97221946716309,
+                            39.78571080720526
+                        ],
+                        [
+                            -104.9717366695404,
+                            39.78627555316886
+                        ],
+                        [
+                            -104.9722409248352,
+                            39.78652700790933
+                        ],
+                        [
+                            -104.97272372245789,
+                            39.78596638624477
+                        ],
+                        [
+                            -104.97221946716309,
+                            39.78571080720526
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff8000",
+                "fill-opacity": 0.5,
+                "floor_area": 3260.79,
+                "maximum_roof_height": 6,
+                "name": "Stock Yards",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "4 - Phase 1",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97021853923798,
+                            39.78590867493174
+                        ],
+                        [
+                            -104.96936559677124,
+                            39.78536453731467
+                        ],
+                        [
+                            -104.96883988380432,
+                            39.785842719086126
+                        ],
+                        [
+                            -104.96843755245209,
+                            39.785585078458396
+                        ],
+                        [
+                            -104.96777772903441,
+                            39.786131275443836
+                        ],
+                        [
+                            -104.96792793273926,
+                            39.78623845321133
+                        ],
+                        [
+                            -104.96664047241211,
+                            39.787433886224406
+                        ],
+                        [
+                            -104.96775627136229,
+                            39.788101670796145
+                        ],
+                        [
+                            -104.97021853923798,
+                            39.78590867493174
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff0000",
+                "fill-opacity": 0.5,
+                "floor_area": 54129.4856,
+                "maximum_roof_height": 8,
+                "name": "Equestrian Center",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "8 - Phase 2",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.9663507938385,
+                            39.78726075583292
+                        ],
+                        [
+                            -104.96571242809296,
+                            39.7878955651384
+                        ],
+                        [
+                            -104.96620595455168,
+                            39.788163502373074
+                        ],
+                        [
+                            -104.96581703424454,
+                            39.78857571146574
+                        ],
+                        [
+                            -104.96695697307587,
+                            39.78915280004616
+                        ],
+                        [
+                            -104.96752560138702,
+                            39.78853036858645
+                        ],
+                        [
+                            -104.96724128723145,
+                            39.78837372931895
+                        ],
+                        [
+                            -104.96758460998535,
+                            39.788002740157474
+                        ],
+                        [
+                            -104.9663507938385,
+                            39.78726075583292
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff0000",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 8,
+                "name": "CSU Equine Sports Medicine Clinic",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "9 - Phase 2",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97070133686064,
+                            39.78267676414352
+                        ],
+                        [
+                            -104.9701327085495,
+                            39.78210786617542
+                        ],
+                        [
+                            -104.96889889240263,
+                            39.782099621242786
+                        ],
+                        [
+                            -104.96836245059967,
+                            39.78246239734548
+                        ],
+                        [
+                            -104.9681156873703,
+                            39.78228100953317
+                        ],
+                        [
+                            -104.96723055839539,
+                            39.78292823203627
+                        ],
+                        [
+                            -104.96745049953459,
+                            39.78310549573627
+                        ],
+                        [
+                            -104.9669998884201,
+                            39.783439409837804
+                        ],
+                        [
+                            -104.96829271316528,
+                            39.78446587637344
+                        ],
+                        [
+                            -104.97070133686064,
+                            39.78267676414352
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ffff00",
+                "fill-opacity": 0.5,
+                "floor_area": 427340.0,
+                "maximum_roof_height": 10,
+                "name": "Trade Show Exposition Hall",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "16 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.96805667877196,
+                            39.78068972322917
+                        ],
+                        [
+                            -104.96776700019836,
+                            39.78082164473613
+                        ],
+                        [
+                            -104.96756315231323,
+                            39.78108136446387
+                        ],
+                        [
+                            -104.96756315231322,
+                            39.781316348134794
+                        ],
+                        [
+                            -104.96772408485411,
+                            39.78162965844787
+                        ],
+                        [
+                            -104.96811032295226,
+                            39.78177806809827
+                        ],
+                        [
+                            -104.96912956237792,
+                            39.78176570063963
+                        ],
+                        [
+                            -104.96947288513182,
+                            39.7816214134579
+                        ],
+                        [
+                            -104.96968746185301,
+                            39.78134108321138
+                        ],
+                        [
+                            -104.96967673301697,
+                            39.781036016645544
+                        ],
+                        [
+                            -104.96951043605804,
+                            39.78080927710558
+                        ],
+                        [
+                            -104.969322681427,
+                            39.780673233023016
+                        ],
+                        [
+                            -104.96805667877196,
+                            39.78068972322917
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ffff00",
+                "fill-opacity": 0.5,
+                "floor_area": 274705.3,
+                "maximum_roof_height": 20,
+                "name": "New Arena",
+                "number_of_stories": 2,
+                "number_of_stories_above_ground": 2,
+                "source_id": "17 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97091054916382,
+                            39.78171210829318
+                        ],
+                        [
+                            -104.97165620326994,
+                            39.782338723888955
+                        ],
+                        [
+                            -104.97239649295807,
+                            39.78181929294436
+                        ],
+                        [
+                            -104.97231602668762,
+                            39.781757455665975
+                        ],
+                        [
+                            -104.9725466966629,
+                            39.781588433488196
+                        ],
+                        [
+                            -104.97253596782684,
+                            39.78146888096543
+                        ],
+                        [
+                            -104.9719887971878,
+                            39.78146888096543
+                        ],
+                        [
+                            -104.97158110141754,
+                            39.78111846720212
+                        ],
+                        [
+                            -104.97112512588501,
+                            39.781386430828704
+                        ],
+                        [
+                            -104.97122704982758,
+                            39.78149361598718
+                        ],
+                        [
+                            -104.97091054916382,
+                            39.78171210829318
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ffff00",
+                "fill-opacity": 0.5,
+                "floor_area": 14467.7815,
+                "maximum_roof_height": 12,
+                "name": "CSU Center",
+                "number_of_stories": 3,
+                "number_of_stories_above_ground": 3,
+                "source_id": "15 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.96652245521545,
+                            39.783831035423084
+                        ],
+                        [
+                            -104.96469855308533,
+                            39.78382279069688
+                        ],
+                        [
+                            -104.9647307395935,
+                            39.7851172006116
+                        ],
+                        [
+                            -104.96653854846954,
+                            39.78510895603954
+                        ],
+                        [
+                            -104.96652245521545,
+                            39.783831035423084
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff8000",
+                "fill-opacity": 0.5,
+                "floor_area": 30238.95,
+                "maximum_roof_height": 12,
+                "name": "Shared Use TOD Parking Structure",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "6 - Phase 1",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97135043144226,
+                            39.77873560629044
+                        ],
+                        [
+                            -104.97014880180359,
+                            39.77871911561603
+                        ],
+                        [
+                            -104.97008442878723,
+                            39.77881805960319
+                        ],
+                        [
+                            -104.96995568275452,
+                            39.779048928353326
+                        ],
+                        [
+                            -104.96997714042664,
+                            39.779329267937264
+                        ],
+                        [
+                            -104.97021317481993,
+                            39.77952715401486
+                        ],
+                        [
+                            -104.9713397026062,
+                            39.77952715401486
+                        ],
+                        [
+                            -104.97135043144226,
+                            39.77873560629044
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ffff00",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 16,
+                "name": "Colliseum",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "18 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97156500816345,
+                            39.78028983461606
+                        ],
+                        [
+                            -104.97147381305695,
+                            39.780339305498295
+                        ],
+                        [
+                            -104.97136920690536,
+                            39.78042794073999
+                        ],
+                        [
+                            -104.97132092714308,
+                            39.78051863714821
+                        ],
+                        [
+                            -104.97132897377014,
+                            39.78062788493573
+                        ],
+                        [
+                            -104.97136920690536,
+                            39.780712397256174
+                        ],
+                        [
+                            -104.9714469909668,
+                            39.78078248056515
+                        ],
+                        [
+                            -104.97156232595442,
+                            39.78085050253206
+                        ],
+                        [
+                            -104.97217923402786,
+                            39.78085462507335
+                        ],
+                        [
+                            -104.97226506471634,
+                            39.78079897074513
+                        ],
+                        [
+                            -104.97235625982285,
+                            39.78073713254985
+                        ],
+                        [
+                            -104.97241795063019,
+                            39.780638191321835
+                        ],
+                        [
+                            -104.97241795063019,
+                            39.78052275970938
+                        ],
+                        [
+                            -104.97236430644989,
+                            39.78041557303869
+                        ],
+                        [
+                            -104.97220873832701,
+                            39.78029395719094
+                        ],
+                        [
+                            -104.97156500816345,
+                            39.78028983461606
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ffff00",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 6,
+                "name": "Stadium Arena Market",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "13 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.96822834014893,
+                            39.78494406439043
+                        ],
+                        [
+                            -104.96807813644408,
+                            39.78483688460661
+                        ],
+                        [
+                            -104.96725738048553,
+                            39.78556652829598
+                        ],
+                        [
+                            -104.96741294860838,
+                            39.78564485116999
+                        ],
+                        [
+                            -104.96822834014893,
+                            39.78494406439043
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff8000",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 6,
+                "name": "NWC Transit Station",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "5 - Phase 3-8",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -104.97437462210655,
+                            39.78410001907333
+                        ],
+                        [
+                            -104.97409969568251,
+                            39.78398562385634
+                        ],
+                        [
+                            -104.97396156191824,
+                            39.78417937420221
+                        ],
+                        [
+                            -104.9742391705513,
+                            39.78429479968086
+                        ],
+                        [
+                            -104.97437462210655,
+                            39.78410001907333
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Office",
+                "fill": "#ff8000",
+                "fill-opacity": 0.5,
+                "floor_area": 9999.9,
+                "maximum_roof_height": 12,
+                "name": "CSU Water Resources Center",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "2 - Phase 1",
+                "source_name": "2016_June_Powerpoint",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        }
+    ],
+    "type": "FeatureCollection"
+}
