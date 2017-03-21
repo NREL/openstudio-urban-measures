@@ -4,8 +4,16 @@
   "root_directory": null,
   "run_directory": "./run",
   "file_paths": ["./../../../weather/"],
-  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL working measures/"],
+  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/"],
   "steps": [{
+    "measure_dir_name": "ChangeBuildingLocation",
+    "arguments": {
+      "weather_directory": "./../../../openstudio-urban-measures/weather",
+      "weather_file_name": null,
+      "climate_zone": null
+    }
+  },
+  { 
     "measure_dir_name": "BarAspectRatioStudy",
     "arguments": {
       "total_bldg_area_ip": null,

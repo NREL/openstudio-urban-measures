@@ -607,7 +607,7 @@ class OpenStudio::Model::Model
       # boiler_stpt_manager.addToNode(boiler.outletModelObject.get.to_Node.get)
     else
       water_to_water_hp = OpenStudio::Model::HeatPumpWaterToWaterEquationFitHeating.new(self)
-      loop.addSupplyBranchForComponent(water_to_water_hp)
+      hot_water_loop.addSupplyBranchForComponent(water_to_water_hp)
       ambient_loop.addDemandBranchForComponent(water_to_water_hp)    
     end
 
@@ -882,7 +882,7 @@ class OpenStudio::Model::Model
 
   end
   
-  def add_prm_baseline_system(template, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
+  def add_system(template, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
     case template
     when '90.1-2004', '90.1-2007', '90.1-2010', '90.1-2013'
 
@@ -1404,7 +1404,7 @@ class OpenStudio::Model::Model
       when 'Zone Water-to-Air HP w/DOAS'
       
         unless zones.empty?
-        
+                
           chw_pumping_type = "const_pri" # const_pri, const_pri_var_sec
           chiller_cooling_type = "AirCooled" # AirCooled, WaterCooled
           chiller_condenser_type = nil # WithCondenser, WithoutCondenser, nil
@@ -1452,16 +1452,16 @@ class OpenStudio::Model::Model
           
           ambient_loop = add_district_ambient_loop(lower_loop_temp_f, upper_loop_temp_f)
           
-          add_vav_reheat(building_vintage, 
+          add_vav_reheat(template,
                          nil, 
                          add_hw_loop('HeatPump', nil, ambient_loop), 
                          add_chw_loop(nil, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, chiller_capacity_guess, ambient_loop),
                          zones,
                          nil,
                          nil,
-                         prototype_input['vav_fan_efficiency'],
-                         prototype_input['vav_fan_motor_efficiency'],
-                         prototype_input['vav_fan_pressure_rise'],
+                         0.62,
+                         0.9,
+                         OpenStudio.convert(4.0, 'inH_{2}O', 'Pa').get,
                          nil)        
         
         end      

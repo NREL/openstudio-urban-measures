@@ -42,12 +42,12 @@ buildings = [
 ]
 
 buildings.each do |building|
+  building[:heating_source] = "District Hot Water" # Gas, Electric, District Hot Water, District Ambient Water
+  building[:cooling_source] = "District Chilled Water" # Electric, District Chilled Water, District Ambient Water
   # building[:heating_source] = "District Ambient Water" # Gas, Electric, District Hot Water, District Ambient Water
   # building[:cooling_source] = "District Ambient Water" # Electric, District Chilled Water, District Ambient Water
-  building[:heating_source] = "NA" # Gas, Electric, District Hot Water, District Ambient Water
-  building[:cooling_source] = "NA" # Electric, District Chilled Water, District Ambient Water  
 end
-
+  
 def merge(workflow, properties)
   workflow[:steps].each do |step|
     arguments = step[:arguments]

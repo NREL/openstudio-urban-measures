@@ -64,7 +64,7 @@ class OpenStudio::Model::Model
         thermostatClone = thermostat.get.clone(self).to_ThermostatSetpointDualSetpoint.get
         zone.setThermostatSetpointDualSetpoint(thermostatClone)
       end
-    end      
+    end
     # self.add_hvac(building_type, building_vintage, climate_zone, prototype_input)
     # self.custom_hvac_tweaks(building_type, building_vintage, climate_zone, prototype_input)
     # self.add_swh(building_type, building_vintage, climate_zone, prototype_input)

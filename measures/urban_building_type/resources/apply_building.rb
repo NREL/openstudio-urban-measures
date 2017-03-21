@@ -69,6 +69,25 @@ class OpenStudio::Model::Model
     modify_surface_convection_algorithm(template)
     add_constructions(building_type, template, climate_zone)
     # create_thermal_zones(building_type, template, climate_zone)
+    
+    self.getSpaces.each do |space|
+      zone = space.thermalZone.get
+
+      # Skip thermostat for spaces with no space type
+      next if space.spaceType.empty?
+
+      # Add a thermostat
+      space_type_name = space.spaceType.get.name.get
+      thermostat_name = space_type_name + ' Thermostat'
+      thermostat = self.getThermostatSetpointDualSetpointByName(thermostat_name)
+      if thermostat.empty?
+        OpenStudio::logFree(OpenStudio::Error, 'openstudio.model.Model', "Thermostat #{thermostat_name} not found for space name: #{space.name}")
+      else
+        thermostatClone = thermostat.get.clone(self).to_ThermostatSetpointDualSetpoint.get
+        zone.setThermostatSetpointDualSetpoint(thermostatClone)
+      end
+    end    
+    
     # add_hvac(building_type, template, climate_zone, prototype_input, epw_file)
     # custom_hvac_tweaks(building_type, template, climate_zone, prototype_input, self)
     # add_swh(building_type, template, climate_zone, prototype_input)
@@ -309,7 +328,7 @@ def apply_new_hvac(model, runner, building_type, building_vintage, heating_sourc
 
     end 
     
-    add_prm_baseline_system(building_vintage, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
+    add_system(building_vintage, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
 
     puts "#{system_type} applied to #{building_type}."
       
