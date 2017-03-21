@@ -1,0 +1,813 @@
+{
+	"crs": {
+		"type": "name",
+		"properties": {
+			"name": "EPSG:4326"
+		}
+	},
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.16672975690406,
+                            39.74778650064243
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.74778650430236
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.74757934557861
+                        ],
+                        [
+                            -105.16690477966127,
+                            39.747579343176575
+                        ],
+                        [
+                            -105.16690478141159,
+                            39.747417218952805
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.74741722135481
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.747210062617825
+                        ],
+                        [
+                            -105.16690478364808,
+                            39.74721006021585
+                        ],
+                        [
+                            -105.16690478530111,
+                            39.747056942883766
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.74705694528577
+                        ],
+                        [
+                            -105.16765153164674,
+                            39.74684978653591
+                        ],
+                        [
+                            -105.16628639007239,
+                            39.74684977850845
+                        ],
+                        [
+                            -105.16628638758377,
+                            39.74697587513961
+                        ],
+                        [
+                            -105.16600635803252,
+                            39.74697587150852
+                        ],
+                        [
+                            -105.16600633939458,
+                            39.747759471940746
+                        ],
+                        [
+                            -105.16672975726415,
+                            39.74775947993974
+                        ],
+                        [
+                            -105.16672975690406,
+                            39.74778650064243
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "SecondarySchool",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 19592,
+                "maximum_roof_height": 7.92,
+                "name": "Secondary School",
+                "number_of_stories": 2,
+                "number_of_stories_above_ground": 2,
+                "source_id": "Secondary School",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.1706699481121,
+                            39.74775333340512
+                        ],
+                        [
+                            -105.17163839221934,
+                            39.74775333121484
+                        ],
+                        [
+                            -105.17163839017735,
+                            39.747564186739865
+                        ],
+                        [
+                            -105.17089164013669,
+                            39.74756418914187
+                        ],
+                        [
+                            -105.17089164013669,
+                            39.7474741203421
+                        ],
+                        [
+                            -105.17163838920492,
+                            39.747474117940115
+                        ],
+                        [
+                            -105.17163838716293,
+                            39.74728497345603
+                        ],
+                        [
+                            -105.17089164013669,
+                            39.74728497585804
+                        ],
+                        [
+                            -105.17089164013669,
+                            39.7472039139344
+                        ],
+                        [
+                            -105.17163838628781,
+                            39.747203911532395
+                        ],
+                        [
+                            -105.17163838424577,
+                            39.74701476703953
+                        ],
+                        [
+                            -105.17042492506846,
+                            39.7470147685033
+                        ],
+                        [
+                            -105.17042492136127,
+                            39.747564188203526
+                        ],
+                        [
+                            -105.17066994871838,
+                            39.74756418893017
+                        ],
+                        [
+                            -105.1706699481121,
+                            39.74775333340512
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "PrimarySchool",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 6871,
+                "maximum_roof_height": 3.96,
+                "name": "PrimarySchool",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "PrimarySchool",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.18415154168912,
+                            39.747754593133266
+                        ],
+                        [
+                            -105.1844153379898,
+                            39.747754593433
+                        ],
+                        [
+                            -105.1844153379898,
+                            39.74755096115635
+                        ],
+                        [
+                            -105.18415154246574,
+                            39.747550960856564
+                        ],
+                        [
+                            -105.18415154168912,
+                            39.747754593133266
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "FullServiceRestaurant",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 511,
+                "maximum_roof_height": 3.05,
+                "name": "FullServiceRestaurant",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "FullServiceRestaurant",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.18612400837199,
+                            39.75034931538642
+                        ],
+                        [
+                            -105.18694197888183,
+                            39.75034931826834
+                        ],
+                        [
+                            -105.18694197888183,
+                            39.74986891117119
+                        ],
+                        [
+                            -105.18612401405332,
+                            39.7498689082893
+                        ],
+                        [
+                            -105.18612400837199,
+                            39.75034931538642
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Hospital",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 22422,
+                "maximum_roof_height": 25.62,
+                "name": "Hospital",
+                "number_of_stories": 6,
+                "number_of_stories_above_ground": 5,
+                "source_id": "Hospital",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.16415243226324,
+                            39.750070671153416
+                        ],
+                        [
+                            -105.16516244168089,
+                            39.75007067554741
+                        ],
+                        [
+                            -105.16516244168089,
+                            39.74986478677426
+                        ],
+                        [
+                            -105.16415243526974,
+                            39.749864782380335
+                        ],
+                        [
+                            -105.16415243226324,
+                            39.750070671153416
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "LargeHotel",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 11345,
+                "maximum_roof_height": 22.26,
+                "name": "LargeHotel",
+                "number_of_stories": 7,
+                "number_of_stories_above_ground": 6,
+                "source_id": "LargeHotel",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.17301051651576,
+                            39.7503078680901
+                        ],
+                        [
+                            -105.1738635277252,
+                            39.750307871224216
+                        ],
+                        [
+                            -105.1738635277252,
+                            39.74986891117124
+                        ],
+                        [
+                            -105.17301052192934,
+                            39.7498689080372
+                        ],
+                        [
+                            -105.17301051651576,
+                            39.7503078680901
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "LargeOffice",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 46320,
+                "maximum_roof_height": 51.48,
+                "name": "LargeOffice",
+                "number_of_stories": 12,
+                "number_of_stories_above_ground": 12,
+                "source_id": "LargeOffice",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.1779321202396,
+                            39.750180963571886
+                        ],
+                        [
+                            -105.17851447815704,
+                            39.75018096503265
+                        ],
+                        [
+                            -105.17851447815704,
+                            39.749881284360605
+                        ],
+                        [
+                            -105.17793212276283,
+                            39.749881282899786
+                        ],
+                        [
+                            -105.1779321202396,
+                            39.750180963571886
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "MediumOffice",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 4982,
+                "maximum_roof_height": 11.88,
+                "name": "MediumOffice",
+                "number_of_stories": 3,
+                "number_of_stories_above_ground": 3,
+                "source_id": "MediumOffice",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.1904299669118,
+                            39.75018322691233
+                        ],
+                        [
+                            -105.1906006734011,
+                            39.7501832275504
+                        ],
+                        [
+                            -105.19060067371923,
+                            39.75012008832864
+                        ],
+                        [
+                            -105.19081761301801,
+                            39.75012008877728
+                        ],
+                        [
+                            -105.19081761297623,
+                            39.75014205024576
+                        ],
+                        [
+                            -105.19090296617004,
+                            39.750142050311155
+                        ],
+                        [
+                            -105.19090296618474,
+                            39.75012008884268
+                        ],
+                        [
+                            -105.19094919915003,
+                            39.75012008885189
+                        ],
+                        [
+                            -105.19094919915003,
+                            39.750029497793356
+                        ],
+                        [
+                            -105.190924304509,
+                            39.750029497790685
+                        ],
+                        [
+                            -105.19092430453863,
+                            39.74994714228172
+                        ],
+                        [
+                            -105.19073937313982,
+                            39.74994714209473
+                        ],
+                        [
+                            -105.19073937338968,
+                            39.7498647865846
+                        ],
+                        [
+                            -105.19035884192594,
+                            39.74986478527304
+                        ],
+                        [
+                            -105.19035883991086,
+                            39.75010087106562
+                        ],
+                        [
+                            -105.19034461438703,
+                            39.75010087099241
+                        ],
+                        [
+                            -105.19034461421909,
+                            39.75012008727744
+                        ],
+                        [
+                            -105.1904299673858,
+                            39.750120087690604
+                        ],
+                        [
+                            -105.1904299669118,
+                            39.75018322691233
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Outpatient",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 3804,
+                "maximum_roof_height": 9.15,
+                "name": "Outpatient",
+                "number_of_stories": 3,
+                "number_of_stories_above_ground": 3,
+                "source_id": "Outpatient",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.18868458907245,
+                            39.74775011791505
+                        ],
+                        [
+                            -105.18886244053651,
+                            39.74775011805128
+                        ],
+                        [
+                            -105.18886244053651,
+                            39.74761282916261
+                        ],
+                        [
+                            -105.18868458942546,
+                            39.74761282902635
+                        ],
+                        [
+                            -105.18868458907245,
+                            39.74775011791505
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "QuickServiceRestaurant",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 232,
+                "maximum_roof_height": 3.05,
+                "name": "QuickServiceRestaurant",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "QuickServiceRestaurant",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.17538762781184,
+                            39.74776097646443
+                        ],
+                        [
+                            -105.1764545416336,
+                            39.74776098136762
+                        ],
+                        [
+                            -105.1764545416336,
+                            39.74755508569185
+                        ],
+                        [
+                            -105.17538763098774,
+                            39.74755508078871
+                        ],
+                        [
+                            -105.17538762781184,
+                            39.74776097646443
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "RetailStripmall",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 2090,
+                "maximum_roof_height": 5.18,
+                "name": "RetailStripmall",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "RetailStripmall",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.1797026548082,
+                            39.74776696892707
+                        ],
+                        [
+                            -105.18086945767213,
+                            39.74776697479145
+                        ],
+                        [
+                            -105.18086945767213,
+                            39.746866284844266
+                        ],
+                        [
+                            -105.17970267000176,
+                            39.746866278980086
+                        ],
+                        [
+                            -105.1797026548082,
+                            39.74776696892707
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "RetailStandalone",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 2294,
+                "maximum_roof_height": 6.1,
+                "name": "RetailStandalone",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "RetailStandalone",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.16866841367413,
+                            39.750025816559216
+                        ],
+                        [
+                            -105.16930856859096,
+                            39.75002581832748
+                        ],
+                        [
+                            -105.16930856859231,
+                            39.749861101894645
+                        ],
+                        [
+                            -105.16866841519997,
+                            39.74986110012636
+                        ],
+                        [
+                            -105.16866841367413,
+                            39.750025816559216
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "SmallHotel",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 4013,
+                "maximum_roof_height": 11.57,
+                "name": "SmallHotel",
+                "number_of_stories": 4,
+                "number_of_stories_above_ground": 4,
+                "source_id": "SmallHotel",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.18174263861016,
+                            39.75004754400961
+                        ],
+                        [
+                            -105.18206572289273,
+                            39.750047544459235
+                        ],
+                        [
+                            -105.18206572289273,
+                            39.749881284360576
+                        ],
+                        [
+                            -105.18174263938675,
+                            39.74988128391097
+                        ],
+                        [
+                            -105.18174263861016,
+                            39.75004754400961
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "SmallOffice",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 511,
+                "maximum_roof_height": 3.05,
+                "name": "SmallOffice",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "SmallOffice",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.1924059619447,
+                            39.74775569132292
+                        ],
+                        [
+                            -105.1929393982391,
+                            39.74775569254868
+                        ],
+                        [
+                            -105.1929393982391,
+                            39.74684978653588
+                        ],
+                        [
+                            -105.19240596893108,
+                            39.74684978531025
+                        ],
+                        [
+                            -105.1924059619447,
+                            39.74775569132292
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "Warehouse",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 4835,
+                "maximum_roof_height": 8.53,
+                "name": "Warehouse",
+                "number_of_stories": 1,
+                "number_of_stories_above_ground": 1,
+                "source_id": "Warehouse",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 1584.3504,
+                "type": "Building"
+            },
+            "type": "Feature"
+        }
+    ],
+    "type": "FeatureCollection"
+}
