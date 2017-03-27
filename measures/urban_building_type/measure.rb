@@ -65,6 +65,16 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     cooling_source.setDefaultValue("Electric")
     args << cooling_source
     
+    # system type
+    system_types = OpenStudio::StringVector.new
+    system_types << "NA"
+    system_types << "Forced air"
+    system_types << "Hydronic"
+    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("system_type", system_types, true)
+    system_type.setDisplayName("System type to model")
+    system_type.setDefaultValue("Forced air")
+    args << system_type    
+    
     return args
   end
 
@@ -79,6 +89,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     
     cooling_source = runner.getStringArgumentValue("cooling_source", user_arguments)
     heating_source = runner.getStringArgumentValue("heating_source", user_arguments)
+    system_type = runner.getStringArgumentValue("system_type", user_arguments)
     if cooling_source == "NA" or heating_source == "NA"
       cooling_source = "NA"
       heating_source = "NA"
@@ -99,7 +110,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     standards_building_type = building_space_type.get.standardsBuildingType.get
     
     runner.registerInfo("Processing #{standards_building_type} Building")
-    result = apply_building(model, runner, heating_source, cooling_source)
+    result = apply_building(model, runner, heating_source, cooling_source, system_type)
     
     # residential = false
     # if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type

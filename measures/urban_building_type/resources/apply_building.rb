@@ -30,7 +30,7 @@ class OpenStudio::Model::Model
   # @example Create a Small Office, 90.1-2010, in ASHRAE Climate Zone 5A (Chicago)
   #   model.create_prototype_building('SmallOffice', '90.1-2010', 'ASHRAE 169-2006-5A')
 
-  def apply_standard(runner, building_type, template, climate_zone, heating_source, cooling_source, num_floors, floor_area, sizing_run_dir=Dir.pwd, debug=false)
+  def apply_standard(runner, building_type, template, climate_zone, heating_source, cooling_source, system_type, num_floors, floor_area, sizing_run_dir=Dir.pwd, debug=false)
     osm_file_increment = 0 
     # There are no reference models for HighriseApartment at vintages Pre-1980 and 1980-2004, nor for NECB 2011. This is a quick check.
     if building_type == 'HighriseApartment'
@@ -70,7 +70,7 @@ class OpenStudio::Model::Model
     add_constructions(building_type, template, climate_zone)
     # create_thermal_zones(building_type, template, climate_zone)
     
-    self.getSpaces.each do |space|
+    getSpaces.each do |space|
       zone = space.thermalZone.get
 
       # Skip thermostat for spaces with no space type
@@ -79,7 +79,7 @@ class OpenStudio::Model::Model
       # Add a thermostat
       space_type_name = space.spaceType.get.name.get
       thermostat_name = space_type_name + ' Thermostat'
-      thermostat = self.getThermostatSetpointDualSetpointByName(thermostat_name)
+      thermostat = getThermostatSetpointDualSetpointByName(thermostat_name)
       if thermostat.empty?
         OpenStudio::logFree(OpenStudio::Error, 'openstudio.model.Model', "Thermostat #{thermostat_name} not found for space name: #{space.name}")
       else
@@ -122,7 +122,13 @@ class OpenStudio::Model::Model
       HelperMethods.remove_all_hvac_equipment(self, runner)
       floor_area = OpenStudio::convert(floor_area,"m^2","ft^2").get
       runner.registerInfo("Applying HVAC system with heating_source='#{heating_source}' and cooling_source='#{cooling_source}', num_floors='#{num_floors}' and floor_area='#{floor_area.round}' ft^2.")
-      result = apply_new_hvac(self, runner, building_type, template, heating_source, cooling_source, num_floors, floor_area)
+      if system_type == "Forced air"
+        result = apply_new_forced_air_system(self, runner, building_type, template, heating_source, cooling_source, num_floors, floor_area)
+      elsif system_type == "Hydronic"
+        result = apply_new_hydronic_system(self, runner, building_type, template, heating_source, cooling_source, num_floors, floor_area)
+      else
+        runner.registerInfo("Did not select either 'Forced air' or 'Hydronic' system type.")
+      end
       return false if !result
     end  
 
@@ -193,7 +199,7 @@ class OpenStudio::Model::Model
    
 end
   
-def apply_new_hvac(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
+def apply_new_forced_air_system(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
 
     search_criteria = {
       'template' => building_vintage,
@@ -215,10 +221,11 @@ def apply_new_hvac(model, runner, building_type, building_vintage, heating_sourc
     zones = HelperMethods.zones_with_thermostats(model.getThermalZones)
     zone_heat_fuel = nil
 
-    if num_floors < 3 or floor_area < 75000 
+    case building_type
+    when "MidriseApartment", "HighriseApartment" # Residential
     
-      case building_type
-      when "MidriseApartment", "HighriseApartment" # Residential
+      if num_floors < 3 # Single-Family, MidriseApartment
+      
         if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
             system_type = "PTAC"
@@ -234,7 +241,31 @@ def apply_new_hvac(model, runner, building_type, building_vintage, heating_sourc
         elsif main_heat_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/ERV"
         end
-      else # Commercial      
+        
+      else # HighriseApartment
+      
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "DOAS"
+          end
+        elsif main_heat_fuel == "Electricity"
+          if cool_fuel == "Electricity"
+            system_type = "PTHP"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PSZ_AC"
+          end
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "Zone Water-to-Air HP w/DOAS"
+        end      
+      
+      end
+    
+    else # Commercial
+    
+      if num_floors < 3 or floor_area < 75000 # Small
+    
         if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
             system_type =  "PSZ_AC"
@@ -250,65 +281,27 @@ def apply_new_hvac(model, runner, building_type, building_vintage, heating_sourc
         elsif main_heat_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end
-      end
-      
-    elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000)
-    
-      case building_type
-      when "MidriseApartment", "HighriseApartment" # Residential
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
-          if cool_fuel == "Electricity"
-            system_type = "PTAC"
-          elsif cool_fuel == "DistrictCooling"
-            system_type = "DOAS"
-          end
-        elsif main_heat_fuel == "Electricity"
-          if cool_fuel == "Electricity"
-            system_type = "PTHP"
-          elsif cool_fuel == "DistrictCooling"
-            system_type == "PSZ_AC"
-          end
-        elsif main_heat_fuel == "AmbientWater"
-          system_type = "Zone Water-to-Air HP w/ERV"
-        end
-      else # Commercial      
+  
+      elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000) # Medium
+        
         if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
             system_type =  "PVAV_Reheat"
           elsif cool_fuel == "DistrictCooling"
-            system_type == "VAV_Reheat"
+            system_type = "VAV_Reheat"
           end            
         elsif main_heat_fuel == "Electric"
           if cool_fuel == "Electricity"
             system_type = "PVAV_PFP_Boxes"
           elsif cool_fuel == "DistrictCooling"
-            system_type == "PVAV_PFP_Boxes"
+            system_type = "PVAV_PFP_Boxes"
           end          
         elsif main_heat_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
         end
-      end
-    
-    elsif num_floors > 5 or floor_area > 150000
-      
-      case building_type
-      when "MidriseApartment", "HighriseApartment" # Residential
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
-          if cool_fuel == "Electricity"
-            system_type = "PTAC"
-          elsif cool_fuel == "DistrictCooling"
-            system_type = "DOAS"
-          end
-        elsif main_heat_fuel == "Electricity"
-          if cool_fuel == "Electricity"
-            system_type = "PTHP"
-          elsif cool_fuel == "DistrictCooling"
-            system_type == "PSZ_AC"
-          end
-        elsif main_heat_fuel == "AmbientWater"
-          system_type = "Zone Water-to-Air HP w/ERV"
-        end
-      else # Commercial      
+        
+      elsif num_floors > 5 or floor_area > 150000 # Large
+        
         if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
             system_type =  "VAV_Reheat"
@@ -324,13 +317,145 @@ def apply_new_hvac(model, runner, building_type, building_vintage, heating_sourc
         elsif main_heat_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
         end
-      end      
 
-    end 
+      end
+        
+    end
+
+    add_system(building_vintage, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
+
+    puts "Forced air system '#{system_type}' applied to #{building_type}."
+      
+    return true
+    
+end
+
+def apply_new_hydronic_system(model, runner, building_type, building_vintage, heating_source, cooling_source, num_floors, floor_area)
+
+    search_criteria = {
+      'template' => building_vintage,
+      'building_type' => building_type
+    }
+    prototype_input = model.find_object($os_standards['prototype_inputs'], search_criteria)
+    
+    if [["District Ambient Water", "Electric"], ["District Ambient Water", "District Chilled Water"], ["Gas", "District Ambient Water"], ["Electric", "District Ambient Water"], ["District Hot Water", "District Ambient Water"]].include? [heating_source, cooling_source]
+      runner.registerError("Heating source '#{heating_source}' and cooling source '#{cooling_source}' not supported.")
+      return false
+    end
+    
+    main_heat_fuel_map = {"Gas"=>"NaturalGas", "Electric"=>"Electricity", "District Hot Water"=>"DistrictHeating", "District Ambient Water"=>"AmbientWater"}
+    cool_fuel_map = {"Electric"=>"Electricity", "District Chilled Water"=>"DistrictCooling", "District Ambient Water"=>"AmbientWater"}
+    
+    system_type = nil
+    main_heat_fuel = main_heat_fuel_map[heating_source]
+    cool_fuel = cool_fuel_map[cooling_source]
+    zones = HelperMethods.zones_with_thermostats(model.getThermalZones)
+    zone_heat_fuel = nil
+
+    case building_type
+    when "MidriseApartment", "HighriseApartment" # Residential
+    
+      if num_floors < 3 # Single-Family, MidriseApartment
+      
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "DOAS"
+          end
+        elsif main_heat_fuel == "Electricity"
+          if cool_fuel == "Electricity"
+            system_type = "PTHP"
+          elsif cool_fuel == "DistrictCooling"
+            system_type == "PSZ_AC"
+          end
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "Zone Water-to-Air HP w/ERV"
+        end
+        
+      else # HighriseApartment
+      
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "DOAS"
+          end
+        elsif main_heat_fuel == "Electricity"
+          if cool_fuel == "Electricity"
+            system_type = "PTHP"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PSZ_AC"
+          end
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "Zone Water-to-Air HP w/DOAS"
+        end      
+      
+      end
+    
+    else # Commercial
+    
+      if num_floors < 3 or floor_area < 75000 # Small
+    
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "PSZ_AC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PSZ_AC"
+          end
+        elsif main_heat_fuel == "Electric"
+          if cool_fuel == "Electricity"
+            system_type = "PSZ_HP"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PSZ_HP"
+          end            
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "Zone Water-to-Air HP w/DOAS"
+        end
+  
+      elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000) # Medium
+        
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "PVAV_Reheat"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "VAV_Reheat"
+          end            
+        elsif main_heat_fuel == "Electric"
+          if cool_fuel == "Electricity"
+            system_type = "PVAV_PFP_Boxes"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PVAV_PFP_Boxes"
+          end          
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "Zone Water-to-Air HP w/DOAS"
+        end
+        
+      elsif num_floors > 5 or floor_area > 150000 # Large
+        
+        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "VAV_Reheat"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "VAV_Reheat"
+          end
+        elsif main_heat_fuel == "Electric"
+          if cool_fuel == "Electricity"
+            system_type = "VAV_PFP_Boxes"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "VAV_PFP_Boxes"
+          end
+        elsif main_heat_fuel == "AmbientWater"
+          system_type = "VAV w/Heat Pumps"
+        end
+
+      end
+        
+    end
     
     add_system(building_vintage, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
 
-    puts "#{system_type} applied to #{building_type}."
+    puts "Hydronic system '#{system_type}' applied to #{building_type}."
       
     return true
     
@@ -588,13 +713,17 @@ def map_space_type(space_type, runner)
 
 end
 
-def apply_building(model, runner, heating_source, cooling_source)
+def apply_building(model, runner, heating_source, cooling_source, system_type)
 
   num_spaces = model.getSpaces.length.to_i
 
   result, building_type, num_floors, floor_area = prototype_building_type(model, runner)
-  building_vintage = '90.1-2010'
-  climate_zone = 'ASHRAE 169-2006-5A'
+  building_vintage = "90.1-2010"
+  climate_zone = nil
+  model.getClimateZones.climateZones.each do |cz|
+    next unless cz.institution == "ASHRAE"
+    climate_zone = "ASHRAE 169-2006-#{cz.value}"
+  end
   
   if !result
     runner.registerError("Cannot apply building type")
@@ -605,7 +734,7 @@ def apply_building(model, runner, heating_source, cooling_source)
     map_space_type(space_type, runner)
   end
   
-  result = model.apply_standard(runner, building_type, building_vintage, climate_zone, heating_source, cooling_source, num_floors, floor_area)
+  result = model.apply_standard(runner, building_type, building_vintage, climate_zone, heating_source, cooling_source, system_type, num_floors, floor_area)
   
   model.getThermalZones.each do |thermal_zone|
     if thermal_zone.spaces.empty?
@@ -633,8 +762,6 @@ def apply_building(model, runner, heating_source, cooling_source)
       end
     end
   end
-  
-  
   
   runner.registerValue('bldg_use', building_type)
   runner.registerValue('num_spaces', num_spaces, 'spaces')

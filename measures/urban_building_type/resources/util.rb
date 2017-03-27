@@ -195,7 +195,7 @@ class OpenStudio::Model::Model
     sizing_system.setSizingOption('Coincident')
     # load specification
     sizing_system.setSystemOutdoorAirMethod('ZoneSum') # ML OS default is ZoneSum
-    sizing_system.setTypeofLoadtoSizeOn('Sensible')         # DOAS
+    sizing_system.setTypeofLoadtoSizeOn('Ventilation')      # DOAS
     sizing_system.setAllOutdoorAirinCooling(true)           # DOAS
     sizing_system.setAllOutdoorAirinHeating(true)           # DOAS
     sizing_system.setMinimumSystemAirFlowRatio(0.3)         # No DCV
@@ -1380,7 +1380,7 @@ class OpenStudio::Model::Model
                                      nil,
                                      add_hw_loop(main_heat_fuel), 
                                      add_chw_loop(template, chw_pumping_type, chiller_cooling_type, chiller_condenser_type, chiller_compressor_type, cool_fuel),
-                                     HelperMethods.zones_with_thermostats(model.getThermalZones),
+                                     zones,
                                      vav_operation_schedule,
                                      doas_oa_damper_schedule,
                                      doas_fan_maximum_flow_rate,

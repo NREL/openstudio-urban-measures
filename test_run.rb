@@ -35,19 +35,21 @@ buildings = [
    # {name: "Mixed-use",                building_type: "Mixed use",                     total_bldg_area_ip: 4013,   num_floors: 4,  number_of_residential_units: 15, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 75, mixed_type_2: "Retail other than mall", mixed_type_2_percentage: 25}, 
    # {name: "Mixed-use-2",              building_type: "Mixed use",                     total_bldg_area_ip: 4013,   num_floors: 4,  number_of_residential_units: 12, mixed_type_1: "Multifamily (5 or more units)", mixed_type_1_percentage: 60, mixed_type_2: "Food service", mixed_type_2_percentage: 40} 
    # {name: "Single-Family-Amb-1",      building_type: "Single-Family",                 total_bldg_area_ip: 1600,    num_floors: 1,  number_of_residential_units: 1},
-   # {name: "Multifamily-Amb-2",        building_type: "Multifamily (5 or more units)", total_bldg_area_ip: 10000,   num_floors: 3,  number_of_residential_units: 9},
-   {name: "Small-Office-Amb-3",       building_type: "Office",                        total_bldg_area_ip: 5000,    num_floors: 1},
+   {name: "Multifamily-Amb-2",        building_type: "Multifamily (5 or more units)", total_bldg_area_ip: 10000,   num_floors: 3,  number_of_residential_units: 9},
+   # {name: "Small-Office-Amb-3",       building_type: "Office",                        total_bldg_area_ip: 5000,    num_floors: 1},
    # {name: "Medium-Office-Amb-4",      building_type: "Office",                        total_bldg_area_ip: 80000,   num_floors: 4},
    # {name: "Large-Office-Amb-5",       building_type: "Office",                        total_bldg_area_ip: 300000,  num_floors: 12}
 ]
 
 buildings.each do |building|
-  building[:heating_source] = "District Hot Water" # Gas, Electric, District Hot Water, District Ambient Water
-  building[:cooling_source] = "District Chilled Water" # Electric, District Chilled Water, District Ambient Water
-  # building[:heating_source] = "District Ambient Water" # Gas, Electric, District Hot Water, District Ambient Water
-  # building[:cooling_source] = "District Ambient Water" # Electric, District Chilled Water, District Ambient Water
+  # building[:heating_source] = "District Hot Water" # Gas, Electric, District Hot Water, District Ambient Water
+  # building[:cooling_source] = "District Chilled Water" # Electric, District Chilled Water, District Ambient Water
+  building[:heating_source] = "District Ambient Water" # Gas, Electric, District Hot Water, District Ambient Water
+  building[:cooling_source] = "District Ambient Water" # Electric, District Chilled Water, District Ambient Water  
+  building[:system_type] = "Forced air"
+  # building[:system_type] = "Hydronic"
 end
-  
+
 def merge(workflow, properties)
   workflow[:steps].each do |step|
     arguments = step[:arguments]
@@ -98,7 +100,8 @@ buildings.each do |building|
   # configure jsons
   datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}
-  region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
+  # region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
+  region_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
 
   name = building[:name]
 

@@ -41,7 +41,8 @@
     "measure_dir_name": "urban_building_type",
     "arguments": {
       "heating_source": "Gas",
-      "cooling_source": "Electric"
+      "cooling_source": "Electric",
+      "system_type": "Forced air"
     }
   },
   {
