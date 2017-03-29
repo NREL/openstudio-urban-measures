@@ -195,7 +195,7 @@ class OpenStudio::Model::Model
     sizing_system.setSizingOption('Coincident')
     # load specification
     sizing_system.setSystemOutdoorAirMethod('ZoneSum') # ML OS default is ZoneSum
-    sizing_system.setTypeofLoadtoSizeOn('Ventilation')      # DOAS
+    sizing_system.setTypeofLoadtoSizeOn('Sensible')         # DOAS
     sizing_system.setAllOutdoorAirinCooling(true)           # DOAS
     sizing_system.setAllOutdoorAirinHeating(true)           # DOAS
     sizing_system.setMinimumSystemAirFlowRatio(0.3)         # No DCV

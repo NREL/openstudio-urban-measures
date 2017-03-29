@@ -16,7 +16,7 @@ class OpenStudio::Model::Model
   # require_relative '../standards/Standards.Model'
   # require_relative 'Prototype.building_specific_methods'
   spec = Gem::Specification.find_by_name('openstudio-standards')
-  gem_root = spec.gem_dir  
+  gem_root = spec.gem_dir
   require File.join(gem_root, 'lib', 'openstudio-standards', 'prototypes', 'Prototype.building_specific_methods')
     
   # Creates a DOE prototype building model and replaces
@@ -86,7 +86,7 @@ class OpenStudio::Model::Model
         thermostatClone = thermostat.get.clone(self).to_ThermostatSetpointDualSetpoint.get
         zone.setThermostatSetpointDualSetpoint(thermostatClone)
       end
-    end    
+    end
     
     # add_hvac(building_type, template, climate_zone, prototype_input, epw_file)
     # custom_hvac_tweaks(building_type, template, climate_zone, prototype_input, self)
@@ -699,11 +699,14 @@ def map_space_type(space_type, runner)
     new_space_type = 'Strip mall - type 1'
     new_building_type = 'StripMall'
   when "Single-Family"
-    building_type = 'Apartment'
+    new_space_type = 'Apartment'
+    new_building_type = 'MidriseApartment'
   when "Multifamily (2 to 4 units)"
-    building_type = 'Apartment'
+    new_space_type = 'Apartment'
+    new_building_type = 'MidriseApartment'
   when "Multifamily (5 or more units)"
-    building_type = 'Apartment'  
+    new_space_type = 'Apartment'
+    new_building_type = 'HighriseApartment'  
   else
     runner.registerError("Unknown building type #{standards_building_type}")
   end
