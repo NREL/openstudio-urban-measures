@@ -44,10 +44,10 @@ buildings = [
 buildings.each do |building|
   # building[:heating_source] = "District Hot Water" # Gas, Electric, District Hot Water, District Ambient Water
   # building[:cooling_source] = "District Chilled Water" # Electric, District Chilled Water, District Ambient Water
-  building[:heating_source] = "District Ambient Water" # Gas, Electric, District Hot Water, District Ambient Water
-  building[:cooling_source] = "District Ambient Water" # Electric, District Chilled Water, District Ambient Water  
-  building[:system_type] = "Forced air"
-  # building[:system_type] = "Hydronic"
+  building[:heating_source] = "Electric" # Gas, Electric, District Hot Water, District Ambient Water
+  building[:cooling_source] = "District Chilled Water" # Electric, District Chilled Water, District Ambient Water  
+  # building[:system_type] = "Forced air"
+  building[:system_type] = "Hydronic"
 end
 
 def merge(workflow, properties)

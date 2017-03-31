@@ -224,9 +224,9 @@ def apply_new_forced_air_system(model, runner, building_type, building_vintage, 
     case building_type
     when "MidriseApartment", "HighriseApartment" # Residential
     
-      if num_floors < 3 # Single-Family, MidriseApartment
+      if num_floors < 3 # Small
       
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
             system_type = "PTAC"
           elsif cool_fuel == "DistrictCooling"
@@ -238,13 +238,19 @@ def apply_new_forced_air_system(model, runner, building_type, building_vintage, 
           elsif cool_fuel == "DistrictCooling"
             system_type == "PSZ_AC"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC w/Hot Water Coil"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "DOAS"
+          end        
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/ERV"
         end
         
-      else # HighriseApartment
+      else # Large
       
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
             system_type = "PTAC"
           elsif cool_fuel == "DistrictCooling"
@@ -256,7 +262,13 @@ def apply_new_forced_air_system(model, runner, building_type, building_vintage, 
           elsif cool_fuel == "DistrictCooling"
             system_type = "PSZ_AC"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC w/Hot Water Coil"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "DOAS"
+          end          
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end      
       
@@ -266,55 +278,73 @@ def apply_new_forced_air_system(model, runner, building_type, building_vintage, 
     
       if num_floors < 3 or floor_area < 75000 # Small
     
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
             system_type =  "PSZ_AC"
           elsif cool_fuel == "DistrictCooling"
             system_type = "PSZ_AC"
           end
-        elsif main_heat_fuel == "Electric"
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
             system_type = "PSZ_HP"
           elsif cool_fuel == "DistrictCooling"
             system_type = "PSZ_HP"
-          end            
-        elsif main_heat_fuel == "AmbientWater"
+          end
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "PSZ_AC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "PSZ_AC"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end
   
       elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000) # Medium
         
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
             system_type =  "PVAV_Reheat"
           elsif cool_fuel == "DistrictCooling"
             system_type = "VAV_Reheat"
-          end            
-        elsif main_heat_fuel == "Electric"
+          end
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
             system_type = "PVAV_PFP_Boxes"
           elsif cool_fuel == "DistrictCooling"
             system_type = "PVAV_PFP_Boxes"
-          end          
-        elsif main_heat_fuel == "AmbientWater"
+          end
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "PVAV_Reheat"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "VAV_Reheat"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
         end
         
       elsif num_floors > 5 or floor_area > 150000 # Large
         
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
             system_type =  "VAV_Reheat"
           elsif cool_fuel == "DistrictCooling"
             system_type = "VAV_Reheat"
           end
-        elsif main_heat_fuel == "Electric"
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
             system_type = "VAV_PFP_Boxes"
           elsif cool_fuel == "DistrictCooling"
             system_type = "VAV_PFP_Boxes"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "VAV_Reheat"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "VAV_Reheat"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
         end
 
@@ -355,39 +385,51 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
     case building_type
     when "MidriseApartment", "HighriseApartment" # Residential
     
-      if num_floors < 3 # Single-Family, MidriseApartment
+      if num_floors < 3 # Small
       
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type = "PTAC"
+            system_type = "NA"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "DOAS"
+            system_type = "NA"
           end
         elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
-            system_type = "PTHP"
+            system_type = "NA"
           elsif cool_fuel == "DistrictCooling"
-            system_type == "PSZ_AC"
+            system_type = "NA"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "PTAC"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "Four Pipe Fan Coils w/ERV"
+          end        
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/ERV"
         end
         
-      else # HighriseApartment
+      else # Large
       
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type = "PTAC"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "DOAS"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           end
         elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
-            system_type = "PTHP"
+            system_type = "Zone Water-to-Air HP w/ERV"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "PSZ_AC"
+            system_type = "Two Pipe Fan Coils"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type = "Four Pipe Fan Coils w/DOAS"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "Four Pipe Fan Coils w/ERV"
+          end          
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end      
       
@@ -397,55 +439,73 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
     
       if num_floors < 3 or floor_area < 75000 # Small
     
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type =  "PSZ_AC"
+            system_type =  "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "PSZ_AC"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           end
-        elsif main_heat_fuel == "Electric"
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
-            system_type = "PSZ_HP"
+            system_type = "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "PSZ_HP"
-          end            
-        elsif main_heat_fuel == "AmbientWater"
+            system_type = "Two Pipe Fan Coils"
+          end
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "Zone Water-to-Air HP w/DOAS"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "Four Pipe Fan Coils w/DOAS"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end
   
       elsif num_floors == 4 or num_floors == 5 or ( floor_area >= 75000 and floor_area <= 150000) # Medium
         
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type =  "PVAV_Reheat"
+            system_type =  "Four Pipe Fan Coils w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "VAV_Reheat"
-          end            
-        elsif main_heat_fuel == "Electric"
+            system_type = "Four Pipe Fan Coils w/DOAS"
+          end
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
-            system_type = "PVAV_PFP_Boxes"
+            system_type = "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "PVAV_PFP_Boxes"
-          end          
-        elsif main_heat_fuel == "AmbientWater"
+            system_type = "Two Pipe Fan Coils"
+          end
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "Four Pipe Fan Coils w/DOAS"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "our Pipe Fan Coils w/DOAS"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
         end
         
       elsif num_floors > 5 or floor_area > 150000 # Large
         
-        if main_heat_fuel == "NaturalGas" or main_heat_fuel == "DistrictHeating"
+        if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type =  "VAV_Reheat"
+            system_type =  "Four Pipe Fan Coils w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "VAV_Reheat"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           end
-        elsif main_heat_fuel == "Electric"
+        elsif main_heat_fuel == "Electricity"
           if cool_fuel == "Electricity"
-            system_type = "VAV_PFP_Boxes"
+            system_type = "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "VAV_PFP_Boxes"
+            system_type = "Two Pipe Fan Coils"
           end
-        elsif main_heat_fuel == "AmbientWater"
+        elsif main_heat_fuel == "DistrictHeating"
+          if cool_fuel == "Electricity"
+            system_type =  "Four Pipe Fan Coils w/DOAS"
+          elsif cool_fuel == "DistrictCooling"
+            system_type = "our Pipe Fan Coils w/DOAS"
+          end
+        elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
         end
 
