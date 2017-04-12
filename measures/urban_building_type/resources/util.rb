@@ -1138,7 +1138,7 @@ class OpenStudio::Model::Model
     end
 
     return ptacs
-  end  
+  end
   
   def add_system(template, system_type, main_heat_fuel, zone_heat_fuel, cool_fuel, zones)
     case template
@@ -1151,7 +1151,7 @@ class OpenStudio::Model::Model
 
           add_ptac(template,
                    nil,
-                   hot_water_loop,
+                   nil,
                    zones,
                    'ConstantVolume',
                    main_heat_fuel,

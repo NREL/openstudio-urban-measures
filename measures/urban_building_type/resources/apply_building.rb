@@ -236,7 +236,7 @@ def apply_new_forced_air_system(model, runner, building_type, building_vintage, 
           if cool_fuel == "Electricity"
             system_type = "PTHP"
           elsif cool_fuel == "DistrictCooling"
-            system_type == "PSZ_AC"
+            system_type = "PSZ_AC"
           end
         elsif main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
@@ -401,7 +401,7 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
           end
         elsif main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
-            system_type = "PTAC"
+            system_type = "PTAC w/Hot Water Coil"
           elsif cool_fuel == "DistrictCooling"
             system_type = "Four Pipe Fan Coils w/ERV"
           end        
@@ -441,7 +441,7 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
     
         if main_heat_fuel == "NaturalGas"
           if cool_fuel == "Electricity"
-            system_type =  "Zone Water-to-Air HP w/DOAS"
+            system_type = "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
             system_type = "Four Pipe Fan Coils w/DOAS"
           end
@@ -453,7 +453,7 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
           end
         elsif main_heat_fuel == "DistrictHeating"
           if cool_fuel == "Electricity"
-            system_type =  "Zone Water-to-Air HP w/DOAS"
+            system_type = "Zone Water-to-Air HP w/DOAS"
           elsif cool_fuel == "DistrictCooling"
             system_type = "Four Pipe Fan Coils w/DOAS"
           end
@@ -479,7 +479,7 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
           if cool_fuel == "Electricity"
             system_type =  "Four Pipe Fan Coils w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "our Pipe Fan Coils w/DOAS"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           end
         elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "Zone Water-to-Air HP w/DOAS"
@@ -503,7 +503,7 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
           if cool_fuel == "Electricity"
             system_type =  "Four Pipe Fan Coils w/DOAS"
           elsif cool_fuel == "DistrictCooling"
-            system_type = "our Pipe Fan Coils w/DOAS"
+            system_type = "Four Pipe Fan Coils w/DOAS"
           end
         elsif main_heat_fuel == "AmbientWater" and cool_fuel == "AmbientWater"
           system_type = "VAV w/Heat Pumps"
@@ -517,6 +517,11 @@ def apply_new_hydronic_system(model, runner, building_type, building_vintage, he
 
     puts "Hydronic system '#{system_type}' applied to #{building_type}."
       
+    if system_type == "NA"
+      runner.registerError("No hydronic system supported for #{building_type}.")
+      return false
+    end
+      
     return true
     
 end
@@ -526,7 +531,7 @@ def office_size(floor_area, runner)
   result = "Medium"
       
   # todo: put in real ranges
-  if floor_area > 40000
+  if floor_area > 25000
     result = "Large"
   elsif floor_area > 4000
     result = "Medium"
