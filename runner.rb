@@ -358,7 +358,7 @@ class Runner
     end
   end
   
-  def save_results
+  def save_results(save_datapoint_files = false)
     puts "save_results"
     all_scenario_ids = get_all_scenario_ids()
     
@@ -380,16 +380,19 @@ class Runner
         end
       end
       
+      # todo: might also sum by type
       summed_results = nil
       detailed_results_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}/")
       get_all_datapoint_ids.each do |datapoint_id|
         file = get_detailed_results(datapoint_id)
         
-        #FileUtils.mkdir_p(detailed_results_dir) if !File.exists(detailed_results_dir) 
-        #result_path = File.join(detailed_results_dir, "#{datapoint_id}_timeseries.csv")
-        #File.open(result_path, "w") do |f|
-        #  f.write(file)
-        #end
+        if save_datapoint_files
+          FileUtils.mkdir_p(detailed_results_dir) if !File.exists?(detailed_results_dir) 
+          result_path = File.join(detailed_results_dir, "#{datapoint_id}_timeseries.csv")
+          File.open(result_path, "w") do |f|
+            f.write(file)
+          end
+        end
         
         if summed_results.nil?
           summed_results = CSV.parse(file)
