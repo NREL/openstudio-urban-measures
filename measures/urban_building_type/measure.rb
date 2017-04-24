@@ -4,8 +4,9 @@
 require 'openstudio-standards'
 require 'fileutils'
 
-require_relative 'resources/apply_residential'
-require_relative 'resources/apply_commercial'
+# require_relative 'resources/apply_residential'
+# require_relative 'resources/apply_commercial'
+require_relative 'resources/apply_building'
 
 module OpenStudio
   module Model
@@ -43,6 +44,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
 
     # heating source
     heating_sources = OpenStudio::StringVector.new
+    heating_sources << "NA"
     heating_sources << "Gas"
     heating_sources << "Electric"
     heating_sources << "District Hot Water"
@@ -54,6 +56,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     
     # cooling source
     cooling_sources = OpenStudio::StringVector.new
+    cooling_sources << "NA"
     cooling_sources << "Electric"
     cooling_sources << "District Chilled Water"
     cooling_sources << "District Ambient Water"
@@ -61,6 +64,16 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     cooling_source.setDisplayName("Cooling source to model")
     cooling_source.setDefaultValue("Electric")
     args << cooling_source
+    
+    # system type
+    system_types = OpenStudio::StringVector.new
+    system_types << "NA"
+    system_types << "Forced air"
+    system_types << "Hydronic"
+    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("system_type", system_types, true)
+    system_type.setDisplayName("System type to model")
+    system_type.setDefaultValue("Forced air")
+    args << system_type    
     
     return args
   end
@@ -76,6 +89,7 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     
     cooling_source = runner.getStringArgumentValue("cooling_source", user_arguments)
     heating_source = runner.getStringArgumentValue("heating_source", user_arguments)
+    system_type = runner.getStringArgumentValue("system_type", user_arguments)
     if cooling_source == "NA" or heating_source == "NA"
       cooling_source = "NA"
       heating_source = "NA"
@@ -95,29 +109,32 @@ class UrbanBuildingType < OpenStudio::Ruleset::ModelUserScript
     end
     standards_building_type = building_space_type.get.standardsBuildingType.get
     
-    residential = false
-    if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
-      runner.registerInfo("Processing Residential Building, #{standards_building_type}")
-      residential = true
-    else
-      runner.registerInfo("Processing Commercial Building, #{standards_building_type}")
-      residential = false
-    end
+    runner.registerInfo("Processing #{standards_building_type} Building")
+    result = apply_building(model, runner, heating_source, cooling_source, system_type)
+    
+    # residential = false
+    # if ["Single-Family", "Multifamily (2 to 4 units)", "Multifamily (5 or more units)", "Mobile Home"].include? standards_building_type
+      # runner.registerInfo("Processing Residential Building, #{standards_building_type}")
+      # residential = true
+    # else
+      # runner.registerInfo("Processing Commercial Building, #{standards_building_type}")
+      # residential = false
+    # end
         
-    beopt_measures_dir = "./resources/measures/"
-    if File.exists?(beopt_measures_dir)
-      FileUtils.rm_rf(beopt_measures_dir)
-    end
+    # beopt_measures_dir = "./resources/measures/"
+    # if File.exists?(beopt_measures_dir)
+      # FileUtils.rm_rf(beopt_measures_dir)
+    # end
 
-    result = nil
-    if residential
-      beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
-      unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
-      unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
-      result = apply_residential(model, runner, heating_source, cooling_source)
-    else
-      result = apply_commercial(model, runner, heating_source, cooling_source)
-    end
+    # result = nil
+    # if residential
+      # beopt_measures_zip = OpenStudio::toPath(File.dirname(__FILE__) + "/resources/measures.zip")
+      # unzip_file = OpenStudio::UnzipFile.new(beopt_measures_zip)
+      # unzip_file.extractAllFiles(OpenStudio::toPath(beopt_measures_dir))
+      # result = apply_residential(model, runner, heating_source, cooling_source)
+    # else
+      # result = apply_commercial(model, runner, heating_source, cooling_source)
+    # end
     
     timeseries = ["District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]

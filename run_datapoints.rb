@@ -12,7 +12,7 @@ num_parallel = UrbanOptConfig::NUM_PARALLEL
 project_id = UrbanOptConfig::PROJECT_ID
 datapoint_ids = UrbanOptConfig::DATAPOINT_IDS
 
-runner = Runner.new(url, openstudio_exe,openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.update_measures
 runner.clear_results(datapoint_ids)
 
