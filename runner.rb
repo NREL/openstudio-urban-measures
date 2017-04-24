@@ -1,6 +1,8 @@
 require 'rest-client'
 require 'parallel'
 require 'json'
+require 'base64'
+require 'csv'
 
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
@@ -212,6 +214,34 @@ class Runner
     return results
   end
   
+  def get_detailed_results(datapoint_id)
+    puts "get_detailed_results, datapoint_id = #{datapoint_id}"
+    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
+    response = request.get(content_type: :json, accept: :json)
+
+    datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
+
+    datapoint_files = datapoint[:datapoint_files]
+    if datapoint_files
+      datapoint_files.each do |datapoint_file|
+        if /datapoint_reports_report\.csv/.match( datapoint_file[:file_name] )
+          file_name = datapoint_file[:file_name]
+          file_id = datapoint_file[:_id][:$oid]
+
+          request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}", user: @user_name, password: @user_pwd)
+          response = request.get(content_type: :json, accept: :json)
+
+          file_data = JSON.parse(response.body, :symbolize_names => true)[:file_data]
+          file = Base64.strict_decode64(file_data[:file])
+
+          return file
+        end
+      end
+    end    
+    
+    return nil
+  end
+  
   # return a vector of directories to run
   def create_osws
     puts "create_osws"
@@ -349,6 +379,40 @@ class Runner
           file << JSON.pretty_generate(results)
         end
       end
+      
+      summed_results = nil
+      detailed_results_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}/")
+      get_all_datapoint_ids.each do |datapoint_id|
+        file = get_detailed_results(datapoint_id)
+        
+        #FileUtils.mkdir_p(detailed_results_dir) if !File.exists(detailed_results_dir) 
+        #result_path = File.join(detailed_results_dir, "#{datapoint_id}_timeseries.csv")
+        #File.open(result_path, "w") do |f|
+        #  f.write(file)
+        #end
+        
+        if summed_results.nil?
+          summed_results = CSV.parse(file)
+        else
+          results = CSV.parse(file)
+          results.each_index do |i|
+            next if i < 1 # header
+            
+            summed_results[i].each_index do |j|
+              summed_results[i][j] = summed_results[i][j].to_f + results[i][j].to_f
+            end
+          end
+        end
+
+      end
+      
+      summed_result_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_timeseries.csv")
+      File.open(summed_result_path, "w") do |f|
+        summed_results.each do |row|
+          f.write(CSV.generate_line(row))
+        end
+      end
+        
     end
     
   end
