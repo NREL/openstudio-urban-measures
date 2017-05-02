@@ -58,9 +58,8 @@ class Runner
     
     result = []
     
-    request = RestClient::Resource.new("#{@url}/projects/#{@project_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-    
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/project?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
     result = JSON.parse(response.body, :symbolize_names => true)
 
     return result[:project]
@@ -86,8 +85,8 @@ class Runner
     puts "get_all_workflow_ids, feature_type = #{feature_type}"
     result = []
     
-    request = RestClient::Resource.new("#{@url}/workflows.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/workflows?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
   
     workflows = JSON.parse(response.body, :symbolize_names => true)
     workflows.each do |workflow|
@@ -112,8 +111,8 @@ class Runner
     puts "get_all_scenario_ids"
     result = []
     
-    request = RestClient::Resource.new("#{@url}/scenarios.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/scenarios?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
   
     scenarios = JSON.parse(response.body, :symbolize_names => true)
     scenarios.each do |scenario|
@@ -134,8 +133,8 @@ class Runner
     puts "get_all_datapoint_ids"
     result = []
     
-    request = RestClient::Resource.new("#{@url}/datapoints.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/datapoints?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
   
     datapoints = JSON.parse(response.body, :symbolize_names => true)
     
@@ -143,15 +142,8 @@ class Runner
     feature_types = ['Building', 'District System']
     datapoints.sort!{|a,b| feature_types.index(a[:feature_type]) <=> feature_types.index(b[:feature_type])}
     
-    datapoints.each do |datapoint|
-
-      project_id = datapoint[:project_id]
-      if project_id == @project_id
-        result << datapoint[:id]
-      else
-        puts "skipping datapoint #{datapoint[:id]} since it is not associated with project #{@project_id}"
-      end
-    end
+    # make an array of datapoint IDs only
+    result = datapoints.map{|x| x[:id]}
   
     puts "get_all_datapoint_ids = #{result.join(',')}"
     return result
@@ -170,33 +162,46 @@ class Runner
 
    def get_datapoint_by_id(datapoint_id)
     puts "get_datapoint_by_id, datapoint_id = #{datapoint_id}"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
     
     datapoint = JSON.parse(response.body, :symbolize_names => true)
     return datapoint[:datapoint]
   end
   
+  # This needs to be tweaked!
   def get_workflow(datapoint_id)
     puts "get_workflow, datapoint_id = #{datapoint_id}"
-    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
+
+    # puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
+    # request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    # begin
+    #   response = request["/api/retrieve_workflow_instance?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
+    # rescue => e
+    #   puts e.response
+    # end
+    # workflow = JSON.parse(response.body, :symbolize_names => true)
+
+    #  TODO: reimplement!
+    # for now: get option_set for datapoint
+    puts "#{@url}/api/retrieve_option_set"
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     begin
-      response = request.get(content_type: :json, accept: :json)
+      response = request["/api/retrieve_option_set?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
     rescue => e
       puts e.response
     end
-
     workflow = JSON.parse(response.body, :symbolize_names => true)
+    puts "workflow: #{workflow}"
     return workflow
   end
 
   def get_scenario(scenario_id)
     puts "get_scenario, scenario_id = #{scenario_id}"
     puts "#{@url}/scenarios/#{scenario_id}.json"
-    request = RestClient::Resource.new("#{@url}/scenarios/#{scenario_id}.json", user: @user_name, password: @user_pwd)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     begin
-      response = request.get(content_type: :json, accept: :json)
+      response = request["/api/retrieve_scenario?project_id=#{@project_id}&scenario_id=#{scenario_id}"].get(content_type: :json, accept: :json)
     rescue => e
       puts e.response
     end
@@ -216,8 +221,8 @@ class Runner
   
   def get_detailed_results(datapoint_id)
     puts "get_detailed_results, datapoint_id = #{datapoint_id}"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
 
     datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
 
@@ -228,7 +233,7 @@ class Runner
           file_name = datapoint_file[:file_name]
           file_id = datapoint_file[:_id][:$oid]
 
-          request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}", user: @user_name, password: @user_pwd)
+          request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint_file.json?project_id=#{@project_id}&datapoint_id=#{datapoint_id}&file_name=#{file_name}", user: @user_name, password: @user_pwd)
           response = request.get(content_type: :json, accept: :json)
 
           file_data = JSON.parse(response.body, :symbolize_names => true)[:file_data]
@@ -294,6 +299,7 @@ class Runner
 
     # datapoint is not run, get the workflow
     # this is the merged workflow with the building properties merged in to the template workflow
+    # TODO: rework get_workflow!
     workflow = get_workflow(datapoint_id)
     
     building_workflow_id = nil
