@@ -7,12 +7,18 @@ def map_region_properties(properties)
     case name
     when :climate_zone
       next if value.nil?
-      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'climate_zone', :value => value}
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
+      
+    when :weather_file_name
+      next if value.nil?
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
       
     else
       puts "Unmapped region property '#{name}' with value '#{value}'"
     end
   end
+  
+  return result
 end
 
 def map_building_properties(properties)
@@ -28,7 +34,23 @@ def map_building_properties(properties)
       
     when :building_type
       next if value.nil?
-      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => 'bldg_type_a', :value => value}
+      
+      if value == "Office"
+        puts "Office requested"
+        floor_area = properties[:floor_area]
+        puts "floor_area = '#{floor_area}'"
+        if floor_area
+          if floor_area.to_f < 0
+            value = "SmallOffice"
+          elsif floor_area.to_f > 1
+            value = "LargeOffice"
+          else
+            value = "MediumOffice"
+          end
+        end
+      end 
+      
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
       
     when :cooling_source
       next if value.nil?
@@ -42,11 +64,10 @@ def map_building_properties(properties)
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
       
-    when :heating_source
+    when :include_in_energy_analysis
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
-      include_in_energy_analysis
+     
     when :maximum_roof_height
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
@@ -59,10 +80,6 @@ def map_building_properties(properties)
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
 
-    when :num_floors
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
     when :project_id
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
@@ -83,13 +100,9 @@ def map_building_properties(properties)
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
 
-    when :total_bldg_area_ip
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
     when :weather_file_name
       next if value.nil?
-      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
       
     when :year_built
       next if value.nil?
@@ -101,20 +114,21 @@ def map_building_properties(properties)
     when :mixed_type_1, :mixed_type_1_percentage, :mixed_type_2, :mixed_type_2_percentage, :mixed_type_3, :mixed_type_3_percentage, :mixed_type_4, :mixed_type_4_percentage
       # no-op, handled under building_type
       
-    when :address, :created_at, :footprint_area, :footprint_perimeter :geojson_id, :id, :legal_name, :name, :source_id, :source_name, :type, :updated_at
+    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :source_id, :source_name, :type, :updated_at
       # no-op
 
     else 
       puts "Unmapped building property '#{name}' with value '#{value}'"
     end
   
-    "include_in_energy_analysis": {
-      "description": "Include this building's energy use and cost in the analysis. Defaults to true. Fixed parameter.",
-      "type": "boolean"
-    }
-    
-  
   end
+  
+  return result
+end
+
+
+def map_datapoint_properties(properties)
+  result = []
   
   return result
 end

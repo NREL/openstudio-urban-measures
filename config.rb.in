@@ -1,5 +1,8 @@
 module UrbanOptConfig
 
+  #ENV['GEM_HOME'] = 'C:/bricr/gems'
+  #ENV['GEM_PATH'] = 'C:/bricr/gems'
+  
   # url of urbanopt website
   URL = 'http://localhost:3000'
   #URL = 'http://insight4.hpc.nrel.gov:8081'
