@@ -37,6 +37,8 @@ def map_building_properties(properties)
       
       case value
       
+      when "Office"
+      
       when "Mobile Home"
       
       when "Multifamily (2 to 4 units)"
@@ -64,28 +66,25 @@ def map_building_properties(properties)
         
       end 
       
-      
-        "Mobile Home",
-        "Vacant",
-        "Office",
-        "Laboratory",
-        "Nonrefrigerated warehouse",
-        "Food sales",
-        "Public order and safety",
-        "Outpatient health care",
-        "Refrigerated warehouse",
-        "Religious worship",
-        "Public assembly",
-        "Education",
-        "Food service",
-        "Inpatient health care",
-        "Nursing",
-        "Lodging",
-        "Strip shopping mall",
-        "Enclosed mall",
-        "Retail other than mall",
-        "Service",
-        "Mixed use"
+
+        #"Laboratory",
+        #"Nonrefrigerated warehouse",
+        #"Food sales",
+        #"Public order and safety",
+        #"Outpatient health care",
+        #"Refrigerated warehouse",
+        #"Religious worship",
+        #"Public assembly",
+        #"Education",
+        #"Food service",
+        #"Inpatient health care",
+        #"Nursing",
+        #"Lodging",
+        #"Strip shopping mall",
+        #"Enclosed mall",
+        #"Retail other than mall",
+        #"Service",
+        #"Mixed use"
       
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
       
