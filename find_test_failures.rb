@@ -1,15 +1,18 @@
 require 'json'
 
-dirs = Dir.glob("./run/*")
+dirs = Dir.glob("./run/testing*")
 
 euis = []
 failed = []
+num_success = 0
 num_failed = 0
 dirs.each do |osw_dir|
   ['baseline', 'retrofit'].each do |workflow|
     if File.exists?(File.join(osw_dir, workflow, "run/failed.job"))
       failed << "#{osw_dir}/#{workflow} failed to run"
       num_failed += 1
+    else
+      num_success += 1
     end
     
     if File.exists?(File.join(osw_dir, workflow, "out.osw"))
@@ -37,3 +40,4 @@ euis.each {|eui| puts eui}
 
 failed.each {|failure| puts failure}
 puts "#{num_failed} failures"
+puts "#{num_success} success"
