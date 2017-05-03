@@ -88,7 +88,7 @@ def configure(workflow, datapoint, building, region, is_retrofit)
       if name == :__SKIP__
         if is_retrofit
           # don't skip retrofit measures
-          arguments[name] = true  
+          arguments[name] = false  
         end
       elsif arguments[name].nil?
         arguments.delete(name)
