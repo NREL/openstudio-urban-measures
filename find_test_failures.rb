@@ -20,7 +20,7 @@ dirs.each do |osw_dir|
         out_osw = JSON::parse(f.read, :symbolize_names => true)
         if out_osw[:steps]
           out_osw[:steps].each do |step|
-            if step[:measure_dir_name] == 'StandardReports'
+            if step[:measure_dir_name] == 'openstudio_results'
               if step[:result] && step[:result][:step_values]
                 step[:result][:step_values].each do |result|
                   if result[:name] == 'eui'
@@ -37,7 +37,8 @@ dirs.each do |osw_dir|
 end
 
 euis.each {|eui| puts eui}
+puts "#{num_success} success"
+puts
 
 failed.each {|failure| puts failure}
 puts "#{num_failed} failures"
-puts "#{num_success} success"
