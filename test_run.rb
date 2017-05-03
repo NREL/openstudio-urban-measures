@@ -101,6 +101,11 @@ end
 
 buildings.each do |building|
 
+  # use include_in_energy_analysis to skip this run
+  if building[:include_in_energy_analysis] == 0 || building[:include_in_energy_analysis] == "false"
+    next
+  end
+
   # configure jsons
   datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}

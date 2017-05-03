@@ -21,6 +21,99 @@ def map_region_properties(properties)
   return result
 end
 
+def map_building_type(value, floor_area, number_of_stories)
+  # TODO: find real cut off values based on square footage
+  case value
+  
+  when "Education"
+    value = "PrimarySchool"
+    
+  when "Enclosed mall"
+    value = "RetailStripmall"
+    
+  when "Food sales"
+    value = "SuperMarket"
+    
+  when "Food service"
+    value = "FullServiceRestaurant"
+    
+  when "Inpatient health care"
+    value = "Outpatient"
+    
+  when "Laboratory"
+    value = "Hospital"
+    
+  when "Lodging"
+    if number_of_stories
+      if number_of_stories.to_i > 3
+        value = "LargeHotel"
+      else
+        value = "SmallHotel"
+      end
+    end
+    
+  when "Mixed use"
+    # no-op
+    
+  when "Mobile Home"
+    value = "MidriseApartment"
+    
+  when "Multifamily (2 to 4 units)"
+    value = "MidriseApartment"
+    
+  when "Multifamily (5 or more units)"
+    value = "MidriseApartment"
+    
+  when "Nonrefrigerated warehouse"
+    value = "Warehouse"
+    
+  when "Nursing"
+    value = "Outpatient"
+    
+  when "Office"
+    if floor_area
+      if floor_area.to_f < 20000
+        value = "SmallOffice"
+      elsif floor_area.to_f > 100000
+        value = "LargeOffice"
+      else
+        value = "MediumOffice"
+      end
+    end
+  
+  when "Outpatient health care"
+    value = "Outpatient"
+    
+  when "Public assembly"
+    value = "MediumOffice"
+    
+  when "Public order and safety"
+    value = "MediumOffice"
+    
+  when "Refrigerated warehouse"
+    value = "SuperMarket"
+    
+  when "Religious worship"
+    value = "MediumOffice"
+    
+  when "Retail other than mall"
+    value = "RetailStandalone"
+    
+  when "Service"
+    value = "MediumOffice"
+    
+  when "Single-Family"
+    value = "MidriseApartment"
+    
+  when "Strip shopping mall"
+    value = "RetailStripmall"
+    
+  when "Vacant"
+    value = "Warehouse"
+  end 
+      
+end
+
 def map_building_properties(properties)
   result = []
   
@@ -31,62 +124,44 @@ def map_building_properties(properties)
     when :building_status
       next if value.nil?
       #result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => 'bldg_type_a', :value => value}
-      
+    
     when :building_type
       next if value.nil?
       
-      case value
+      value = map_building_type(value, properties[:floor_area], properties[:number_of_stories])
+      if value == "Mixed use"
       
-      when "Office"
-      
-      when "Mobile Home"
-      
-      when "Multifamily (2 to 4 units)"
-      
-      when "Multifamily (5 or more units)"
-      
-      when "Office"
-        floor_area = properties[:floor_area]
-        if floor_area
-          if floor_area.to_f < 0
-            value = "SmallOffice"
-          elsif floor_area.to_f > 1
-            value = "LargeOffice"
-          else
-            value = "MediumOffice"
-          end
+        mixed_type_1 = properties[:mixed_type_1]
+        mixed_type_1 = map_building_type(mixed_type_1)
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => mixed_type_1}
+        
+        mixed_type_2 = properties[:mixed_type_2]
+        mixed_type_2_percentage = properties[:mixed_type_2_percentage].to_f / 100.0
+        if mixed_type_2 and mixed_type_2_percentage
+          mixed_type_2 = map_building_type(mixed_type_2)
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b, :value => mixed_type_2}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_fract_bldg_area, :value => mixed_type_2_percentage}
         end
-      
-      when "Single-Family"
-      
-      when "Vacant"
-      
         
+        mixed_type_3 = properties[:mixed_type_3]
+        mixed_type_3_percentage = properties[:mixed_type_3_percentage].to_f / 100.0
+        if mixed_type_3 and mixed_type_3_percentage
+          mixed_type_3 = map_building_type(mixed_type_3)
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c, :value => mixed_type_3}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_fract_bldg_area, :value => mixed_type_3_percentage}
+        end
         
+        mixed_type_4 = properties[:mixed_type_4]
+        mixed_type_4_percentage = properties[:mixed_type_4_percentage].to_f / 100.0
+        if mixed_type_4 and mixed_type_4_percentage
+          mixed_type_4 = map_building_type(mixed_type_4)
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => mixed_type_4}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => mixed_type_4_percentage}
+        end
         
-      end 
-      
-
-        #"Laboratory",
-        #"Nonrefrigerated warehouse",
-        #"Food sales",
-        #"Public order and safety",
-        #"Outpatient health care",
-        #"Refrigerated warehouse",
-        #"Religious worship",
-        #"Public assembly",
-        #"Education",
-        #"Food service",
-        #"Inpatient health care",
-        #"Nursing",
-        #"Lodging",
-        #"Strip shopping mall",
-        #"Enclosed mall",
-        #"Retail other than mall",
-        #"Service",
-        #"Mixed use"
-      
-      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
+      else
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
+      end
       
     when :cooling_source
       next if value.nil?
@@ -94,7 +169,7 @@ def map_building_properties(properties)
       
     when :floor_area
       next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :total_bldg_floor_area, :value => value}
       
     when :heating_source
       next if value.nil?

@@ -77,11 +77,11 @@
       "type": "string"
     },
     "surface_elevation": {
-      "description": "The surface elevation (above NAVD88 datum) of the building (m).  This is the elevation of the ground at the building location, any below ground stories will be lower than this. Defaults to project's surface_elevation.  Fixed parameter.",
+      "description": "The surface elevation (above NAVD88 datum) of the building (ft).  This is the elevation of the ground at the building location, any below ground stories will be lower than this. Defaults to project's surface_elevation.  Fixed parameter.",
       "type": "number"
     },
     "floor_area": {
-      "description": "Usable floor area (m^2). Fixed parameter.",
+      "description": "Usable floor area (ft^2). Fixed parameter.",
       "type": "number"
     },
     "building_type": {
@@ -136,7 +136,7 @@
       "type": "integer"
     },
     "maximum_roof_height": {
-      "description": "Maximum height of the roof relative to surface elevation (m)",
+      "description": "Maximum height of the roof relative to surface elevation (ft)",
       "type": "number"
     },
     "roof_type": {
@@ -153,11 +153,11 @@
       "type": "integer"
     },
     "footprint_area": {
-      "description": "Area of the footprint (m^2).  Calculated on export.",
+      "description": "Area of the footprint (ft^2).  Calculated on export.",
       "type": "number"
     },
     "footprint_perimeter": {
-      "description": "Perimeter of the footprint (m). Calculated on export.",
+      "description": "Perimeter of the footprint (ft). Calculated on export.",
       "type": "number"
     }
   },
