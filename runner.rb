@@ -4,6 +4,8 @@ require 'json'
 require 'base64'
 require 'csv'
 
+require_relative 'map_properties'
+
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
@@ -149,9 +151,10 @@ class Runner
     return result
   end
   
+  # todo: DLM, needs to be generalized to take feature_id and scenario_id
   def get_datapoint(building_id, workflow_id)
     puts "get_datapoint, building_id = #{building_id}, workflow_id = #{workflow_id}"
-    # todo: DLM, needs to be generalized to take feature_id
+    
     json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
     response = request.post(json_request, content_type: :json, accept: :json)
@@ -264,7 +267,7 @@ class Runner
     
       datapoint = get_datapoint_by_id(datapoint_id)
       
-      # DLM: TODO: skipp running district system datapoints until all buildings are run
+      # DLM: TODO: skip running district system datapoints until all buildings are run
       
       # see if datapoint needs to be run
       if datapoint[:status] 
@@ -295,33 +298,43 @@ class Runner
 
   def create_osw(datapoint_id)
     puts "create_osw, datapoint_id = #{datapoint_id}"
-    datapoint = get_datapoint_by_id(datapoint_id)
-
-    # datapoint is not run, get the workflow
-    # this is the merged workflow with the building properties merged in to the template workflow
-    # TODO: rework get_workflow!
-    workflow = get_workflow(datapoint_id)
     
-    building_workflow_id = nil
-    if workflow[:feature_type] == "District System"
-      building_workflow_ids = get_all_workflow_ids("Building")
-      building_workflow_id = building_workflow_ids[0]
-    end
+    raise "not working"
+
+    # TODO: rework all of this
+    workflow = get_option_set_json(option_set_id)
+    datapoint = get_datapoint_by_id_json(datapoint_id)
+    feature = get_feature_json(feature_id)
+    region = get_first_region() # todo, this should eventually look up which regions the feature is in
+    
+    workflow = configure_workflow(workflow, datapoint, feature, region)
     
     workflow[:steps].each do |step|
       arguments = step[:arguments]
       arguments.each_key do |name|
 
-        if name == 'city_db_url'.to_sym
+        if name == :city_db_url
           arguments[name] = @url
         end
         
-        if name == 'building_workflow_id'.to_sym
-          arguments[name] = building_workflow_id
+        if name == :project_id
+          arguments[name] = @project_id
         end
-
+        
+        if name == :scenario_id
+          arguments[name] = scenario_id
+        end
+        
+        if name == :feature_id
+          arguments[name] = feature_id
+        end
+        
+        if name == :datapoint_id
+          arguments[name] = datapoint_id
+        end
+        
         # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
-        if name == 'weather_file_name'.to_sym
+        if name == :weather_file_name
           workflow[:weather_file] = arguments[name]
         end
       end
@@ -358,9 +371,10 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
+      # ok to put user name and password in environment variables?
       command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
       puts command
-      system(command)
+      system({"USERNAME" => @user_name, "PASSWORD" => @user_pwd}, command)
     end
   end
   

@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_building_type</name>
   <uid>df81b2ab-8dca-484f-9016-8e6fe3e13cb6</uid>
-  <version_id>4c615b2f-38b6-4222-99c8-50fa19398617</version_id>
-  <version_modified>20170316T213615Z</version_modified>
+  <version_id>aa40697f-c0df-4f91-b35e-b647dad6ec3f</version_id>
+  <version_modified>20170503T211128Z</version_modified>
   <xml_checksum>28AD5222</xml_checksum>
   <class_name>UrbanBuildingType</class_name>
   <display_name>Urban Building Type</display_name>
@@ -18,6 +18,10 @@
       <model_dependent>false</model_dependent>
       <default_value>Gas</default_value>
       <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
         <choice>
           <value>Gas</value>
           <display_name>Gas</display_name>
@@ -45,6 +49,10 @@
       <default_value>Electric</default_value>
       <choices>
         <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
+        <choice>
           <value>Electric</value>
           <display_name>Electric</display_name>
         </choice>
@@ -55,6 +63,28 @@
         <choice>
           <value>District Ambient Water</value>
           <display_name>District Ambient Water</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>system_type</name>
+      <display_name>System type to model</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>Forced air</default_value>
+      <choices>
+        <choice>
+          <value>NA</value>
+          <display_name>NA</display_name>
+        </choice>
+        <choice>
+          <value>Forced air</value>
+          <display_name>Forced air</display_name>
+        </choice>
+        <choice>
+          <value>Hydronic</value>
+          <display_name>Hydronic</display_name>
         </choice>
       </choices>
     </argument>
@@ -110,12 +140,6 @@
       <checksum>B1E02AE9</checksum>
     </file>
     <file>
-      <filename>MinimalTemplate.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>C48B2E8F</checksum>
-    </file>
-    <file>
       <filename>geometry.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
@@ -128,6 +152,12 @@
       <checksum>6FEC70C2</checksum>
     </file>
     <file>
+      <filename>measures.zip</filename>
+      <filetype>zip</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>AE0D16F8</checksum>
+    </file>
+    <file>
       <version>
         <software_program>OpenStudio</software_program>
         <identifier>1.9.0</identifier>
@@ -136,31 +166,31 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>F9774552</checksum>
+      <checksum>27417B13</checksum>
     </file>
     <file>
       <filename>util.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>2AA47E53</checksum>
+      <checksum>12381C46</checksum>
     </file>
     <file>
       <filename>apply_residential.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>D908E1D8</checksum>
-    </file>
-    <file>
-      <filename>measures.zip</filename>
-      <filetype>zip</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>AE0D16F8</checksum>
+      <checksum>6D02EE38</checksum>
     </file>
     <file>
       <filename>apply_commercial.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>AE9959EA</checksum>
+      <checksum>0A0EAAE1</checksum>
+    </file>
+    <file>
+      <filename>apply_building.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>984E3A34</checksum>
     </file>
   </files>
 </measure>

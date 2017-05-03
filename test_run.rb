@@ -47,58 +47,6 @@ buildings.each do |building|
   building[:system_type] = "Forced air" if building[:system_type].nil? 
 end
 
-def merge(workflow, instructions)
-  instructions.each do |instruction|
-    workflow[:steps].each do |step|
-      if step[:measure_dir_name] == instruction[:measure_dir_name]
-        arguments = step[:arguments]
-        arguments.each_key do |name|
-          if name == instruction[:argument]
-            value = instruction[:value]
-            puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
-            arguments[name] = value
-          end
-        end
-      end
-    end
-  end
-
-  return workflow
-end
-
-# configure a workflow with building data
-def configure(workflow, datapoint, building, region, is_retrofit)
-
-  # configure with region first
-  workflow = merge(workflow, map_region_properties(region[:properties]))
-
-  # configure with building next
-  workflow = merge(workflow, map_building_properties(building[:properties]))
-  
-  # configure with datapoint last
-  workflow = merge(workflow, map_datapoint_properties(datapoint[:properties]))
-  
-  # weather_file comes from the region properties
-  workflow[:weather_file] = region[:properties][:weather_file_name]
-  
-  # remove keys with null values
-  workflow[:steps].each do |step|
-    arguments = step[:arguments]
-    arguments.each_key do |name|
-      if name == :__SKIP__
-        if is_retrofit
-          # don't skip retrofit measures
-          arguments[name] = false  
-        end
-      elsif arguments[name].nil?
-        arguments.delete(name)
-      end 
-    end
-  end
-  
-  return workflow
-end
-
 buildings.each do |building|
 
   # use include_in_energy_analysis to skip this run
@@ -129,9 +77,9 @@ buildings.each do |building|
   end
   
   # configure the osws with jsons
-  baseline_osw = configure(baseline_osw, datapoint_json, building_json, region_json, false)
+  baseline_osw = configure_workflow(baseline_osw, datapoint_json, building_json, region_json, false)
   if run_retrofit
-    retrofit_osw = configure(retrofit_osw, datapoint_json, building_json, region_json, true)
+    retrofit_osw = configure_workflow(retrofit_osw, datapoint_json, building_json, region_json, true)
   end
 
   # set up the directories

@@ -1,3 +1,59 @@
+def merge_workflow(workflow, instructions)
+  instructions.each do |instruction|
+    workflow[:steps].each do |step|
+      if step[:measure_dir_name] == instruction[:measure_dir_name]
+        arguments = step[:arguments]
+        arguments.each_key do |name|
+          if name == instruction[:argument]
+            value = instruction[:value]
+            puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
+            arguments[name] = value
+          end
+        end
+      end
+    end
+  end
+
+  return workflow
+end
+
+# configure a workflow with datapoint, feature, and region data
+def configure_workflow(workflow, datapoint, feature, region, is_retrofit = false)
+
+  # configure with region first
+  workflow = merge_workflow(workflow, map_region_properties(region[:properties]))
+
+  # configure with feature next
+  if feature[:properties][:type] == "Building"
+    workflow = merge_workflow(workflow, map_building_properties(feature[:properties]))
+  elsif feature[:properties][:type] == "District System"
+    workflow = merge_workflow(workflow, map_district_system_properties(feature[:properties]))
+  end
+  
+  # configure with datapoint last
+  workflow = merge_workflow(workflow, map_datapoint_properties(datapoint[:properties]))
+  
+  # weather_file comes from the region properties
+  workflow[:weather_file] = region[:properties][:weather_file_name]
+  
+  # remove keys with null values
+  workflow[:steps].each do |step|
+    arguments = step[:arguments]
+    arguments.each_key do |name|
+      if name == :__SKIP__
+        if is_retrofit
+          # don't skip retrofit measures
+          arguments[name] = false  
+        end
+      elsif arguments[name].nil?
+        arguments.delete(name)
+      end 
+    end
+  end
+  
+  return workflow
+end
+
 def map_region_properties(properties)
   result = []
   
@@ -237,6 +293,11 @@ def map_building_properties(properties)
   return result
 end
 
+def map_district_system_properties(properties)
+  result = []
+  
+  return result
+end
 
 def map_datapoint_properties(properties)
   result = []

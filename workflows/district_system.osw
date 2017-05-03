@@ -16,7 +16,7 @@
 		}, {
 			"measure_dir_name": "urban_geometry_creation",
 			"arguments": {
-				"city_db_url": "http://insight4.hpc.nrel.gov:8081/",
+				"city_db_url": null,
 				"project_id": null,
 				"feature_id": null,
 				"surrounding_buildings": "None"
@@ -24,7 +24,7 @@
 		}, {
 			"measure_dir_name": "import_district_system_loads",
 			"arguments": {
-				"city_db_url": "http://insight4.hpc.nrel.gov:8081/",
+				"city_db_url": null,
 				"project_id": null,
 				"scenario_id": null,
 				"feature_id": null
@@ -37,11 +37,9 @@
 		}, {
 			"measure_dir_name": "datapoint_reports",
 			"arguments": {
-				"city_db_url": "http://insight4.hpc.nrel.gov:8080/",
-				"user_name": "test@nrel.gov",
-				"password": "testing123",
-				"project_id": "0",
-				"datapoint_id": "0"
+				"city_db_url": null,
+				"project_id": null,
+				"datapoint_id": null
 			}
 		}
 	]
