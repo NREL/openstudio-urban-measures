@@ -35,10 +35,16 @@ def map_building_properties(properties)
     when :building_type
       next if value.nil?
       
-      if value == "Office"
-        puts "Office requested"
+      case value
+      
+      when "Mobile Home"
+      
+      when "Multifamily (2 to 4 units)"
+      
+      when "Multifamily (5 or more units)"
+      
+      when "Office"
         floor_area = properties[:floor_area]
-        puts "floor_area = '#{floor_area}'"
         if floor_area
           if floor_area.to_f < 0
             value = "SmallOffice"
@@ -48,7 +54,38 @@ def map_building_properties(properties)
             value = "MediumOffice"
           end
         end
+      
+      when "Single-Family"
+      
+      when "Vacant"
+      
+        
+        
+        
       end 
+      
+      
+        "Mobile Home",
+        "Vacant",
+        "Office",
+        "Laboratory",
+        "Nonrefrigerated warehouse",
+        "Food sales",
+        "Public order and safety",
+        "Outpatient health care",
+        "Refrigerated warehouse",
+        "Religious worship",
+        "Public assembly",
+        "Education",
+        "Food service",
+        "Inpatient health care",
+        "Nursing",
+        "Lodging",
+        "Strip shopping mall",
+        "Enclosed mall",
+        "Retail other than mall",
+        "Service",
+        "Mixed use"
       
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
       
