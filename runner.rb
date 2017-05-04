@@ -178,9 +178,18 @@ class Runner
     response = request["/api/retrieve_option_set?project_id=#{@project_id}&option_set_id=#{option_set_id}"].get(content_type: :json, accept: :json)
     
     datapoint = JSON.parse(response.body, :symbolize_names => true)
-    return datapoint[:datapoint]
+    return datapoint[:option_set]
   end
-
+  
+  def get_feature(feature_id)
+    puts "feature_id, feature_id = #{feature_id}"
+    request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+    response = request["/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}"].get(content_type: :json, accept: :json)
+    
+    feature = JSON.parse(response.body, :symbolize_names => true)
+    return feature
+  end
+  
   def get_scenario(scenario_id)
     puts "get_scenario, scenario_id = #{scenario_id}"
     puts "#{@url}/scenarios/#{scenario_id}.json"
@@ -296,10 +305,19 @@ class Runner
       scenario_id = datapoint[:scenario_ids].first
     end
     
+    puts "option_set_id = #{option_set_id}"
     puts "workflow = #{workflow}"
+    puts "feature_id = #{feature_id}"
+    puts "feature_type = #{feature_type}"
     puts "feature = #{feature}"
     puts "project = #{project}"
     puts "scenario_id = #{scenario_id}"
+    
+    if project[:properties].nil?
+      project[:properties] = {}
+    end
+    
+    workflow.delete(:datapoints)
 
     workflow = configure_workflow(workflow, feature, project)
     

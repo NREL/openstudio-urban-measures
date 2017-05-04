@@ -3,9 +3,9 @@
   "seed_file": null,
   "weather_file": null,
   "root_directory": null,
-  "run_directory": ".",
-  "file_paths": null,
-  "measure_paths": null,
+  "run_directory": "./run",
+  "file_paths": ["./../../../weather/"],
+  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
   "steps": [
     {
       "measure_dir_name": "gem_env_report",

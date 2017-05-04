@@ -187,6 +187,7 @@ def map_building_properties(properties)
         mixed_type_1 = properties[:mixed_type_1]
         mixed_type_1 = map_building_type(mixed_type_1)
         result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => mixed_type_1}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a_num_units, :value => 1}
         
         mixed_type_2 = properties[:mixed_type_2]
         mixed_type_2_percentage = properties[:mixed_type_2_percentage].to_f / 100.0
@@ -194,6 +195,7 @@ def map_building_properties(properties)
           mixed_type_2 = map_building_type(mixed_type_2)
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b, :value => mixed_type_2}
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_fract_bldg_area, :value => mixed_type_2_percentage}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_num_units, :value => 1}
         end
         
         mixed_type_3 = properties[:mixed_type_3]
@@ -202,6 +204,7 @@ def map_building_properties(properties)
           mixed_type_3 = map_building_type(mixed_type_3)
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c, :value => mixed_type_3}
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_fract_bldg_area, :value => mixed_type_3_percentage}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_num_units, :value => 1}
         end
         
         mixed_type_4 = properties[:mixed_type_4]
@@ -210,24 +213,30 @@ def map_building_properties(properties)
           mixed_type_4 = map_building_type(mixed_type_4)
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => mixed_type_4}
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => mixed_type_4_percentage}
+          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => 1}
         end
         
       else
         result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => value}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a_num_units, :value => 1}
+        
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b, :value => value}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_fract_bldg_area, :value => 0.0}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_num_units, :value => 0}       
+
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c, :value => value}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_fract_bldg_area, :value => 0.0}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_num_units, :value => 0}  
+
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => value}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => 0.0}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => 0}          
       end
-      
-    when :cooling_source
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
+
     when :floor_area
       next if value.nil?
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :total_bldg_floor_area, :value => value}
-      
-    when :heating_source
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
+
     when :include_in_energy_analysis
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
@@ -238,16 +247,21 @@ def map_building_properties(properties)
 
     when :number_of_stories
       next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
+      
+      num_stories_above_grade = properties[:number_of_stories_above_ground]
+      if num_stories_above_grade.nil? 
+        num_stories_above_grade = value
+      end
+      
+      num_stories_below_grade = value - num_stories_above_grade
+      
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_above_grade, :value => num_stories_above_grade}
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_below_grade, :value => num_stories_below_grade}
       
     when :number_of_residential_units
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
 
-    when :project_id
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
     when :roof_type
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
@@ -256,18 +270,10 @@ def map_building_properties(properties)
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
       
-    when :system_type
-      next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-      
     when :tariff_filename
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
 
-    when :weather_file_name
-      next if value.nil?
-      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
-      
     when :year_built
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
@@ -278,7 +284,7 @@ def map_building_properties(properties)
     when :mixed_type_1, :mixed_type_1_percentage, :mixed_type_2, :mixed_type_2_percentage, :mixed_type_3, :mixed_type_3_percentage, :mixed_type_4, :mixed_type_4_percentage
       # no-op, handled under building_type
       
-    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :source_id, :source_name, :type, :updated_at
+    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at
       # no-op
 
     else 

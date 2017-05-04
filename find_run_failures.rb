@@ -4,11 +4,14 @@ dirs = Dir.glob("./run/*/datapoint*/")
 
 euis = []
 failed = []
+num_success = 0
 num_failed = 0
 dirs.each do |osw_dir|
   if File.exists?(File.join(osw_dir, "run/failed.job"))
     failed << "#{osw_dir} failed to run"
     num_failed += 1
+    else
+      num_success += 1
   end
   
   if File.exists?(File.join(osw_dir, "out.osw"))
@@ -32,6 +35,8 @@ dirs.each do |osw_dir|
 end
 
 euis.each {|eui| puts eui}
+puts "#{num_success} success"
+puts
 
 failed.each {|failure| puts failure}
 puts "#{num_failed} failures"
