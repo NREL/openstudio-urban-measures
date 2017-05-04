@@ -17,11 +17,11 @@ def merge_workflow(workflow, instructions)
   return workflow
 end
 
-# configure a workflow with datapoint, feature, and region data
-def configure_workflow(workflow, datapoint, feature, region, is_retrofit = false)
+# configure a workflow with feature, and region data
+def configure_workflow(workflow, feature, project, is_retrofit = false)
 
   # configure with region first
-  workflow = merge_workflow(workflow, map_region_properties(region[:properties]))
+  workflow = merge_workflow(workflow, map_project_properties(project[:properties]))
 
   # configure with feature next
   if feature[:properties][:type] == "Building"
@@ -30,11 +30,8 @@ def configure_workflow(workflow, datapoint, feature, region, is_retrofit = false
     workflow = merge_workflow(workflow, map_district_system_properties(feature[:properties]))
   end
   
-  # configure with datapoint last
-  workflow = merge_workflow(workflow, map_datapoint_properties(datapoint[:properties]))
-  
-  # weather_file comes from the region properties
-  workflow[:weather_file] = region[:properties][:weather_file_name]
+  # weather_file comes from the project properties
+  workflow[:weather_file] = project[:properties][:weather_file_name]
   
   # remove keys with null values
   workflow[:steps].each do |step|
@@ -54,7 +51,7 @@ def configure_workflow(workflow, datapoint, feature, region, is_retrofit = false
   return workflow
 end
 
-def map_region_properties(properties)
+def map_project_properties(properties)
   result = []
   
   properties.each_key do |name|
@@ -70,7 +67,7 @@ def map_region_properties(properties)
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
       
     else
-      puts "Unmapped region property '#{name}' with value '#{value}'"
+      puts "Unmapped project property '#{name}' with value '#{value}'"
     end
   end
   
@@ -294,12 +291,6 @@ def map_building_properties(properties)
 end
 
 def map_district_system_properties(properties)
-  result = []
-  
-  return result
-end
-
-def map_datapoint_properties(properties)
   result = []
   
   return result

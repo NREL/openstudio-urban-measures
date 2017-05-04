@@ -1,75 +1,137 @@
 {
-	"feature_type": "Building",
-	"seed_file": null,
-	"weather_file": null,
-	"root_directory": null,
-	"run_directory": ".",
-	"file_paths": null,
-	"measure_paths": null,
-	"steps": [{
-			"measure_dir_name": "ChangeBuildingLocation",
-			"arguments": {
-				"weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
-        "climate_zone": "Lookup From Known Locations"
-			}
-		}, {
-			"measure_dir_name": "urban_geometry_creation",
-			"arguments": {
-				"city_db_url": null,
-				"project_id": null,
-				"feature_id": null,
-				"surrounding_buildings": "None"
-			}
-		}, {
-			"measure_dir_name": "urban_building_type",
-			"arguments": {
-				"heating_source": "Gas",
-				"cooling_source": "Electric"
-			}
-		}, {
-			"measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "AedgK12ElectricEquipmentControls",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "ReduceLightingLoadsByPercentage",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "AedgK12InteriorLightingControls",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "AdjustSystemEfficiencies",
-			"arguments": {
-				"__SKIP__": true,
-				"heating_efficiency_multiplier": 1.0,
-				"cooling_cop_multiplier": 1.0
-			}
-		}, {
-			"measure_dir_name": "ImproveFanBeltEfficiency",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "ImproveMotorEfficiency",
-			"arguments": {
-				"__SKIP__": true
-			}
-		}, {
-			"measure_dir_name": "datapoint_reports",
-			"arguments": {
-				"city_db_url": null,
-				"project_id": null,
-				"datapoint_id": null
-			}
-		}
-	]
+  "feature_type": "Building",
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": ".",
+  "file_paths": null,
+  "measure_paths": null,
+  "steps": [
+    {
+      "measure_dir_name": "gem_env_report",
+      "arguments": {
+      }
+    },
+    {
+      "measure_dir_name": "ChangeBuildingLocation",
+      "arguments": {
+        "__SKIP__": false,
+        "weather_directory": "../../NREL_integration_testing/weather",
+        "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5B"
+      }
+    },
+    {
+      "measure_dir_name": "create_bar_from_building_type_ratios",
+      "arguments": {
+        "bldg_type_a": null,
+        "bldg_type_a_num_units": null,
+        "bldg_type_b": null,
+        "bldg_type_b_fract_bldg_area": null,
+        "bldg_type_b_num_units": null,
+        "bldg_type_c": null,
+        "bldg_type_c_fract_bldg_area": null,
+        "bldg_type_c_num_units": null,
+        "bldg_type_d": null,
+        "bldg_type_d_fract_bldg_area": null,
+        "bldg_type_d_num_units": null,
+        "total_bldg_floor_area": null,
+        "floor_height": 0,
+        "num_stories_above_grade": null,
+        "num_stories_below_grade": null,
+        "building_rotation": 0,
+        "template": "90.1-2004",
+        "ns_to_ew_ratio": 0,
+        "wwr": 0,
+        "party_wall_fraction": 0,
+        "story_multiplier": "None",
+        "bar_division_method": "Multiple Space Types - Individual Stories Sliced"
+      }
+    },
+    {
+      "measure_dir_name": "create_typical_building_from_model",
+      "arguments": {
+        "template": "90.1-2004",
+        "add_thermostat": false,
+        "add_hvac": false
+      }
+    },
+    {
+      "measure_dir_name": "blended_space_type_from_model",
+      "arguments": {
+        "blend_method": "Building Story"
+      }
+    }, 
+    {
+      "measure_dir_name": "urban_geometry_creation",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "feature_id": null,
+        "surrounding_buildings": "None"
+      }
+    }, 
+    {
+      "measure_dir_name": "create_typical_building_from_model",
+      "arguments": {
+        "template": "90.1-2004",
+        "add_constructions": false,
+        "add_space_type_loads": false,
+        "add_elevators": false,
+        "add_exterior_lights": false,
+        "add_exhaust": false,
+        "add_swh": false,
+        "remove_objects": false,
+        "clg_src": "Electricity",
+        "htg_src": "NaturalGas",
+        "hvac_delivery_type": "Forced Air",
+        "system_type": "Inferred"
+      }
+    }, {
+      "measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, {
+      "measure_dir_name": "AedgK12ElectricEquipmentControls",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, {
+      "measure_dir_name": "ReduceLightingLoadsByPercentage",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, {
+      "measure_dir_name": "AedgK12InteriorLightingControls",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, {
+      "measure_dir_name": "AdjustSystemEfficiencies",
+      "arguments": {
+        "__SKIP__": true,
+        "heating_efficiency_multiplier": 1.0,
+        "cooling_cop_multiplier": 1.0
+      }
+    }, {
+      "measure_dir_name": "ImproveFanBeltEfficiency",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, {
+      "measure_dir_name": "ImproveMotorEfficiency",
+      "arguments": {
+        "__SKIP__": true
+      }
+    }, 
+    {
+      "measure_dir_name": "datapoint_reports",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      }
+    }
+  ]
 }

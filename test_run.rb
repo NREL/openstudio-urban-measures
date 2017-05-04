@@ -13,6 +13,9 @@ run_retrofit = true
 num_parallel = 7
 jobs = []
 
+# project_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
+project_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
+
 def convert_value(value)
   if value.nil?
     return nil
@@ -24,41 +27,69 @@ def convert_value(value)
   return value
 end
 
+def apply_option_set(workflow, option_set)
+  workflow[:steps].each do |step|
+    arguments = step[:arguments]
+    arguments.each_key do |name|
+      if option_set[name]
+        value = option_set[name]
+        puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
+        arguments[name] = value
+      end 
+    end
+  end  
+  return workflow
+end
 
 buildings = []
-headers = []
+option_sets = []
+headers_1 = []
+headers_2 = []
 CSV.foreach('test_buildings.csv') do |row|
-  if headers.empty?
-    row.each {|header| headers << header.to_sym}
+  if headers_1.empty?
+    row.each {|header| headers_1 << header.to_s}
+  elsif headers_2.empty?
+    row.each {|header| headers_2 << header.to_sym}    
   else
     building = {}
-    headers.each_index do |i|
-      if row[i]
-        building[headers[i]] = convert_value(row[i])
+    option_set = {}
+    headers_1.each_index do |i|
+      if headers_1[i] == "Feature"
+        if row[i]
+          building[headers_2[i]] = convert_value(row[i])
+        end
+      else
+        if row[i]
+          option_set[headers_2[i]] = convert_value(row[i])
+        end
       end
     end
     buildings << building
+    option_sets << option_set
   end
 end
 
-buildings.each do |building|
-  building[:heating_source] = "Gas" if building[:heating_source].nil?
-  building[:cooling_source] = "Electric" if building[:cooling_source].nil? 
-  building[:system_type] = "Forced air" if building[:system_type].nil? 
-end
+buildings_to_run = ['Small-Office-All-Electric']
 
-buildings.each do |building|
+buildings.each_index do |i|
+  
+  building = buildings[i]
+  option_set = option_sets[i]
 
   # use include_in_energy_analysis to skip this run
   if building[:include_in_energy_analysis] == 0 || building[:include_in_energy_analysis] == "false"
+    puts "Skipping '#{building[:name]}'"
+    next
+  end
+  
+  # only run certain buildings
+  if buildings_to_run.index(building[:name]).nil?
+    puts "Skipping '#{building[:name]}'"
     next
   end
 
   # configure jsons
-  datapoint_json = {:properties=>{}}
   building_json = {:properties=>building}
-  # region_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
-  region_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
 
   name = building[:name]
 
@@ -77,9 +108,11 @@ buildings.each do |building|
   end
   
   # configure the osws with jsons
-  baseline_osw = configure_workflow(baseline_osw, datapoint_json, building_json, region_json, false)
+  baseline_osw = configure_workflow(baseline_osw, building_json, project_json, false)
+  baseline_osw = apply_option_set(baseline_osw, option_set)
   if run_retrofit
-    retrofit_osw = configure_workflow(retrofit_osw, datapoint_json, building_json, region_json, true)
+    retrofit_osw = configure_workflow(retrofit_osw, building_json, project_json, true)
+    retrofit_osw = apply_option_set(retrofit_osw, option_set)
   end
 
   # set up the directories
