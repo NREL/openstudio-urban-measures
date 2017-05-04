@@ -151,11 +151,10 @@ class Runner
     return result
   end
   
-  # todo: DLM, needs to be generalized to take feature_id and scenario_id
-  def get_datapoint(building_id, workflow_id)
-    puts "get_datapoint, building_id = #{building_id}, workflow_id = #{workflow_id}"
+  def get_or_create_datapoint(feature_id, option_set_id, scenario_id)
+    puts "get_or_create_datapoint, feature_id = #{feature_id}, option_set_id = #{option_set_id}, scenario_id = #{scenario_id}"
     
-    json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
+    json_request = JSON.generate('feature_id' => feature_id, 'option_set_id' => option_set_id, 'scenario_id' => scenario_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
     response = request.post(json_request, content_type: :json, accept: :json)
     
@@ -163,8 +162,8 @@ class Runner
     return datapoint[:datapoint]
   end
 
-   def get_datapoint_by_id(datapoint_id)
-    puts "get_datapoint_by_id, datapoint_id = #{datapoint_id}"
+   def get_datapoint(datapoint_id)
+    puts "get_datapoint, datapoint_id = #{datapoint_id}"
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
     
@@ -172,31 +171,14 @@ class Runner
     return datapoint[:datapoint]
   end
   
-  # This needs to be tweaked!
-  def get_workflow(datapoint_id)
-    puts "get_workflow, datapoint_id = #{datapoint_id}"
+  def get_option_set(option_set_id)
+    puts "get_option_set, option_set_id = #{option_set_id}"
 
-    # puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
-    # request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
-    # begin
-    #   response = request["/api/retrieve_workflow_instance?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
-    # rescue => e
-    #   puts e.response
-    # end
-    # workflow = JSON.parse(response.body, :symbolize_names => true)
-
-    #  TODO: reimplement!
-    # for now: get option_set for datapoint
-    puts "#{@url}/api/retrieve_option_set"
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
-    begin
-      response = request["/api/retrieve_option_set?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
-    rescue => e
-      puts e.response
-    end
-    workflow = JSON.parse(response.body, :symbolize_names => true)
-    puts "workflow: #{workflow}"
-    return workflow
+    response = request["/api/retrieve_option_set?project_id=#{@project_id}&option_set_id=#{option_set_id}"].get(content_type: :json, accept: :json)
+    
+    datapoint = JSON.parse(response.body, :symbolize_names => true)
+    return datapoint[:datapoint]
   end
 
   def get_scenario(scenario_id)
@@ -265,7 +247,7 @@ class Runner
     num_datapoints = 1
     all_datapoint_ids.each do |datapoint_id|
     
-      datapoint = get_datapoint_by_id(datapoint_id)
+      datapoint = get_datapoint(datapoint_id)
       
       # DLM: TODO: skip running district system datapoints until all buildings are run
       
@@ -299,15 +281,27 @@ class Runner
   def create_osw(datapoint_id)
     puts "create_osw, datapoint_id = #{datapoint_id}"
     
-    raise "not working"
+    datapoint = get_datapoint(datapoint_id) # format scenario_ids as array of strings
+    feature_id = datapoint[:feature_id]
+    feature_type = datapoint[:feature_type]
+    option_set_id = datapoint[:option_set_id]
 
-    # TODO: rework all of this
-    workflow = get_option_set_json(option_set_id)
-    datapoint = get_datapoint_by_id_json(datapoint_id)
-    feature = get_feature_json(feature_id)
-    region = get_first_region() # todo, this should eventually look up which regions the feature is in
+    workflow = get_option_set(option_set_id)
+    feature = get_feature(feature_id)
+    project = get_project()
     
-    workflow = configure_workflow(workflow, datapoint, feature, region)
+    # if feature_type, set scenario_id
+    scenario_id = nil
+    if feature_type == "District System"
+      scenario_id = datapoint[:scenario_ids].first
+    end
+    
+    puts "workflow = #{workflow}"
+    puts "feature = #{feature}"
+    puts "project = #{project}"
+    puts "scenario_id = #{scenario_id}"
+
+    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:steps].each do |step|
       arguments = step[:arguments]
