@@ -258,6 +258,10 @@ def map_building_properties(properties)
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_above_grade, :value => num_stories_above_grade}
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_below_grade, :value => num_stories_below_grade}
       
+      if value == 0
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :__SKIP__, :value => true}
+      end
+      
     when :number_of_residential_units
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}

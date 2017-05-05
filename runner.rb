@@ -386,7 +386,7 @@ class Runner
       # ok to put user name and password in environment variables?
       command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
       puts command
-      system({"USERNAME" => @user_name, "PASSWORD" => @user_pwd}, command)
+      system({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command)
     end
   end
   

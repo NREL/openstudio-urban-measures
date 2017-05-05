@@ -641,9 +641,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     request = Net::HTTP::Get.new("/projects/#{project_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -658,16 +656,14 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   end
   
   # get the feature from the database
-  def get_feature(feature_id)
+  def get_feature(project_id, feature_id)
     
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
-  
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
+  @runner.registerInfo("/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}")
     response = http.request(request)
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
@@ -688,9 +684,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -717,6 +711,26 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     feature_id = runner.getStringArgumentValue("feature_id", user_arguments)
     surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
     
+    # pull information from the previous model 
+    default_construction_set = model.getBuilding.defaultConstructionSet
+    
+    stories = []
+    model.getBuildingStorys.each { |story| stories << story }
+    stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
+
+    space_types = []
+    stories.each_index do |i|
+      space_type = nil
+      space = stories[i].spaces.first
+      if space && space.spaceType.is_initialized
+        space_type = space.spaceType.get
+      end
+      space_types[i] = space_type
+    end
+    
+    # delete the previous model
+    model.getBuilding.remove
+    
     # instance variables
     @runner = runner
     @origin_lat_lon = nil
@@ -729,7 +743,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    feature = get_feature(feature_id)
+    feature = get_feature(project_id, feature_id)
     if feature.nil? || feature.empty?
       @runner.registerError("Feature '#{feature_id}' could not be found")
       return false
@@ -877,6 +891,25 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @runner.registerError("Unknown feature type '#{feature_type}'")
       return false
     end
+    
+    # transfer data from previous model
+    if default_construction_set.is_initialized
+      model.getBuilding.setDefaultConstructionSet(default_construction_set.get)
+    end
+    
+    stories = []
+    model.getBuildingStorys.each { |story| stories << story }
+    stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
+
+    stories.each_index do |i|
+      space_type = space_types[i]
+      next if space_type.nil?
+      
+      stories[i].spaces.each do |space|
+        space.setSpaceType(space_type)
+      end
+    end
+    
 
     return true
 
