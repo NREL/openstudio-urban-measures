@@ -3,6 +3,7 @@ name,type,building_type,floor_area,include_in_energy_analysis,maximum_roof_heigh
 Large-Office,Building,Office,300000,1,,12,,,,,,,,,,,,,,
 Medium-Office,Building,Office,80000,1,,3,,,,,,,,,,,,,,
 Small-Office,Building,Office,5000,1,,1,,,,,,,,,,,,,,
+Vacant,Building,Vacant,52000,1,,1,,,,,,,,,,,,,,
 Warehouse,Building,Nonrefrigerated warehouse,52000,1,,1,,,,,,,,,,,,,,
 StandaloneRetail,Building,Retail other than mall,25000,1,,1,,,,,,,,,,,,,,
 Strip-Mall,Building,Strip shopping mall,23000,1,,1,,,,,,,,,,,,,,

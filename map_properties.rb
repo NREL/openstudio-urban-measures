@@ -3,13 +3,8 @@ def merge_workflow(workflow, instructions)
     workflow[:steps].each do |step|
       if step[:measure_dir_name] == instruction[:measure_dir_name]
         arguments = step[:arguments]
-        arguments.each_key do |name|
-          if name == instruction[:argument]
-            value = instruction[:value]
-            puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
-            arguments[name] = value
-          end
-        end
+        puts "Setting '#{instruction[:argument]}' of '#{step[:measure_dir_name]}' to '#{instruction[:value]}'"
+        arguments[instruction[:argument]] = instruction[:value]
       end
     end
   end
@@ -259,7 +254,7 @@ def map_building_properties(properties)
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_below_grade, :value => num_stories_below_grade}
       
       if value == 0
-        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :__SKIP__, :value => true}
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :num_stories_above_grade, :value => 1}
       end
       
     when :number_of_residential_units

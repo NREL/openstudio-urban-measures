@@ -69,7 +69,7 @@ CSV.foreach('test_buildings.csv') do |row|
   end
 end
 
-buildings_to_run = ['Small-Office-All-Electric']
+buildings_to_run = ['Vacant']
 
 buildings.each_index do |i|
   
@@ -83,7 +83,7 @@ buildings.each_index do |i|
   end
   
   # only run certain buildings
-  if buildings_to_run.index(building[:name]).nil?
+  if buildings_to_run && buildings_to_run.size > 0 && buildings_to_run.index(building[:name]).nil?
     puts "Skipping '#{building[:name]}'"
     next
   end

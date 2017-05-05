@@ -127,12 +127,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def create_building(building_json, create_method, model)
     
     properties = building_json[:properties]
-    surface_elevation	= properties[:surface_elevation]
     number_of_stories = properties[:number_of_stories]
     number_of_stories_above_ground = properties[:number_of_stories_above_ground]
     number_of_stories_below_ground = properties[:number_of_stories_below_ground]
     number_of_residential_units = properties[:number_of_residential_units]
-    floor_to_floor_height = properties[:floor_to_floor_height]
+    maximum_roof_height = properties[:maximum_roof_height]
     space_type = properties[:building_type]
     
     if space_type == "Mixed use"
@@ -173,9 +172,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       number_of_stories_below_ground = number_of_stories - number_of_stories_above_ground
     end
     
-    if floor_to_floor_height.nil?
-      # DLM: todo, set this by space type
-      floor_to_floor_height = 3.6
+    floor_to_floor_height = 3
+    if number_of_stories_above_ground && number_of_stories_above_ground > 0 && maximum_roof_height
+      floor_to_floor_height = maximum_roof_height / number_of_stories_above_ground
+      floor_to_floor_height = OpenStudio::convert(floor_to_floor_height, 'ft', 'm').get
     end
     
     if create_method == :space_per_floor
@@ -410,11 +410,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       if surrounding_buildings == "ShadingOnly"
       
         # check if any building point is shaded by any other building point
-        surface_elevation	= other_building[:properties][:surface_elevation]
         roof_elevation	= other_building[:properties][:roof_elevation]
         number_of_stories = other_building[:properties][:number_of_stories]
         number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
-        floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+        maximum_roof_height = properties[:maximum_roof_height]
         
         if number_of_stories_above_ground.nil?
           if number_of_stories_below_ground.nil?
@@ -425,9 +424,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           end
         end
         
-        if floor_to_floor_height.nil?
-          # DLM: todo, set this by space type
-          floor_to_floor_height = 3.6
+        floor_to_floor_height = 3
+        if number_of_stories_above_ground && number_of_stories_above_ground > 0 && maximum_roof_height
+          floor_to_floor_height = maximum_roof_height / number_of_stories_above_ground
+          floor_to_floor_height = OpenStudio::convert(floor_to_floor_height, 'ft', 'm')
         end
         
         other_height = number_of_stories_above_ground * floor_to_floor_height
@@ -712,8 +712,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
     
     # pull information from the previous model 
-    default_construction_set = model.getBuilding.defaultConstructionSet
+    #model.save('initial.osm', true)
     
+    default_construction_set = model.getBuilding.defaultConstructionSet
+    if !default_construction_set.is_initialized
+      runner.registerError("Starting model does not have a default construction set")
+      return false
+    end
+    default_construction_set = default_construction_set.get
+      
     stories = []
     model.getBuildingStorys.each { |story| stories << story }
     stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
@@ -728,8 +735,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       space_types[i] = space_type
     end
     
-    # delete the previous model
+    # delete the previous building
     model.getBuilding.remove
+    
+    # create new building and transfer default construction set
+    model.getBuilding.setDefaultConstructionSet(default_construction_set)
     
     # instance variables
     @runner = runner
@@ -792,6 +802,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     if feature[:properties][:surface_elevation]
       surface_elevation = feature[:properties][:surface_elevation].to_f
+      surface_elevation = OpenStudio::convert(surface_elevation, 'ft', 'm').get
       site.setElevation(surface_elevation)
     end
     
@@ -863,12 +874,20 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           surface_construction = surface.construction
           if !surface_construction.empty?
             surface.setConstruction(surface_construction.get)
+          else
+            @runner.registerError("Surface '#{surface.nameString}' does not have a construction")
+            #model.save('error.osm', true)
+            return false
           end
           surface.setOutsideBoundaryCondition('Adiabatic')
           
           adjacent_surface_construction = adjacent_surface.get.construction
           if !adjacent_surface_construction.empty?
             adjacent_surface.get.setConstruction(adjacent_surface_construction.get)
+          else
+            @runner.registerError("Surface '#{adjacent_surface.get.nameString}' does not have a construction")
+            #model.save('error.osm', true)
+            return false
           end
           adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
         end
@@ -893,10 +912,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
     
     # transfer data from previous model
-    if default_construction_set.is_initialized
-      model.getBuilding.setDefaultConstructionSet(default_construction_set.get)
-    end
-    
     stories = []
     model.getBuildingStorys.each { |story| stories << story }
     stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
