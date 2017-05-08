@@ -21,8 +21,6 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
       @url = md[1]
     end
     
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123'
     super
   end
   
@@ -75,6 +73,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
 
     params = {}
     params[:datapoint_id] = @options[:datapoint_id]
+    params[:project_id] = @options[:project_id]
     params[:file_data] = file_data
     
     puts "sending file '#{path}'"
@@ -87,8 +86,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth(@user_name, @user_pwd)
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if response.code != '200' # success
