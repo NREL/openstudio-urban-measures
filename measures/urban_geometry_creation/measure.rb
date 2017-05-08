@@ -716,10 +716,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     default_construction_set = model.getBuilding.defaultConstructionSet
     if !default_construction_set.is_initialized
-      runner.registerError("Starting model does not have a default construction set")
-      return false
+      runner.registerInfo("Starting model does not have a default construction set, creating new one")
+      default_construction_set = OpenStudio::Model::DefaultConstructionSet.new(model)
+    else
+      default_construction_set = default_construction_set.get
     end
-    default_construction_set = default_construction_set.get
       
     stories = []
     model.getBuildingStorys.each { |story| stories << story }
@@ -731,6 +732,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       space = stories[i].spaces.first
       if space && space.spaceType.is_initialized
         space_type = space.spaceType.get
+      else  
+        space_type = OpenStudio::Model::SpaceType.new(model)
+        runner.registerInfo("Story #{i} does not have a space type, creating new one")
       end
       space_types[i] = space_type
     end

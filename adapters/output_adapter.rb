@@ -39,8 +39,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth(@user_name, @user_pwd)
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if response.code != '200' # success
@@ -82,7 +81,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     puts visible_params
     
     http = Net::HTTP.new(@url, @port)
-    request = Net::HTTP::Post.new("/api/datapoint_file")
+    request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)

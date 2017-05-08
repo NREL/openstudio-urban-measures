@@ -298,5 +298,18 @@ end
 def map_district_system_properties(properties)
   result = []
   
+  properties.each_key do |name|
+    
+    value = properties[name]
+    case name
+    when :district_system_type
+      next if value.nil?
+      result << {:measure_dir_name => 'add_district_system', :argument => :district_system_type, :value => value}
+      
+     else 
+      puts "Unmapped building property '#{name}' with value '#{value}'"
+    end
+  end
+  
   return result
 end

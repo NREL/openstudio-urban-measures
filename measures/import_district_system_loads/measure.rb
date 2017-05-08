@@ -58,15 +58,13 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   end
   
   # get the feature from the database
-  def get_feature(feature_id)
+  def get_feature(project_id, feature_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -84,12 +82,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def get_datapoint_ids(project_id, scenario_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/scenarios/#{scenario_id}.json")
+    request = Net::HTTP::Get.new("/api/retrieve_scenario.json?project_id=#{project_id}&scenario_id=#{scenario_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -116,14 +112,12 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
-  def download_datapoint(datapoint_id)
+  def download_datapoint(project_id, datapoint_id)
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/datapoints/#{datapoint_id}.json")
+    request = Net::HTTP::Get.new("/api/retrieve_datapoint.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -141,11 +135,8 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           file_id = datapoint_file[:_id][:$oid]
 
           http = Net::HTTP.new(@city_db_url, @port)
-          request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}")
-          "/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}"
-          
-          # DLM: todo, get these from environment variables or as measure inputs?
-          request.basic_auth("test@nrel.gov", "testing123")
+          request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}&file_name=#{file_name}")
+          request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
        
           response = http.request(request)
           if  response.code != '200' # success
@@ -238,9 +229,9 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    feature = get_feature(feature_id)
+    feature = get_feature(project_id, feature_id)
     if feature[:properties].nil? || feature[:properties][:district_system_type].nil?
-      runner.registerError("Cannot feature #{feature_id} missing required property district_system_type")
+      runner.registerError("Cannot get feature #{feature_id} missing required property district_system_type")
       return false
     end
     
@@ -265,7 +256,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     
     datapoint_files = []
     datapoint_ids.each do |datapoint_id|
-      datapoint_file = download_datapoint(datapoint_id)
+      datapoint_file = download_datapoint(project_id, datapoint_id)
       if datapoint_file
         datapoint_files << datapoint_file
       end

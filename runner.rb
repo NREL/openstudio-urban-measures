@@ -44,14 +44,21 @@ class Runner
       datapoint[:status] = nil
       datapoint[:results] = nil
       
-      # DLM: todo, how to reset related files?
+      json_request = JSON.generate('project_id' => @project_id, 'datapoint' => datapoint)
+      
+      existing_datapoint = get_datapoint(datapoint_id)
+      puts "existing_datapoint = #{existing_datapoint}"
+      existing_datapoint[:datapoint_files].each do |file|
+        filename = file[:file_name]
+        puts "deleting file #{filename} for datapoint #{datapoint_id}"
+        
+        request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+        response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
+        
+      end
 
-      params = {}
-      params[:project_id] = @project_id
-      params[:datapoint] = datapoint
-
-      request = RestClient::Resource.new("#{@url}/api/datapoint.json", user: @user_name, password: @user_pwd)
-      response = request.post(params, content_type: :json, accept: :json)    
+      request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)    
     end
   end
   

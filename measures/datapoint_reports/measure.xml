@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-  <version_id>7e3ed9b9-421b-45a0-82ee-6a573d2d21a8</version_id>
-  <version_modified>20170316T213615Z</version_modified>
+  <version_id>e7d26db9-f447-4f7e-8310-909cf0aae52c</version_id>
+  <version_modified>20170508T203119Z</version_modified>
   <xml_checksum>FB304155</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
@@ -17,23 +17,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
-      <default_value>http://insight4.hpc.nrel.gov:8081/</default_value>
-    </argument>
-    <argument>
-      <name>user_name</name>
-      <display_name>User name</display_name>
-      <type>String</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>test@nrel.gov</default_value>
-    </argument>
-    <argument>
-      <name>password</name>
-      <display_name>Password</display_name>
-      <type>String</type>
-      <required>true</required>
-      <model_dependent>false</model_dependent>
-      <default_value>testing123</default_value>
+      <default_value></default_value>
     </argument>
     <argument>
       <name>project_id</name>
@@ -42,6 +26,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
     </argument>
     <argument>
       <name>datapoint_id</name>
@@ -50,6 +35,7 @@
       <type>String</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
     </argument>
   </arguments>
   <outputs/>
@@ -80,7 +66,7 @@
       <filename>datapoint_reports_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>4403C357</checksum>
+      <checksum>DFD41408</checksum>
     </file>
     <file>
       <version>
@@ -91,7 +77,13 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>063271A4</checksum>
+      <checksum>4B9D2A0B</checksum>
+    </file>
+    <file>
+      <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
+      <filetype>epw</filetype>
+      <usage_type>test</usage_type>
+      <checksum>BDF687C1</checksum>
     </file>
   </files>
 </measure>
