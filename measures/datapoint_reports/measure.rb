@@ -143,7 +143,19 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     val
   end
   
-  def add_result(results, name, value, units)
+  def add_result(results, name, value, units, units_from = nil)
+
+    # apply unit conversion
+    if not units_from.nil?
+      value_converted = OpenStudio::convert(value,units_from,units)
+      if value_converted.is_initialized
+        value = value_converted.get
+      else
+        @runner.registerWarning("Was not able to register value for #{name} with value of #{value} #{units_from} converted to #{units}.")
+      end
+    end
+
+    # register value
     if !value.to_f.nan? and !value.to_f.infinite?
       results[name] = value
       results[name + '_units'] = units
@@ -208,7 +220,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
 
     #get building footprint to use for calculating end use EUIs
     building_area = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Building Area' AND RowName='Total Building Area' AND ColumnName='Area'")
-    add_result(results, 'building_area', building_area, 'm2')
+    add_result(results, 'building_area', building_area, 'ft^2', 'm^2')
     
     #get end use totals for fuels
     site_energy_use = 0.0
@@ -217,15 +229,19 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       fuel_type_aggregation = 0.0
       mult_factor = 1
       if fuel_str != "Water"
-        runner_units_eui = "MJ/m2"
+        runner_units_eui_to = "kBtu/ft^2"
+        runner_units_eui = "MJ/m^2"
         metadata_units_eui = "megajoules_per_square_meter"
         mult_factor = 1000
+        runner_units_agg_to = "kBtu"
         runner_units_agg = "GJ"
         metadata_units_agg = "gigajoule"
       else
+        runner_units_eui_to = "ft"
         runner_units_eui = "m"
         metadata_units_eui = "meter"
-        runner_units_agg = "m3"
+        runner_units_agg_to = "ft^3"
+        runner_units_agg = "m^3"
         metadata_units_agg = "cubic meter"
       end
       OpenStudio::EndUseCategoryType.getValues.each do |category_type|
@@ -234,27 +250,28 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
         if temp_val
           eui_val = temp_val / building_area * mult_factor
           prefix_str = OpenStudio::toUnderscoreCase("#{fuel_str}_#{category_str}_eui")
-          add_result(results, prefix_str, eui_val, runner_units_eui)
+          add_result(results, prefix_str, eui_val, runner_units_eui_to, runner_units_eui)
           short_name = "#{short_os_fuel(fuel_str)} #{short_os_cat(category_str)} EUI"
           fuel_type_aggregation += temp_val
         end
       end
       if fuel_type_aggregation
         prefix_str = OpenStudio::toUnderscoreCase("total_#{fuel_str}_end_use")
-        add_result(results, prefix_str, fuel_type_aggregation, runner_units_agg)
+        add_result(results, prefix_str, fuel_type_aggregation, runner_units_agg_to, runner_units_agg)
         short_name = "#{short_os_fuel(fuel_str)} Total"
         site_energy_use += fuel_type_aggregation if fuel_str != "Water"
       end
     end
 
-    add_result(results, 'site_energy_use', site_energy_use, "GJ")
+    add_result(results, 'site_energy_use', site_energy_use, "kBtu", "GJ")
 
     #get monthly fuel aggregates
     #todo: get all monthly fuel type outputs, including non-present fuel types, mapping to 0
     OpenStudio::EndUseFuelType.getValues.each do |fuel_type|
       fuel_str = OpenStudio::EndUseFuelType.new(fuel_type).valueDescription
       mult_factor = 10**-6 / building_area
-      runner_units = "MJ/m2"
+      runner_units_to = "kBtu/ft^2"
+      runner_units = "MJ/m^2"
       metadata_units = "megajoules_per_square_meter"
       if fuel_str == "Water"
         next
@@ -271,7 +288,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
           fuel_and_month_aggregation *= mult_factor
           month_str = OpenStudio::MonthOfYear.new(month).valueDescription
           prefix_str = OpenStudio::toUnderscoreCase("#{month_str}_end_use_#{fuel_str}_eui")
-          add_result(results, prefix_str, fuel_and_month_aggregation, runner_units)
+          add_result(results, prefix_str, fuel_and_month_aggregation, runner_units_to, runner_units)
           short_name = "#{month_str[0..2]} #{short_os_fuel(fuel_str)} EUI"
         end
       end
@@ -283,28 +300,28 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "life_cycle_cost", life_cycle_cost, "dollars")
   
     conditioned_area = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Building Area' AND RowName='Net Conditioned Building Area' AND ColumnName='Area'")
-    add_result(results, "conditioned_area", conditioned_area, "m2")
+    add_result(results, "conditioned_area", conditioned_area, "ft^2", "m^2")
 
     unconditioned_area = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Building Area' AND RowName='Unconditioned Building Area' AND ColumnName='Area'")
-    add_result(results, "unconditioned_area", unconditioned_area, "m2")
+    add_result(results, "unconditioned_area", unconditioned_area, "ft^2", "m^2")
     
     total_site_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Site Energy' AND ColumnName='Total Energy'")
-    add_result(results, "total_site_energy", total_site_energy, "GJ")
+    add_result(results, "total_site_energy", total_site_energy, "kBtu", "GJ")
     
     net_site_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Net Site Energy' AND ColumnName='Total Energy'")
-    add_result(results, "net_site_energy", net_site_energy, "GJ")
+    add_result(results, "net_site_energy", net_site_energy, "kBtu", "GJ")
     
     total_source_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Source Energy' AND ColumnName='Total Energy'")
-    add_result(results, "total_source_energy", total_source_energy, "GJ")
+    add_result(results, "total_source_energy", total_source_energy, "kBtu", "GJ")
     
     net_source_energy = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Net Source Energy' AND ColumnName='Total Energy'")
-    add_result(results, "net_source_energy", net_source_energy, "GJ")
+    add_result(results, "net_source_energy", net_source_energy, "kBtu", "GJ")
     
     total_site_eui = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Site Energy' AND ColumnName='Energy Per Conditioned Building Area'")
-    add_result(results, "total_site_eui", total_site_eui, "MJ/m2")
+    add_result(results, "total_site_eui", total_site_eui, "kBtu/ft^2", "MJ/m^2")
 
     total_source_eui = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Site and Source Energy' AND RowName='Total Source Energy' AND ColumnName='Energy Per Conditioned Building Area'")
-    add_result(results, "total_source_eui", total_source_eui, "MJ/m2")
+    add_result(results, "total_source_eui", total_source_eui, "kBtu/ft^2", "MJ/m^2")
 
     time_setpoint_not_met_during_occupied_heating = sql_query(runner, sql_file, "AnnualBuildingUtilityPerformanceSummary", "TableName='Comfort and Setpoint Not Met Summary' AND RowName='Time Setpoint Not Met During Occupied Heating' AND ColumnName='Facility'")
     add_result(results, "time_setpoint_not_met_during_occupied_heating", time_setpoint_not_met_during_occupied_heating, "hr")
@@ -334,7 +351,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "longitude", long, "deg")
 
     elev = sql_query(runner, sql_file, "InputVerificationandResultsSummary", "TableName='General' AND RowName='Elevation' AND ColumnName='Value'")
-    add_result(results, "elevation", elev, "m")
+    add_result(results, "elevation", elev, "ft", "m")
 
     weather_file = sql_query(runner, sql_file, "InputVerificationandResultsSummary", "TableName='General' AND RowName='Weather File' AND ColumnName='Value'")
     add_result(results, "weather_file", weather_file, "deg")
@@ -353,13 +370,13 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "total_occupancy", total_occupancy * num_units, "people")
 
     occupancy_density = building.peoplePerFloorArea
-    add_result(results, "occupant_density", occupancy_density, "people/m2")
+    add_result(results, "occupant_density", occupancy_density, "people/ft^2", "people/m^2")
 
     lighting_power = building.lightingPower
     add_result(results, "lighting_power", lighting_power, "W")
 
     lighting_power_density = building.lightingPowerPerFloorArea
-    add_result(results, "lighting_power_density", lighting_power_density, "W/m2")
+    add_result(results, "lighting_power_density", lighting_power_density, "W/ft^2", "W/m^2")
 
     infiltration_rate = building.infiltrationDesignAirChangesPerHour
     add_result(results, "infiltration_rate", infiltration_rate, "ACH")
@@ -389,11 +406,11 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       end
     end
 
-    add_result(results, "exterior_wall_area", exterior_wall_area, "m2")
+    add_result(results, "exterior_wall_area", exterior_wall_area, "ft^2", "m^2")
 
-    add_result(results, "exterior_roof_area", exterior_roof_area, "m2")
+    add_result(results, "exterior_roof_area", exterior_roof_area, "ft^2", "m^2")
 
-    add_result(results, "ground_contact_area", ground_contact_area, "m2")
+    add_result(results, "ground_contact_area", ground_contact_area, "ft^2", "m^2")
 
     #get exterior fenestration area
     exterior_fenestration_area = 0.0
@@ -406,7 +423,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       end
     end
 
-    add_result(results, "exterior_fenestration_area", exterior_fenestration_area, "m2")
+    add_result(results, "exterior_fenestration_area", exterior_fenestration_area, "ft^2", "m^2")
 
     #get density of economizers in airloops
     num_airloops = 0
