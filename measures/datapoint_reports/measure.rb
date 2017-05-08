@@ -27,32 +27,21 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
     city_db_url.setDisplayName("City Database Url")
     city_db_url.setDescription("Url of the City Database")
-	  #city_db_url.setDefaultValue("http://localhost:3000")
-    city_db_url.setDefaultValue("http://insight4.hpc.nrel.gov:8081/")
+    city_db_url.setDefaultValue("")
     args << city_db_url
-    
-    # user_name
-    user_name = OpenStudio::Ruleset::OSArgument.makeStringArgument("user_name", true)
-    user_name.setDisplayName("User name")
-    user_name.setDefaultValue("test@nrel.gov")
-    args << user_name
-    
-    # password
-    password = OpenStudio::Ruleset::OSArgument.makeStringArgument("password", true)
-    password.setDisplayName("Password")
-    password.setDefaultValue("testing123")
-    args << password
         
     # project id to update
     project_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_id", true)
     project_id.setDisplayName("Project ID")
     project_id.setDescription("Project ID to generate reports for.")
+    project_id.setDefaultValue('0')
     args << project_id
     
     # datapoint id to update
     datapoint_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("datapoint_id", true)
     datapoint_id.setDisplayName("Datapoint ID")
     datapoint_id.setDescription("Datapoint ID to generate reports for.")
+    datapoint_id.setDefaultValue('0')
     args << datapoint_id
     
     return args
@@ -185,8 +174,6 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     end
     
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
-    user_name = runner.getStringArgumentValue("user_name", user_arguments)
-    password = runner.getStringArgumentValue("password", user_arguments)
     project_id = runner.getStringArgumentValue("project_id", user_arguments)
     datapoint_id = runner.getStringArgumentValue("datapoint_id", user_arguments)
     
@@ -489,7 +476,9 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     sql_file.close
     
     if datapoint_id == '0' || project_id == '0'
-      puts results
+      File.open('report.json', 'w') do |file|
+        file << JSON::pretty_generate(results)
+      end
     else
       params = {}
       params['project_id'] = project_id
@@ -500,7 +489,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       request.add_field('Accept', 'application/json')
       request.body = JSON.generate(params)
       # DLM: todo, get these from environment variables or as measure inputs?
-      request.basic_auth(user_name, password)
+      request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
     
       response = http.request(request)
       if response.code != '200' # success
