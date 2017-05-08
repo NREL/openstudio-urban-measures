@@ -141,6 +141,14 @@
         "source_energy_section": true,
         "schedules_overview_section": true
       }
+    }, 
+    {
+      "measure_dir_name": "datapoint_reports",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      }
     }
   ]
 }

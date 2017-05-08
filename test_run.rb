@@ -13,6 +13,8 @@ run_retrofit = true
 num_parallel = 7
 jobs = []
 
+buildings_to_run = ['Vacant']
+
 # project_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
 project_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
 
@@ -69,8 +71,6 @@ CSV.foreach('test_buildings.csv') do |row|
   end
 end
 
-buildings_to_run = ['Vacant']
-
 buildings.each_index do |i|
   
   building = buildings[i]
@@ -109,18 +109,22 @@ buildings.each_index do |i|
   
   # configure the osws with jsons
   baseline_osw = configure_workflow(baseline_osw, building_json, project_json, false)
+  baseline_osw[:file_paths] = UrbanOptConfig::OPENSTUDIO_FILES
+  baseline_osw[:measure_paths] = UrbanOptConfig::OPENSTUDIO_MEASURES
   baseline_osw = apply_option_set(baseline_osw, option_set)
   if run_retrofit
     retrofit_osw = configure_workflow(retrofit_osw, building_json, project_json, true)
+    retrofit_osw[:file_paths] = UrbanOptConfig::OPENSTUDIO_FILES
+    retrofit_osw[:measure_paths] = UrbanOptConfig::OPENSTUDIO_MEASURES    
     retrofit_osw = apply_option_set(retrofit_osw, option_set)
   end
 
   # set up the directories
-  baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/baseline/")
+  baseline_osw_dir = File.join(File.dirname(__FILE__), "/run/testing/#{name}_baseline/")
   FileUtils.rm_rf(baseline_osw_dir)
   FileUtils.mkdir_p(baseline_osw_dir)
 
-  retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing_#{name}/retrofit/")
+  retrofit_osw_dir = File.join(File.dirname(__FILE__), "/run/testing/#{name}_retrofit/")
   FileUtils.rm_rf(retrofit_osw_dir)
   FileUtils.mkdir_p(retrofit_osw_dir) if run_retrofit
   

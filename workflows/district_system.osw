@@ -3,17 +3,25 @@
 	"seed_file": null,
 	"weather_file": null,
 	"root_directory": null,
-	"run_directory": ".",
+        "run_directory": "./run",
 	"file_paths": ["./../../../weather/"],
-	"measure_paths": ["./../../../measures/", "./../../../openstudio-measures/"],
-	"steps": [{
-			"measure_dir_name": "ChangeBuildingLocation",
-			"arguments": {
-				"weather_directory": "./../../weather",
-				"weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
-        "climate_zone": "5C"
-			}
-		}, {
+        "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
+	"steps": [
+	{
+      "measure_dir_name": "gem_env_report",
+      "arguments": {
+      }
+    },
+    {
+      "measure_dir_name": "ChangeBuildingLocation",
+      "arguments": {
+        "__SKIP__": false,
+        "weather_directory": "../../NREL_integration_testing/weather",
+        "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5B"
+      }
+    },
+    {
 			"measure_dir_name": "urban_geometry_creation",
 			"arguments": {
 				"city_db_url": null,
