@@ -1,11 +1,11 @@
 def merge_workflow(workflow, instructions)
   instructions.each do |instruction|
     workflow[:steps].each do |step|
-      if step[:measure_dir_name] == instruction[:measure_dir_name]
+      if instruction[:measure_dir_name] && step[:measure_dir_name] == instruction[:measure_dir_name]
         arguments = step[:arguments]
         #puts "Setting '#{instruction[:argument]}' of '#{step[:measure_dir_name]}' to '#{instruction[:value]}'"
         arguments[instruction[:argument]] = instruction[:value]
-      elsif step[:name] == instruction[:measure_step_name]
+      elsif instruction[:measure_step_name] && step[:name] == instruction[:measure_step_name]
         arguments = step[:arguments]
         #puts "Setting '#{instruction[:argument]}' of '#{step[:name]}' to '#{instruction[:value]}'"
         arguments[instruction[:argument]] = instruction[:value]        

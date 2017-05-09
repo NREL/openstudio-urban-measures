@@ -138,6 +138,12 @@
       "arguments": {
         "__SKIP__": true
       }
+    }, {
+      "name": "add_rooftop_pv",
+      "measure_dir_name": "add_rooftop_pv",
+      "arguments": {
+        "__SKIP__": true
+      }
     }, 
     {
       "name": "datapoint_reports",

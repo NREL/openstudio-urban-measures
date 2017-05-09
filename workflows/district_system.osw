@@ -33,6 +33,7 @@
         "surrounding_buildings": "None"
       }
     }, {
+      "name": "import_district_system_loads",
       "measure_dir_name": "import_district_system_loads",
       "arguments": {
         "city_db_url": null,
@@ -41,11 +42,13 @@
         "feature_id": null
       }
     }, {
+      "name": "add_district_system",
       "measure_dir_name": "add_district_system",
       "arguments": {
         "district_system_type": null
       }
     }, {
+      "name": "datapoint_reports",
       "measure_dir_name": "datapoint_reports",
       "arguments": {
         "city_db_url": null,

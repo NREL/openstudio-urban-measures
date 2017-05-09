@@ -48,13 +48,15 @@ class Runner
       
       existing_datapoint = get_datapoint(datapoint_id)
       puts "existing_datapoint = #{existing_datapoint}"
-      existing_datapoint[:datapoint_files].each do |file|
-        filename = file[:file_name]
-        puts "deleting file #{filename} for datapoint #{datapoint_id}"
-        
-        request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
-        response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
-        
+      if existing_datapoint[:datapoint_files]
+        existing_datapoint[:datapoint_files].each do |file|
+          filename = file[:file_name]
+          puts "deleting file #{filename} for datapoint #{datapoint_id}"
+          
+          request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+          response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
+          
+        end
       end
 
       request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)

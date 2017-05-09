@@ -42,7 +42,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
-    if response.code != '200' # success
+    if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
       File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
       return false
@@ -88,7 +88,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
-    if response.code != '200' # success
+    if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
       File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
       return false

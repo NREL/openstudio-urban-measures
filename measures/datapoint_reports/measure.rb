@@ -515,7 +515,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
     
       response = http.request(request)
-      if response.code != '200' # success
+      if response.code != '200' && response.code != '201' # success
         runner.registerError("Bad response #{response.code}")
         runner.registerError(response.body)
         return false
