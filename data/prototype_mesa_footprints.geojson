@@ -364,7 +364,7 @@
                 "floor_area": 46320,
                 "maximum_roof_height": 51.48,
                 "name": "LargeOffice",
-                "number_of_stories": 12,
+                "number_of_stories": 13,
                 "number_of_stories_above_ground": 12,
                 "source_id": "LargeOffice",
                 "source_name": "OpenStudio-Standards",
