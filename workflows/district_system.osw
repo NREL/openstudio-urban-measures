@@ -1,18 +1,20 @@
 {
-	"feature_type": "District System",
-	"seed_file": null,
-	"weather_file": null,
-	"root_directory": null,
-        "run_directory": "./run",
-	"file_paths": ["./../../../weather/"],
-        "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
-	"steps": [
-	{
+  "feature_type": "District System",
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": "./run",
+  "file_paths": ["./../../../weather/"],
+  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
+  "steps": [
+    {
+      "name": "gem_env_report",
       "measure_dir_name": "gem_env_report",
       "arguments": {
       }
     },
     {
+      "name": "ChangeBuildingLocation",
       "measure_dir_name": "ChangeBuildingLocation",
       "arguments": {
         "__SKIP__": false,
@@ -22,33 +24,34 @@
       }
     },
     {
-			"measure_dir_name": "urban_geometry_creation",
-			"arguments": {
-				"city_db_url": null,
-				"project_id": null,
-				"feature_id": null,
-				"surrounding_buildings": "None"
-			}
-		}, {
-			"measure_dir_name": "import_district_system_loads",
-			"arguments": {
-				"city_db_url": null,
-				"project_id": null,
-				"scenario_id": null,
-				"feature_id": null
-			}
-		}, {
-			"measure_dir_name": "add_district_system",
-			"arguments": {
-				"district_system_type": null
-			}
-		}, {
-			"measure_dir_name": "datapoint_reports",
-			"arguments": {
-				"city_db_url": null,
-				"project_id": null,
-				"datapoint_id": null
-			}
-		}
-	]
+      "name": "urban_geometry_creation",
+      "measure_dir_name": "urban_geometry_creation",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "feature_id": null,
+        "surrounding_buildings": "None"
+      }
+    }, {
+      "measure_dir_name": "import_district_system_loads",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "scenario_id": null,
+        "feature_id": null
+      }
+    }, {
+      "measure_dir_name": "add_district_system",
+      "arguments": {
+        "district_system_type": null
+      }
+    }, {
+      "measure_dir_name": "datapoint_reports",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      }
+    }
+  ]
 }

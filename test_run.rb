@@ -13,7 +13,7 @@ run_retrofit = true
 num_parallel = 7
 jobs = []
 
-buildings_to_run = ['Vacant']
+buildings_to_run = ['Vacant', 'Small-Office-All-Electric']
 
 # project_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
 project_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
@@ -29,20 +29,6 @@ def convert_value(value)
   return value
 end
 
-def apply_option_set(workflow, option_set)
-  workflow[:steps].each do |step|
-    arguments = step[:arguments]
-    arguments.each_key do |name|
-      if option_set[name]
-        value = option_set[name]
-        puts "Setting '#{name}' of '#{step[:measure_dir_name]}' to '#{value}'"
-        arguments[name] = value
-      end 
-    end
-  end  
-  return workflow
-end
-
 buildings = []
 option_sets = []
 headers_1 = []
@@ -54,7 +40,7 @@ CSV.foreach('test_buildings.csv') do |row|
     row.each {|header| headers_2 << header.to_sym}    
   else
     building = {}
-    option_set = {}
+    option_set = []
     headers_1.each_index do |i|
       if headers_1[i] == "Feature"
         if row[i]
@@ -62,7 +48,7 @@ CSV.foreach('test_buildings.csv') do |row|
         end
       else
         if row[i]
-          option_set[headers_2[i]] = convert_value(row[i])
+          option_set << {:measure_step_name => headers_1[i], :argument => headers_2[i].to_sym, :value => row[i]}
         end
       end
     end
@@ -111,12 +97,12 @@ buildings.each_index do |i|
   baseline_osw = configure_workflow(baseline_osw, building_json, project_json, false)
   baseline_osw[:file_paths] = UrbanOptConfig::OPENSTUDIO_FILES
   baseline_osw[:measure_paths] = UrbanOptConfig::OPENSTUDIO_MEASURES
-  baseline_osw = apply_option_set(baseline_osw, option_set)
+  baseline_osw = merge_workflow(baseline_osw, option_set)
   if run_retrofit
     retrofit_osw = configure_workflow(retrofit_osw, building_json, project_json, true)
     retrofit_osw[:file_paths] = UrbanOptConfig::OPENSTUDIO_FILES
     retrofit_osw[:measure_paths] = UrbanOptConfig::OPENSTUDIO_MEASURES    
-    retrofit_osw = apply_option_set(retrofit_osw, option_set)
+    retrofit_osw = merge_workflow(retrofit_osw, option_set)
   end
 
   # set up the directories
