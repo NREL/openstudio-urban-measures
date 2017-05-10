@@ -13,7 +13,8 @@ run_retrofit = true
 num_parallel = 7
 jobs = []
 
-buildings_to_run = ['Vacant', 'Small-Office-All-Electric']
+buildings_to_run = []
+#buildings_to_run = ['Vacant', 'Small-Office-All-Electric']
 
 # project_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
 project_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}

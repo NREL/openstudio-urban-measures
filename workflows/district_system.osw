@@ -47,7 +47,14 @@
       "arguments": {
         "district_system_type": null
       }
-    }, {
+    }, 
+    {
+      "name": "ViewModel",
+      "measure_dir_name": "ViewModel",
+      "arguments": {
+      }
+    }, 
+    {
       "name": "datapoint_reports",
       "measure_dir_name": "datapoint_reports",
       "arguments": {

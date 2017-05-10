@@ -136,6 +136,12 @@
       }
     }, 
     {
+      "name": "ViewModel",
+      "measure_dir_name": "ViewModel",
+      "arguments": {
+      }
+    }, 
+    {
       "name": "openstudio_results",
       "measure_dir_name": "openstudio_results",
       "arguments": {
