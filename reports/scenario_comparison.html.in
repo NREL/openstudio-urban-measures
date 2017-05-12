@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Something</title>
+  <title>Scenario Comparison</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
@@ -199,7 +199,20 @@
           console.debug('In the directive');
 
           var data = newData;
-console.debug(data);
+element.append("<br>");
+element.append("<table style=\"border: 1px solid black;\">");
+
+var names = ['Electricity:Facility', 'ElectricityProduced:Facility', 'Gas:Facility', 'DistrictCooling:Facility', 'DistrictHeating:Facility'];
+
+names.forEach(function(name) {
+  element.append("<tr>");
+  element.append("<td>" + name + "</td>");
+  element.append("<td>" + data["summary"][name].toPrecision(3) + "</td>");
+  element.append("</tr>");
+});
+
+element.append("</table>");
+
           // return nothing if the data isn't available yet
           if (data.length == 0) {
             console.info("Data is not ready yet, not creating a chart.");
