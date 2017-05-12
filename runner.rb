@@ -278,8 +278,8 @@ class Runner
           puts "Skipping Complete Datapoint"
           next
         elsif datapoint[:status] == "Failed"
-          puts "Skipping Failed Datapoint"
-          next
+          #puts "Skipping Failed Datapoint"
+          #next
         end
       end
       puts "Saving Datapoint #{datapoint}"

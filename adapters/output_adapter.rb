@@ -35,6 +35,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     params[:datapoint] = datapoint
     
     http = Net::HTTP.new(@url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Post.new("/api/datapoint.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -81,6 +82,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     puts visible_params
     
     http = Net::HTTP.new(@url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -110,7 +112,11 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
     send_status("Complete")
     send_file("#{@options[:output_directory]}/run.log")
-    Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
+    Dir.glob("#{@options[:output_directory]}/../reports/*").each do |f|
+      next if File.basename(f) == 'view_model_report.json'
+      
+      send_file(f) 
+    end
   end
 
   # Write that the process has failed

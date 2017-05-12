@@ -14,7 +14,7 @@ datapoint_ids = UrbanOptConfig::DATAPOINT_IDS
 
 runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
 runner.update_measures
-runner.clear_results
+#runner.clear_results
 dirs = runner.create_osws
 runner.run_osws(dirs)
 runner.save_results

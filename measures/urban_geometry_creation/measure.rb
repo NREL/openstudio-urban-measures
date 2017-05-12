@@ -638,6 +638,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_project(project_id)
 
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/projects/#{project_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -659,6 +660,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_feature(project_id, feature_id)
     
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -680,6 +682,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_feature_collection(params)
     
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Post.new("/api/search.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')

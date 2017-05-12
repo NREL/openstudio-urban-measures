@@ -61,6 +61,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def get_feature(project_id, feature_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -82,6 +83,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def get_datapoint_ids(project_id, scenario_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/api/retrieve_scenario.json?project_id=#{project_id}&scenario_id=#{scenario_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -114,6 +116,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
   def download_datapoint(project_id, datapoint_id)
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/api/retrieve_datapoint.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')

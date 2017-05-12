@@ -507,6 +507,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       params['project_id'] = project_id
       params['datapoint'] = {'id' => datapoint_id, 'results' => results}
       http = Net::HTTP.new(@city_db_url, @port)
+      http.read_timeout = 1000
       request = Net::HTTP::Post.new("/api/datapoint.json")
       request.add_field('Content-Type', 'application/json')
       request.add_field('Accept', 'application/json')
