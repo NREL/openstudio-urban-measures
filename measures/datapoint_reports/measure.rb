@@ -57,13 +57,18 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     if !runner.validateUserArguments(arguments(), user_arguments)
       return result
     end
+    
+    result << OpenStudio::IdfObject.load("Output:Meter:MeterFileOnly,Electricity:Facility,Timestep;").get
+    result << OpenStudio::IdfObject.load("Output:Meter:MeterFileOnly,ElectricityProduced:Facility,Timestep;").get
+    result << OpenStudio::IdfObject.load("Output:Meter:MeterFileOnly,Gas:Facility,Timestep;").get
 
-    timeseries = ["Electricity:Facility", "Gas:Facility", "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
-                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", "District Heating Hot Water Rate", 
-                  "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+    timeseries = ["District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
+                  "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
+                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", 
+                  "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
 
     timeseries.each do |ts|
-      result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},timestep;").get
+      result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},Timestep;").get
     end
     
     return result
@@ -458,7 +463,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "aspect_ratio", aspect_ratio, "")
     
     # get timeseries
-    timeseries = ["Electricity:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
+    timeseries = ["Electricity:Facility", "ElectricityProduced:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
     

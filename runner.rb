@@ -407,7 +407,7 @@ class Runner
       scenario = get_scenario(scenario_id)
       scenario_name = scenario[:name]
       results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
-      
+
       if !File.exists?(results_path)
         results = get_results(scenario_id)
         
@@ -423,8 +423,10 @@ class Runner
       
       # todo: might also sum by type
       summed_results = nil
+      missing_results = []
       detailed_results_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}/")
-      get_all_datapoint_ids.each do |datapoint_id|
+      scenario[:datapoints].each do |datapoint|
+        datapoint_id = datapoint[:id]
         file = get_detailed_results(datapoint_id)
         
         if save_datapoint_files
@@ -435,7 +437,9 @@ class Runner
           end
         end
         
-        if summed_results.nil?
+        if file.nil?
+          missing_results << "Datapoint #{datapoint_id} does not have timeseries results"
+        elsif summed_results.nil?
           summed_results = CSV.parse(file)
         else
           results = CSV.parse(file)
@@ -456,7 +460,17 @@ class Runner
           f.write(CSV.generate_line(row))
         end
       end
-        
+      
+      missing_results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_missing_results.txt")
+      if missing_results.size > 0
+        File.open(missing_results_path, "w") do |f|
+          f << missing_results.join("\n")
+        end
+      else
+        if File.exists?(missing_results_path)
+          FileUtils.rm(missing_results_path)
+        end
+      end
     end
     
   end

@@ -84,7 +84,8 @@ def map_building_type(value, floor_area, number_of_stories)
     value = "RetailStripmall"
     
   when "Food sales"
-    value = "SuperMarket"
+    #value = "SuperMarket" # not working
+    value = "FullServiceRestaurant"
     
   when "Food service"
     value = "FullServiceRestaurant"
@@ -143,7 +144,8 @@ def map_building_type(value, floor_area, number_of_stories)
     value = "MediumOffice"
     
   when "Refrigerated warehouse"
-    value = "SuperMarket"
+    #value = "SuperMarket" # not working
+    value = "Warehouse"
     
   when "Religious worship"
     value = "MediumOffice"
@@ -169,6 +171,27 @@ end
 def map_building_properties(properties)
   result = []
   
+  # default properties
+  if properties[:number_of_stories].nil?
+    if properties[:number_of_stories_above_ground]
+      properties[:number_of_stories] = properties[:number_of_stories_above_ground]
+    else
+      properties[:number_of_stories] = 1
+    end
+  end
+  
+  if properties[:floor_area].nil?
+    if properties[:footprint_area]
+      if properties[:number_of_stories] > 0
+        properties[:floor_area] = properties[:footprint_area]*properties[:number_of_stories]
+      else
+        properties[:floor_area] = properties[:footprint_area]
+      end
+    end
+  end
+  
+  
+  # map properties
   properties.each_key do |name|
     
     value = properties[name]
@@ -308,6 +331,15 @@ def map_district_system_properties(properties)
     case name
     when :district_system_type
       next if value.nil?
+      
+      if value == 'Central Chilled Water'
+        value = 'Central Hot and Chilled Water'
+      elsif value == 'Central Hot Water'
+        value = 'Central Hot and Chilled Water'
+      elsif value == 'Central Ambient Water'
+        value = 'Ambient Loop'  
+      end
+        
       result << {:measure_dir_name => 'add_district_system', :argument => :district_system_type, :value => value}
       
      else 
