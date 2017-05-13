@@ -22,33 +22,80 @@ Dir.glob(project_path + "*_timeseries.csv").each do |scenario_path|
   scenario[:name] = scenario_name
 
   i = 0
-  num_rows = 8760*4
+  timestep_per_hr = 4
+  num_rows = 8760*timestep_per_hr
   headers = []
-  summary = {}
-  values = {}
+  annual_values = {}
+  timestep_values = {}
+  daily_values = {}
+  monthly_values = {}
   CSV.foreach(scenario_path) do |row|
     if i == 0
       # header row
       headers = row
       headers.each do |header|
-        summary[header] = 0
-        values[header] = []
+        annual_values[header] = 0
+        timestep_values[header] = []
+        daily_values[header] = []
       end
     elsif i <= num_rows
       headers.each_index do |j|
-        summary[headers[j]] += row[j].to_f
-        values[headers[j]] << row[j].to_f
+        annual_values[headers[j]] += row[j].to_f
+        timestep_values[headers[j]] << row[j].to_f 
       end
     end
     i += 1
   end
+  
+  headers.each_index do |j|
+  
+    daily_sums = []
+    all_values = timestep_values[headers[j]]
+    
+    raise "Wrong size #{all_values.size} != #{num_rows}" if all_values.size != num_rows
+    
+    i = 1
+    day_sum = 0
+    all_values.each do |v|
+      day_sum += v
+      if i == 24*timestep_per_hr
+        daily_sums << day_sum
+        i = 1
+      else
+        i += 1
+      end
+    end
+    
+    raise "Wrong size #{daily_sums.size} != 365" if daily_sums.size != 365
+    
+    daily_values[headers[j]] = daily_sums
+    
+    # horrendous
+    monthly_sums = []
+    days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    k = 0
+    monthly_sum = 0
+    days_per_month.each do |days|
+      (1..days).each do |day|
+        monthly_sum += daily_sums[k]
+        k += 1
+      end
+      
+      monthly_sums << monthly_sum
+    end
+    
+    raise "Wrong size #{k} != 365" if k != 365
+    
+    monthly_values[headers[j]] = monthly_sums
+  end
 
-  scenario[:summary] = summary
-  #scenario[:values] = values
+  scenario[:annual_values] = annual_values
+  #scenario[:timestep_values] = timestep_values
+  scenario[:daily_values] = daily_values
+  scenario[:monthly_values] = monthly_values
   
   scenarios << scenario
 end
-
 
 
 # read in template
