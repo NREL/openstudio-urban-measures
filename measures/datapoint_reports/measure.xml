@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-  <version_id>8c5b9d6f-aaf7-41c4-807d-40f32e46200d</version_id>
-  <version_modified>20170512T192951Z</version_modified>
+  <version_id>7580eb9c-feb5-4288-95b3-6e0de544a75d</version_id>
+  <version_modified>20170515T191742Z</version_modified>
   <xml_checksum>FB304155</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
@@ -63,16 +63,16 @@
       <checksum>A0199A45</checksum>
     </file>
     <file>
-      <filename>datapoint_reports_test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>DFD41408</checksum>
-    </file>
-    <file>
       <filename>USA_CO_Golden-NREL.724666_TMY3.epw</filename>
       <filetype>epw</filetype>
       <usage_type>test</usage_type>
       <checksum>BDF687C1</checksum>
+    </file>
+    <file>
+      <filename>datapoint_reports_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>967A79A4</checksum>
     </file>
     <file>
       <version>
@@ -83,7 +83,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>D83B14D6</checksum>
+      <checksum>E38FD954</checksum>
     </file>
   </files>
 </measure>

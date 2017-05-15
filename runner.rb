@@ -1,3 +1,9 @@
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
+
 require 'rest-client'
 require 'parallel'
 require 'json'
@@ -105,15 +111,8 @@ class Runner
     workflows = JSON.parse(response.body, :symbolize_names => true)
     workflows.each do |workflow|
       if feature_type != workflow[:feature_type]
-        puts "skipping workflow with feature_type '#{workflow[:feature_type]}', requested feature_type '#{feature_type}'"
+        #puts "skipping workflow with feature_type '#{workflow[:feature_type]}', requested feature_type '#{feature_type}'"
         next
-      end
-      
-      project_id = workflow[:project_id]
-      if project_id == @project_id
-        result << workflow[:id]
-      else
-        puts "skipping workflow #{workflow[:id]} since it is not associated with project #{@project_id}"
       end
     end
   
@@ -130,13 +129,7 @@ class Runner
   
     scenarios = JSON.parse(response.body, :symbolize_names => true)
     scenarios.each do |scenario|
-      
-      project_id = scenario[:project_id]
-      if project_id == @project_id
-        result << scenario[:id]
-      else
-        puts "skipping scenario #{scenario[:id]} since it is not associated with project #{@project_id}"
-      end
+      result << scenario[:id]
     end
   
     #puts "get_all_scenario_ids = #{result.join(',')}"
@@ -274,10 +267,10 @@ class Runner
       # see if datapoint needs to be run
       if datapoint[:status] 
         if datapoint[:status] == "Started"
-          puts "Skipping Started Datapoint"
+          #puts "Skipping Started Datapoint"
           next
         elsif datapoint[:status] == "Complete"
-          puts "Skipping Complete Datapoint"
+          #puts "Skipping Complete Datapoint"
           next
         elsif datapoint[:status] == "Failed"
           #puts "Skipping Failed Datapoint"
