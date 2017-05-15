@@ -32,7 +32,7 @@ project_ids = get_all_project_ids(url, user_name, user_pwd)
 project_ids.each do |project_id|
   runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
   runner.update_measures
-  runner.clear_results
+  #runner.clear_results
 end
 
 # main loop
@@ -43,7 +43,7 @@ while true
 
     runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
     dirs = runner.create_osws
-    puts "running dirs #{dirs}"
+    puts "running dirs #{dirs.join("\n")}"
     runner.run_osws(dirs)
     if dirs.size > 0
       runner.save_results

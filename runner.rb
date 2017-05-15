@@ -3,6 +3,7 @@ require 'parallel'
 require 'json'
 require 'base64'
 require 'csv'
+require 'open3'
 
 require_relative 'map_properties'
 
@@ -27,12 +28,14 @@ class Runner
   def update_measures
     measure_dir = File.join(File.dirname(__FILE__), "/measures")
     command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
-    puts command
-    system(command)
+    Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
+      # calling wait_thr.value blocks until command is complete
+      wait_thr.value
+    end
   end
   
   def clear_results(datapoint_ids = [])
-    puts "clear_results, datapoint_ids = #{datapoint_ids}"
+    #puts "clear_results, datapoint_ids = #{datapoint_ids}"
     
     if datapoint_ids.empty?
       datapoint_ids = get_all_datapoint_ids
@@ -47,11 +50,11 @@ class Runner
       json_request = JSON.generate('project_id' => @project_id, 'datapoint' => datapoint)
       
       existing_datapoint = get_datapoint(datapoint_id)
-      puts "existing_datapoint = #{existing_datapoint}"
+      #puts "existing_datapoint = #{existing_datapoint}"
       if existing_datapoint[:datapoint_files]
         existing_datapoint[:datapoint_files].each do |file|
           filename = file[:file_name]
-          puts "deleting file #{filename} for datapoint #{datapoint_id}"
+          #puts "deleting file #{filename} for datapoint #{datapoint_id}"
           
           request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
           response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
@@ -65,7 +68,7 @@ class Runner
   end
   
   def get_project()
-    puts "get_project"
+    #puts "get_project"
     
     result = []
     
@@ -77,7 +80,7 @@ class Runner
   end  
     
   def get_all_feature_ids(feature_type)
-    puts "get_all_feature_ids, feature_type = #{feature_type}"
+    #puts "get_all_feature_ids, feature_type = #{feature_type}"
     result = []
     
     json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
@@ -93,7 +96,7 @@ class Runner
   end
   
   def get_all_workflow_ids(feature_type)
-    puts "get_all_workflow_ids, feature_type = #{feature_type}"
+    #puts "get_all_workflow_ids, feature_type = #{feature_type}"
     result = []
     
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
@@ -114,12 +117,12 @@ class Runner
       end
     end
   
-    puts "get_all_workflow_ids = #{result.join(',')}"
+    #puts "get_all_workflow_ids = #{result.join(',')}"
     return result
   end
   
   def get_all_scenario_ids()
-    puts "get_all_scenario_ids"
+    #puts "get_all_scenario_ids"
     result = []
     
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
@@ -136,12 +139,12 @@ class Runner
       end
     end
   
-    puts "get_all_scenario_ids = #{result.join(',')}"
+    #puts "get_all_scenario_ids = #{result.join(',')}"
     return result
   end
   
   def get_all_datapoint_ids()
-    puts "get_all_datapoint_ids"
+    #puts "get_all_datapoint_ids"
     result = []
     
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
@@ -156,12 +159,12 @@ class Runner
     # make an array of datapoint IDs only
     result = datapoints.map{|x| x[:id]}
   
-    puts "get_all_datapoint_ids = #{result.join(',')}"
+    #puts "get_all_datapoint_ids = #{result.join(',')}"
     return result
   end
   
   def get_or_create_datapoint(feature_id, option_set_id, scenario_id)
-    puts "get_or_create_datapoint, feature_id = #{feature_id}, option_set_id = #{option_set_id}, scenario_id = #{scenario_id}"
+    #puts "get_or_create_datapoint, feature_id = #{feature_id}, option_set_id = #{option_set_id}, scenario_id = #{scenario_id}"
     
     json_request = JSON.generate('feature_id' => feature_id, 'option_set_id' => option_set_id, 'scenario_id' => scenario_id, 'project_id' => @project_id)
     request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
@@ -172,7 +175,7 @@ class Runner
   end
 
    def get_datapoint(datapoint_id)
-    puts "get_datapoint, datapoint_id = #{datapoint_id}"
+    #puts "get_datapoint, datapoint_id = #{datapoint_id}"
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
     
@@ -181,7 +184,7 @@ class Runner
   end
   
   def get_option_set(option_set_id)
-    puts "get_option_set, option_set_id = #{option_set_id}"
+    #puts "get_option_set, option_set_id = #{option_set_id}"
 
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     response = request["/api/retrieve_option_set?project_id=#{@project_id}&option_set_id=#{option_set_id}"].get(content_type: :json, accept: :json)
@@ -191,7 +194,7 @@ class Runner
   end
   
   def get_feature(feature_id)
-    puts "feature_id, feature_id = #{feature_id}"
+    #puts "feature_id, feature_id = #{feature_id}"
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     response = request["/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}"].get(content_type: :json, accept: :json)
     
@@ -200,8 +203,8 @@ class Runner
   end
   
   def get_scenario(scenario_id)
-    puts "get_scenario, scenario_id = #{scenario_id}"
-    puts "#{@url}/scenarios/#{scenario_id}.json"
+    #puts "get_scenario, scenario_id = #{scenario_id}"
+
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     begin
       response = request["/api/retrieve_scenario?project_id=#{@project_id}&scenario_id=#{scenario_id}"].get(content_type: :json, accept: :json)
@@ -214,7 +217,8 @@ class Runner
   end
   
   def get_results(scenario_id)
-    puts "get_results, scenario_id = #{scenario_id}"
+    #puts "get_results, scenario_id = #{scenario_id}"
+    
     request = RestClient::Resource.new("#{@url}/api/scenario_features.json?project_id=#{@project_id}&scenario_id=#{scenario_id}", user: @user_name, password: @user_pwd)
     response = request.get(content_type: :json, accept: :json)
 
@@ -223,7 +227,8 @@ class Runner
   end
   
   def get_detailed_results(datapoint_id)
-    puts "get_detailed_results, datapoint_id = #{datapoint_id}"
+    #puts "get_detailed_results, datapoint_id = #{datapoint_id}"
+    
     request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
     response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
 
@@ -252,15 +257,12 @@ class Runner
   
   # return a vector of directories to run
   def create_osws
-    puts "create_osws"
+    #puts "create_osws"
     result = []
     
     # connect to database, get list of all datapoint ids
     all_datapoint_ids = get_all_datapoint_ids()
 
-    puts "Project #{@project_name}"
-    puts "#{all_datapoint_ids.size} datapoints"
-    
     # loop over all combinations
     num_datapoints = 1
     all_datapoint_ids.each do |datapoint_id|
@@ -282,7 +284,7 @@ class Runner
           #next
         end
       end
-      puts "Saving Datapoint #{datapoint}"
+      #puts "Saving Datapoint #{datapoint}"
       
       result << create_osw(datapoint_id)
       
@@ -297,7 +299,7 @@ class Runner
   end
 
   def create_osw(datapoint_id)
-    puts "create_osw, datapoint_id = #{datapoint_id}"
+    #puts "create_osw, datapoint_id = #{datapoint_id}"
     
     datapoint = get_datapoint(datapoint_id) # format scenario_ids as array of strings
     feature_id = datapoint[:feature_id]
@@ -313,14 +315,6 @@ class Runner
     if feature_type == "District System"
       scenario_id = datapoint[:scenario_ids].first
     end
-    
-    puts "option_set_id = #{option_set_id}"
-    puts "workflow = #{workflow}"
-    puts "feature_id = #{feature_id}"
-    puts "feature_type = #{feature_type}"
-    puts "feature = #{feature}"
-    puts "project = #{project}"
-    puts "scenario_id = #{scenario_id}"
     
     if project[:properties].nil?
       project[:properties] = {}
@@ -371,7 +365,7 @@ class Runner
     FileUtils.mkdir_p(osw_dir)
  
     osw_path = "#{osw_dir}/in.osw"
-    puts "saving osw #{osw_path}"
+
     File.open(osw_path, 'w') do |file|
       file << JSON.pretty_generate(workflow)
     end
@@ -380,9 +374,8 @@ class Runner
   end
   
   def run_osws(dirs)
-    puts "run_osws, dirs = #{dirs}"
-    #dirs = Dir.glob("./run/*")
-    
+    #puts "run_osws, dirs = #{dirs}"
+
     Parallel.each(dirs, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
       
       md = /datapoint_(.*)/.match(osw_dir)
@@ -394,13 +387,15 @@ class Runner
       
       # ok to put user name and password in environment variables?
       command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
-      puts command
-      system({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command)
+      Open3.popen3({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command) do |stdin, stdout, stderr, wait_thr|
+        # calling wait_thr.value blocks until command is complete
+        wait_thr.value
+      end
     end
   end
   
   def save_results(save_datapoint_files = false)
-    puts "save_results"
+    #puts "save_results"
     all_scenario_ids = get_all_scenario_ids()
     
     all_scenario_ids.each do |scenario_id|
@@ -455,9 +450,11 @@ class Runner
       end
       
       summed_result_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_timeseries.csv")
-      File.open(summed_result_path, "w") do |f|
-        summed_results.each do |row|
-          f.write(CSV.generate_line(row))
+      if summed_results
+        File.open(summed_result_path, "w") do |f|
+          summed_results.each do |row|
+            f.write(CSV.generate_line(row))
+          end
         end
       end
       
