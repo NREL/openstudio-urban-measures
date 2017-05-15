@@ -34,6 +34,7 @@ geojson[:features].each do |feature|
   end
   
   area = 0
+  distance = 0
   multi_polygons[0].each do |polygon|
     origin_lat_lon = nil
     floor_print = OpenStudio::Point3dVector.new
@@ -46,15 +47,25 @@ geojson[:features].each do |feature|
       floor_print << point_3d
     end
     area += OpenStudio::getArea(floor_print).get
-  end
     
-  if number_of_stories == 0
-    floor_area = OpenStudio::convert(area, 'm', 'ft').get
-  else
-    floor_area = number_of_stories*OpenStudio::convert(area, 'm', 'ft').get
+    polygon.each_index do |i|
+      if i == (polygon.size-1)
+        distance += OpenStudio::getDistance(floor_print[i], floor_print[0])
+      else
+        distance += OpenStudio::getDistance(floor_print[i], floor_print[i+1])
+      end
+    end
   end
   
-  properties[:floor_area] = floor_area
+  if number_of_stories == 0
+    floor_area = area
+  else
+    floor_area = number_of_stories*area
+  end
+  
+  properties[:footprint_area] = OpenStudio::convert(area, 'm^2', 'ft^2').get
+  properties[:footprint_perimeter] = OpenStudio::convert(distance, 'm', 'ft').get
+  properties[:floor_area] = OpenStudio::convert(floor_area, 'm^2', 'ft^2').get
   properties[:number_of_stories] = number_of_stories
   properties[:maximum_roof_height] = maximum_roof_height
   
