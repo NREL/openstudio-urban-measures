@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>add_district_system</name>
   <uid>5c781ee3-b77c-4a71-ac0d-5ad19863c96b</uid>
-  <version_id>da50df20-f5fb-4949-8600-47b1e7b22171</version_id>
-  <version_modified>20170515T191742Z</version_modified>
+  <version_id>39876a27-50c6-41c4-a7df-5f1c94ae9d33</version_id>
+  <version_modified>20170516T015652Z</version_modified>
   <xml_checksum>A7890DC7</xml_checksum>
   <class_name>AddDistrictSystem</class_name>
   <display_name>Add district system</display_name>
@@ -102,7 +102,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>60810187</checksum>
+      <checksum>FF19E3B0</checksum>
     </file>
   </files>
 </measure>

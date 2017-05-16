@@ -268,16 +268,23 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
-    # 15 minute timesteps
-    num_rows = 8760*4
+    # get timesteps
+    time_step_per_hour = model.getTimestep.numberOfTimestepsPerHour
+    num_rows = 8760*time_step_per_hour
     start_date = model.getYearDescription.makeDate(1,1)
-    time_step = OpenStudio::Time.new(0,0,15,0)
+    time_step = OpenStudio::Time.new(0,0,60/time_step_per_hour,0)
     
     electric_schedules = []
     gas_schedules = []
     district_cooling_schedules = []
     district_heating_schedules = []
     
+    timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
+                  {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
+                  {name: "District Heating Hot Water Rate", units: "W", normalize: false},
+                  {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
+                  
+    summed_values = {}
     datapoint_files.each do |file|
     
       puts "Reading #{file}"
@@ -292,26 +299,33 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           # header row
           headers = row
           headers.each do |header|
-            values[header] = OpenStudio::Vector.new(num_rows)
+            values[header] = OpenStudio::Vector.new(num_rows, 0.0)
+            if summed_values[header].nil?
+              summed_values[header] = OpenStudio::Vector.new(num_rows, 0.0)
+            end
           end
         elsif i <= num_rows
           headers.each_index do |j|
-            values[headers[j]][i-1] = row[j].to_f
+            v = row[j].to_f
+            values[headers[j]][i-1] = v
+            summed_values[headers[j]][i-1] = summed_values[headers[j]][i-1] + v
           end
         end
         i += 1
       end
-  
-      timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
-                    {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
-                    {name: "District Heating Hot Water Rate", units: "W", normalize: false},
-                    {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
-                    
-      timeseries.each do |ts|
-        makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
-      end
+      
+      # to make one individual schedules
+      #timeseries.each do |ts|
+      #  makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
+      #end
+
     end
-    
+     
+    # to make one summed schedule
+    timeseries.each do |ts|
+      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summmed", ts)
+    end
+      
     # todo: create a plant loop
     
     return @result

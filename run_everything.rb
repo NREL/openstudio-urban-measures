@@ -7,6 +7,7 @@
 require_relative 'runner'
 require_relative 'config'
 
+logger = UrbanOptConfig::LOGGER
 url = UrbanOptConfig::URL
 openstudio_exe = UrbanOptConfig::OPENSTUDIO_EXE
 openstudio_measures = UrbanOptConfig::OPENSTUDIO_MEASURES
@@ -15,12 +16,13 @@ user_name = UrbanOptConfig::USER_NAME
 user_pwd = UrbanOptConfig::USER_PWD
 max_datapoints = UrbanOptConfig::MAX_DATAPOINTS
 num_parallel = UrbanOptConfig::NUM_PARALLEL
+clear_results = UrbanOptConfig::CLEAR_RESULTS
 project_id = UrbanOptConfig::PROJECT_ID
 datapoint_ids = UrbanOptConfig::DATAPOINT_IDS
 
-runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel, logger)
 runner.update_measures
-#runner.clear_results
+runner.clear_results if clear_results
 dirs = runner.create_osws
 runner.run_osws(dirs)
 runner.save_results

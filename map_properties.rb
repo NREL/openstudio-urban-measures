@@ -4,16 +4,18 @@
 #  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
 ######################################################################
 
+module UrbanOptMapping
+
 def merge_workflow(workflow, instructions)
   instructions.each do |instruction|
     workflow[:steps].each do |step|
       if instruction[:measure_dir_name] && step[:measure_dir_name] == instruction[:measure_dir_name]
         arguments = step[:arguments]
-        #puts "Setting '#{instruction[:argument]}' of '#{step[:measure_dir_name]}' to '#{instruction[:value]}'"
+        @logger.debug("Setting '#{instruction[:argument]}' of '#{step[:measure_dir_name]}' to '#{instruction[:value]}'") if @logger
         arguments[instruction[:argument]] = instruction[:value]
       elsif instruction[:measure_step_name] && step[:name] == instruction[:measure_step_name]
         arguments = step[:arguments]
-        #puts "Setting '#{instruction[:argument]}' of '#{step[:name]}' to '#{instruction[:value]}'"
+        @logger.debug("Setting '#{instruction[:argument]}' of '#{step[:name]}' to '#{instruction[:value]}'") if @logger
         arguments[instruction[:argument]] = instruction[:value]        
       end
     end
@@ -72,7 +74,7 @@ def map_project_properties(properties)
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
       
     else
-      puts "Unmapped project property '#{name}' with value '#{value}'"
+      @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
     end
   end
   
@@ -318,9 +320,12 @@ def map_building_properties(properties)
       
     when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at
       # no-op
+      
+    when :fill, :"fill-opacity", :height, :stroke, :"stroke-opacity", :"stroke-width"
+      # no-op
 
     else 
-      puts "Unmapped building property '#{name}' with value '#{value}'"
+      @logger.warn("Unmapped building property '#{name}' with value '#{value}'") if @logger
     end
   
   end
@@ -348,10 +353,20 @@ def map_district_system_properties(properties)
         
       result << {:measure_dir_name => 'add_district_system', :argument => :district_system_type, :value => value}
       
+    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at
+      # no-op
+      
+    when :surface_elevation, :floor_area, :number_of_stories, :maximum_roof_height
+
+    when :fill, :"fill-opacity", :height, :stroke, :"stroke-opacity", :"stroke-width"
+      # no-op
+      
      else 
-      puts "Unmapped building property '#{name}' with value '#{value}'"
+      @logger.warn("Unmapped district system property '#{name}' with value '#{value}'") if @logger
     end
   end
   
   return result
+end
+
 end
