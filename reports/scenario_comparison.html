@@ -1,0 +1,267 @@
+<!doctype html>
+<html ng-app="myApp">
+  <head>
+    <meta charset="utf-8">
+    <title>Scenario Comparison</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.4/angular-aria.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-nvd3/1.0.7/angular-nvd3.min.js"></script>
+
+    <script src="All%20Electric.geojson.js"></script>
+    <script src="Baseline.geojson.js"></script>
+    <script src="District%20Cooling.geojson.js"></script>
+    <script src="scenarioData.js"></script>
+    <style type="text/css">
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
+    </style>
+    <style type="text/css">
+      nvd3 {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      nvd3.remove-x-lines .nv-x .tick line {
+        display: none;
+      }
+
+      nvd3.remove-y-lines .nv-y .tick line {
+        display: none;
+      }
+
+      nvd3.remove-line-stroke .nv-groups path.nv-line {
+        stroke-width: 0 !important;
+      }
+
+      nvd3.remove-opacity .nv-groups .nv-group {
+        fill-opacity: 1 !important;
+      }
+
+      nvd3.show-line-points .nv-line .nv-scatter .nv-groups .nv-point {
+        fill-opacity: 1 !important;
+        stroke-opacity: 1 !important;
+      }
+
+      .nvd3 text {
+        font-family: 'Roboto', sans-serif;
+      }
+
+      .nvd3 line.nv-guideline {
+        stroke: rgba(0, 0, 0, 0.54);
+      }
+
+      .nvd3 .nv-groups .nv-point.hover {
+        stroke-width: 3px !important;
+        fill-opacity: 1 !important;
+        stroke-opacity: 1 !important;
+      }
+
+      .nvtooltip {
+        background: none;
+        color: white;
+        padding: 0;
+        border: none;
+      }
+
+      .nvtooltip.gravity-n:after {
+        display: block;
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        left: 50%;
+        bottom: 100%;
+        margin-left: -5px;
+        border: 5px solid transparent;
+        border-bottom-color: rgba(0, 0, 0, 0.87);
+      }
+
+      .nvtooltip.gravity-s:after {
+        display: block;
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border: 5px solid transparent;
+        border-top-color: rgba(0, 0, 0, 0.87);
+      }
+
+      .nvtooltip.gravity-e:after {
+        display: block;
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        top: 50%;
+        right: 0;
+        margin-top: -6px;
+        margin-right: -11px;
+        border: 6px solid transparent;
+        border-left-color: rgba(0, 0, 0, 0.87);
+      }
+
+      .nvtooltip.gravity-w:after {
+        display: block;
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        top: 50%;
+        margin-top: -6px;
+        margin-left: -11px;
+        border: 6px solid transparent;
+        border-right-color: rgba(0, 0, 0, 0.87);
+      }
+
+      .nvtooltip table {
+        background: rgba(0, 0, 0, 0.87);
+        padding: 8px 12px;
+        margin: 0;
+        border-radius: 2px;
+      }
+
+      .nvtooltip table tbody tr td.legend-color-guide div {
+        border: none;
+      }
+
+      .nvtooltip table tbody tr td:last-child {
+        padding-right: 0;
+      }
+
+    </style>
+  </head>
+  <body ng-cloak>
+
+    <div ng-controller="MyAppCtrl">
+
+      <h1>Scenarios</h1>
+
+      <md-content class="md-padding" layout-sm="column" layout="row">
+        <div flex-gt-sm="50" layout="column" ng-repeat="scenario in scenarios">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">{{ scenario.name }}</span>
+                <span class="md-subhead">Monthly Overview (MMBtu)</span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div layout="row" layout-align="start center" class="layout-wrap layout-align-start-center layout-row">
+                <div class="layout-row flex-100" layout="row" style="padding: 16px;">
+                  <nvd3 class="h-320 remove-x-lines" config="chartConfig" options="chartOptions" data="chartData[scenario.name]"></nvd3>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+    </div>
+
+    <script type="text/javascript">
+      var myApp = angular.module('myApp', ['ngMaterial', 'nvd3']);
+
+      myApp.controller('MyAppCtrl', function ($scope) {
+        $scope.scenarios = scenarioData;
+
+        $scope.chartConfig = {
+          refreshDataOnly: true,
+          deepWatchData: true
+        };
+
+        $scope.chartOptions = {
+          chart: {
+            type: 'multiBarChart',
+            color: ['#03a9f4', '#b3e5fc'],
+            height: 320,
+            margin: {
+              top: 8,
+              right: 16,
+              bottom: 32,
+              left: 32
+            },
+            clipEdge: true,
+            groupSpacing: 0.3,
+            reduceXTicks: false,
+            stacked: false,
+            duration: 250,
+            x: function (d) {
+              return d.x;
+            },
+            y: function (d) {
+              return d.y;
+            },
+            yAxis: {
+              tickFormat: function (d) {
+                return d;
+              }
+            },
+            legend: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            controls: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            tooltip: {
+              gravity: 's',
+              classes: 'gravity-s'
+            }
+          }
+        };
+
+        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        var datasets = ['Electricity:Facility', 'ElectricityProduced:Facility', 'Gas:Facility'];
+        $scope.chartData = {};
+        $scope.yMax = 0;
+
+        _.forEach($scope.scenarios, function (scenario) {
+          $scope.chartData[scenario.name] = [];
+          _.forEach(datasets, function (dataset) {
+            var values = scenario.monthly_values[dataset];
+
+            $scope.chartData[scenario.name].push({
+              key: dataset,
+              values: _.map(values, function (value, i) {
+                value = Math.round(value * 9.47817e-10);
+                $scope.yMax = _.max([$scope.yMax, value]);
+                return {
+                  x: months[i],
+                  y: value
+                };
+              })
+            });
+
+            console.debug($scope.chartData[scenario.name]);
+          });
+        });
+      });
+
+      _.delay(function () {
+        window.dispatchEvent(new Event('resize'));
+      }, 300);
+
+    </script>
+
+  </body>
+</html>
