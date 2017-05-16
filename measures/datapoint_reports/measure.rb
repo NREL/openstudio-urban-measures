@@ -173,7 +173,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       if name.nil?
         @runner.registerWarning("Name is nil")
       elsif value.nil?
-        @runner.registerWarning("Value for #{name}' is nil")
+        @runner.registerWarning("Value for '#{name}' is nil")
       elsif units.nil?
         @runner.registerValue(name, value)
       else

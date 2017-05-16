@@ -94,11 +94,12 @@ Dir.glob(project_path + "*_timeseries.csv").each do |scenario_path|
     
     monthly_values[headers[j]] = monthly_sums
   end
-
-  scenario[:annual_values] = annual_values
+  
   #scenario[:timestep_values] = timestep_values
-  scenario[:daily_values] = daily_values
+  #scenario[:hourly_values] = hourly_values
+  #scenario[:daily_values] = daily_values
   scenario[:monthly_values] = monthly_values
+  scenario[:annual_values] = annual_values
   
   scenarios << scenario
 end

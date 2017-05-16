@@ -32,7 +32,7 @@ class Runner
     @logger = logger
     
     @project = get_project
-    @project_name = @project[:name]
+    @project_name = @project[:name] if @project
   end
   
   def update_measures
@@ -84,7 +84,7 @@ class Runner
             request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
             response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
           rescue => e
-            logger.error("Error in clear_results delete_datapoint_file: #{e.response}")
+            @logger.error("Error in clear_results delete_datapoint_file: #{e.response}")
           end
         end
       end
@@ -93,7 +93,7 @@ class Runner
         request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
         response = request.post(json_request, content_type: :json, accept: :json)    
       rescue => e
-        logger.error("Error in clear_results: #{e.response}")
+        @logger.error("Error in clear_results: #{e.response}")
       end        
     end
   end
@@ -108,7 +108,7 @@ class Runner
       project = JSON.parse(response.body, :symbolize_names => true)
       result = project[:project]
     rescue => e
-      logger.error("Error in get_project: #{e.response}")
+      @logger.error("Error in get_project: #{e.response}")
     end   
     
     return result
@@ -128,7 +128,7 @@ class Runner
         result << building[:properties][:id]
       end
     rescue => e
-      logger.error("Error in get_all_feature_ids: #{e.response}")
+      @logger.error("Error in get_all_feature_ids: #{e.response}")
     end   
     
     return result
@@ -150,7 +150,7 @@ class Runner
         end
       end
     rescue => e
-      logger.error("Error in get_all_workflow_ids: #{e.response}")
+      @logger.error("Error in get_all_workflow_ids: #{e.response}")
     end   
     
     @logger.debug("get_all_workflow_ids = #{result.join(',')}")
@@ -170,7 +170,7 @@ class Runner
         result << scenario[:id]
       end
     rescue => e
-      logger.error("Error in get_all_scenario_ids: #{e.response}")
+      @logger.error("Error in get_all_scenario_ids: #{e.response}")
     end   
   
     @logger.debug("get_all_scenario_ids = #{result.join(',')}")
@@ -194,7 +194,7 @@ class Runner
       # make an array of datapoint IDs only
       result = datapoints.map{|x| x[:id]}
     rescue => e
-      logger.error("Error in get_all_datapoint_ids: #{e.response}")
+      @logger.error("Error in get_all_datapoint_ids: #{e.response}")
     end   
     
     @logger.debug("get_all_datapoint_ids = #{result.join(',')}")
@@ -212,7 +212,7 @@ class Runner
       datapoint = JSON.parse(response.body, :symbolize_names => true)
       result = datapoint[:datapoint]
     rescue => e
-      logger.error("Error in get_all_datapoint_ids: #{e.response}")
+      @logger.error("Error in get_all_datapoint_ids: #{e.response}")
     end   
     
     return result
@@ -228,7 +228,7 @@ class Runner
       datapoint = JSON.parse(response.body, :symbolize_names => true)
       result = datapoint[:datapoint]
     rescue => e
-      logger.error("Error in get_datapoint: #{e.response}")
+      @logger.error("Error in get_datapoint: #{e.response}")
     end   
     
     return result
@@ -244,7 +244,7 @@ class Runner
       datapoint = JSON.parse(response.body, :symbolize_names => true)
       result = datapoint[:option_set]
     rescue => e
-      logger.error("Error in get_option_set: #{e.response}")
+      @logger.error("Error in get_option_set: #{e.response}")
     end
       
     return result
@@ -260,7 +260,7 @@ class Runner
       feature = JSON.parse(response.body, :symbolize_names => true)
       result = feature
     rescue => e
-      logger.error("Error in get_feature: #{e.response}")
+      @logger.error("Error in get_feature: #{e.response}")
     end
       
     return result
@@ -481,23 +481,13 @@ class Runner
     @logger.debug("save_results")
     all_scenario_ids = get_all_scenario_ids()
     
+    all_scenario_results = []
     all_scenario_ids.each do |scenario_id|
       scenario = get_scenario(scenario_id)
       scenario_name = scenario[:name]
-      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
-
-      if !File.exists?(results_path)
-        results = get_results(scenario_id)
-        
-        results_dir = File.dirname(results_path)
-        if !File.exists?(results_dir)
-          FileUtils.mkdir_p(results_dir)
-        end
-        
-        File.open(results_path, 'w') do |file|
-          file << JSON.pretty_generate(results)
-        end
-      end
+      
+      scenario_results = get_results(scenario_id)
+      scenario_results[:name] = scenario_name
       
       # todo: might also sum by type
       summed_results = nil
@@ -516,7 +506,7 @@ class Runner
         end
         
         if file.nil?
-          missing_results << "Datapoint #{datapoint_id} does not have timeseries results"
+          missing_results << datapoint_id
         elsif summed_results.nil?
           summed_results = CSV.parse(file)
         else
@@ -529,9 +519,10 @@ class Runner
             end
           end
         end
-
       end
+      scenario_results[:missing_results] = missing_results
       
+      # write out combined CSV
       summed_result_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_timeseries.csv")
       if summed_results
         File.open(summed_result_path, "w") do |f|
@@ -541,18 +532,143 @@ class Runner
         end
       end
       
+      # write out any missing results
       missing_results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_missing_results.txt")
       if missing_results.size > 0
         File.open(missing_results_path, "w") do |f|
-          f << missing_results.join("\n")
+          missing_results.each do |missing_result|
+            f << "Datapoint #{missing_result} does not have timeseries results"
+          end
         end
       else
         if File.exists?(missing_results_path)
           FileUtils.rm(missing_results_path)
         end
       end
+      
+      # aggregate timeseries into hourly, daily, monthly, and annual values
+      i = 0
+      timestep_per_hr = 6
+      num_rows = 8760*timestep_per_hr
+      headers = []
+      timestep_values = {}
+      hourly_values = {}
+      daily_values = {}
+      monthly_values = {}
+      annual_values = {}
+      CSV.foreach(summed_result_path) do |row|
+        if i == 0
+          # header row
+          headers = row
+          headers.each do |header|
+            annual_values[header] = 0
+            timestep_values[header] = []
+            daily_values[header] = []
+          end
+        elsif i <= num_rows
+          headers.each_index do |j|
+            annual_values[headers[j]] += row[j].to_f
+            timestep_values[headers[j]] << row[j].to_f 
+          end
+        end
+        i += 1
+      end
+
+      headers.each_index do |j|
+
+        all_values = timestep_values[headers[j]]
+        
+        raise "Wrong size #{all_values.size} != #{num_rows}" if all_values.size != num_rows
+        
+        # hourly sums
+        
+        i = 1
+        hour_sum = 0
+        hourly_sums = []
+        all_values.each do |v|
+          hour_sum += v
+          if i == timestep_per_hr
+            hourly_sums << hour_sum
+            i = 1
+            hour_sum = 0
+          else
+            i += 1
+          end
+        end
+        
+        raise "Wrong size #{hourly_sums.size} != 8760" if hourly_sums.size != 8760
+        
+        hourly_values[headers[j]] = hourly_sums
+        
+        # daily sums
+        
+        i = 1
+        day_sum = 0
+        daily_sums = []
+        all_values.each do |v|
+          day_sum += v
+          if i == 24*timestep_per_hr
+            daily_sums << day_sum
+            i = 1
+            day_sum = 0
+          else
+            i += 1
+          end
+        end
+        
+        raise "Wrong size #{daily_sums.size} != 365" if daily_sums.size != 365
+        
+        daily_values[headers[j]] = daily_sums
+        
+        # horrendous monthly sums
+        monthly_sums = []
+        days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        k = 0
+        monthly_sum = 0
+        days_per_month.each do |days|
+          (1..days).each do |day|
+            monthly_sum += daily_sums[k]
+            k += 1
+          end
+          
+          monthly_sums << monthly_sum
+          monthly_sum = 0
+        end
+        
+        raise "Wrong size #{k} != 365" if k != 365
+        
+        monthly_values[headers[j]] = monthly_sums
+      end
+
+      #scenario_results[:timestep_values] = timestep_values
+      #scenario_results[:hourly_values] = hourly_values
+      #scenario_results[:daily_values] = daily_values
+      scenario_results[:monthly_values] = monthly_values
+      scenario_results[:annual_values] = annual_values
+      
+      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
+      results_dir = File.dirname(results_path)
+      if !File.exists?(results_dir)
+        FileUtils.mkdir_p(results_dir)
+      end
+      
+      File.open(results_path, 'w') do |file|
+        file << JSON.pretty_generate(scenario_results)
+      end
+      
+      all_scenario_results << scenario_results
+
     end
     
+    results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/scenarioData.js")
+    File.open(results_path, 'w') do |file|
+      file << "var scenarioData = #{JSON.pretty_generate(all_scenario_results)};"
+    end
+    
+    # copy results htmls
+    html_in_path = "#{File.dirname(__FILE__)}/reports/scenario_comparison.html"
+    html_out_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/scenario_comparison.html")
+    FileUtils.cp(html_in_path, html_out_path)
   end
   
 end
