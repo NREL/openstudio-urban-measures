@@ -168,6 +168,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
   def makeSchedule(start_date, time_step, values, model, basename, ts)
   
+    if values.nil?
+      return
+    end
+    
     if ts[:name].include? "Mass Flow Rate"
       values *= 0.001 # kg to m^3 of water, which is 1000 kg/m^3
     end

@@ -347,6 +347,8 @@ def map_district_system_properties(properties)
         value = 'Central Hot and Chilled Water'
       elsif value == 'Central Hot Water'
         value = 'Central Hot and Chilled Water'
+      elsif value == 'Central Hot and Cold Water'
+        value = 'Central Hot and Chilled Water'
       elsif value == 'Central Ambient Water'
         value = 'Ambient Loop'  
       end
