@@ -11,6 +11,8 @@ require 'csv'
 require_relative 'config'
 require_relative 'map_properties'
 
+include UrbanOptMapping
+
 openstudio_exe = UrbanOptConfig::OPENSTUDIO_EXE
 
 run_retrofit = true
