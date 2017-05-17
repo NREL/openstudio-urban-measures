@@ -441,6 +441,8 @@ class Runner
     FileUtils.mkdir_p(osw_dir)
  
     osw_path = "#{osw_dir}/in.osw"
+    
+    FileUtils.rm_rf(osw_path) if File.exists?(osw_path)
 
     File.open(osw_path, 'w') do |file|
       file << JSON.pretty_generate(workflow)

@@ -321,7 +321,7 @@ def map_building_properties(properties)
     when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at
       # no-op
       
-    when :fill, :"fill-opacity", :height, :stroke, :"stroke-opacity", :"stroke-width"
+    when :fill, :"fill-opacity", :geometryType, :height, :stroke, :"stroke-opacity", :"stroke-width"
       # no-op
 
     else 
@@ -360,7 +360,7 @@ def map_district_system_properties(properties)
       
     when :surface_elevation, :floor_area, :number_of_stories, :maximum_roof_height
 
-    when :fill, :"fill-opacity", :height, :stroke, :"stroke-opacity", :"stroke-width"
+    when :fill, :"fill-opacity", :geometryType, :height, :stroke, :"stroke-opacity", :"stroke-width"
       # no-op
       
      else 
