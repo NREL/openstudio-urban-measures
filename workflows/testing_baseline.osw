@@ -64,9 +64,17 @@
       "name": "blended_space_type_from_model",
       "measure_dir_name": "blended_space_type_from_model",
       "arguments": {
+        "__SKIP__": false,
         "blend_method": "Building Story"
       }
     }, 
+     {
+      "name": "replace_geometry_by_story",
+      "measure_dir_name": "replace_geometry_by_story",
+      "arguments": {
+        "__SKIP__": true
+      }
+    },    
     {
       "name": "create_typical_building_from_model 2",
       "measure_dir_name": "create_typical_building_from_model",
@@ -84,7 +92,8 @@
         "hvac_delivery_type": "Forced Air",
         "system_type": "Inferred"
       }
-    }, {
+    }, 
+    {
       "name": "ReduceElectricEquipmentLoadsByPercentage",
       "measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
       "arguments": {
