@@ -149,6 +149,7 @@
 
       <h1>Scenarios</h1>
 
+      <h2>Monthly Fuel Use</h2>
       <md-content class="md-padding" layout-sm="column" layout="row">
         <div flex-gt-sm="50" layout="column" ng-repeat="scenario in scenarios">
           <md-card>
@@ -161,13 +162,57 @@
             <md-card-content>
               <div layout="row" layout-align="start center" class="layout-wrap layout-align-start-center layout-row">
                 <div class="layout-row flex-100" layout="row" style="padding: 16px;">
-                  <nvd3 class="h-320 remove-x-lines" config="chartConfig" options="chartOptions" data="chartData[scenario.name]"></nvd3>
+                  <nvd3 class="h-320 remove-x-lines" config="monthlyFuelChartConfig" options="monthlyFuelChartOptions" data="monthlyFuelChartData[scenario.name]"></nvd3>
                 </div>
               </div>
             </md-card-content>
           </md-card>
         </div>
       </md-content>
+      
+      <h2>Monthly Net Energy</h2>
+      <md-content class="md-padding" layout-sm="column" layout="row">
+        <div flex-gt-sm="50" layout="column" ng-repeat="scenario in scenarios">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">{{ scenario.name }}</span>
+                <span class="md-subhead">Annual Net Energy {{ annualNetChartData[scenario.name] }} (MMBtu)</span>
+                <span class="md-subhead">Monthly Net Energy (MMBtu)</span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div layout="row" layout-align="start center" class="layout-wrap layout-align-start-center layout-row">
+                <div class="layout-row flex-100" layout="row" style="padding: 16px;">
+                  <nvd3 class="h-320 remove-x-lines" config="monthlyNetChartConfig" options="monthlyNetChartOptions" data="monthlyNetChartData[scenario.name]"></nvd3>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+      
+      <h2>Annual End Uses</h2>
+      <md-content class="md-padding" layout-sm="column" layout="row">
+        <div flex-gt-sm="50" layout="column" ng-repeat="scenario in scenarios">
+          <md-card>
+            <md-card-title>
+              <md-card-title-text>
+                <span class="md-headline">{{ scenario.name }}</span>
+                <span class="md-subhead">Annual End Use (MMBtu)</span>
+              </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+              <div layout="row" layout-align="start center" class="layout-wrap layout-align-start-center layout-row">
+                <div class="layout-row flex-100" layout="row" style="padding: 16px;">
+                  <nvd3 class="h-320 remove-x-lines" config="annualEndUseChartConfig" options="annualEndUseChartOptions" data="annualEndUseChartData[scenario.name]"></nvd3>
+                </div>
+              </div>
+            </md-card-content>
+          </md-card>
+        </div>
+      </md-content>
+      
     </div>
 
     <script type="text/javascript">
@@ -176,21 +221,21 @@
       myApp.controller('MyAppCtrl', function ($scope) {
         $scope.scenarios = scenarioData;
 
-        $scope.chartConfig = {
+        $scope.monthlyFuelChartConfig = {
           refreshDataOnly: true,
           deepWatchData: true
         };
 
-        $scope.chartOptions = {
+        $scope.monthlyFuelChartOptions = {
           chart: {
             type: 'multiBarChart',
-            color: ['#03a9f4', '#b3e5fc'],
+            color: ['#187C7C', '#8CC025', '#CE2828'],
             height: 320,
             margin: {
               top: 8,
               right: 16,
               bottom: 32,
-              left: 32
+              left: 64
             },
             clipEdge: true,
             groupSpacing: 0.3,
@@ -208,6 +253,111 @@
                 return d;
               }
             },
+            showControls: false,
+            legend: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            controls: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            tooltip: {
+              gravity: 's',
+              classes: 'gravity-s'
+            }
+          }
+        };
+
+        $scope.monthlyNetChartConfig = {
+          refreshDataOnly: true,
+          deepWatchData: true
+        };
+
+        $scope.monthlyNetChartOptions = {
+          chart: {
+            type: 'multiBarChart',
+            color: ['#014D4D'],
+            height: 320,
+            margin: {
+              top: 8,
+              right: 16,
+              bottom: 32,
+              left: 64
+            },
+            clipEdge: true,
+            groupSpacing: 0.3,
+            reduceXTicks: false,
+            stacked: false,
+            duration: 250,
+            x: function (d) {
+              return d.x;
+            },
+            y: function (d) {
+              return d.y;
+            },
+            yAxis: {
+              tickFormat: function (d) {
+                return d;
+              }
+            },
+            showControls: false,
+            legend: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            controls: {
+              margin: {
+                top: 8,
+                bottom: 32
+              }
+            },
+            tooltip: {
+              gravity: 's',
+              classes: 'gravity-s'
+            }
+          }
+        };
+
+        $scope.annualEndUseChartConfig = {
+          refreshDataOnly: true,
+          deepWatchData: true
+        };
+
+        $scope.annualEndUseChartOptions = {
+          chart: {
+            type: 'multiBarChart',
+            color: ['#014D4D'],
+            height: 320,
+            margin: {
+              top: 8,
+              right: 16,
+              bottom: 32,
+              left: 64
+            },
+            clipEdge: true,
+            groupSpacing: 0.3,
+            reduceXTicks: false,
+            stacked: true,
+            duration: 250,
+            x: function (d) {
+              return d.x;
+            },
+            y: function (d) {
+              return d.y;
+            },
+            yAxis: {
+              tickFormat: function (d) {
+                return d;
+              }
+            },
+            showControls: false,
             legend: {
               margin: {
                 top: 8,
@@ -229,29 +379,104 @@
 
         var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         var datasets = ['Electricity:Facility', 'ElectricityProduced:Facility', 'Gas:Facility'];
-        $scope.chartData = {};
-        $scope.yMax = 0;
-
+        
+        var endUseKeys = ["electricity_heating_eui", "electricity_cooling_eui", "electricity_interior_lighting_eui", "electricity_exterior_lighting_eui", "electricity_interior_equipment_eui", "electricity_exterior_equipment_eui", "electricity_fans_eui", "electricity_pumps_eui", "electricity_heat_rejection_eui", "electricity_humidification_eui", "electricity_heat_recovery_eui", "electricity_water_systems_eui", "electricity_refrigeration_eui", "electricity_generators_eui", "natural_gas_heating_eui", "natural_gas_cooling_eui", "natural_gas_interior_lighting_eui", "natural_gas_exterior_lighting_eui", "natural_gas_interior_equipment_eui", "natural_gas_exterior_equipment_eui", "natural_gas_fans_eui", "natural_gas_pumps_eui", "natural_gas_heat_rejection_eui", "natural_gas_humidification_eui", "natural_gas_heat_recovery_eui", "natural_gas_water_systems_eui", "natural_gas_refrigeration_eui", "natural_gas_generators_eui"];
+        
+        $scope.monthlyFuelChartData = {};
+        $scope.monthlyNetChartData = {};
+        $scope.annualNetChartData = {};
+        $scope.annualEndUseChartData = {};
+       
+        $scope.monthlyFuelYMax = 0;
+        $scope.monthlyNetYMin = 0;
+        $scope.monthlyNetYMax = 0;
+        $scope.annualTotalYMax = 0;
+        
+        // figure out max total energy use
         _.forEach($scope.scenarios, function (scenario) {
-          $scope.chartData[scenario.name] = [];
+          value = scenario.annual_values['Electricity:Facility'] + scenario.annual_values['Gas:Facility'];
+          $scope.annualTotalYMax =  _.max([$scope.annualTotalYMax, value]);
+        });
+        
+        // gather data for each scenario
+        _.forEach($scope.scenarios, function (scenario) {
+            
+          // monthly fuel use
+          $scope.monthlyFuelChartData[scenario.name] = [];
           _.forEach(datasets, function (dataset) {
             var values = scenario.monthly_values[dataset];
 
-            $scope.chartData[scenario.name].push({
+            $scope.monthlyFuelChartData[scenario.name].push({
               key: dataset,
               values: _.map(values, function (value, i) {
                 value = Math.round(value * 9.47817e-10);
-                $scope.yMax = _.max([$scope.yMax, value]);
+                $scope.monthlyFuelYMax = _.max([$scope.monthlyFuelYMax, value]);
                 return {
                   x: months[i],
                   y: value
                 };
               })
             });
-
-            console.debug($scope.chartData[scenario.name]);
           });
-        });
+          $scope.monthlyFuelChartOptions.chart['yDomain'] = [0, Math.round(1.1*$scope.monthlyFuelYMax)];
+
+          // monthly net use
+          $scope.monthlyNetChartData[scenario.name] = [];
+          $scope.annualNetChartData[scenario.name] = 0;
+          $scope.monthlyNetChartData[scenario.name].push({
+            key: "Net Energy Use",
+            values: _.map(months, function (month, i) {
+              value = scenario.monthly_values['Electricity:Facility'][i] - scenario.monthly_values['ElectricityProduced:Facility'][i] + scenario.monthly_values['Gas:Facility'][i];
+              value = Math.round(value * 9.47817e-10);
+              $scope.annualNetChartData[scenario.name] += value;
+              $scope.monthlyNetYMin = _.min([$scope.monthlyNetYMin, value]);
+              $scope.monthlyNetYMax = _.max([$scope.monthlyNetYMax, value]);
+              return {
+                x: month,
+                y: value
+              };
+            })
+          });
+          $scope.annualNetChartData[scenario.name] = Math.round($scope.annualNetChartData[scenario.name]);
+          $scope.monthlyNetChartOptions.chart['yDomain'] = [Math.round(1.1*$scope.monthlyNetYMin), Math.round(1.1*$scope.monthlyNetYMax)];
+
+          
+          /*
+          // annual end use
+          $scope.annualEndUseChartData[scenario.name] = [];
+          _.forEach(endUseKeys, function (endUseKey) {
+            value = 0;
+            scenario.features.forEach(function (feature) {                
+              datapoint = feature.properties.datapoint;
+              if (datapoint){
+                results = datapoint.results;
+                if (results){
+                  temp = results[endUseKey];
+                  if (temp){
+                    value += temp;
+                  }
+                }
+              }
+            });
+            value = Math.round(value * 9.47817e-10);
+              
+            $scope.annualEndUseChartData[scenario.name].push({
+              key: endUseKey,
+              values: [{
+                key: endUseKey,
+                series: 0,
+                x: 1,
+                y: value
+              }]
+            });
+          });
+          $scope.annualEndUseChartOptions.chart['yDomain'] = [0, Math.round(1.1*$scope.annualTotalYMax)];
+          */         
+          
+          //console.log($scope.monthlyFuelChartData);    
+          //console.log($scope.annualNetChartData);                 
+          //console.log($scope.annualEndUseChartData);
+        });     
       });
 
       _.delay(function () {
