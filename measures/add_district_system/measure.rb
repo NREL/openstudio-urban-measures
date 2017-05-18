@@ -1,5 +1,8 @@
-# see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
 
 # start the measure
 class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
@@ -40,15 +43,30 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
   
   def add_system_7_commercial(model)
   
+    OpenStudio::Model::OutputVariable.new("Plant System Cycle On Off Status",model)
+    OpenStudio::Model::OutputVariable.new("Plant Load Profile Mass Flow Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Load Profile Heat Transfer Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Load Profile Heat Transfer Energy",model)
+    OpenStudio::Model::OutputVariable.new("Plant Load Profile Heating Energy",model)
+    OpenStudio::Model::OutputVariable.new("Plant Load Profile Cooling Energy",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Cooling Demand Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Heating Demand Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Inlet Mass Flow Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Inlet Temperature",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Outlet Temperature",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Not Distributed Demand Rate",model)
+    OpenStudio::Model::OutputVariable.new("Plant Supply Side Unmet Demand Rate",model)
+    
     # Hot Water Plant
-
+    hw_t_c = OpenStudio::convert(180,"F","C").get
+    
     hw_loop = OpenStudio::Model::PlantLoop.new(model)
     hw_loop.setName("Hot Water Loop")
     hw_sizing_plant = hw_loop.sizingPlant
     hw_sizing_plant.setLoopType("Heating")
-    hw_sizing_plant.setDesignLoopExitTemperature(82.0) #TODO units
+    hw_sizing_plant.setDesignLoopExitTemperature(hw_t_c) 
     hw_sizing_plant.setLoopDesignTemperatureDifference(11.0)
-
+    
     hw_pump = OpenStudio::Model::PumpVariableSpeed.new(model)
     boiler = OpenStudio::Model::BoilerHotWater.new(model)
 
@@ -75,7 +93,6 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
     # Add a setpoint manager to control the
     # hot water to a constant temperature    
-    hw_t_c = OpenStudio::convert(153,"F","C").get
     hw_t_sch = OpenStudio::Model::ScheduleRuleset.new(model)
     hw_t_sch.setName("HW Temp")
     hw_t_sch.defaultDaySchedule().setName("HW Temp Default")
@@ -84,12 +101,13 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     hw_t_stpt_manager.addToNode(hw_supply_outlet_node)
     
     # Chilled Water Plant
-
+    chw_t_c = OpenStudio::convert(44,"F","C").get
+    
     chw_loop = OpenStudio::Model::PlantLoop.new(model)
     chw_loop.setName("Chilled Water Loop")
     chw_sizing_plant = chw_loop.sizingPlant
     chw_sizing_plant.setLoopType("Cooling")
-    chw_sizing_plant.setDesignLoopExitTemperature(7.22) #TODO units
+    chw_sizing_plant.setDesignLoopExitTemperature(chw_t_c)
     chw_sizing_plant.setLoopDesignTemperatureDifference(6.67)    
 
     chw_pump = OpenStudio::Model::PumpVariableSpeed.new(model)
@@ -108,7 +126,6 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
     # Add a setpoint manager to control the
     # chilled water to a constant temperature    
-    chw_t_c = OpenStudio::convert(44,"F","C").get
     chw_t_sch = OpenStudio::Model::ScheduleRuleset.new(model)
     chw_t_sch.setName("CHW Temp")
     chw_t_sch.defaultDaySchedule().setName("CHW Temp Default")
@@ -126,6 +143,10 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
       schedules[building][schedule_name] = [schedule, schedule.comment.split(" = ")[1].to_f]
     end
     
+    total_heating_capacity = 0
+    total_heating_flow_rate = 0
+    total_cooling_capacity = 0
+    total_cooling_flow_rate = 0
     schedules.each do |building, schedule|
       if schedule["District Heating Hot Water Rate"]
         load_profile_plant = OpenStudio::Model::LoadProfilePlant.new(model)
@@ -134,6 +155,9 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
         load_profile_plant.setPeakFlowRate(schedule["District Heating Mass Flow Rate"][1])
         load_profile_plant.setFlowRateFractionSchedule(schedule["District Heating Mass Flow Rate"][0])
         hw_loop.addDemandBranchForComponent(load_profile_plant)
+        
+        total_heating_capacity += schedule["District Heating Hot Water Rate"][1]
+        total_heating_flow_rate += schedule["District Heating Mass Flow Rate"][1]
       end
     
       if schedule["District Cooling Chilled Water Rate"]
@@ -143,8 +167,23 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
         load_profile_plant.setPeakFlowRate(schedule["District Cooling Mass Flow Rate"][1])
         load_profile_plant.setFlowRateFractionSchedule(schedule["District Cooling Mass Flow Rate"][0])
         chw_loop.addDemandBranchForComponent(load_profile_plant)
+        
+        total_cooling_capacity += schedule["District Cooling Chilled Water Rate"][1]
+        total_cooling_flow_rate += schedule["District Cooling Mass Flow Rate"][1]
       end
     end
+    
+    # sizing is occuring on design days which might not have maximum load, hard size equipment here
+    if total_heating_capacity > 0
+      boiler.setNominalCapacity(1.2*total_heating_capacity)
+      boiler.setDesignWaterFlowRate(total_heating_flow_rate)
+    end
+    
+    if total_cooling_capacity > 0
+      chiller.setReferenceCapacity(1.2*total_cooling_capacity)
+      chiller.setReferenceChilledWaterFlowRate(total_cooling_flow_rate)
+    end
+    
     
   end
 
@@ -167,6 +206,8 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)
+    elsif system_type == 'Ambient Loop'
+      # todo
     end
 
     return true

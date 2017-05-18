@@ -1,5 +1,8 @@
-# see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/measures/measure_writing_guide/
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
 
 require 'json'
 require 'net/http'
@@ -127,12 +130,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def create_building(building_json, create_method, model)
     
     properties = building_json[:properties]
-    surface_elevation	= properties[:surface_elevation]
     number_of_stories = properties[:number_of_stories]
     number_of_stories_above_ground = properties[:number_of_stories_above_ground]
     number_of_stories_below_ground = properties[:number_of_stories_below_ground]
     number_of_residential_units = properties[:number_of_residential_units]
-    floor_to_floor_height = properties[:floor_to_floor_height]
+    maximum_roof_height = properties[:maximum_roof_height]
     space_type = properties[:building_type]
     
     if space_type == "Mixed use"
@@ -173,9 +175,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       number_of_stories_below_ground = number_of_stories - number_of_stories_above_ground
     end
     
-    if floor_to_floor_height.nil?
-      # DLM: todo, set this by space type
-      floor_to_floor_height = 3.6
+    floor_to_floor_height = 3
+    if number_of_stories_above_ground && number_of_stories_above_ground > 0 && maximum_roof_height
+      floor_to_floor_height = maximum_roof_height / number_of_stories_above_ground
+      floor_to_floor_height = OpenStudio::convert(floor_to_floor_height, 'ft', 'm').get
     end
     
     if create_method == :space_per_floor
@@ -410,11 +413,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       if surrounding_buildings == "ShadingOnly"
       
         # check if any building point is shaded by any other building point
-        surface_elevation	= other_building[:properties][:surface_elevation]
         roof_elevation	= other_building[:properties][:roof_elevation]
         number_of_stories = other_building[:properties][:number_of_stories]
         number_of_stories_above_ground = other_building[:properties][:number_of_stories_above_ground]
-        floor_to_floor_height = other_building[:properties][:floor_to_floor_height]
+        maximum_roof_height = properties[:maximum_roof_height]
         
         if number_of_stories_above_ground.nil?
           if number_of_stories_below_ground.nil?
@@ -425,9 +427,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           end
         end
         
-        if floor_to_floor_height.nil?
-          # DLM: todo, set this by space type
-          floor_to_floor_height = 3.6
+        floor_to_floor_height = 3
+        if number_of_stories_above_ground && number_of_stories_above_ground > 0 && maximum_roof_height
+          floor_to_floor_height = maximum_roof_height / number_of_stories_above_ground
+          floor_to_floor_height = OpenStudio::convert(floor_to_floor_height, 'ft', 'm')
         end
         
         other_height = number_of_stories_above_ground * floor_to_floor_height
@@ -638,12 +641,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_project(project_id)
 
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Get.new("/projects/#{project_id}.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -658,16 +660,15 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   end
   
   # get the feature from the database
-  def get_feature(feature_id)
+  def get_feature(project_id, feature_id)
     
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    http.read_timeout = 1000
+    request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
-  
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
+  @runner.registerInfo("/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}")
     response = http.request(request)
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
@@ -684,13 +685,12 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_feature_collection(params)
     
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Post.new("/api/search.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -717,6 +717,40 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     feature_id = runner.getStringArgumentValue("feature_id", user_arguments)
     surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
     
+    # pull information from the previous model 
+    #model.save('initial.osm', true)
+    
+    default_construction_set = model.getBuilding.defaultConstructionSet
+    if !default_construction_set.is_initialized
+      runner.registerInfo("Starting model does not have a default construction set, creating new one")
+      default_construction_set = OpenStudio::Model::DefaultConstructionSet.new(model)
+    else
+      default_construction_set = default_construction_set.get
+    end
+      
+    stories = []
+    model.getBuildingStorys.each { |story| stories << story }
+    stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
+
+    space_types = []
+    stories.each_index do |i|
+      space_type = nil
+      space = stories[i].spaces.first
+      if space && space.spaceType.is_initialized
+        space_type = space.spaceType.get
+      else  
+        space_type = OpenStudio::Model::SpaceType.new(model)
+        runner.registerInfo("Story #{i} does not have a space type, creating new one")
+      end
+      space_types[i] = space_type
+    end
+    
+    # delete the previous building
+    model.getBuilding.remove
+    
+    # create new building and transfer default construction set
+    model.getBuilding.setDefaultConstructionSet(default_construction_set)
+    
     # instance variables
     @runner = runner
     @origin_lat_lon = nil
@@ -729,7 +763,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    feature = get_feature(feature_id)
+    feature = get_feature(project_id, feature_id)
     if feature.nil? || feature.empty?
       @runner.registerError("Feature '#{feature_id}' could not be found")
       return false
@@ -778,6 +812,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     if feature[:properties][:surface_elevation]
       surface_elevation = feature[:properties][:surface_elevation].to_f
+      surface_elevation = OpenStudio::convert(surface_elevation, 'ft', 'm').get
       site.setElevation(surface_elevation)
     end
     
@@ -849,12 +884,20 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
           surface_construction = surface.construction
           if !surface_construction.empty?
             surface.setConstruction(surface_construction.get)
+          else
+            @runner.registerError("Surface '#{surface.nameString}' does not have a construction")
+            #model.save('error.osm', true)
+            return false
           end
           surface.setOutsideBoundaryCondition('Adiabatic')
           
           adjacent_surface_construction = adjacent_surface.get.construction
           if !adjacent_surface_construction.empty?
             adjacent_surface.get.setConstruction(adjacent_surface_construction.get)
+          else
+            @runner.registerError("Surface '#{adjacent_surface.get.nameString}' does not have a construction")
+            #model.save('error.osm', true)
+            return false
           end
           adjacent_surface.get.setOutsideBoundaryCondition('Adiabatic')
         end
@@ -877,6 +920,21 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       @runner.registerError("Unknown feature type '#{feature_type}'")
       return false
     end
+    
+    # transfer data from previous model
+    stories = []
+    model.getBuildingStorys.each { |story| stories << story }
+    stories.sort! { |x,y| x.nominalZCoordinate.to_s.to_f <=> y.nominalZCoordinate.to_s.to_f }
+
+    stories.each_index do |i|
+      space_type = space_types[i]
+      next if space_type.nil?
+      
+      stories[i].spaces.each do |space|
+        space.setSpaceType(space_type)
+      end
+    end
+    
 
     return true
 

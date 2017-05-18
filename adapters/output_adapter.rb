@@ -1,3 +1,9 @@
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
+
 require 'openstudio'
 require 'openstudio-workflow'
 require 'openstudio/workflow/adapters/output_adapter'
@@ -21,8 +27,6 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
       @url = md[1]
     end
     
-    @user_name = 'test@nrel.gov'
-    @user_pwd = 'testing123'
     super
   end
   
@@ -37,15 +41,15 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     params[:datapoint] = datapoint
     
     http = Net::HTTP.new(@url, @port)
+    http.read_timeout = 1000
     request = Net::HTTP::Post.new("/api/datapoint.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth(@user_name, @user_pwd)
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
-    if response.code != '200' # success
+    if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
       File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
       return false
@@ -75,6 +79,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
 
     params = {}
     params[:datapoint_id] = @options[:datapoint_id]
+    params[:project_id] = @options[:project_id]
     params[:file_data] = file_data
     
     puts "sending file '#{path}'"
@@ -83,15 +88,15 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     puts visible_params
     
     http = Net::HTTP.new(@url, @port)
-    request = Net::HTTP::Post.new("/api/datapoint_file")
+    http.read_timeout = 1000
+    request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.body = JSON.generate(params)
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth(@user_name, @user_pwd)
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
-    if response.code != '200' # success
+    if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
       File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
       return false
@@ -113,7 +118,11 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     fail 'Missing required options' unless @options[:url] && @options[:datapoint_id] && @options[:project_id]
     send_status("Complete")
     send_file("#{@options[:output_directory]}/run.log")
-    Dir.glob("#{@options[:output_directory]}/../reports/*").each { |f| send_file(f) }
+    Dir.glob("#{@options[:output_directory]}/../reports/*").each do |f|
+      next if File.basename(f) == 'view_model_report.json'
+      
+      send_file(f) 
+    end
   end
 
   # Write that the process has failed

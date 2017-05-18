@@ -1,5 +1,18 @@
+require 'logger'
+
 module UrbanOptConfig
 
+  #ENV['GEM_HOME'] = 'C:/bricr/gems'
+  #ENV['GEM_PATH'] = 'C:/bricr/gems'
+  
+  STDOUT.sync = true
+  LOGGER = Logger.new(STDOUT)
+  LOGGER.formatter = proc { |severity, datetime, progname, msg| "#{severity}: #{msg.dump}\n" }
+  #LOGGER.level = Logger::ERROR
+  LOGGER.level = Logger::WARN
+  #LOGGER.level = Logger::INFO
+  #LOGGER.level = Logger::DEBUG
+  
   # url of urbanopt website
   URL = 'http://localhost:3000'
   #URL = 'http://insight4.hpc.nrel.gov:8081'
@@ -10,7 +23,7 @@ module UrbanOptConfig
   OPENSTUDIO_EXE = 'C:/openstudio-2.0.4/bin/openstudio.exe'
   
   # one or more measure paths
-  OPENSTUDIO_MEASURES = ["./../../../measures", "./../../../../OpenStudio-measures/NREL\ working\ measures"]
+  OPENSTUDIO_MEASURES = ["./../../../measures", "./../../../../OpenStudio-measures/NREL\ working\ measures", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"]
 
   # one or more file paths
   OPENSTUDIO_FILES = ["./../../../adapters","./../../../weather","./../../../../OpenStudio-measures/NREL_integration_testing/weather"]
@@ -27,6 +40,9 @@ module UrbanOptConfig
   
   # number of parallel jobs
   NUM_PARALLEL = 7
+  
+  # clear results when running
+  CLEAR_RESULTS = true
   
   # used by run_datapoints and run_everything
   PROJECT_ID = '58c18ff06eeb883348000002'

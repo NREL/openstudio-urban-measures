@@ -1,5 +1,8 @@
-# see the URL below for information on how to write OpenStudio measures
-# http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
 
 require 'json'
 require 'net/http'
@@ -58,15 +61,14 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   end
   
   # get the feature from the database
-  def get_feature(feature_id)
+  def get_feature(project_id, feature_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/features/#{feature_id}.json")
+    http.read_timeout = 1000
+    request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -84,12 +86,11 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def get_datapoint_ids(project_id, scenario_id)
   
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/scenarios/#{scenario_id}.json")
+    http.read_timeout = 1000
+    request = Net::HTTP::Get.new("/api/retrieve_scenario.json?project_id=#{project_id}&scenario_id=#{scenario_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -116,14 +117,13 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
-  def download_datapoint(datapoint_id)
+  def download_datapoint(project_id, datapoint_id)
     http = Net::HTTP.new(@city_db_url, @port)
-    request = Net::HTTP::Get.new("/datapoints/#{datapoint_id}.json")
+    http.read_timeout = 1000
+    request = Net::HTTP::Get.new("/api/retrieve_datapoint.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
-    
-    # DLM: todo, get these from environment variables or as measure inputs?
-    request.basic_auth("test@nrel.gov", "testing123")
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
   
     response = http.request(request)
     if  response.code != '200' # success
@@ -141,11 +141,8 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           file_id = datapoint_file[:_id][:$oid]
 
           http = Net::HTTP.new(@city_db_url, @port)
-          request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}")
-          "/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}"
-          
-          # DLM: todo, get these from environment variables or as measure inputs?
-          request.basic_auth("test@nrel.gov", "testing123")
+          request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}&file_name=#{file_name}")
+          request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
        
           response = http.request(request)
           if  response.code != '200' # success
@@ -171,6 +168,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
   def makeSchedule(start_date, time_step, values, model, basename, ts)
   
+    if values.nil?
+      return
+    end
+    
     if ts[:name].include? "Mass Flow Rate"
       values *= 0.001 # kg to m^3 of water, which is 1000 kg/m^3
     end
@@ -238,9 +239,9 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @city_db_url = md[1]
     end
 
-    feature = get_feature(feature_id)
+    feature = get_feature(project_id, feature_id)
     if feature[:properties].nil? || feature[:properties][:district_system_type].nil?
-      runner.registerError("Cannot feature #{feature_id} missing required property district_system_type")
+      runner.registerError("Cannot get feature #{feature_id} missing required property district_system_type")
       return false
     end
     
@@ -265,22 +266,29 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     
     datapoint_files = []
     datapoint_ids.each do |datapoint_id|
-      datapoint_file = download_datapoint(datapoint_id)
+      datapoint_file = download_datapoint(project_id, datapoint_id)
       if datapoint_file
         datapoint_files << datapoint_file
       end
     end
     
-    # 15 minute timesteps
-    num_rows = 8760*4
+    # get timesteps
+    time_step_per_hour = model.getTimestep.numberOfTimestepsPerHour
+    num_rows = 8760*time_step_per_hour
     start_date = model.getYearDescription.makeDate(1,1)
-    time_step = OpenStudio::Time.new(0,0,15,0)
+    time_step = OpenStudio::Time.new(0,0,60/time_step_per_hour,0)
     
     electric_schedules = []
     gas_schedules = []
     district_cooling_schedules = []
     district_heating_schedules = []
     
+    timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
+                  {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
+                  {name: "District Heating Hot Water Rate", units: "W", normalize: false},
+                  {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
+                  
+    summed_values = {}
     datapoint_files.each do |file|
     
       puts "Reading #{file}"
@@ -295,26 +303,33 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           # header row
           headers = row
           headers.each do |header|
-            values[header] = OpenStudio::Vector.new(num_rows)
+            values[header] = OpenStudio::Vector.new(num_rows, 0.0)
+            if summed_values[header].nil?
+              summed_values[header] = OpenStudio::Vector.new(num_rows, 0.0)
+            end
           end
         elsif i <= num_rows
           headers.each_index do |j|
-            values[headers[j]][i-1] = row[j].to_f
+            v = row[j].to_f
+            values[headers[j]][i-1] = v
+            summed_values[headers[j]][i-1] = summed_values[headers[j]][i-1] + v
           end
         end
         i += 1
       end
-  
-      timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
-                    {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
-                    {name: "District Heating Hot Water Rate", units: "W", normalize: false},
-                    {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
-                    
-      timeseries.each do |ts|
-        makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
-      end
+      
+      # to make one individual schedules
+      #timeseries.each do |ts|
+      #  makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
+      #end
+
     end
-    
+     
+    # to make one summed schedule
+    timeseries.each do |ts|
+      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summmed", ts)
+    end
+      
     # todo: create a plant loop
     
     return @result

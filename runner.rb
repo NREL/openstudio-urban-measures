@@ -1,13 +1,25 @@
+######################################################################
+#  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
+#   
+#  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
+######################################################################
+
 require 'rest-client'
 require 'parallel'
 require 'json'
 require 'base64'
 require 'csv'
+require 'open3'
+
+require_relative 'map_properties'
 
 # Runner creates all datapoints in a project, it then downloads max_datapoints number of osws, then runs all downloaded osws
 class Runner
 
-  def initialize(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+  # include module containing configure_workflow
+  include UrbanOptMapping
+
+  def initialize(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel, logger)
     @url = url
     @openstudio_exe = openstudio_exe
     @openstudio_measures = openstudio_measures
@@ -17,20 +29,30 @@ class Runner
     @user_pwd = user_pwd
     @max_datapoints = max_datapoints
     @num_parallel = num_parallel
+    @logger = logger
     
     @project = get_project
-    @project_name = @project[:name]
+    @project_name = @project[:name] if @project
   end
   
   def update_measures
     measure_dir = File.join(File.dirname(__FILE__), "/measures")
     command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
-    puts command
-    system(command)
+    @logger.info("Running command: '#{command}'")
+    Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
+      # calling wait_thr.value blocks until command is complete
+      if wait_thr.value.success?
+        @logger.info("Command completed successfully")
+      else
+        @logger.error("Error running command: '#{command}'")
+        @logger.error("#{stdout.read}")
+        @logger.error("#{stderr.read}")
+      end
+    end
   end
   
   def clear_results(datapoint_ids = [])
-    puts "clear_results, datapoint_ids = #{datapoint_ids}"
+    @logger.debug("clear_results, datapoint_ids = #{datapoint_ids}")
     
     if datapoint_ids.empty?
       datapoint_ids = get_all_datapoint_ids
@@ -42,185 +64,252 @@ class Runner
       datapoint[:status] = nil
       datapoint[:results] = nil
       
-      # DLM: todo, how to reset related files?
+      osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
+      if File.exists?(osw_dir)
+        @logger.debug("removing directory '#{osw_dir}'")
+        FileUtils.rm_rf(osw_dir)
+      end
+      
+      json_request = JSON.generate('project_id' => @project_id, 'datapoint' => datapoint)
+      
+      existing_datapoint = get_datapoint(datapoint_id)
+      @logger.debug("existing_datapoint = #{existing_datapoint}")
+      
+      if existing_datapoint[:datapoint_files]
+        existing_datapoint[:datapoint_files].each do |file|
+          filename = file[:file_name]
+          @logger.debug("deleting file #{filename} for datapoint #{datapoint_id}")
+          
+          begin
+            request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+            response = request["/api/delete_datapoint_file?datapoint_id=#{datapoint_id}&file_name=#{filename}"].get(content_type: :json, accept: :json)
+          rescue => e
+            @logger.error("Error in clear_results delete_datapoint_file: #{e.response}")
+          end
+        end
+      end
 
-      params = {}
-      params[:project_id] = @project_id
-      params[:datapoint] = datapoint
-
-      request = RestClient::Resource.new("#{@url}/api/datapoint.json", user: @user_name, password: @user_pwd)
-      response = request.post(params, content_type: :json, accept: :json)    
+      begin
+        request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
+        response = request.post(json_request, content_type: :json, accept: :json)    
+      rescue => e
+        @logger.error("Error in clear_results: #{e.response}")
+      end        
     end
   end
   
   def get_project()
-    puts "get_project"
+    @logger.debug("get_project")
     
-    result = []
+    result = nil
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/project?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
+      project = JSON.parse(response.body, :symbolize_names => true)
+      result = project[:project]
+    rescue => e
+      @logger.error("Error in get_project: #{e.response}")
+    end   
     
-    request = RestClient::Resource.new("#{@url}/projects/#{@project_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-    
-    result = JSON.parse(response.body, :symbolize_names => true)
-
-    return result[:project]
+    return result
   end  
     
   def get_all_feature_ids(feature_type)
-    puts "get_all_feature_ids, feature_type = #{feature_type}"
+    @logger.debug("get_all_feature_ids, feature_type = #{feature_type}")
+    
     result = []
+    begin
+      json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
+      request = RestClient::Resource.new("#{@url}/api/export", user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      
+      buildings = JSON.parse(response.body, :symbolize_names => true)
+      buildings[:features].each do |building|
+        result << building[:properties][:id]
+      end
+    rescue => e
+      @logger.error("Error in get_all_feature_ids: #{e.response}")
+    end   
     
-    json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
-    request = RestClient::Resource.new("#{@url}/api/export", user: @user_name, password: @user_pwd)
-    response = request.post(json_request, content_type: :json, accept: :json)
-    
-    buildings = JSON.parse(response.body, :symbolize_names => true)
-    buildings[:features].each do |building|
-      result << building[:properties][:id]
-    end
-
     return result
   end
   
   def get_all_workflow_ids(feature_type)
-    puts "get_all_workflow_ids, feature_type = #{feature_type}"
-    result = []
+    @logger.debug("get_all_workflow_ids, feature_type = #{feature_type}")
     
-    request = RestClient::Resource.new("#{@url}/workflows.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-  
-    workflows = JSON.parse(response.body, :symbolize_names => true)
-    workflows.each do |workflow|
-      if feature_type != workflow[:feature_type]
-        puts "skipping workflow with feature_type '#{workflow[:feature_type]}', requested feature_type '#{feature_type}'"
-        next
+    result = []
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/workflows?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
+    
+      workflows = JSON.parse(response.body, :symbolize_names => true)
+      workflows.each do |workflow|
+        if feature_type != workflow[:feature_type]
+          @logger.debug("skipping workflow with feature_type '#{workflow[:feature_type]}', requested feature_type '#{feature_type}'")
+          next
+        end
       end
-      
-      project_id = workflow[:project_id]
-      if project_id == @project_id
-        result << workflow[:id]
-      else
-        puts "skipping workflow #{workflow[:id]} since it is not associated with project #{@project_id}"
-      end
-    end
-  
-    puts "get_all_workflow_ids = #{result.join(',')}"
+    rescue => e
+      @logger.error("Error in get_all_workflow_ids: #{e.response}")
+    end   
+    
+    @logger.debug("get_all_workflow_ids = #{result.join(',')}")
     return result
   end
   
   def get_all_scenario_ids()
-    puts "get_all_scenario_ids"
-    result = []
+    @logger.debug("get_all_scenario_ids")
     
-    request = RestClient::Resource.new("#{@url}/scenarios.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-  
-    scenarios = JSON.parse(response.body, :symbolize_names => true)
-    scenarios.each do |scenario|
-      
-      project_id = scenario[:project_id]
-      if project_id == @project_id
+    result = []
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/scenarios?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
+    
+      scenarios = JSON.parse(response.body, :symbolize_names => true)
+      scenarios.each do |scenario|
         result << scenario[:id]
-      else
-        puts "skipping scenario #{scenario[:id]} since it is not associated with project #{@project_id}"
       end
-    end
+    rescue => e
+      @logger.error("Error in get_all_scenario_ids: #{e.response}")
+    end   
   
-    puts "get_all_scenario_ids = #{result.join(',')}"
+    @logger.debug("get_all_scenario_ids = #{result.join(',')}")
     return result
   end
   
   def get_all_datapoint_ids()
-    puts "get_all_datapoint_ids"
+    @logger.debug("get_all_datapoint_ids")
+    
     result = []
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/datapoints?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
     
-    request = RestClient::Resource.new("#{@url}/datapoints.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-  
-    datapoints = JSON.parse(response.body, :symbolize_names => true)
+      datapoints = JSON.parse(response.body, :symbolize_names => true)
+      
+      # sort building datapoints before district system ones
+      feature_types = ['Building', 'District System']
+      datapoints.sort!{|a,b| feature_types.index(a[:feature_type]) <=> feature_types.index(b[:feature_type])}
+      
+      # make an array of datapoint IDs only
+      result = datapoints.map{|x| x[:id]}
+    rescue => e
+      @logger.error("Error in get_all_datapoint_ids: #{e.response}")
+    end   
     
-    # sort building datapoints before district system ones
-    feature_types = ['Building', 'District System']
-    datapoints.sort!{|a,b| feature_types.index(a[:feature_type]) <=> feature_types.index(b[:feature_type])}
-    
-    datapoints.each do |datapoint|
-
-      project_id = datapoint[:project_id]
-      if project_id == @project_id
-        result << datapoint[:id]
-      else
-        puts "skipping datapoint #{datapoint[:id]} since it is not associated with project #{@project_id}"
-      end
-    end
-  
-    puts "get_all_datapoint_ids = #{result.join(',')}"
+    @logger.debug("get_all_datapoint_ids = #{result.join(',')}")
     return result
   end
   
-  def get_datapoint(building_id, workflow_id)
-    puts "get_datapoint, building_id = #{building_id}, workflow_id = #{workflow_id}"
-    # todo: DLM, needs to be generalized to take feature_id
-    json_request = JSON.generate('workflow_id' => workflow_id, 'building_id' => building_id, 'project_id' => @project_id)
-    request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
-    response = request.post(json_request, content_type: :json, accept: :json)
+  def get_or_create_datapoint(feature_id, option_set_id, scenario_id)
+    @logger.debug("get_or_create_datapoint, feature_id = #{feature_id}, option_set_id = #{option_set_id}, scenario_id = #{scenario_id}")
     
-    datapoint = JSON.parse(response.body, :symbolize_names => true)
-    return datapoint[:datapoint]
+    result = nil
+    begin
+      json_request = JSON.generate('feature_id' => feature_id, 'option_set_id' => option_set_id, 'scenario_id' => scenario_id, 'project_id' => @project_id)
+      request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint", user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+      datapoint = JSON.parse(response.body, :symbolize_names => true)
+      result = datapoint[:datapoint]
+    rescue => e
+      @logger.error("Error in get_all_datapoint_ids: #{e.response}")
+    end   
+    
+    return result
   end
 
-   def get_datapoint_by_id(datapoint_id)
-    puts "get_datapoint_by_id, datapoint_id = #{datapoint_id}"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
+   def get_datapoint(datapoint_id)
+    @logger.debug("get_datapoint, datapoint_id = #{datapoint_id}")
     
-    datapoint = JSON.parse(response.body, :symbolize_names => true)
-    return datapoint[:datapoint]
+    result = nil
+    begin    
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
+      datapoint = JSON.parse(response.body, :symbolize_names => true)
+      result = datapoint[:datapoint]
+    rescue => e
+      @logger.error("Error in get_datapoint: #{e.response}")
+    end   
+    
+    return result
   end
   
-  def get_workflow(datapoint_id)
-    puts "get_workflow, datapoint_id = #{datapoint_id}"
-    puts "#{@url}/datapoints/#{datapoint_id}/instance_workflow.json"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}/instance_workflow.json", user: @user_name, password: @user_pwd)
-    begin
-      response = request.get(content_type: :json, accept: :json)
+  def get_option_set(option_set_id)
+    @logger.debug("get_option_set, option_set_id = #{option_set_id}")
+    
+    result = nil
+    begin    
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_option_set?project_id=#{@project_id}&option_set_id=#{option_set_id}"].get(content_type: :json, accept: :json)
+      datapoint = JSON.parse(response.body, :symbolize_names => true)
+      result = datapoint[:option_set]
     rescue => e
-      puts e.response
+      @logger.error("Error in get_option_set: #{e.response}")
     end
-
-    workflow = JSON.parse(response.body, :symbolize_names => true)
-    return workflow
+      
+    return result
   end
-
-  def get_scenario(scenario_id)
-    puts "get_scenario, scenario_id = #{scenario_id}"
-    puts "#{@url}/scenarios/#{scenario_id}.json"
-    request = RestClient::Resource.new("#{@url}/scenarios/#{scenario_id}.json", user: @user_name, password: @user_pwd)
-    begin
-      response = request.get(content_type: :json, accept: :json)
+  
+  def get_feature(feature_id)
+    @logger.debug("feature_id, feature_id = #{feature_id}")
+    
+    result = nil
+    begin        
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}"].get(content_type: :json, accept: :json)
+      feature = JSON.parse(response.body, :symbolize_names => true)
+      result = feature
     rescue => e
-      puts e.response
+      @logger.error("Error in get_feature: #{e.response}")
+    end
+      
+    return result
+  end
+  
+  def get_scenario(scenario_id)
+    @logger.debug("get_scenario, scenario_id = #{scenario_id}")
+
+    result = nil
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_scenario?project_id=#{@project_id}&scenario_id=#{scenario_id}"].get(content_type: :json, accept: :json)
+      scenario = JSON.parse(response.body, :symbolize_names => true)
+      result = scenario[:scenario]
+    rescue => e
+      @logger.error("Error in get_scenario: #{e.response}")
     end
 
-    scenario = JSON.parse(response.body, :symbolize_names => true)
-    return scenario[:scenario]
+    return result
   end
   
   def get_results(scenario_id)
-    puts "get_results, scenario_id = #{scenario_id}"
-    request = RestClient::Resource.new("#{@url}/api/scenario_features.json?project_id=#{@project_id}&scenario_id=#{scenario_id}", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-
-    results = JSON.parse(response.body, :symbolize_names => true)
+    @logger.debug("get_results, scenario_id = #{scenario_id}")
+    
+    results = nil
+    begin
+      request = RestClient::Resource.new("#{@url}/api/scenario_features.json?project_id=#{@project_id}&scenario_id=#{scenario_id}", user: @user_name, password: @user_pwd)
+      response = request.get(content_type: :json, accept: :json)
+      results = JSON.parse(response.body, :symbolize_names => true)
+    rescue => e
+      @logger.error("Error in get_results: #{e.response}")
+    end
+    
     return results
   end
   
   def get_detailed_results(datapoint_id)
-    puts "get_detailed_results, datapoint_id = #{datapoint_id}"
-    request = RestClient::Resource.new("#{@url}/datapoints/#{datapoint_id}.json", user: @user_name, password: @user_pwd)
-    response = request.get(content_type: :json, accept: :json)
-
-    datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
-
+    @logger.debug("get_detailed_results, datapoint_id = #{datapoint_id}")
+    
+    datapoint = nil
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
+      datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
+    rescue => e
+      @logger.error("Error in get_detailed_results: #{e.response}")
+      return nil
+    end
+    
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
       datapoint_files.each do |datapoint_file|
@@ -228,7 +317,7 @@ class Runner
           file_name = datapoint_file[:file_name]
           file_id = datapoint_file[:_id][:$oid]
 
-          request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint_file.json?datapoint_id=#{datapoint_id}&file_name=#{file_name}", user: @user_name, password: @user_pwd)
+          request = RestClient::Resource.new("#{@url}/api/retrieve_datapoint_file.json?project_id=#{@project_id}&datapoint_id=#{datapoint_id}&file_name=#{file_name}", user: @user_name, password: @user_pwd)
           response = request.get(content_type: :json, accept: :json)
 
           file_data = JSON.parse(response.body, :symbolize_names => true)[:file_data]
@@ -244,37 +333,34 @@ class Runner
   
   # return a vector of directories to run
   def create_osws
-    puts "create_osws"
+    @logger.debug("create_osws")
     result = []
     
     # connect to database, get list of all datapoint ids
     all_datapoint_ids = get_all_datapoint_ids()
 
-    puts "Project #{@project_name}"
-    puts "#{all_datapoint_ids.size} datapoints"
-    
     # loop over all combinations
     num_datapoints = 1
     all_datapoint_ids.each do |datapoint_id|
     
-      datapoint = get_datapoint_by_id(datapoint_id)
+      datapoint = get_datapoint(datapoint_id)
       
-      # DLM: TODO: skipp running district system datapoints until all buildings are run
+      # DLM: TODO: skip running district system datapoints until all buildings are run
       
       # see if datapoint needs to be run
       if datapoint[:status] 
         if datapoint[:status] == "Started"
-          puts "Skipping Started Datapoint"
+          @logger.debug("Skipping Started Datapoint")
           next
         elsif datapoint[:status] == "Complete"
-          puts "Skipping Complete Datapoint"
+          @logger.debug("Skipping Complete Datapoint")
           next
         elsif datapoint[:status] == "Failed"
-          puts "Skipping Failed Datapoint"
-          next
+          #@logger.debug("Skipping Failed Datapoint")
+          #next
         end
       end
-      puts "Saving Datapoint #{datapoint}"
+      @logger.debug("Saving Datapoint #{datapoint}")
       
       result << create_osw(datapoint_id)
       
@@ -289,33 +375,57 @@ class Runner
   end
 
   def create_osw(datapoint_id)
-    puts "create_osw, datapoint_id = #{datapoint_id}"
-    datapoint = get_datapoint_by_id(datapoint_id)
-
-    # datapoint is not run, get the workflow
-    # this is the merged workflow with the building properties merged in to the template workflow
-    workflow = get_workflow(datapoint_id)
+    @logger.debug("create_osw, datapoint_id = #{datapoint_id}")
     
-    building_workflow_id = nil
-    if workflow[:feature_type] == "District System"
-      building_workflow_ids = get_all_workflow_ids("Building")
-      building_workflow_id = building_workflow_ids[0]
+    datapoint = get_datapoint(datapoint_id) # format scenario_ids as array of strings
+    feature_id = datapoint[:feature_id]
+    feature_type = datapoint[:feature_type]
+    option_set_id = datapoint[:option_set_id]
+
+    workflow = get_option_set(option_set_id)
+    feature = get_feature(feature_id)
+    project = get_project()
+    
+    # if feature_type, set scenario_id
+    scenario_id = nil
+    if feature_type == "District System"
+      scenario_id = datapoint[:scenario_ids].first
     end
+    
+    if project[:properties].nil?
+      project[:properties] = {}
+    end
+    
+    workflow.delete(:datapoints)
+
+    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:steps].each do |step|
       arguments = step[:arguments]
       arguments.each_key do |name|
 
-        if name == 'city_db_url'.to_sym
+        if name == :city_db_url
           arguments[name] = @url
         end
         
-        if name == 'building_workflow_id'.to_sym
-          arguments[name] = building_workflow_id
+        if name == :project_id
+          arguments[name] = @project_id
         end
-
+        
+        if name == :scenario_id
+          arguments[name] = scenario_id
+        end
+        
+        if name == :feature_id
+          arguments[name] = feature_id
+        end
+        
+        if name == :datapoint_id
+          arguments[name] = datapoint_id
+        end
+        
         # work around for https://github.com/NREL/OpenStudio-workflow-gem/issues/32
-        if name == 'weather_file_name'.to_sym
+        if name == :weather_file_name
           workflow[:weather_file] = arguments[name]
         end
       end
@@ -331,7 +441,9 @@ class Runner
     FileUtils.mkdir_p(osw_dir)
  
     osw_path = "#{osw_dir}/in.osw"
-    puts "saving osw #{osw_path}"
+    
+    FileUtils.rm_rf(osw_path) if File.exists?(osw_path)
+
     File.open(osw_path, 'w') do |file|
       file << JSON.pretty_generate(workflow)
     end
@@ -340,9 +452,8 @@ class Runner
   end
   
   def run_osws(dirs)
-    puts "run_osws, dirs = #{dirs}"
-    #dirs = Dir.glob("./run/*")
-    
+    @logger.debug("run_osws, dirs = #{dirs}")
+
     Parallel.each(dirs, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
       
       md = /datapoint_(.*)/.match(osw_dir)
@@ -352,38 +463,40 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
+      # ok to put user name and password in environment variables?
       command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
-      puts command
-      system(command)
+      @logger.info("Running command: '#{command}'")
+      Open3.popen3({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command) do |stdin, stdout, stderr, wait_thr|
+        # calling wait_thr.value blocks until command is complete
+        if wait_thr.value.success?
+          @logger.info("'#{osw_path}' completed successfully")
+        else
+          @logger.error("Error running command: '#{command}'")
+          @logger.error("#{stdout.read}")
+          @logger.error("#{stderr.read}")
+        end
+      end
     end
   end
   
   def save_results(save_datapoint_files = false)
-    puts "save_results"
+    @logger.debug("save_results")
     all_scenario_ids = get_all_scenario_ids()
     
+    all_scenario_results = []
     all_scenario_ids.each do |scenario_id|
       scenario = get_scenario(scenario_id)
       scenario_name = scenario[:name]
-      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
       
-      if !File.exists?(results_path)
-        results = get_results(scenario_id)
-        
-        results_dir = File.dirname(results_path)
-        if !File.exists?(results_dir)
-          FileUtils.mkdir_p(results_dir)
-        end
-        
-        File.open(results_path, 'w') do |file|
-          file << JSON.pretty_generate(results)
-        end
-      end
+      scenario_results = get_results(scenario_id)
+      scenario_results[:name] = scenario_name
       
       # todo: might also sum by type
       summed_results = nil
+      missing_results = []
       detailed_results_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}/")
-      get_all_datapoint_ids.each do |datapoint_id|
+      scenario[:datapoints].each do |datapoint|
+        datapoint_id = datapoint[:id]
         file = get_detailed_results(datapoint_id)
         
         if save_datapoint_files
@@ -394,7 +507,9 @@ class Runner
           end
         end
         
-        if summed_results.nil?
+        if file.nil?
+          missing_results << datapoint_id
+        elsif summed_results.nil?
           summed_results = CSV.parse(file)
         else
           results = CSV.parse(file)
@@ -406,18 +521,156 @@ class Runner
             end
           end
         end
-
       end
+      scenario_results[:missing_results] = missing_results
       
+      # write out combined CSV
       summed_result_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_timeseries.csv")
-      File.open(summed_result_path, "w") do |f|
-        summed_results.each do |row|
-          f.write(CSV.generate_line(row))
+      if summed_results
+        File.open(summed_result_path, "w") do |f|
+          summed_results.each do |row|
+            f.write(CSV.generate_line(row))
+          end
         end
       end
+      
+      # write out any missing results
+      missing_results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}_missing_results.txt")
+      if missing_results.size > 0
+        File.open(missing_results_path, "w") do |f|
+          missing_results.each do |missing_result|
+            f << "Datapoint #{missing_result} does not have timeseries results"
+          end
+        end
+      else
+        if File.exists?(missing_results_path)
+          FileUtils.rm(missing_results_path)
+        end
+      end
+      
+      # aggregate timeseries into hourly, daily, monthly, and annual values
+      i = 0
+      timestep_per_hr = 6
+      num_rows = 8760*timestep_per_hr
+      headers = []
+      timestep_values = {}
+      hourly_values = {}
+      daily_values = {}
+      monthly_values = {}
+      annual_values = {}
+      CSV.foreach(summed_result_path) do |row|
+        if i == 0
+          # header row
+          headers = row
+          headers.each do |header|
+            annual_values[header] = 0
+            timestep_values[header] = []
+            daily_values[header] = []
+          end
+        elsif i <= num_rows
+          headers.each_index do |j|
+            annual_values[headers[j]] += row[j].to_f
+            timestep_values[headers[j]] << row[j].to_f 
+          end
+        end
+        i += 1
+      end
+
+      headers.each_index do |j|
+
+        all_values = timestep_values[headers[j]]
         
+        raise "Wrong size #{all_values.size} != #{num_rows}" if all_values.size != num_rows
+        
+        # hourly sums
+        
+        i = 1
+        hour_sum = 0
+        hourly_sums = []
+        all_values.each do |v|
+          hour_sum += v
+          if i == timestep_per_hr
+            hourly_sums << hour_sum
+            i = 1
+            hour_sum = 0
+          else
+            i += 1
+          end
+        end
+        
+        raise "Wrong size #{hourly_sums.size} != 8760" if hourly_sums.size != 8760
+        
+        hourly_values[headers[j]] = hourly_sums
+        
+        # daily sums
+        
+        i = 1
+        day_sum = 0
+        daily_sums = []
+        all_values.each do |v|
+          day_sum += v
+          if i == 24*timestep_per_hr
+            daily_sums << day_sum
+            i = 1
+            day_sum = 0
+          else
+            i += 1
+          end
+        end
+        
+        raise "Wrong size #{daily_sums.size} != 365" if daily_sums.size != 365
+        
+        daily_values[headers[j]] = daily_sums
+        
+        # horrendous monthly sums
+        monthly_sums = []
+        days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        k = 0
+        monthly_sum = 0
+        days_per_month.each do |days|
+          (1..days).each do |day|
+            monthly_sum += daily_sums[k]
+            k += 1
+          end
+          
+          monthly_sums << monthly_sum
+          monthly_sum = 0
+        end
+        
+        raise "Wrong size #{k} != 365" if k != 365
+        
+        monthly_values[headers[j]] = monthly_sums
+      end
+
+      #scenario_results[:timestep_values] = timestep_values
+      #scenario_results[:hourly_values] = hourly_values
+      #scenario_results[:daily_values] = daily_values
+      scenario_results[:monthly_values] = monthly_values
+      scenario_results[:annual_values] = annual_values
+      
+      results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/#{scenario_name}.geojson")
+      results_dir = File.dirname(results_path)
+      if !File.exists?(results_dir)
+        FileUtils.mkdir_p(results_dir)
+      end
+      
+      File.open(results_path, 'w') do |file|
+        file << JSON.pretty_generate(scenario_results)
+      end
+      
+      all_scenario_results << scenario_results
+
     end
     
+    results_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/scenarioData.js")
+    File.open(results_path, 'w') do |file|
+      file << "var scenarioData = #{JSON.pretty_generate(all_scenario_results)};"
+    end
+    
+    # copy results htmls
+    html_in_path = "#{File.dirname(__FILE__)}/reports/scenario_comparison.html"
+    html_out_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/scenario_comparison.html")
+    FileUtils.cp(html_in_path, html_out_path)
   end
   
 end
