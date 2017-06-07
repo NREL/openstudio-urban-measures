@@ -1058,7 +1058,7 @@
         "stroke-opacity": 1,
         "fill": "#555555",
         "fill-opacity": 0.5,
-        "opendss_id", "ls_vtif",
+        "opendss_id": "ls_vtif",
         "name": "Vehicle Testing and Integration Facility",
         "maximum_roof_height": 10,
         "floor_area": 3745.419332770663,
