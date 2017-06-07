@@ -4,6 +4,9 @@ require 'json'
 require 'csv'
 require 'fileutils'
 
+# DLM: this should be somewhere
+timestep = 10
+
 def find_feature(scenario, urbanopt_name)
   scenario[:features].each do |feature|
     if feature[:properties] && feature[:properties][:name]
@@ -28,10 +31,11 @@ def find_real_reactive_factions(scenario, urbanopt_name)
   return [0.95, 0.05]
 end
 
-def get_timeseries(datapoint_id, run_dir, timeseries)
+def get_timeseries(datapoint_id, run_dir, timeseries, timestep)
   result = []
   header = nil
   index = nil
+  j_to_watts = 1.0 / (timestep*60)
   filename = File.join(run_dir, "datapoint_#{datapoint_id}", "reports", "datapoint_reports_report.csv")
   CSV.foreach(filename) do |row|
     if header.nil?
@@ -39,7 +43,7 @@ def get_timeseries(datapoint_id, run_dir, timeseries)
       index = header.find_index(timeseries)
     else
       if index
-        result << row[index].to_f
+        result << row[index].to_f * j_to_watts
       else
         result << 0
       end
@@ -105,7 +109,7 @@ loads.each_value do |load|
   load.each do |entry|
     datapoint_id = find_datapoint_id(scenario, entry[:urbanopt_name])
     real_reactive_factions = find_real_reactive_factions(scenario, entry[:urbanopt_name])
-    timeseries = get_timeseries(datapoint_id, run_dir, entry[:timeseries])
+    timeseries = get_timeseries(datapoint_id, run_dir, entry[:timeseries], timestep)
     
     timeseries.each_index do |i|
       real_load_sum[i] = 0 if real_load_sum[i].nil?
