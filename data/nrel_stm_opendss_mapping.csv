@@ -1,0 +1,13 @@
+URBANopt Name,Timeseries,Fraction,OpenDSS Load Name,OpenDSS Real Power Filename,OpenDSS Reactive Power Filename
+Education Center,Electricity:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
+Education Center,ElectricityProduced:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
+East Entry,Electricity:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
+East Entry,ElectricityProduced:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
+Research Support Facility,Electricity:Facility,0.5,RSFA,ls_rsf2P1.csv,ls_rsf2Q1.csv
+Research Support Facility,ElectricityProduced:Facility,0.5,RSFA,ls_rsf2P1.csv,ls_rsf2Q1.csv
+Research Support Facility,Electricity:Facility,0.5,RSFBC,ls_rsf1P1.csv,ls_rsf1Q1.csv
+Research Support Facility,ElectricityProduced:Facility,0.5,RSFBC,ls_rsf1P1.csv,ls_rsf1Q1.csv
+East Parking,Electricity:Facility,1,TEMP,ls_pduP1.csv,ls_pduQ1.csv
+East Parking,ElectricityProduced:Facility,1,TEMP,ls_pduP1.csv,ls_pduQ1.csv
+Cafe,Electricity:Facility,1,CAFE,ls_cafeP1.csv,ls_cafeQ1.csv
+Cafe,ElectricityProduced:Facility,1,CAFE,ls_cafeP1.csv,ls_cafeQ1.csv
