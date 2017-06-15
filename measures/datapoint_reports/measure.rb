@@ -374,6 +374,27 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     add_result(results, "weather_file", weather_file, "deg")
 
     # queries with one-line API methods
+    
+    timesteps_per_hour = model.getTimestep.numberOfTimestepsPerHour
+    add_result(results, "timesteps_per_hour", timesteps_per_hour, "")
+    
+    begin_month = model.getRunPeriod.getBeginMonth
+    add_result(results, "begin_month", begin_month, "")
+    
+    begin_day_of_month = model.getRunPeriod.getBeginDayOfMonth
+    add_result(results, "begin_day_of_month", begin_day_of_month, "")
+    
+    end_month = model.getRunPeriod.getEndMonth
+    add_result(results, "end_month", end_month, "")
+    
+    end_day_of_month = model.getRunPeriod.getEndDayOfMonth
+    add_result(results, "end_day_of_month", end_day_of_month, "")
+    
+    begin_year = model.getYearDescription.calendarYear
+    if begin_year.is_initialized
+      add_result(results, "begin_year", begin_year.get, "")
+    end
+    
     building = model.getBuilding
     
     building_rotation = building.northAxis
