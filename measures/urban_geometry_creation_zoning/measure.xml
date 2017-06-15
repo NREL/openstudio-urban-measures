@@ -1,9 +1,9 @@
 <measure>
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
-  <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>967bb6b5-5439-4d48-91ad-0b06b5f502e6</version_id>
-  <version_modified>20160803T053042Z</version_modified>
+  <uid>96ea1317-76ac-4670-b51d-71ee3f4fdd65</uid>
+  <version_id>6a2f34c9-07b1-4264-baa2-4a97087eea81</version_id>
+  <version_modified>20170615T202605Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -68,6 +68,7 @@
       </choices>
     </argument>
   </arguments>
+  <outputs/>
   <provenances/>
   <tags>
     <tag>Envelope.Form</tag>
@@ -109,7 +110,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>052A42F6</checksum>
+      <checksum>267D0726</checksum>
     </file>
     <file>
       <version>
@@ -120,7 +121,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E97F7986</checksum>
+      <checksum>53ACD4D5</checksum>
     </file>
   </files>
 </measure>
