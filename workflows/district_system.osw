@@ -14,6 +14,16 @@
       }
     },
     {
+      "name": "set_run_period",
+      "measure_dir_name": "set_run_period",
+      "arguments": {
+        "__SKIP__": false,
+        "timesteps_per_hour": 4,
+        "begin_date": "2017-01-01",
+        "end_date": "2017-12-31"
+      }
+    },
+    {
       "name": "ChangeBuildingLocation",
       "measure_dir_name": "ChangeBuildingLocation",
       "arguments": {
