@@ -22,9 +22,9 @@ The OpenStudio Urban Modeling platform is built around the OpenStudio City Datab
 
 1. Multiple scenarios are developed for each project.  A scenario pairs each building with a specific workflow option, resulting a in list of datapoints.
 
-1. Once all input data has been defined in the City Database, the project can be run using the [run_everything](./run_everything.rb) script.  This script will create and simulate datapoints for each building, workflo
+1. Once all input data has been defined in the City Database, the project can be run using the [run_project](./run_project.rb) script.  This script will create and simulate datapoints for each building/workflow option combination in each scenario.
 
-4.  After the analysis is complete, a GeoJSON file with embedded results can exported for each scenario.  This file includes results of running each building in the project with their paired workflow.  This resulting GeoJSON file can be viewed from the scenarios page.
+1.  After the analysis is complete, a GeoJSON file with embedded results can exported for each scenario.  This file includes results of running each building in the project with their paired workflow.  This resulting GeoJSON file can be viewed from the scenarios page.
     * In the future, more results will be available for each scenario.
 
 # General Installation
