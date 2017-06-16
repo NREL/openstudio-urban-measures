@@ -7,6 +7,7 @@
 require_relative 'runner'
 require_relative 'config'
 
+logger = UrbanOptConfig::LOGGER
 url = UrbanOptConfig::URL
 openstudio_exe = UrbanOptConfig::OPENSTUDIO_EXE
 openstudio_measures = UrbanOptConfig::OPENSTUDIO_MEASURES
@@ -18,5 +19,5 @@ num_parallel = UrbanOptConfig::NUM_PARALLEL
 project_id = UrbanOptConfig::PROJECT_ID
 datapoint_ids = UrbanOptConfig::DATAPOINT_IDS
 
-runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel)
+runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel, logger)
 runner.save_results(true)

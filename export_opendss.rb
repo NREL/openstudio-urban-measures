@@ -4,8 +4,16 @@ require 'json'
 require 'csv'
 require 'fileutils'
 
-# DLM: this should be somewhere
-timestep = 10
+def find_timestep(scenario)
+  scenario[:features].each do |feature|
+    if feature[:properties] && feature[:properties][:datapoint]
+      datapoint = feature[:properties][:datapoint]
+      if datapoint[:results] && datapoint[:results][:timesteps_per_hour]
+        return 60 / datapoint[:results][:timesteps_per_hour]
+      end
+    end
+  end
+end
 
 def find_feature(scenario, urbanopt_name)
   scenario[:features].each do |feature|
@@ -35,7 +43,7 @@ def get_timeseries(datapoint_id, run_dir, timeseries, timestep)
   result = []
   header = nil
   index = nil
-  j_to_watts = 1.0 / (timestep*60)
+  j_to_kw = 1.0 / (timestep*60.0*1000.0)
   filename = File.join(run_dir, "datapoint_#{datapoint_id}", "reports", "datapoint_reports_report.csv")
   CSV.foreach(filename) do |row|
     if header.nil?
@@ -43,7 +51,7 @@ def get_timeseries(datapoint_id, run_dir, timeseries, timestep)
       index = header.find_index(timeseries)
     else
       if index
-        result << row[index].to_f * j_to_watts
+        result << row[index].to_f * j_to_kw
       else
         result << 0
       end
@@ -92,15 +100,20 @@ CSV.foreach(mapping_filename) do |row|
     loads[opendss_load_name] = []
   end
   
+  break if row[0].nil?
+  puts row
   loads[opendss_load_name] << {
-    :urbanopt_name => row[0],
-    :timeseries => row[1],
-    :fraction => row[2],
-    :opendss_load_name => row[3],
-    :opendss_real_power_filename => row[4],
-    :opendss_reactive_power_filename => row[5]
+    :urbanopt_name => row[0].strip,
+    :timeseries => row[1].strip,
+    :fraction => row[2].strip,
+    :opendss_load_name => row[3].strip,
+    :opendss_real_power_filename => row[4].strip,
+    :opendss_reactive_power_filename => row[5].strip
   }  
 end
+
+# simulation timestep in minutes
+timestep = find_timestep(scenario)
 
 loads.each_value do |load|
   

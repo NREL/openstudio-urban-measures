@@ -483,6 +483,15 @@ class Runner
     @logger.debug("save_results")
     all_scenario_ids = get_all_scenario_ids()
     
+    timesteps_per_hour = nil
+    begin_month = nil
+    begin_day_of_month = nil
+    end_month = nil
+    end_day_of_month = nil
+    begin_year = nil
+    duration_days = nil
+    duration_hours = nil
+    
     all_scenario_results = []
     all_scenario_ids.each do |scenario_id|
       scenario = get_scenario(scenario_id)
@@ -498,6 +507,33 @@ class Runner
       scenario[:datapoints].each do |datapoint|
         datapoint_id = datapoint[:id]
         file = get_detailed_results(datapoint_id)
+
+        # grab timestep and duration_hours
+        if timesteps_per_hour.nil?
+          datapoint = get_datapoint(datapoint_id)
+          puts datapoint
+          
+          timesteps_per_hour = datapoint[:results][:timesteps_per_hour]
+          begin_month = datapoint[:results][:begin_month]
+          begin_day_of_month = datapoint[:results][:begin_day_of_month]
+          end_month = datapoint[:results][:end_month]
+          end_day_of_month = datapoint[:results][:end_day_of_month]
+          begin_year = datapoint[:results][:begin_year]
+          
+          end_year = begin_year
+          if end_month < begin_month  
+            end_year = begin_year + 1
+          elsif end_month == begin_month
+            if end_day_of_month < begin_day_of_month
+              end_year = begin_year + 1
+            end
+          end
+          
+          d1 = Date.new(begin_year, begin_month, begin_day_of_month)
+          d2 = Date.new(end_year, end_month, end_day_of_month, end_year)
+          duration_days = (d2-d1).to_i + 1
+          duration_hours = 24*duration_days
+        end         
         
         if save_datapoint_files
           FileUtils.mkdir_p(detailed_results_dir) if !File.exists?(detailed_results_dir) 
@@ -547,11 +583,10 @@ class Runner
           FileUtils.rm(missing_results_path)
         end
       end
-      
+
       # aggregate timeseries into hourly, daily, monthly, and annual values
       i = 0
-      timestep_per_hr = 6
-      num_rows = 8760*timestep_per_hr
+      num_rows = duration_hours*timesteps_per_hour
       headers = []
       timestep_values = {}
       hourly_values = {}
@@ -589,7 +624,7 @@ class Runner
         hourly_sums = []
         all_values.each do |v|
           hour_sum += v
-          if i == timestep_per_hr
+          if i == timesteps_per_hour
             hourly_sums << hour_sum
             i = 1
             hour_sum = 0
@@ -598,7 +633,7 @@ class Runner
           end
         end
         
-        raise "Wrong size #{hourly_sums.size} != 8760" if hourly_sums.size != 8760
+        raise "Wrong size #{hourly_sums.size} != #{duration_hours}" if hourly_sums.size != duration_hours
         
         hourly_values[headers[j]] = hourly_sums
         
@@ -609,7 +644,7 @@ class Runner
         daily_sums = []
         all_values.each do |v|
           day_sum += v
-          if i == 24*timestep_per_hr
+          if i == 24*timesteps_per_hour
             daily_sums << day_sum
             i = 1
             day_sum = 0
@@ -618,26 +653,29 @@ class Runner
           end
         end
         
-        raise "Wrong size #{daily_sums.size} != 365" if daily_sums.size != 365
+        raise "Wrong size #{daily_sums.size} != #{duration_days}" if daily_sums.size != duration_days
         
         daily_values[headers[j]] = daily_sums
         
-        # horrendous monthly sums
         monthly_sums = []
-        days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-        k = 0
-        monthly_sum = 0
-        days_per_month.each do |days|
-          (1..days).each do |day|
-            monthly_sum += daily_sums[k]
-            k += 1
-          end
+        if begin_month == 1 && begin_day_of_month == 1 && end_month == 12 && end_day_of_month == 31
+          # horrendous monthly sums
           
-          monthly_sums << monthly_sum
+          days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+          k = 0
           monthly_sum = 0
-        end
+          days_per_month.each do |days|
+            (1..days).each do |day|
+              monthly_sum += daily_sums[k]
+              k += 1
+            end
+            
+            monthly_sums << monthly_sum
+            monthly_sum = 0
+          end
         
-        raise "Wrong size #{k} != 365" if k != 365
+          raise "Wrong size #{k} != 365" if k != 365
+        end
         
         monthly_values[headers[j]] = monthly_sums
       end
