@@ -1,13 +1,31 @@
-URBANopt Name,Timeseries,Fraction,OpenDSS Load Name,OpenDSS Real Power Filename,OpenDSS Reactive Power Filename
-Education Center,Electricity:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
-Education Center,ElectricityProduced:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
-East Entry,Electricity:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
-East Entry,ElectricityProduced:Facility,1,EDU,ls_esebP1.csv,ls_esebQ1.csv
-Research Support Facility,Electricity:Facility,0.5,RSFA,ls_rsf2P1.csv,ls_rsf2Q1.csv
-Research Support Facility,ElectricityProduced:Facility,0.5,RSFA,ls_rsf2P1.csv,ls_rsf2Q1.csv
-Research Support Facility,Electricity:Facility,0.5,RSFBC,ls_rsf1P1.csv,ls_rsf1Q1.csv
-Research Support Facility,ElectricityProduced:Facility,0.5,RSFBC,ls_rsf1P1.csv,ls_rsf1Q1.csv
-East Parking,Electricity:Facility,1,TEMP,ls_pduP1.csv,ls_pduQ1.csv
-East Parking,ElectricityProduced:Facility,1,TEMP,ls_pduP1.csv,ls_pduQ1.csv
-Cafe,Electricity:Facility,1,CAFE,ls_cafeP1.csv,ls_cafeQ1.csv
-Cafe,ElectricityProduced:Facility,1,CAFE,ls_cafeP1.csv,ls_cafeQ1.csv
+URBANopt Name,"	Timeseries","	Fraction","	OpenDSS Load Name","	OpenDSS Real Power Filename"," 	OpenDSS Reactive Power Filename ",Note
+Education Center,"	Electricity:Facility",1,"	EDU","	ls_esebP1.csv","	ls_esebQ1.csv",
+East Entry,"	Electricity:Facility",1,"	EDU","	ls_esebP1.csv","	ls_esebQ1.csv",
+Research Support Facility,"	Electricity:Facility",0.5,"	RSFA","	ls_rsf2P1.csv","	ls_rsf2Q1.csv",
+Research Support Facility,"	Electricity:Facility",0.5,"	RSFBC","	ls_rsf1P1.csv","	ls_rsf1Q1.csv",
+Cafe,"	Electricity:Facility",1,"	CAFE","	ls_cafeP1.csv","	ls_cafeQ1.csv",
+Outdoor Test Facility, Electricity:Facility,1,OTF,ls_otfP1.csv,ls_otfQ1.csv,
+Vehicle Testing and Integration Facility, Electricity:Facility,1,VTIF,ls_vtifP1.csv,ls_vtifQ1.csv,
+Field Test Laboratory Building, Electricity:Facility,0.5,FTLB,ls_ftlbP1.csv,ls_ftlbQ1.csv,
+Field Test Laboratory Building, Electricity:Facility,0.5,Central,ls_centralP1.csv,ls_centralQ1.csv,
+Solar Energy Research Facility, Electricity:Facility,0.25,SERF1,ls_serfecP1.csv,ls_serfecQ1.csv,
+Solar Energy Research Facility, Electricity:Facility,0.25,SERF2,ls_serfh9P1.csv,ls_serfh9Q1.csv,
+Solar Energy Research Facility, Electricity:Facility,0.25,SERF3,ls_serfh12P1.csv,ls_serfh12Q1.csv,
+Solar Energy Research Facility, Electricity:Facility,0.25,SERF4,ls_serfr8P1.csv,ls_serfr8Q1.csv,
+Thermal Test Facility, Electricity:Facility,1,TTF,ls_ttfP1.csv,ls_ttfQ1.csv,
+Shipping and Receiving, Electricity:Facility,1,SHIP,ls_shipP1.csv,ls_shipQ1.csv,
+Energy Systems Integration Facility, Electricity:Facility,0.25,ESIFOCP,ls_ocpP1.csv,ls_ocpQ1.csv,Office
+Energy Systems Integration Facility, Electricity:Facility,0.25,HPCDC1,ls_hpcdcP1.csv,ls_hpcdcQ1.csv,HPC
+Energy Systems Integration Facility, Electricity:Facility,0.25,ESIFHB1,ls_hb1P1.csv,ls_hb1Q1.csv,High Bay 1
+Energy Systems Integration Facility, Electricity:Facility,0.25,ESIFHB2,ls_hb2P1.csv,ls_hb2Q1.csv,High Bay 2
+South Site Entrance Building, Electricity:Facility,1,SSEB,ls_ssebP1.csv,ls_ssebQ1.csv,
+Science and Technology Facility, Electricity:Facility,1,PMT,ls_stfP1.csv,ls_stfQ1.csv,
+,,,,,,
+** ls_generic are created for the profiles where data were not good enough to read,,,,,,
+** Artificially PVs are used for 55% PV penetration study in STM Campus. In real scenario 33% PV penetration is available.,,,,,,
+** some transformers have no load or some loads are artificially provided due to some of them are under construction,,,,,,
+** Meter data for a building are taken and divided among the transformers of the building,,,,,,
+"** peak PV generation is occuring during May. So, May data is considered for simulation",,,,,,
+*** Existi ng PV generation  is also increased by multipliers,,,,,,
+"***URBANopt will only export data to absolute loads, it will not write normalized loads",,,,,,
+***We will hold normalized loads constant between real and simulated data,,,,,,
