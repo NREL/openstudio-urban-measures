@@ -133,6 +133,10 @@ loads.each_value do |load|
     end
   end
   
+  # for some reason NREL campus loads have extra hour of data
+  real_load_sum[real_load_sum.size] = real_load_sum[real_load_sum.size - 1]
+  reactive_load_sum[reactive_load_sum.size] = reactive_load_sum[reactive_load_sum.size - 1]
+  
   File.open(File.join(export_dir, load[0][:opendss_real_power_filename]), 'w') do |file|
     file << real_load_sum.join("\n")
   end
