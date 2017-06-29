@@ -96,7 +96,7 @@ def map_building_type(value, floor_area, number_of_stories)
     value = "FullServiceRestaurant"
     
   when "Food service"
-    value = "FullServiceRestaurant"
+    value = "QuickServiceRestaurant"
     
   when "Inpatient health care"
     value = "Outpatient"
