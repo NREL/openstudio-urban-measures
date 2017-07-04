@@ -52,7 +52,7 @@
         "num_stories_above_grade": null,
         "num_stories_below_grade": null,
         "building_rotation": 0,
-        "template": "90.1-2004",
+        "template": "NREL ZNE Ready 2017",
         "ns_to_ew_ratio": 0,
         "wwr": 0,
         "party_wall_fraction": 0,
@@ -61,99 +61,25 @@
       }
     },
     {
-      "name": "create_typical_building_from_model 1",
+      "name": "create_typical_building_from_model",
       "measure_dir_name": "create_typical_building_from_model",
       "arguments": {
-        "template": "90.1-2004",
-        "add_thermostat": false,
-        "add_hvac": false
-      }
-    },
-    {
-      "name": "blended_space_type_from_model",
-      "measure_dir_name": "blended_space_type_from_model",
-      "arguments": {
-        "blend_method": "Building Story"
-      }
-    }, 
-    {
-      "name": "urban_geometry_creation",
-      "measure_dir_name": "urban_geometry_creation",
-      "arguments": {
-        "city_db_url": null,
-        "project_id": null,
-        "feature_id": null,
-        "surrounding_buildings": "None"
-      }
-    }, 
-    {
-      "name": "create_typical_building_from_model 2",
-      "measure_dir_name": "create_typical_building_from_model",
-      "arguments": {
-        "template": "90.1-2004",
-        "add_constructions": false,
-        "add_space_type_loads": false,
-        "add_elevators": false,
-        "add_exterior_lights": false,
-        "add_exhaust": false,
-        "add_swh": false,
-        "remove_objects": false,
+        "template": "NREL ZNE Ready 2017",
+        "add_thermostat": true,
+        "add_hvac": true,
+        "add_constructions": true,
+        "add_space_type_loads": true,
+        "add_elevators": true,
+        "add_exterior_lights": true,
+        "add_exhaust": true,
+        "add_swh": true,
+        "remove_objects": true,
         "clg_src": "Electricity",
         "htg_src": "NaturalGas",
         "hvac_delivery_type": "Forced Air",
         "system_type": "Inferred"
       }
-    }, {
-      "name": "ReduceElectricEquipmentLoadsByPercentage",
-      "measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "AedgK12ElectricEquipmentControls",
-      "measure_dir_name": "AedgK12ElectricEquipmentControls",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "ReduceLightingLoadsByPercentage",
-      "measure_dir_name": "ReduceLightingLoadsByPercentage",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "AedgK12InteriorLightingControls",
-      "measure_dir_name": "AedgK12InteriorLightingControls",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "AdjustSystemEfficiencies",
-      "measure_dir_name": "AdjustSystemEfficiencies",
-      "arguments": {
-        "__SKIP__": true,
-        "heating_efficiency_multiplier": 1.0,
-        "cooling_cop_multiplier": 1.0
-      }
-    }, {
-      "name": "ImproveFanBeltEfficiency",
-      "measure_dir_name": "ImproveFanBeltEfficiency",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "ImproveMotorEfficiency",
-      "measure_dir_name": "ImproveMotorEfficiency",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, {
-      "name": "add_rooftop_pv",
-      "measure_dir_name": "add_rooftop_pv",
-      "arguments": {
-        "__SKIP__": true
-      }
-    }, 
+    },
     {
       "name": "ViewModel",
       "measure_dir_name": "ViewModel",
@@ -167,6 +93,12 @@
         "city_db_url": null,
         "project_id": null,
         "datapoint_id": null
+      }
+    },
+    {
+      "name": "openstudio_results",
+      "measure_dir_name": "openstudio_results",
+      "arguments": {
       }
     }
   ]
