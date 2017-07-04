@@ -71,7 +71,8 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     timeseries = ["District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", 
                   "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", 
-                  "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+                  "District Heating Inlet Temperature", "District Heating Outlet Temperature",
+                  "Site Direct Solar Radiation Rate per Area", "Site Outdoor Air Drybulb Temperature"]
 
     timeseries.each do |ts|
       result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},Timestep;").get
@@ -492,7 +493,8 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
     # get timeseries
     timeseries = ["Electricity:Facility", "ElectricityProduced:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
-                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
+                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature",
+                  "Site Direct Solar Radiation Rate per Area", "Site Outdoor Air Drybulb Temperature"]
     
     n = nil
     values = []
