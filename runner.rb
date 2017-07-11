@@ -512,27 +512,33 @@ class Runner
         if timesteps_per_hour.nil?
           datapoint = get_datapoint(datapoint_id)
           puts datapoint
+
+          if (datapoint.key?(:results))
+            timesteps_per_hour = datapoint[:results][:timesteps_per_hour]
+            begin_month = datapoint[:results][:begin_month]
+            begin_day_of_month = datapoint[:results][:begin_day_of_month]
+            end_month = datapoint[:results][:end_month]
+            end_day_of_month = datapoint[:results][:end_day_of_month]
+            begin_year = datapoint[:results][:begin_year]
           
-          timesteps_per_hour = datapoint[:results][:timesteps_per_hour]
-          begin_month = datapoint[:results][:begin_month]
-          begin_day_of_month = datapoint[:results][:begin_day_of_month]
-          end_month = datapoint[:results][:end_month]
-          end_day_of_month = datapoint[:results][:end_day_of_month]
-          begin_year = datapoint[:results][:begin_year]
-          
-          end_year = begin_year
-          if end_month < begin_month  
-            end_year = begin_year + 1
-          elsif end_month == begin_month
-            if end_day_of_month < begin_day_of_month
+            end_year = begin_year
+            if end_month < begin_month  
               end_year = begin_year + 1
+            elsif end_month == begin_month
+              if end_day_of_month < begin_day_of_month
+                end_year = begin_year + 1
+              end
             end
+            
+            d1 = Date.new(begin_year, begin_month, begin_day_of_month)
+            d2 = Date.new(end_year, end_month, end_day_of_month, end_year)
+            duration_days = (d2-d1).to_i + 1
+            duration_hours = 24*duration_days
+          else
+            # set these to 0 for failed datapoints
+            timesteps_per_hour = 0;
+            duration_hours = 0;
           end
-          
-          d1 = Date.new(begin_year, begin_month, begin_day_of_month)
-          d2 = Date.new(end_year, end_month, end_day_of_month, end_year)
-          duration_days = (d2-d1).to_i + 1
-          duration_hours = 24*duration_days
         end         
         
         if save_datapoint_files
@@ -593,22 +599,25 @@ class Runner
       daily_values = {}
       monthly_values = {}
       annual_values = {}
-      CSV.foreach(summed_result_path) do |row|
-        if i == 0
-          # header row
-          headers = row
-          headers.each do |header|
-            annual_values[header] = 0
-            timestep_values[header] = []
-            daily_values[header] = []
+
+      if File.exists?(summed_result_path)
+        CSV.foreach(summed_result_path) do |row|
+          if i == 0
+            # header row
+            headers = row
+            headers.each do |header|
+              annual_values[header] = 0
+              timestep_values[header] = []
+              daily_values[header] = []
+            end
+          elsif i <= num_rows
+            headers.each_index do |j|
+              annual_values[headers[j]] += row[j].to_f
+              timestep_values[headers[j]] << row[j].to_f 
+            end
           end
-        elsif i <= num_rows
-          headers.each_index do |j|
-            annual_values[headers[j]] += row[j].to_f
-            timestep_values[headers[j]] << row[j].to_f 
-          end
+          i += 1
         end
-        i += 1
       end
 
       headers.each_index do |j|
