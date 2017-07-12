@@ -25,6 +25,12 @@ buildings_to_run = ['Multifamily-32', 'Mixed-use-4-32', 'Mixed-use-4-5']
 # project_json = {:properties=>{:weather_file_name => "USA_CA_San.Francisco.Intl.AP.724940_TMY3.epw", :climate_zone => "3C"}}
 project_json = {:properties=>{:weather_file_name => "USA_CO_Denver.Intl.AP.725650_TMY3.epw", :climate_zone => "5B"}}
 
+#csv_name = "test_buildings_nw.csv"
+csv_name = "test_buildings.csv"
+
+#workflow_name = "testing_baseline_nw.osw" 
+workflow_name = "testing_baseline.osw" 
+
 def convert_value(value)
   if value.nil?
     return nil
@@ -40,7 +46,7 @@ buildings = []
 option_sets = []
 headers_1 = []
 headers_2 = []
-CSV.foreach('test_buildings.csv') do |row|
+CSV.foreach("#{csv_name}") do |row|
   if headers_1.empty?
     row.each {|header| headers_1 << header.to_s}
   elsif headers_2.empty?
@@ -88,14 +94,14 @@ buildings.each_index do |i|
 
   # load the workflows
   baseline_osw = nil
-  File.open(File.join(File.dirname(__FILE__), "/workflows/testing_baseline.osw"), 'r') do |f|
+  File.open(File.join(File.dirname(__FILE__), "/workflows/#{workflow_name}"), 'r') do |f|
     baseline_osw = JSON::parse(f.read, :symbolize_names => true)
   end
   
   if run_retrofit
     # easier than deep cloning baseline_osw
     retrofit_osw = nil
-    File.open(File.join(File.dirname(__FILE__), "/workflows/testing_baseline.osw"), 'r') do |f|
+    File.open(File.join(File.dirname(__FILE__), "/workflows/#{workflow_name}"), 'r') do |f|
       retrofit_osw = JSON::parse(f.read, :symbolize_names => true) # easier than deep cloning
     end
   end
