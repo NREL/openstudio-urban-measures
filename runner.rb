@@ -397,8 +397,6 @@ class Runner
     end
     
     workflow.delete(:datapoints)
-
-    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:steps].each do |step|
       arguments = step[:arguments]
@@ -430,6 +428,9 @@ class Runner
         end
       end
     end
+
+    # now do mapping
+    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:file_paths] = @openstudio_files
     workflow[:measure_paths] = @openstudio_measures
