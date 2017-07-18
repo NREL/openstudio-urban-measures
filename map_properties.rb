@@ -128,9 +128,15 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Multifamily (2 to 4 units)"
     value = "MidriseApartment"
+    if num_units < 2 or num_units > 4
+      num_units = 2
+    end
     
   when "Multifamily (5 or more units)"
     value = "MidriseApartment"
+    if num_units < 5
+      num_units = 5
+    end      
     
   when "Nonrefrigerated warehouse"
     value = "Warehouse"
@@ -219,8 +225,7 @@ def map_building_properties(properties)
         properties[:floor_area] = properties[:footprint_area]
       end
     end
-  end
-  
+  end  
   
   # map properties
   properties.each_key do |name|
@@ -240,41 +245,69 @@ def map_building_properties(properties)
       end
       
       value, num_units = map_building_type(value, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
-      if value == "Mixed use"
 
+      if value == "Mixed use"
+        
         mixed_type_1 = properties[:mixed_type_1]
         mixed_type_1_percentage = properties[:mixed_type_1_percentage].to_f / 100.0
+        
+        mixed_type_2 = properties[:mixed_type_2]
+        mixed_type_2_percentage = properties[:mixed_type_2_percentage].to_f / 100.0
+        
+        mixed_type_3 = properties[:mixed_type_3]
+        mixed_type_3_percentage = properties[:mixed_type_3_percentage].to_f / 100.0
+        
+        mixed_type_4 = properties[:mixed_type_4]
+        mixed_type_4_percentage = properties[:mixed_type_4_percentage].to_f / 100.0
+        
         if mixed_type_1 and mixed_type_1_percentage
           mixed_type_1, mixed_type_1_num_units = map_building_type(mixed_type_1, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => mixed_type_1}
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a_num_units, :value => mixed_type_1_num_units}
         end
-        
-        mixed_type_2 = properties[:mixed_type_2]
-        mixed_type_2_percentage = properties[:mixed_type_2_percentage].to_f / 100.0        
+
         if mixed_type_2 and mixed_type_2_percentage
           mixed_type_2, mixed_type_2_num_units = map_building_type(mixed_type_2, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b, :value => mixed_type_2}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_fract_bldg_area, :value => mixed_type_2_percentage}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_num_units, :value => mixed_type_2_num_units}
+          if mixed_type_1 == mixed_type_2
+            mixed_type_2 = nil
+          end
+          if mixed_type_2
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b, :value => mixed_type_2}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_fract_bldg_area, :value => mixed_type_2_percentage}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_b_num_units, :value => mixed_type_2_num_units}
+          end
         end
-        
-        mixed_type_3 = properties[:mixed_type_3]
-        mixed_type_3_percentage = properties[:mixed_type_3_percentage].to_f / 100.0
+
         if mixed_type_3 and mixed_type_3_percentage
           mixed_type_3, mixed_type_3_num_units = map_building_type(mixed_type_3, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c, :value => mixed_type_3}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_fract_bldg_area, :value => mixed_type_3_percentage}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_num_units, :value => mixed_type_3_num_units}
+          if mixed_type_1 == mixed_type_3 or mixed_type_2 == mixed_type_3
+            mixed_type_3 = nil
+            result.each do |argument|
+              next unless argument[:argument] == :bldg_type_b_fract_bldg_area
+              argument[:value] += mixed_type_3_percentage
+            end            
+          end
+          if mixed_type_3
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c, :value => mixed_type_3}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_fract_bldg_area, :value => mixed_type_3_percentage}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_c_num_units, :value => mixed_type_3_num_units}
+          end
         end
-        
-        mixed_type_4 = properties[:mixed_type_4]
-        mixed_type_4_percentage = properties[:mixed_type_4_percentage].to_f / 100.0
+
         if mixed_type_4 and mixed_type_4_percentage
           mixed_type_4, mixed_type_4_num_units = map_building_type(mixed_type_4, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => mixed_type_4}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => mixed_type_4_percentage}
-          result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => mixed_type_4_num_units}
+          if mixed_type_1 == mixed_type_4 or mixed_type_3 == mixed_type_4
+            mixed_type_4 = nil
+            result.each do |argument|
+              next unless argument[:argument] == :bldg_type_c_fract_bldg_area
+              argument[:value] += mixed_type_4_percentage
+            end            
+          end
+          if mixed_type_4
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => mixed_type_4}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => mixed_type_4_percentage}
+            result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => mixed_type_4_num_units}
+          end
         end
         
       else

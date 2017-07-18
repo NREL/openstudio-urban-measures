@@ -28,7 +28,6 @@
       "measure_dir_name": "ChangeBuildingLocation",
       "arguments": {
         "__SKIP__": false,
-        "weather_directory": "../../../openstudio-urban-measures/weather",
         "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
         "climate_zone": "5B"
       }

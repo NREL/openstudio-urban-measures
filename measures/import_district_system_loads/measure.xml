@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>8197c207-1679-434a-a932-bd66f4c6eb9c</version_id>
-  <version_modified>20170516T183101Z</version_modified>
+  <version_id>4cea9a86-2cd0-4cdd-9064-8217422dd134</version_id>
+  <version_modified>20170718T171324Z</version_modified>
   <xml_checksum>45EB89EB</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
@@ -77,7 +77,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>D390A52F</checksum>
+      <checksum>CE01AB49</checksum>
     </file>
   </files>
 </measure>

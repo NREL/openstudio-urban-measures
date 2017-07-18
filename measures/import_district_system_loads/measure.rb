@@ -278,11 +278,6 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     start_date = model.getYearDescription.makeDate(1,1)
     time_step = OpenStudio::Time.new(0,0,60/time_step_per_hour,0)
     
-    electric_schedules = []
-    gas_schedules = []
-    district_cooling_schedules = []
-    district_heating_schedules = []
-    
     timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
                   {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
                   {name: "District Heating Hot Water Rate", units: "W", normalize: false},
