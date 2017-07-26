@@ -17,15 +17,10 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     fail 'The required :url option was not passed to the local output adapter' unless options[:url]
     fail 'The required :datapoint_id option was not passed to the local output adapter' unless options[:datapoint_id]
     fail 'The required :project_id option was not passed to the local output adapter' unless options[:project_id]
-    @url = options[:url]
+    uri = URI.parse(options[:url])
     
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(@url)
-      @url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(@url)
-      @url = md[1]
-    end
+    @url = uri.host
+    @port = uri.port
     
     super
   end
@@ -171,4 +166,3 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     #end
   end
 end
-

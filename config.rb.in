@@ -2,8 +2,13 @@ require 'logger'
 
 module UrbanOptConfig
 
-  #ENV['GEM_HOME'] = 'C:/bricr/gems'
-  #ENV['GEM_PATH'] = 'C:/bricr/gems'
+  # if you need to build custom versions of gems you can do so with:
+  # gem build openstudio-workflow.gemspec
+  # gem install openstudio-workflow-1.3.1.gem -i /c/urbanopt/gems/
+  #
+  # then set the following environment variables here:
+  #ENV['GEM_HOME'] = 'C:/urbanopt/gems'
+  #ENV['GEM_PATH'] = 'C:/urbanopt/gems'
   
   STDOUT.sync = true
   LOGGER = Logger.new(STDOUT)

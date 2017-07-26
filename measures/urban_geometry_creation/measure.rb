@@ -664,11 +664,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
+    #http.use_ssl = true
+    #http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
     request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
-  @runner.registerInfo("/api/feature?project_id=#{@project_id}&feature_id=#{feature_id}")
+    @runner.registerInfo("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     response = http.request(request)
     if  response.code != '200' # success
       @runner.registerError("Bad response #{response.code}")
@@ -755,13 +757,9 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     @runner = runner
     @origin_lat_lon = nil
 
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-      @city_db_url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-      @city_db_url = md[1]
-    end
+    uri = URI.parse(city_db_url)
+    @city_db_url = uri.host
+    @port = uri.port
 
     feature = get_feature(project_id, feature_id)
     if feature.nil? || feature.empty?
