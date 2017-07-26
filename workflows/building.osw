@@ -4,8 +4,14 @@
   "weather_file": null,
   "root_directory": null,
   "run_directory": "./run",
-  "file_paths": ["./../../../weather/"],
-  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
+  "file_paths": [
+    "./../../../weather/"
+  ],
+  "measure_paths": [
+    "./../../../measures/",
+    "./../../../../OpenStudio-measures/NREL working measures/",
+    "./../../../../OpenStudio-measures/NREL internal measures/"
+  ],
   "steps": [
     {
       "name": "gem_env_report",
@@ -75,7 +81,7 @@
       "arguments": {
         "blend_method": "Building Story"
       }
-    }, 
+    },
     {
       "name": "urban_geometry_creation",
       "measure_dir_name": "urban_geometry_creation",
@@ -85,7 +91,7 @@
         "feature_id": null,
         "surrounding_buildings": "None"
       }
-    }, 
+    },
     {
       "name": "create_typical_building_from_model 2",
       "measure_dir_name": "create_typical_building_from_model",
@@ -103,31 +109,36 @@
         "hvac_delivery_type": "Forced Air",
         "system_type": "Inferred"
       }
-    }, {
+    },
+    {
       "name": "ReduceElectricEquipmentLoadsByPercentage",
       "measure_dir_name": "ReduceElectricEquipmentLoadsByPercentage",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "AedgK12ElectricEquipmentControls",
       "measure_dir_name": "AedgK12ElectricEquipmentControls",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "ReduceLightingLoadsByPercentage",
       "measure_dir_name": "ReduceLightingLoadsByPercentage",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "AedgK12InteriorLightingControls",
       "measure_dir_name": "AedgK12InteriorLightingControls",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "AdjustSystemEfficiencies",
       "measure_dir_name": "AdjustSystemEfficiencies",
       "arguments": {
@@ -135,31 +146,34 @@
         "heating_efficiency_multiplier": 1.0,
         "cooling_cop_multiplier": 1.0
       }
-    }, {
+    },
+    {
       "name": "ImproveFanBeltEfficiency",
       "measure_dir_name": "ImproveFanBeltEfficiency",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "ImproveMotorEfficiency",
       "measure_dir_name": "ImproveMotorEfficiency",
       "arguments": {
         "__SKIP__": true
       }
-    }, {
+    },
+    {
       "name": "add_rooftop_pv",
       "measure_dir_name": "add_rooftop_pv",
       "arguments": {
         "__SKIP__": true
       }
-    }, 
+    },
     {
       "name": "ViewModel",
       "measure_dir_name": "ViewModel",
       "arguments": {
       }
-    }, 
+    },
     {
       "name": "datapoint_reports",
       "measure_dir_name": "datapoint_reports",

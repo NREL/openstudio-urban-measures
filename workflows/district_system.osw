@@ -4,8 +4,14 @@
   "weather_file": null,
   "root_directory": null,
   "run_directory": "./run",
-  "file_paths": ["./../../../weather/"],
-  "measure_paths": ["./../../../measures/", "./../../../../OpenStudio-measures/NREL\ working\ measures/", "./../../../../OpenStudio-measures/NREL\ internal\ measures/"],
+  "file_paths": [
+    "./../../../weather/"
+  ],
+  "measure_paths": [
+    "./../../../measures/",
+    "./../../../../OpenStudio-measures/NREL working measures/",
+    "./../../../../OpenStudio-measures/NREL internal measures/"
+  ],
   "steps": [
     {
       "name": "gem_env_report",
@@ -41,7 +47,8 @@
         "feature_id": null,
         "surrounding_buildings": "None"
       }
-    }, {
+    },
+    {
       "name": "import_district_system_loads",
       "measure_dir_name": "import_district_system_loads",
       "arguments": {
@@ -50,19 +57,20 @@
         "scenario_id": null,
         "feature_id": null
       }
-    }, {
+    },
+    {
       "name": "add_district_system",
       "measure_dir_name": "add_district_system",
       "arguments": {
         "district_system_type": null
       }
-    }, 
+    },
     {
       "name": "ViewModel",
       "measure_dir_name": "ViewModel",
       "arguments": {
       }
-    }, 
+    },
     {
       "name": "datapoint_reports",
       "measure_dir_name": "datapoint_reports",
