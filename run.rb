@@ -8,9 +8,9 @@ openstudio_rb_dir = ARGV[0]
 openstudio_bin_dir = File.join(ARGV[0], '../bin/')
 $:.unshift(openstudio_rb_dir)
 if /win/.match(RUBY_PLATFORM) or /mingw/.match(RUBY_PLATFORM)
-  ENV['PATH'] = openstudio_rb_dir + ";" + openstudio_bin_dir + ";" + ENV['PATH']
+  ENV['PATH'] = openstudio_rb_dir + ";" + ENV['PATH']
 else
-  ENV['PATH'] = openstudio_rb_dir + ":" + openstudio_bin_dir + ":" + ENV['PATH']
+  ENV['PATH'] = openstudio_rb_dir + ":" + ENV['PATH']
 end
 
 require 'openstudio'

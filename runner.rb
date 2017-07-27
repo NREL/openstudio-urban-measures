@@ -476,6 +476,8 @@ class Runner
       openstudio_rb_dir = File.join(File.dirname(@openstudio_exe), "../Ruby/")
       run_rb = File.join(File.dirname(__FILE__), "run.rb")
       command = "bundle exec '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      #command = "'#{ruby_exe}' '#{ruby_exe.gsub('ruby.exe', 'bundle')}' '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      #command = "'#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
       
       @logger.info("Running command: '#{command}'")
       @logger.info("Current directory: '#{Dir.pwd}'")
