@@ -10,6 +10,7 @@ require 'json'
 require 'base64'
 require 'csv'
 require 'open3'
+require 'rbconfig'
 
 require_relative 'map_properties'
 
@@ -437,7 +438,7 @@ class Runner
     
     workflow[:file_paths] = @openstudio_files
     workflow[:measure_paths] = @openstudio_measures
-    workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
+    workflow[:run_options] = {output_adapter:{custom_file_name:File.join(File.dirname(__FILE__), "./adapters/output_adapter.rb"), class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow
     osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
@@ -467,11 +468,37 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      # ok to put user name and password in environment variables?
-      command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
+      # to run with the CLI
+      #command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
+      
+      # to run with current ruby
+      ruby_exe = File.join( RbConfig::CONFIG['bindir'], RbConfig::CONFIG['RUBY_INSTALL_NAME'] + RbConfig::CONFIG['EXEEXT'] )
+      openstudio_rb_dir = File.join(File.dirname(@openstudio_exe), "../Ruby/")
+      run_rb = File.join(File.dirname(__FILE__), "run.rb")
+      command = "bundle exec '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      
       @logger.info("Running command: '#{command}'")
       @logger.info("Current directory: '#{Dir.pwd}'")
-      Open3.popen3({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command) do |stdin, stdout, stderr, wait_thr|
+      @logger.info("ENV['GEM_HOME']: '#{ENV['GEM_HOME']}'")
+      @logger.info("ENV['GEM_PATH']: '#{ENV['GEM_PATH']}'")
+      
+      new_env = {}
+      new_env["URBANOPT_USERNAME"] = @user_name
+      new_env["URBANOPT_PASSWORD"] = @user_pwd
+      
+      # blank out bundler and gem path modifications, will be re-setup by new call
+      new_env["BUNDLER_ORIG_MANPATH"] = nil
+      new_env["GEM_PATH"] = nil
+      new_env["GEM_HOME"] = nil
+      new_env["BUNDLER_ORIG_PATH"] = nil
+      new_env["BUNDLER_VERSION"] = nil
+      new_env["BUNDLE_BIN_PATH"] = nil
+      new_env["BUNDLE_GEMFILE"] = nil
+      new_env["RUBYLIB"] = nil
+      new_env["RUBYOPT"] = nil
+      
+      # ok to put user name and password in environment variables?
+      Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
         # calling wait_thr.value blocks until command is complete
         if wait_thr.value.success?
           @logger.info("'#{osw_path}' completed successfully")
