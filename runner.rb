@@ -500,16 +500,25 @@ class Runner
       new_env["RUBYOPT"] = nil
       
       # ok to put user name and password in environment variables?
-      Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
-        # calling wait_thr.value blocks until command is complete
-        if wait_thr.value.success?
-          @logger.info("'#{osw_path}' completed successfully")
-        else
-          @logger.error("Error running command: '#{command}'")
-          @logger.error("#{stdout.read}")
-          @logger.error("#{stderr.read}")
-        end
+      stdout_str, stderr_str, status = Open3.capture3(new_env, command)
+      if status.success?
+        @logger.info("'#{osw_path}' completed successfully")
+      else
+        @logger.error("Error running command: '#{command}'")
+        @logger.error(stdout_str)
+        @logger.error(stderr_str)
       end
+      
+      #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
+      #  # calling wait_thr.value blocks until command is complete
+      #  if wait_thr.value.success?
+      #    @logger.info("'#{osw_path}' completed successfully")
+      #  else
+      #    @logger.error("Error running command: '#{command}'")
+      #    @logger.error("#{stdout.read}")
+      #    @logger.error("#{stderr.read}")
+      #  end
+      #end
     end
   end
   
