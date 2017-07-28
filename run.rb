@@ -40,3 +40,7 @@ run_options[:preserve_run_dir] = true # because we are running in .
 # do the run
 k = OpenStudio::Workflow::Run.new(osw_path, run_options)
 final_state = k.run
+
+if final_state == :errored 
+  exit(1)
+end

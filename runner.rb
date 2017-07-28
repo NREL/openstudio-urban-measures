@@ -505,8 +505,8 @@ class Runner
         @logger.info("'#{osw_path}' completed successfully")
       else
         @logger.error("Error running command: '#{command}'")
-        @logger.error(stdout_str)
-        @logger.error(stderr_str)
+        #@logger.error(stdout_str)
+        #@logger.error(stderr_str)
       end
       
       #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
