@@ -431,6 +431,22 @@ class Runner
           workflow[:weather_file] = arguments[name]
         end
       end
+      
+      # DLM: in case the arguments were removed 
+      if step[:measure_dir_name] == "urban_geometry_creation"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:feature_id] = feature_id
+      elsif step[:measure_dir_name] == "datapoint_reports"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:datapoint_id] = datapoint_id
+      elsif step[:measure_dir_name] == "import_district_system_loads"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:scenario_id] = scenario_id
+        step[:arguments][:feature_id] = feature_id
+      end
     end
 
     # now do mapping
