@@ -24,7 +24,7 @@ factory = RGeo::Geos.factory(:native_interface => :ffi)
 
 # Specify the location of the files
 # TODO include the site features in the scenario geojson for things like extracting PV
-scenario_filename = 'C:/GitRepos/openstudio-urban-measures/run/Pena Station/90.1-2013 Code Minimum.geojson'
+scenario_filename = 'C:/GitRepos/openstudio-urban-measures/run/Pena Station/NREL ZNE Ready 2017.geojson'
 geojson_with_site_features_filename = 'C:/Projects/Pena Station/UrbanOpt/geojson files/site_and_blocks_revised.json'
 transformer_csv_filename = 'C:/Projects/Pena Station/UrbanOpt/transformer data/transformers.csv'
 
@@ -286,7 +286,7 @@ scenario.each do |feature|
   
   # Loads
   kv = 0.48 # .208, .48 (208V or 480V) # TODO use 208 for Res, 480 for Com
-  loads << "New Load.#{name} Bus1=bus_#{name} kV=#{kv} Yearly=#{name}"
+  loads << "New Load.#{name} Bus1=low_#{name} kV=#{kv} Yearly=#{name}"
 
   # Storage (batteries)
   phases = 3 # 1, 2, 3 phase
@@ -294,7 +294,7 @@ scenario.each do |feature|
   kwh = 0 # rated kWh of the battery
   conn = 'delta' # delta, wye
   disp_mode = 'default' # default, follow, load level, price
-  storages << "New Storage.bat_#{name} phases=#{phases} bus1=bus_#{name} kv=#{kv} kWRated=#{kw} kWhRated=#{kwh} Conn=#{conn} DispMode=#{disp_mode} Yearly=#{name}" 
+  storages << "New Storage.bat_#{name} phases=#{phases} bus1=low_#{name} kv=#{kv} kWRated=#{kw} kWhRated=#{kwh} Conn=#{conn} DispMode=#{disp_mode} Yearly=#{name}" 
 
   # Irradiance profile (kW/m^2) - only export this once per scenario
   # this assumes a uniform profile across the entire site
@@ -338,14 +338,15 @@ scenario.each do |feature|
   total_bldg_pv_kw += kw_pv
   kva_pv = pmpp_pv
   @logs << "#{name} has #{kw_pv} kW of PV based on #{area_pv_ft2.round} ft2 of rooftop area"
-  pv_systems << "New PVSystem.pv_#{name} phases=#{phases} bus1=bus_#{name} kv=#{kv} kVA=#{kva_pv} Pmpp=#{pmpp_pv} Daily=irrad Tyearly=outdoor_air_temp Irradiance=#{max_irrad_kw_per_m2}"
+  pv_systems << "New PVSystem.pv_#{name} phases=#{phases} bus1=low_#{name} kv=#{kv} kVA=#{kva_pv} Pmpp=#{pmpp_pv} Daily=irrad Tyearly=outdoor_air_temp Irradiance=#{max_irrad_kw_per_m2}"
 
   # Building coordinates based on the centroid of the building
-  bus_coordinates << "bus_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
+  bus_coordinates << "low_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
+  bus_coordinates << "high_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
   
   # Transformer for the building
   safety_factor = 0.25
-  trans_conn = 'delta' # delta, wye
+  trans_conn = 'wye' # delta, wye
   high_side_kv = 13.2
   low_side_kv = 0.48
   if peak_building_kw
@@ -355,7 +356,7 @@ scenario.each do |feature|
     high_side_resistance = trans[:high_side_resistance]
     low_side_resistance = trans[:low_side_resistance]
     trans_reactance = trans[:reactance]
-    transformers << "New Transformer.t_#{name} Buses=[t_#{name}_H t_#{name}_L] Conns=[#{trans_conn}] kVs=[#{high_side_kv} #{low_side_kv}] kVA=[#{trans_cap_kva} #{trans_cap_kva}] %R=[#{high_side_resistance} #{low_side_resistance}] XHL=#{trans_reactance}"
+    transformers << "New Transformer.t_#{name} Buses=[high_#{name} low_#{name}] Conns=[#{trans_conn} #{trans_conn}] kVs=[#{high_side_kv} #{low_side_kv}] kVA=[#{trans_cap_kva} #{trans_cap_kva}] %R=[#{high_side_resistance} #{low_side_resistance}] XHL=#{trans_reactance}"
   else
     @logs << "ERROR for #{name}, there was no building peak kW, cannot add transformer for this building."
   end
@@ -424,7 +425,7 @@ if site_json
     kwh = 0 # rated kWh of the battery
     conn = 'delta' # delta, wye
     disp_mode = 'default' # default, follow, load level, price
-    storages << "New Storage.bat_site_#{name} phases=#{phases} bus1=bus_#{name} kv=#{kv} kWRated=#{kw} kWhRated=#{kwh} Conn=#{conn} DispMode=#{disp_mode} Yearly=#{name}" 
+    storages << "New Storage.bat_site_#{name} phases=#{phases} bus1=low_#{name} kv=#{kv} kWRated=#{kw} kWhRated=#{kwh} Conn=#{conn} DispMode=#{disp_mode} Yearly=#{name}" 
 
     # PV
     # fraction of site footprint that can be covered by pv
@@ -439,13 +440,14 @@ if site_json
     total_site_pv_kw += kw_pv
     kva_pv = pmpp_pv
     @logs << "#{name} has #{kw_pv} kW of PV based on #{area_pv_acres} acres of site PV area assuming #{(frac_footprint_usable_for_pv*100).round}% coverage of non-building footprint."
-    pv_systems << "New PVSystem.pv_site_#{name} phases=#{phases} bus1=bus_#{name} kv=#{kv} kVA=#{kva_pv} Pmpp=#{pmpp_pv} Yearly=irrad Tyearly=outdoor_air_temp Irradiance=#{max_irrad_kw_per_m2}"
+    pv_systems << "New PVSystem.pv_site_#{name} phases=#{phases} bus1=low_#{name} kv=#{kv} kVA=#{kva_pv} Pmpp=#{pmpp_pv} Yearly=irrad Tyearly=outdoor_air_temp Irradiance=#{max_irrad_kw_per_m2}"
 
     # PV coordinates based on the centroid of the lot
-    bus_coordinates << "bus_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
+    bus_coordinates << "low_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
+    bus_coordinates << "high_#{name} #{feature.geometry.centroid.x} #{feature.geometry.centroid.y}"
 
     # Transformer for the PV
-    trans_conn = 'delta' # delta, wye
+    trans_conn = 'wye' # delta, wye
     safety_factor = 0.25
     high_side_kv = 13.2
     low_side_kv = 0.48
@@ -455,27 +457,10 @@ if site_json
     high_side_resistance = trans[:high_side_resistance]
     low_side_resistance = trans[:low_side_resistance]
     trans_reactance = trans[:reactance]
-    transformers << "New Transformer.t_#{name} Buses=[t_#{name}_H t_#{name}_L] Conns=[#{trans_conn}] kVs=[#{high_side_kv} #{low_side_kv}] kVA=[#{trans_cap_kva} #{trans_cap_kva}] %R=[#{high_side_resistance} #{low_side_resistance}] XHL=#{trans_reactance}"
+    transformers << "New Transformer.t_#{name} Buses=[high_#{name} low_#{name}] Conns=[#{trans_conn} #{trans_conn}] kVs=[#{high_side_kv} #{low_side_kv}] kVA=[#{trans_cap_kva} #{trans_cap_kva}] %R=[#{high_side_resistance} #{low_side_resistance}] XHL=#{trans_reactance}"
 
     # Get the centroid of the lot
     centroid_lot = feature.geometry.centroid
- 
-    # Line between transformer and building
-=begin # Not doing lines now, Kate will do lines
-    scenario.each do |bldg|
-      next unless bldg.property('type') == 'Building'
-      if lot_geometry.intersects?(bldg.geometry)
-        # Get the name, modified for OpenDSS
-        bldg_name = bldg.property('name').gsub(/\W/,'_')
-        # Get the centroid of the building
-        centroid_bldg = bldg.geometry.centroid
-        # Get the distance from the transformer to the building
-        length_to_load_ft = 'TODO' #TODO
-        # Create the line
-        lines << "New Line.L_#{bldg_name} Bus1=t_#{name}_L Bus2=bus_#{name} Phases=3 Linecode=TODO Length=#{length_to_load_ft} Units=ft"
-      end
-    end
-=end
  
   end
 
@@ -504,13 +489,13 @@ Redirect bus_coordinates.dss
 
 New EnergyMeter.Feederhead Element=TODO_top_of_feeder Terminal=1 option=R PhaseVoltageReport=yes
 
-Set VoltageBasis=[13.2, 0.48]
+Set VoltageBases=[13.2, 0.48]
 
 ! Settings
 Set Casename=#{scenario_name}
 Set Demandinterval=true
 Set DIVerbose=true
-Set Mode=daily
+Set Mode=yearly
 Set Stepsize=1m
 Set Number=#{num_intervals}
 Set Maxiterations=1000
@@ -518,7 +503,11 @@ Set Maxcontroliter=1000
 Set Overloadreport=yes
 Set Voltexcept=true
 
-Solve"
+! Load Flow
+calcv
+Solve
+closedi
+"
 ]
 
 # Ensure that the irradiance and temperature were exported
