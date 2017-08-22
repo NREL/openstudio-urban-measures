@@ -8,7 +8,7 @@ require 'json'
 require 'net/http'
 
 #start the measure
-class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
+class DatapointReports < OpenStudio::Measure::ReportingMeasure
 
   # human readable name
   def name
@@ -27,7 +27,7 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
 
   # define the arguments that the user will input
   def arguments()
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
     
     # url of the city database
     city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
@@ -521,10 +521,65 @@ class DatapointReports < OpenStudio::Ruleset::ReportingUserScript
       (0...n).each do |i|
         line = []
         values.each_index do |j|
-          line << values[j][i]
+          line << values[j][i]          
+          # add_result(results, j, OpenStudio::TimeSeries::sum(values[j]), "")
         end
         file.puts(line.join(',')) 
       end
+    end
+    
+    values = CSV.read("report.csv").transpose
+    values.each_with_index do |value, i|
+      values[i] = [value[0]] + value[1..-1].collect { |i| i.to_f }
+    end
+    
+    month_map = {0=>"jan", 1=>"feb", 2=>"mar", 3=>"apr", 4=>"may", 5=>"jun", 6=>"jul", 7=>"aug", 8=>"sep", 9=>"oct", 10=>"nov", 11=>"dec"}
+    
+    values.each do |value|
+
+      runner.registerValue(value[0], value[1..-1].inject(0){|sum, x| sum + x})
+      add_result(results, value[0], value[1..-1].inject(0){|sum, x| sum + x}, "")
+      
+      all_values = value[1..-1]
+      
+      i = 1
+      day_sum = 0
+      daily_sums = []
+      all_values.each do |v|
+        day_sum += v
+        if i == 24*timesteps_per_hour
+          daily_sums << day_sum
+          i = 1
+          day_sum = 0
+        else
+          i += 1
+        end
+      end
+      
+      monthly_sums = []
+      if begin_month == 1 && begin_day_of_month == 1 && end_month == 12 && end_day_of_month == 31
+        # horrendous monthly sums
+        
+        days_per_month = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        k = 0
+        monthly_sum = 0
+        days_per_month.each_with_index do |days, d|
+          (1..days).each do |day|
+            monthly_sum += daily_sums[k]
+            k += 1
+          end
+          
+          monthly_sums << monthly_sum
+          
+          runner.registerValue("#{value[0]}_#{month_map[d]}", monthly_sum)
+          add_result(results, "#{value[0]}_#{month_map[d]}", monthly_sum, "")          
+          
+          monthly_sum = 0
+          
+        end
+        
+      end      
+      
     end
     
     #closing the sql file

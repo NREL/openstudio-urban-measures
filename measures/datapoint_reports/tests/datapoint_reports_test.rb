@@ -11,6 +11,7 @@ require 'minitest/autorun'
 require_relative '../measure.rb'
 
 require 'fileutils'
+require 'csv'
 
 class DatapointReports_Test < MiniTest::Unit::TestCase
 
@@ -152,7 +153,7 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
     # get arguments
     arguments = measure.arguments
-    argument_map = OpenStudio::Ruleset.convertOSArgumentVectorToMap(arguments)
+    argument_map = OpenStudio::Measure::convertOSArgumentVectorToMap(arguments)
 
     # create hash of argument values.
     # If the argument has a default that you want to use, you don't need it in the hash
@@ -205,7 +206,7 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
       # run the measure
       measure.run(runner, argument_map)
       result = runner.result
-      show_output(result)
+      # show_output(result)
       assert_equal('Success', result.value.valueName)
 
     ensure
