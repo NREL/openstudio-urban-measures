@@ -200,13 +200,9 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     project_id = runner.getStringArgumentValue("project_id", user_arguments)
     datapoint_id = runner.getStringArgumentValue("datapoint_id", user_arguments)
     
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-      @city_db_url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-      @city_db_url = md[1]
-    end
+    uri = URI.parse(city_db_url)
+    @city_db_url = uri.host
+    @port = uri.port
     
     @runner = runner
     
@@ -593,8 +589,12 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       params = {}
       params['project_id'] = project_id
       params['datapoint'] = {'id' => datapoint_id, 'results' => results}
+      
       http = Net::HTTP.new(@city_db_url, @port)
       http.read_timeout = 1000
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      
       request = Net::HTTP::Post.new("/api/datapoint.json")
       request.add_field('Content-Type', 'application/json')
       request.add_field('Accept', 'application/json')

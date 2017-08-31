@@ -8,6 +8,9 @@ require 'openstudio'
 require 'openstudio-workflow'
 require 'openstudio/workflow/adapters/output_adapter'
 
+require 'net/http'
+require 'openssl'
+require 'uri'
 require 'base64'
 
 class CityDB < OpenStudio::Workflow::OutputAdapters
@@ -37,6 +40,9 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    
     request = Net::HTTP::Post.new("/api/datapoint.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -84,6 +90,9 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
+    http.use_ssl = true
+    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    
     request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
