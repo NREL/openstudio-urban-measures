@@ -506,13 +506,13 @@ class Runner
       
       # blank out bundler and gem path modifications, will be re-setup by new call
       new_env["BUNDLER_ORIG_MANPATH"] = nil
-      new_env["GEM_PATH"] = nil
+#      new_env["GEM_PATH"] = nil
       new_env["GEM_HOME"] = nil
       new_env["BUNDLER_ORIG_PATH"] = nil
       new_env["BUNDLER_VERSION"] = nil
       new_env["BUNDLE_BIN_PATH"] = nil
       new_env["BUNDLE_GEMFILE"] = nil
-      new_env["RUBYLIB"] = nil
+#      new_env["RUBYLIB"] = nil
       new_env["RUBYOPT"] = nil
       
       # ok to put user name and password in environment variables?
@@ -521,8 +521,8 @@ class Runner
         @logger.info("'#{osw_path}' completed successfully")
       else
         @logger.error("Error running command: '#{command}'")
-        #@logger.error(stdout_str)
-        #@logger.error(stderr_str)
+        @logger.error(stdout_str)
+        @logger.error(stderr_str)
       end
       
       #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
