@@ -114,6 +114,24 @@ class Runner
     rescue => e
       @logger.error("Error in get_project: #{e.response}")
     end   
+
+    # create project_files directory
+    project_files_dir = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files")
+    if !File.exists?(project_files_dir)
+      FileUtils.mkdir_p(project_files_dir)
+    end
+    # download all project files
+    @logger.debug("get_project_files")
+    result[:project_files].each do |file|
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_project_file?project_id=#{@project_id.to_s}&file_name=#{file[:file_name]}"].get(content_type: :json, accept: :json)
+      temp = JSON.parse(response.body, :symbolize_names => true)
+      file_data = temp[:file_data][:file]
+      # base64 decode and write to run_dir/project_files (overwrite)
+      raw_data = Base64.strict_decode64(file_data)
+      file_path = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}")
+      File.write(file_path, raw_data)
+    end
     
     return result
   end  
