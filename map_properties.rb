@@ -27,8 +27,14 @@ end
 # configure a workflow with feature, and region data
 def configure_workflow(workflow, feature, project, is_retrofit = false)
 
+  # make 'properties' array for project (just weather_file_name and climate_zone for now)
+  # TODO: there could be other project-level properties that need to be mapped to measure inputs in the future
+  prop = {}
+  prop[:weather_file_name] = project[:weather_filename]
+  prop[:climate_zone] = project[:climate_zone]
+
   # configure with region first
-  workflow = merge_workflow(workflow, map_project_properties(project[:properties]))
+  workflow = merge_workflow(workflow, map_project_properties(prop))
 
   # configure with feature next
   if feature[:properties][:type] == "Building"
@@ -72,7 +78,7 @@ def map_project_properties(properties)
     when :weather_file_name
       next if value.nil?
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
-      
+  
     else
       @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
     end
