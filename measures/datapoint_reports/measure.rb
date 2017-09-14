@@ -592,8 +592,10 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       
       http = Net::HTTP.new(@city_db_url, @port)
       http.read_timeout = 1000
-      http.use_ssl = true
-      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      if @city_db_url.include? "https"
+        http.use_ssl = true
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
       
       request = Net::HTTP::Post.new("/api/datapoint.json")
       request.add_field('Content-Type', 'application/json')

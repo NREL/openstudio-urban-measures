@@ -644,8 +644,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    if @city_db_url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     
     request = Net::HTTP::Get.new("/projects/#{project_id}.json")
     request.add_field('Content-Type', 'application/json')
@@ -669,8 +671,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    if @city_db_url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
 
     request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
@@ -694,8 +698,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    if @city_db_url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     
     request = Net::HTTP::Post.new("/api/search.json")
     request.add_field('Content-Type', 'application/json')
