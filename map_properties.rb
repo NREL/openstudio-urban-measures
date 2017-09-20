@@ -74,6 +74,7 @@ def map_project_properties(properties)
     when :climate_zone
       next if value.nil?
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
+      result << {:measure_dir_name => 'create_DOE_prototype_building', :argument => :climate_zone, :value => "ASHRAE 169-2006-#{value}"}
       
     when :weather_file_name
       next if value.nil?
@@ -331,7 +332,12 @@ def map_building_properties(properties)
 
         result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d, :value => value}
         result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_fract_bldg_area, :value => 0.0}
-        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => 0}          
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_d_num_units, :value => 0}   
+
+
+        # custom mapping for prototype measure
+        result << {:measure_dir_name => 'create_DOE_prototype_building', :argument => :building_type, :value => value}
+
       end
 
     when :floor_area

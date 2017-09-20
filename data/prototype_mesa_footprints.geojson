@@ -86,8 +86,8 @@
                 "building_type": "SecondarySchool",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 19592,
-                "maximum_roof_height": 7.92,
+                "floor_area": 210887,
+                "maximum_roof_height": 26.0,
                 "name": "Secondary School",
                 "number_of_stories": 2,
                 "number_of_stories_above_ground": 2,
@@ -96,7 +96,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -173,8 +173,8 @@
                 "building_type": "PrimarySchool",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 6871,
-                "maximum_roof_height": 3.96,
+                "floor_area": 73989,
+                "maximum_roof_height": 13.00,
                 "name": "PrimarySchool",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -183,7 +183,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -220,8 +220,8 @@
                 "building_type": "FullServiceRestaurant",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 511,
-                "maximum_roof_height": 3.05,
+                "floor_area": 5500,
+                "maximum_roof_height": 10.0,
                 "name": "FullServiceRestaurant",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -230,7 +230,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -267,8 +267,8 @@
                 "building_type": "Hospital",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 22422,
-                "maximum_roof_height": 25.62,
+                "floor_area": 241348,
+                "maximum_roof_height": 84.055,
                 "name": "Hospital",
                 "number_of_stories": 6,
                 "number_of_stories_above_ground": 5,
@@ -277,7 +277,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -314,8 +314,8 @@
                 "building_type": "LargeHotel",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 11345,
-                "maximum_roof_height": 22.26,
+                "floor_area": 122117,
+                "maximum_roof_height": 73.0,
                 "name": "LargeHotel",
                 "number_of_stories": 7,
                 "number_of_stories_above_ground": 6,
@@ -324,7 +324,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -361,8 +361,8 @@
                 "building_type": "LargeOffice",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 46320,
-                "maximum_roof_height": 51.48,
+                "floor_area": 498584,
+                "maximum_roof_height": 168.9,
                 "name": "LargeOffice",
                 "number_of_stories": 13,
                 "number_of_stories_above_ground": 12,
@@ -371,7 +371,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -408,8 +408,8 @@
                 "building_type": "MediumOffice",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 4982,
-                "maximum_roof_height": 11.88,
+                "floor_area": 53626,
+                "maximum_roof_height": 38.9,
                 "name": "MediumOffice",
                 "number_of_stories": 3,
                 "number_of_stories_above_ground": 3,
@@ -418,7 +418,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -511,8 +511,8 @@
                 "building_type": "Outpatient",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 3804,
-                "maximum_roof_height": 9.15,
+                "floor_area": 40946,
+                "maximum_roof_height": 30.0,
                 "name": "Outpatient",
                 "number_of_stories": 3,
                 "number_of_stories_above_ground": 3,
@@ -521,7 +521,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -558,8 +558,8 @@
                 "building_type": "QuickServiceRestaurant",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 232,
-                "maximum_roof_height": 3.05,
+                "floor_area": 2497,
+                "maximum_roof_height": 10.0,
                 "name": "QuickServiceRestaurant",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -568,7 +568,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -605,8 +605,8 @@
                 "building_type": "RetailStripmall",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 2090,
-                "maximum_roof_height": 5.18,
+                "floor_area": 22497,
+                "maximum_roof_height": 17.0,
                 "name": "RetailStripmall",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -615,7 +615,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -652,8 +652,8 @@
                 "building_type": "RetailStandalone",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 2294,
-                "maximum_roof_height": 6.1,
+                "floor_area": 24692,
+                "maximum_roof_height": 20.0,
                 "name": "RetailStandalone",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -662,7 +662,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -699,8 +699,8 @@
                 "building_type": "SmallHotel",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 4013,
-                "maximum_roof_height": 11.57,
+                "floor_area": 43196,
+                "maximum_roof_height": 38.0,
                 "name": "SmallHotel",
                 "number_of_stories": 4,
                 "number_of_stories_above_ground": 4,
@@ -709,7 +709,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -746,8 +746,8 @@
                 "building_type": "SmallOffice",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 511,
-                "maximum_roof_height": 3.05,
+                "floor_area": 5500,
+                "maximum_roof_height": 10.0,
                 "name": "SmallOffice",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -756,7 +756,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
@@ -793,8 +793,8 @@
                 "building_type": "Warehouse",
                 "fill": "#555555",
                 "fill-opacity": 0.5,
-                "floor_area": 4835,
-                "maximum_roof_height": 8.53,
+                "floor_area": 52044,
+                "maximum_roof_height": 28.0,
                 "name": "Warehouse",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -803,7 +803,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 1584.3504,
+                "surface_elevation": 5198.0,
                 "type": "Building"
             },
             "type": "Feature"
