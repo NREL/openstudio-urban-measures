@@ -74,6 +74,27 @@ keep << 'end_use_natural_gas_water_systems'
 keep << 'end_use_natural_gas_refrigeration'
 keep << 'end_use_natural_gas_generators'
 
+# variables ot keep from envelope_and_internal_load_breakdown
+# heat gains
+keep << 'electric_equipment_total_heating_energy_annual'
+keep << 'gas_equipment_total_heating_energy_annual'
+keep << 'zone_lights_total_heating_energy_annual'
+keep << 'zone_people_sensible_heating_energy_annual'
+keep << 'zone_mechanical_ventilation_cooling_load_increase_energy_annual'
+keep << 'zone_infiltration_sensible_heat_gain_energy_annual'
+keep << 'surface_window_heat_gain_energy_annual'
+keep << 'ext_wall_heat_gain'
+keep << 'ext_roof_heat_gain'
+keep << 'ground_heat_gain'
+
+# heat losses
+keep << 'zone_infiltration_sensible_heat_loss_energy_annual'
+keep << 'zone_mechanical_ventilation_heating_load_increase_energy_annual'
+keep << 'surface_window_heat_loss_energy_annual'
+keep << 'ext_wall_heat_loss'
+keep << 'ext_roof_heat_loss'
+keep << 'ground_heat_loss'
+
 # scenario_mapping
 # all measure through ViewModel with 1 not being "Skip"
 scenario_mapping = {}
@@ -84,6 +105,8 @@ scenario_mapping['3a - Prototype-Bar-Sliced'] =          [1,1,1,1,1,0,1,0,0,0,1,
 scenario_mapping['4a - Prototype-Bar-Blend'] =           [1,1,1,1,1,0,1,1,1,0,1,1]
 scenario_mapping['3b - Typical-Bar-Sliced'] =            [1,0,1,1,0,1,1,0,0,0,1,1]
 scenario_mapping['4b - Typical-Bar-Blend'] =             [1,0,1,1,0,1,1,1,1,0,1,1]
+scenario_mapping['4c - Typical-Urban-Blend'] =           [1,0,1,1,0,1,1,1,0,1,1,1]
+scenario_mapping['4d - Prototype-ProtoGeo-Blend'] =      [1,1,1,1,0,0,1,1,0,0,1,1]
 
 # loop through resoruce files
 results_directories = Dir.glob("#{path_datapoints}/*")
@@ -102,11 +125,25 @@ results_directories.each do |results_directory|
 	model = translator.loadModel(path)
 	next if not model.is_initialized
 	model = model.get
-  building_name = model.getBuilding.name
+  building_name = model.getBuilding.name.get
   city = model.getSite.weatherFile.get.city
 
+  # remap building type as needed
+  building_type = model.getBuilding.standardsBuildingType.get
+  if building_type == "Office"
+    if building_name.include?("Small")
+      building_type = "SmallOffice"
+    elsif building_name.include?("Medium")
+      building_type = "MediumOffice"
+    else
+      building_type = "LargeOffice"
+    end
+  end
+  if building_type == "RetailStandalone" then building_type = "Retail" end
+  if building_type == "RetailStripmall" then building_type = "StripMall" end
+
   row_data[:building_name] = building_name
-  row_data[:building_type] = model.getBuilding.standardsBuildingType.get
+  row_data[:building_type] = building_type
   row_data[:city] = city
 
 	# load OSW to get information from argument values
@@ -147,6 +184,8 @@ results_directories.each do |results_directory|
             # todo - see if temp_scenario_map matches any hash 
             row_data[:scenario] = scenario_mapping.key(temp_scenario_map)
       
+            # todo change order of end uses to match Excel Spreadsheet
+
             result = measure_step.result.get
             result.stepValues.each do |arg|
               name = arg.name

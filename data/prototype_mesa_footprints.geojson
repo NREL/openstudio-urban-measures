@@ -1,10 +1,4 @@
 {
-	"crs": {
-		"type": "name",
-		"properties": {
-			"name": "EPSG:4326"
-		}
-	},
     "features": [
         {
             "geometry": {
@@ -87,7 +81,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 210887,
-                "maximum_roof_height": 26.0,
+                "maximum_roof_height": 26,
                 "name": "Secondary School",
                 "number_of_stories": 2,
                 "number_of_stories_above_ground": 2,
@@ -96,7 +90,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -174,7 +168,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 73989,
-                "maximum_roof_height": 13.00,
+                "maximum_roof_height": 13,
                 "name": "PrimarySchool",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -183,7 +177,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -221,7 +215,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 5500,
-                "maximum_roof_height": 10.0,
+                "maximum_roof_height": 10,
                 "name": "FullServiceRestaurant",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -230,7 +224,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -277,7 +271,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -315,7 +309,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 122117,
-                "maximum_roof_height": 73.0,
+                "maximum_roof_height": 73,
                 "name": "LargeHotel",
                 "number_of_stories": 7,
                 "number_of_stories_above_ground": 6,
@@ -324,7 +318,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -371,7 +365,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -418,7 +412,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -512,7 +506,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 40946,
-                "maximum_roof_height": 30.0,
+                "maximum_roof_height": 30,
                 "name": "Outpatient",
                 "number_of_stories": 3,
                 "number_of_stories_above_ground": 3,
@@ -521,7 +515,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -559,7 +553,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 2497,
-                "maximum_roof_height": 10.0,
+                "maximum_roof_height": 10,
                 "name": "QuickServiceRestaurant",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -568,7 +562,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -606,7 +600,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 22497,
-                "maximum_roof_height": 17.0,
+                "maximum_roof_height": 17,
                 "name": "RetailStripmall",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -615,7 +609,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -625,24 +619,24 @@
                 "coordinates": [
                     [
                         [
-                            -105.1797026548082,
-                            39.74776696892707
+                            -105.17988113209616,
+                            39.747904480357825
                         ],
                         [
-                            -105.18086945767213,
-                            39.74776697479145
+                            -105.18051425933835,
+                            39.7479044820841
                         ],
                         [
-                            -105.18086945767213,
-                            39.746866284844266
+                            -105.18051425933835,
+                            39.74752381888029
                         ],
                         [
-                            -105.17970267000176,
-                            39.746866278980086
+                            -105.17988113557978,
+                            39.74752381715403
                         ],
                         [
-                            -105.1797026548082,
-                            39.74776696892707
+                            -105.17988113209616,
+                            39.747904480357825
                         ]
                     ]
                 ],
@@ -653,7 +647,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 24692,
-                "maximum_roof_height": 20.0,
+                "maximum_roof_height": 20,
                 "name": "RetailStandalone",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -662,7 +656,101 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.19576661520844,
+                            39.74790162758368
+                        ],
+                        [
+                            -105.19630710601807,
+                            39.74790162884176
+                        ],
+                        [
+                            -105.19630710601807,
+                            39.7477465435306
+                        ],
+                        [
+                            -105.19576661642003,
+                            39.74774654227253
+                        ],
+                        [
+                            -105.19576661520844,
+                            39.74790162758368
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "MidriseApartment",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 34352,
+                "maximum_roof_height": 40,
+                "name": "MidriseApartment",
+                "number_of_stories": 4,
+                "number_of_stories_above_ground": 4,
+                "source_id": "MidriseApartment",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 5198,
+                "type": "Building"
+            },
+            "type": "Feature"
+        },
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            -105.19431822234036,
+                            39.74985661977038
+                        ],
+                        [
+                            -105.19485871315001,
+                            39.7498566210284
+                        ],
+                        [
+                            -105.19485871315001,
+                            39.74970154011801
+                        ],
+                        [
+                            -105.19431822355196,
+                            39.74970153885999
+                        ],
+                        [
+                            -105.19431822234036,
+                            39.74985661977038
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "building_type": "HighriseApartment",
+                "fill": "#555555",
+                "fill-opacity": 0.5,
+                "floor_area": 85880,
+                "maximum_roof_height": 100,
+                "name": "HighriseApartment",
+                "number_of_stories": 10,
+                "number_of_stories_above_ground": 10,
+                "source_id": "HighriseApartment",
+                "source_name": "OpenStudio-Standards",
+                "stroke": "#555555",
+                "stroke-opacity": 1,
+                "stroke-width": 2,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -700,7 +788,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 43196,
-                "maximum_roof_height": 38.0,
+                "maximum_roof_height": 38,
                 "name": "SmallHotel",
                 "number_of_stories": 4,
                 "number_of_stories_above_ground": 4,
@@ -709,7 +797,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -747,7 +835,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 5500,
-                "maximum_roof_height": 10.0,
+                "maximum_roof_height": 10,
                 "name": "SmallOffice",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -756,7 +844,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
@@ -794,7 +882,7 @@
                 "fill": "#555555",
                 "fill-opacity": 0.5,
                 "floor_area": 52044,
-                "maximum_roof_height": 28.0,
+                "maximum_roof_height": 28,
                 "name": "Warehouse",
                 "number_of_stories": 1,
                 "number_of_stories_above_ground": 1,
@@ -803,7 +891,7 @@
                 "stroke": "#555555",
                 "stroke-opacity": 1,
                 "stroke-width": 2,
-                "surface_elevation": 5198.0,
+                "surface_elevation": 5198,
                 "type": "Building"
             },
             "type": "Feature"
