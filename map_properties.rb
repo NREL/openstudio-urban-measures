@@ -73,8 +73,12 @@ def map_project_properties(properties)
     case name
     when :climate_zone
       next if value.nil?
-      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
       result << {:measure_dir_name => 'create_DOE_prototype_building', :argument => :climate_zone, :value => "ASHRAE 169-2006-#{value}"}
+
+      # trim A off of climate zones 7 and 8
+      if value == '7A' then value = '7' end
+      if value == '8A' then value = '8' end
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
       
     when :weather_file_name
       next if value.nil?
