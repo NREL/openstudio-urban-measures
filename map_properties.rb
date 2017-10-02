@@ -383,6 +383,10 @@ def map_building_properties(properties)
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
 
+    when :exclude_hvac
+      next if value.nil?
+      result << {:measure_dir_name => 'remove_hvac_systems', :argument => 'remove_all_equipment', :value => value}
+
     when :number_of_stories_above_ground
       # no-op, handled under number_of_stories
       
