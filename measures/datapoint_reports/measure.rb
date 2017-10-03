@@ -201,6 +201,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     datapoint_id = runner.getStringArgumentValue("datapoint_id", user_arguments)
     
     uri = URI.parse(city_db_url)
+    @city_db_is_https = uri.scheme == 'https' ? true : false
     @city_db_url = uri.host
     @port = uri.port
     
@@ -592,7 +593,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       
       http = Net::HTTP.new(@city_db_url, @port)
       http.read_timeout = 1000
-      if @city_db_url.include? "https"
+      if @city_db_is_https
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end

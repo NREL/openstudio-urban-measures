@@ -65,7 +65,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    if @city_db_url.include? "https"
+    if @city_db_is_https
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
@@ -92,7 +92,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    if @city_db_url.include? "https"
+    if @city_db_is_https
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
@@ -130,7 +130,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def download_datapoint(project_id, datapoint_id)
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
-    if @city_db_url.include? "https"
+    if @city_db_is_https
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
@@ -157,7 +157,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
 
           http = Net::HTTP.new(@city_db_url, @port)
           http.read_timeout = 1000
-          if @city_db_url.include? "https"
+          if @city_db_is_https
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
@@ -258,6 +258,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     uri = URI.parse(city_db_url)
     @city_db_url = uri.host
     @port = uri.port
+    @city_db_is_https = uri.scheme == 'https' ? true : false
 
     feature = get_feature(project_id, feature_id)
     if feature[:properties].nil? || feature[:properties][:district_system_type].nil?
