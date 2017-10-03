@@ -3,6 +3,8 @@
 
 require 'json'
 require 'net/http'
+require 'uri'
+require 'openssl'
 
 # start the measure
 class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
@@ -563,8 +565,14 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
 
     params = {}
     params[:name] = project_name
-    
+
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+
     request = Net::HTTP::Post.new("/api/project_search.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -587,6 +595,11 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   def get_feature_collection(params)
     
     http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     request = Net::HTTP::Post.new("/api/search.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -625,13 +638,18 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     @runner = runner
     @origin_lat_lon = nil
 
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-      @city_db_url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-      @city_db_url = md[1]
-    end
+    # @port = 80
+    # if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
+    #   @city_db_url = md[1]
+    #   @port = md[2]
+    # elsif /http:\/\/([^:\/]*)/.match(city_db_url)
+    #   @city_db_url = md[1]
+    # end
+
+    uri = URI.parse(city_db_url)
+    @city_db_url = uri.host
+    @port = uri.port
+    @city_db_is_https = uri.scheme == 'https' ? true : false
 
     project = get_project(project_name)
     
