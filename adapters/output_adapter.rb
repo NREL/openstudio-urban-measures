@@ -40,8 +40,10 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    if @url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     
     request = Net::HTTP::Post.new("/api/datapoint.json")
     request.add_field('Content-Type', 'application/json')
@@ -90,8 +92,10 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
-    http.use_ssl = true
-    http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    if @url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
     
     request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
