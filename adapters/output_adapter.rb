@@ -8,6 +8,9 @@ require 'openstudio'
 require 'openstudio-workflow'
 require 'openstudio/workflow/adapters/output_adapter'
 
+require 'net/http'
+require 'openssl'
+require 'uri'
 require 'base64'
 
 class CityDB < OpenStudio::Workflow::OutputAdapters
@@ -17,15 +20,10 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     fail 'The required :url option was not passed to the local output adapter' unless options[:url]
     fail 'The required :datapoint_id option was not passed to the local output adapter' unless options[:datapoint_id]
     fail 'The required :project_id option was not passed to the local output adapter' unless options[:project_id]
-    @url = options[:url]
+    uri = URI.parse(options[:url])
     
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(@url)
-      @url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(@url)
-      @url = md[1]
-    end
+    @url = uri.host
+    @port = uri.port
     
     super
   end
@@ -42,6 +40,11 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
+    if @url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     request = Net::HTTP::Post.new("/api/datapoint.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -89,6 +92,11 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
+    if @url.include? "https"
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     request = Net::HTTP::Post.new("/api/datapoint_file.json")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -171,4 +179,3 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     #end
   end
 end
-

@@ -10,6 +10,7 @@ require 'json'
 require 'base64'
 require 'csv'
 require 'open3'
+require 'rbconfig'
 
 require_relative 'map_properties'
 
@@ -39,6 +40,7 @@ class Runner
     measure_dir = File.join(File.dirname(__FILE__), "/measures")
     command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
     @logger.info("Running command: '#{command}'")
+    @logger.info("Current directory: '#{Dir.pwd}'")
     Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
       # calling wait_thr.value blocks until command is complete
       if wait_thr.value.success?
@@ -92,8 +94,10 @@ class Runner
       begin
         request = RestClient::Resource.new("#{@url}/api/datapoint", user: @user_name, password: @user_pwd)
         response = request.post(json_request, content_type: :json, accept: :json)    
-      rescue => e
+      rescue RestClient::Exception  => e
         @logger.error("Error in clear_results: #{e.response}")
+      rescue => e
+        @logger.error("Error in clear_results: #{e}")
       end        
     end
   end
@@ -110,6 +114,24 @@ class Runner
     rescue => e
       @logger.error("Error in get_project: #{e.response}")
     end   
+
+    # create project_files directory
+    project_files_dir = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files")
+    if !File.exists?(project_files_dir)
+      FileUtils.mkdir_p(project_files_dir)
+    end
+    # download all project files
+    @logger.debug("get_project_files")
+    result[:project_files].each do |file|
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_project_file?project_id=#{@project_id.to_s}&file_name=#{file[:file_name]}"].get(content_type: :json, accept: :json)
+      temp = JSON.parse(response.body, :symbolize_names => true)
+      file_data = temp[:file_data][:file]
+      # base64 decode and write to run_dir/project_files (overwrite)
+      raw_data = Base64.strict_decode64(file_data)
+      file_path = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}")
+      File.write(file_path, raw_data)
+    end
     
     return result
   end  
@@ -397,8 +419,6 @@ class Runner
     end
     
     workflow.delete(:datapoints)
-
-    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:steps].each do |step|
       arguments = step[:arguments]
@@ -429,11 +449,30 @@ class Runner
           workflow[:weather_file] = arguments[name]
         end
       end
+      
+      # DLM: in case the arguments were removed 
+      if step[:measure_dir_name] == "urban_geometry_creation"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:feature_id] = feature_id
+      elsif step[:measure_dir_name] == "datapoint_reports"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:datapoint_id] = datapoint_id
+      elsif step[:measure_dir_name] == "import_district_system_loads"
+        step[:arguments][:city_db_url] = @url
+        step[:arguments][:project_id] = @project_id
+        step[:arguments][:scenario_id] = scenario_id
+        step[:arguments][:feature_id] = feature_id
+      end
     end
+
+    # now do mapping
+    workflow = configure_workflow(workflow, feature, project)
     
     workflow[:file_paths] = @openstudio_files
     workflow[:measure_paths] = @openstudio_measures
-    workflow[:run_options] = {output_adapter:{custom_file_name:"./../../../adapters/output_adapter.rb", class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
+    workflow[:run_options] = {output_adapter:{custom_file_name:File.join(File.dirname(__FILE__), "./adapters/output_adapter.rb"), class_name:"CityDB",options:{url:@url,datapoint_id:datapoint_id,project_id:@project_id}}}
 
     # save workflow
     osw_dir = File.join(File.dirname(__FILE__), "/run/#{@project_name}/datapoint_#{datapoint_id}")
@@ -463,19 +502,57 @@ class Runner
       
       datapoint_id = md[1].gsub('/','')
       
-      # ok to put user name and password in environment variables?
-      command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
+      # to run with the CLI
+      #command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
+      
+      # to run with current ruby
+      ruby_exe = File.join( RbConfig::CONFIG['bindir'], RbConfig::CONFIG['RUBY_INSTALL_NAME'] + RbConfig::CONFIG['EXEEXT'] )
+      openstudio_rb_dir = File.join(File.dirname(@openstudio_exe), "../Ruby/")
+      run_rb = File.join(File.dirname(__FILE__), "run.rb")
+      command = "bundle exec '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      #command = "'#{ruby_exe}' '#{ruby_exe.gsub('ruby.exe', 'bundle')}' '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      #command = "'#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+      
       @logger.info("Running command: '#{command}'")
-      Open3.popen3({"URBANOPT_USERNAME" => @user_name, "URBANOPT_PASSWORD" => @user_pwd}, command) do |stdin, stdout, stderr, wait_thr|
-        # calling wait_thr.value blocks until command is complete
-        if wait_thr.value.success?
-          @logger.info("'#{osw_path}' completed successfully")
-        else
-          @logger.error("Error running command: '#{command}'")
-          @logger.error("#{stdout.read}")
-          @logger.error("#{stderr.read}")
-        end
+      @logger.info("Current directory: '#{Dir.pwd}'")
+      @logger.info("ENV['GEM_HOME']: '#{ENV['GEM_HOME']}'")
+      @logger.info("ENV['GEM_PATH']: '#{ENV['GEM_PATH']}'")
+      
+      new_env = {}
+      new_env["URBANOPT_USERNAME"] = @user_name
+      new_env["URBANOPT_PASSWORD"] = @user_pwd
+      
+      # blank out bundler and gem path modifications, will be re-setup by new call
+      new_env["BUNDLER_ORIG_MANPATH"] = nil
+      new_env["GEM_PATH"] = nil
+      new_env["GEM_HOME"] = nil
+      new_env["BUNDLER_ORIG_PATH"] = nil
+      new_env["BUNDLER_VERSION"] = nil
+      new_env["BUNDLE_BIN_PATH"] = nil
+      new_env["BUNDLE_GEMFILE"] = nil
+      new_env["RUBYLIB"] = nil
+      new_env["RUBYOPT"] = nil
+      
+      # ok to put user name and password in environment variables?
+      stdout_str, stderr_str, status = Open3.capture3(new_env, command)
+      if status.success?
+        @logger.info("'#{osw_path}' completed successfully")
+      else
+        @logger.error("Error running command: '#{command}'")
+        #@logger.error(stdout_str)
+        #@logger.error(stderr_str)
       end
+      
+      #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
+      #  # calling wait_thr.value blocks until command is complete
+      #  if wait_thr.value.success?
+      #    @logger.info("'#{osw_path}' completed successfully")
+      #  else
+      #    @logger.error("Error running command: '#{command}'")
+      #    @logger.error("#{stdout.read}")
+      #    @logger.error("#{stderr.read}")
+      #  end
+      #end
     end
   end
   
@@ -512,27 +589,33 @@ class Runner
         if timesteps_per_hour.nil?
           datapoint = get_datapoint(datapoint_id)
           puts datapoint
+
+          if (datapoint.key?(:results))
+            timesteps_per_hour = datapoint[:results][:timesteps_per_hour]
+            begin_month = datapoint[:results][:begin_month]
+            begin_day_of_month = datapoint[:results][:begin_day_of_month]
+            end_month = datapoint[:results][:end_month]
+            end_day_of_month = datapoint[:results][:end_day_of_month]
+            begin_year = datapoint[:results][:begin_year]
           
-          timesteps_per_hour = datapoint[:results][:timesteps_per_hour]
-          begin_month = datapoint[:results][:begin_month]
-          begin_day_of_month = datapoint[:results][:begin_day_of_month]
-          end_month = datapoint[:results][:end_month]
-          end_day_of_month = datapoint[:results][:end_day_of_month]
-          begin_year = datapoint[:results][:begin_year]
-          
-          end_year = begin_year
-          if end_month < begin_month  
-            end_year = begin_year + 1
-          elsif end_month == begin_month
-            if end_day_of_month < begin_day_of_month
+            end_year = begin_year
+            if end_month < begin_month  
               end_year = begin_year + 1
+            elsif end_month == begin_month
+              if end_day_of_month < begin_day_of_month
+                end_year = begin_year + 1
+              end
             end
+            
+            d1 = Date.new(begin_year, begin_month, begin_day_of_month)
+            d2 = Date.new(end_year, end_month, end_day_of_month, end_year)
+            duration_days = (d2-d1).to_i + 1
+            duration_hours = 24*duration_days
+          else
+            # set these to 0 for failed datapoints
+            timesteps_per_hour = 0;
+            duration_hours = 0;
           end
-          
-          d1 = Date.new(begin_year, begin_month, begin_day_of_month)
-          d2 = Date.new(end_year, end_month, end_day_of_month, end_year)
-          duration_days = (d2-d1).to_i + 1
-          duration_hours = 24*duration_days
         end         
         
         if save_datapoint_files
@@ -593,22 +676,25 @@ class Runner
       daily_values = {}
       monthly_values = {}
       annual_values = {}
-      CSV.foreach(summed_result_path) do |row|
-        if i == 0
-          # header row
-          headers = row
-          headers.each do |header|
-            annual_values[header] = 0
-            timestep_values[header] = []
-            daily_values[header] = []
+
+      if File.exists?(summed_result_path)
+        CSV.foreach(summed_result_path) do |row|
+          if i == 0
+            # header row
+            headers = row
+            headers.each do |header|
+              annual_values[header] = 0
+              timestep_values[header] = []
+              daily_values[header] = []
+            end
+          elsif i <= num_rows
+            headers.each_index do |j|
+              annual_values[headers[j]] += row[j].to_f
+              timestep_values[headers[j]] << row[j].to_f 
+            end
           end
-        elsif i <= num_rows
-          headers.each_index do |j|
-            annual_values[headers[j]] += row[j].to_f
-            timestep_values[headers[j]] << row[j].to_f 
-          end
+          i += 1
         end
-        i += 1
       end
 
       headers.each_index do |j|

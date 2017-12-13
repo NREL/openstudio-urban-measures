@@ -1,7 +1,10 @@
 source 'http://rubygems.org'
+ruby "2.2.4"
 
 gem 'rest-client'
 
 gem 'parallel'
 
-gem 'openstudio-standards', :git => 'http://github.com/NREL/openstudio-standards.git', :branch => 'hvac_additions'
+gem 'openstudio-workflow', '1.3.1'
+
+gem 'openstudio-standards', '0.1.15'

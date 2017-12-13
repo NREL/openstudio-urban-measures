@@ -65,6 +65,11 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     request = Net::HTTP::Get.new("/api/feature.json?project_id=#{project_id}&feature_id=#{feature_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -87,6 +92,11 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     request = Net::HTTP::Get.new("/api/retrieve_scenario.json?project_id=#{project_id}&scenario_id=#{scenario_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -120,6 +130,11 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
   def download_datapoint(project_id, datapoint_id)
     http = Net::HTTP.new(@city_db_url, @port)
     http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
     request = Net::HTTP::Get.new("/api/retrieve_datapoint.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}")
     request.add_field('Content-Type', 'application/json')
     request.add_field('Accept', 'application/json')
@@ -141,6 +156,12 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           file_id = datapoint_file[:_id][:$oid]
 
           http = Net::HTTP.new(@city_db_url, @port)
+          http.read_timeout = 1000
+          if @city_db_is_https
+            http.use_ssl = true
+            http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          end
+    
           request = Net::HTTP::Get.new("/api/retrieve_datapoint_file.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}&file_name=#{file_name}")
           request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
        
@@ -153,6 +174,9 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
           
           file_data = JSON.parse(response.body, :symbolize_names => true)[:file_data]
           file = Base64.strict_decode64(file_data[:file])
+          
+          # DLM: not sure why line endings are being changed on upload/download, correct them here for now
+          file.gsub!("\r\n", "\n")
 
           filename = "#{datapoint_id}_timeseries.csv"
           File.open(filename, "w") do |f|
@@ -231,13 +255,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     @runner = runner
     @result = true
     
-    @port = 80
-    if md = /http:\/\/(.*):(\d+)/.match(city_db_url)
-      @city_db_url = md[1]
-      @port = md[2]
-    elsif /http:\/\/([^:\/]*)/.match(city_db_url)
-      @city_db_url = md[1]
-    end
+    uri = URI.parse(city_db_url)
+    @city_db_url = uri.host
+    @port = uri.port
+    @city_db_is_https = uri.scheme == 'https' ? true : false
 
     feature = get_feature(project_id, feature_id)
     if feature[:properties].nil? || feature[:properties][:district_system_type].nil?
@@ -278,11 +299,6 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     start_date = model.getYearDescription.makeDate(1,1)
     time_step = OpenStudio::Time.new(0,0,60/time_step_per_hour,0)
     
-    electric_schedules = []
-    gas_schedules = []
-    district_cooling_schedules = []
-    district_heating_schedules = []
-    
     timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
                   {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
                   {name: "District Heating Hot Water Rate", units: "W", normalize: false},
@@ -291,7 +307,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     summed_values = {}
     datapoint_files.each do |file|
     
-      puts "Reading #{file}"
+      runner.registerInfo("Reading #{file}")
       
       basename = File.basename(file, '.csv').gsub('_timeseries', '')
       

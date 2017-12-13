@@ -372,9 +372,11 @@
           _.forEach(endUseKeys, function (endUseKey) {
             _.forEach(scenario.features, function (feature) {
               var endUseValue = _.get(feature, ['properties', 'datapoint', 'results', endUseKey], undefined);
-              if (!_.isUndefined(endUseValue) && endUseValue !== 0) {
+              var bldgArea = _.get(feature, ['properties', 'datapoint', 'results', 'building_area'], undefined);
+              if (!_.isUndefined(endUseValue) && endUseValue !== 0 && !_.isUndefined(bldgArea) && bldgArea !== 0) {
+              
                 applicableEndUseKeys.push(endUseKey);
-                value += endUseValue;
+                value += (endUseValue * bldgArea) * 0.001;  // usage in MMBtu
               }
             });
           });
@@ -432,9 +434,10 @@
             var value = 0;
             _.forEach(scenario.features, function (feature) {
               var endUseValue = _.get(feature, ['properties', 'datapoint', 'results', endUseKey], undefined);
-              if (!_.isUndefined(endUseValue)) value += endUseValue;
+              var bldgArea = _.get(feature, ['properties', 'datapoint', 'results', 'building_area'], undefined);
+              if (!_.isUndefined(endUseValue) && !_.isUndefined(bldgArea)) value += endUseValue * bldgArea;
             });
-            value = _.round(value);
+            value = _.round(value * 0.001);  // kBtu to MMBtu
 
             $scope.annualEndUseChartData[scenario.name].push({
               key: endUseKey,
