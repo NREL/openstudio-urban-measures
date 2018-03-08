@@ -24,6 +24,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     @url = uri.host
     @port = uri.port
+    @is_https = (uri.scheme == 'https' ? true : false)
     
     super
   end
@@ -40,7 +41,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
-    if @url.include? "https"
+    if @is_https
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
@@ -54,7 +55,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     response = http.request(request)
     if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
-      File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
+      File.open("#{@options[:output_directory]}/datapoint_error.html", 'w') {|f| f.puts response.body}
       return false
     end
     
@@ -92,7 +93,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     
     http = Net::HTTP.new(@url, @port)
     http.read_timeout = 1000
-    if @url.include? "https"
+    if @is_https
       http.use_ssl = true
       http.verify_mode = OpenSSL::SSL::VERIFY_NONE
     end
@@ -106,7 +107,7 @@ class CityDB < OpenStudio::Workflow::OutputAdapters
     response = http.request(request)
     if response.code != '200' && response.code != '201' # success
       puts "Bad response #{response.code}"
-      File.open("#{@options[:output_directory]}/error.html", 'w') {|f| f.puts response.body}
+      File.open("#{@options[:output_directory]}/datapoint_file_error.html", 'w') {|f| f.puts response.body}
       return false
     end
     
