@@ -502,6 +502,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         key_value = key_values[0]
       end
       ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
+      runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
       if n.nil? 
         # first timeseries should always be set
         values[i] = ts.get.values

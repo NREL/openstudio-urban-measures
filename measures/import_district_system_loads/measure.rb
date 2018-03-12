@@ -86,6 +86,34 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     result = JSON.parse(response.body, :symbolize_names => true)
     return result
   end
+
+  def get_transformer_datapoints(project_id, scenario_id, feature_id)
+    http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+
+    @runner.registerInfo("in Get_transformer_datapoints")
+    
+    request = Net::HTTP::Get.new("/api/scenario_transformer_datapoints.json?project_id=#{project_id}&scenario_id=#{scenario_id}&transformer_id=#{feature_id}")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
+
+    response = http.request(request)
+    @runner.registerInfo("Response code: #{response.code}")
+    if response.code != '200' # success
+      @runner.registerError("Bad response: #{response.code}")
+      @runner.registerError(response.body)
+      @result = false
+      return {}
+    end
+    
+    result = JSON.parse(response.body, :symbolize_names => true)
+    return result
+  end
   
   # get the project from the database
   def get_datapoint_ids(project_id, scenario_id)
@@ -214,6 +242,13 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     end
   
     name = "#{basename} #{ts[:name]}"
+    # adjust transformer names
+    # if ts[:name].include? 'Electricity:Facility'
+    #   name = "#{basename} transformer loads"
+    # elsif ts[:name].include? 'ElectricityProduced'
+    #   name = "#{basename} transformer PV generation"
+    # end
+
     if maximum == minimum
       schedule = OpenStudio::Model::ScheduleConstant.new(model)
       schedule.setValue(maximum)
@@ -282,17 +317,33 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       runner.registerInfo("No need to import loads for district system type '#{district_system_type}'")
       return true
     end
-    
-    datapoint_ids = get_datapoint_ids(project_id, scenario_id)
-    
+
     datapoint_files = []
-    datapoint_ids.each do |datapoint_id|
-      datapoint_file = download_datapoint(project_id, datapoint_id)
-      if datapoint_file
-        datapoint_files << datapoint_file
+    if district_system_type == 'Transformer'
+      # this datapoint corresponds to 1 transformer in a specific scenario
+      # get all datapoints for this scenario that represent a feature with transformer_id equal to this transformer (buildings AND district systems)
+      datapoints = get_transformer_datapoints(project_id, scenario_id, feature_id)
+
+      datapoints.each do |datapoint|
+        #@runner.registerInfo("DATAPOINT ID: #{datapoint[:id]}.")
+        datapoint_file = download_datapoint(project_id, datapoint[:id])
+        if datapoint_file
+          datapoint_files << datapoint_file
+        end
+      end
+    else
+      # regular district system: only has buildings connected to it  
+      datapoint_ids = get_datapoint_ids(project_id, scenario_id)
+
+      datapoint_ids.each do |datapoint_id|
+        datapoint_file = download_datapoint(project_id, datapoint_id)
+        if datapoint_file
+          datapoint_files << datapoint_file
+        end
       end
     end
     
+      
     # get timesteps
     time_step_per_hour = model.getTimestep.numberOfTimestepsPerHour
     num_rows = 8760*time_step_per_hour
@@ -302,7 +353,9 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     timeseries = [{name: "District Cooling Chilled Water Rate", units: "W", normalize: false},
                   {name: "District Cooling Mass Flow Rate", units: "kg/s", normalize: true},
                   {name: "District Heating Hot Water Rate", units: "W", normalize: false},
-                  {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true}]
+                  {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true},
+                  {name: "Electricity:Facility", units: "J", normalize: false}, 
+                  {name: "ElectricityProduced:Facility", units: "J", normalize: false}]
                   
     summed_values = {}
     datapoint_files.each do |file|
@@ -338,7 +391,6 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       #timeseries.each do |ts|
       #  makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
       #end
-
     end
      
     # to make one summed schedule

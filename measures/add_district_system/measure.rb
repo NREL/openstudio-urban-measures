@@ -32,6 +32,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     systems << "Community Photovoltaic"
     systems << "Central Hot and Chilled Water"
     systems << "Ambient Loop"
+    systems << "Transformer"
     system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('district_system_type', systems, true)
     system_type.setDisplayName("System Type")
     system_type.setDefaultValue("None")
@@ -187,6 +188,11 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     
   end
 
+  def add_transformer(model)
+    # stub to get schedules to report out
+    OpenStudio::Model::addExampleModelObjects(model)
+  end
+
   # define what happens when the measure is run
   def run(model, runner, user_arguments)
     super(model, runner, user_arguments)
@@ -203,6 +209,8 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
       runner.registerAsNotApplicable("NA.")
     elsif system_type == 'Community Photovoltaic'
       # already done?
+    elsif system_type == 'Transformer'
+       add_transformer(model)
     elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)
