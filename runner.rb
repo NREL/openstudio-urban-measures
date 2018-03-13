@@ -239,7 +239,7 @@ class Runner
         # select datapoints down to subset
         datapoints = datapoints.select{ |dp| datapoint_ids.include? dp[:id] }
       end
-      
+
       # separate buildings, district systems, and transformers
       new_dps = {}
       new_dps[:buildings] = datapoints.select { |dp| dp[:feature_type] == 'Building'}
@@ -251,7 +251,6 @@ class Runner
         result[key] = dpArr.map{|x| x[:id]}
       end
 
-      @logger.info("DATAPOINTS By Type: #{result}")
     rescue => e
       @logger.error("Error in get_datapoint_ids_by_type: #{e.response}")
     end   
