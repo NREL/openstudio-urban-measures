@@ -537,6 +537,8 @@ class Runner
       stdout_str, stderr_str, status = Open3.capture3(new_env, command)
       if status.success?
         @logger.info("'#{osw_path}' completed successfully")
+        #@logger.info(stdout_str)
+        #@logger.info(stderr_str)        
       else
         @logger.error("Error running command: '#{command}'")
         #@logger.error(stdout_str)
