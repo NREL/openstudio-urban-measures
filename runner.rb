@@ -199,8 +199,9 @@ class Runner
     return result
   end
   
+  # DEPRECATED
   def get_all_datapoint_ids()
-    @logger.debug("get_all_datapoint_ids")
+    @logger.debug("get_all_datapoint_ids...this method is DEPRECATED")
     
     result = []
     begin
@@ -215,11 +216,47 @@ class Runner
       
       # make an array of datapoint IDs only
       result = datapoints.map{|x| x[:id]}
+
     rescue => e
       @logger.error("Error in get_all_datapoint_ids: #{e.response}")
     end   
     
     @logger.debug("get_all_datapoint_ids = #{result.join(',')}")
+    return result
+  end
+
+  def get_datapoint_ids_by_type(datapoint_ids = [])
+    @logger.debug("get_datapoint_ids_by_type")
+    
+    result = []
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/datapoints?project_id=#{@project_id.to_s}"].get(content_type: :json, accept: :json)
+
+      datapoints = JSON.parse(response.body, :symbolize_names => true)
+
+      if datapoint_ids.length > 0
+        # select datapoints down to subset
+        datapoints = datapoints.select{ |dp| datapoint_ids.include? dp[:id] }
+      end
+      
+      # separate buildings, district systems, and transformers
+      new_dps = {}
+      new_dps[:buildings] = datapoints.select { |dp| dp[:feature_type] == 'Building'}
+      new_dps[:district_systems] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] != 'Transformer'}     
+      new_dps[:transformers] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] == 'Transformer'}
+
+      result = {}
+      new_dps.each do |key, dpArr|
+        result[key] = dpArr.map{|x| x[:id]}
+      end
+
+      @logger.info("DATAPOINTS By Type: #{result}")
+    rescue => e
+      @logger.error("Error in get_datapoint_ids_by_type: #{e.response}")
+    end   
+    
+    @logger.debug("get_datapoint_ids_by_type = #{result}")
     return result
   end
   
@@ -354,43 +391,45 @@ class Runner
   end
   
   # return a vector of directories to run
-  def create_osws
+  def create_osws(datapoint_ids = [])
     @logger.debug("create_osws")
-    result = []
+    result = {}
     
+    # datapoint IDs may be passed in (from run_datapoints)
     # connect to database, get list of all datapoint ids
-    all_datapoint_ids = get_all_datapoint_ids()
-
+    all_datapoint_ids = get_datapoint_ids_by_type(datapoint_ids)
+    
     # loop over all combinations
     num_datapoints = 1
-    all_datapoint_ids.each do |datapoint_id|
+    all_datapoint_ids.each do |key, dpArr|
+      result[key] = []
+
+      dpArr.each do |datapoint_id|
     
-      datapoint = get_datapoint(datapoint_id)
+        datapoint = get_datapoint(datapoint_id) 
       
-      # DLM: TODO: skip running district system datapoints until all buildings are run
+        # see if datapoint needs to be run
+        if datapoint[:status] 
+          if datapoint[:status] == "Started"
+            @logger.debug("Skipping Started Datapoint")
+            next
+          elsif datapoint[:status] == "Complete"
+            @logger.debug("Skipping Complete Datapoint")
+            next
+          elsif datapoint[:status] == "Failed"
+            #@logger.debug("Skipping Failed Datapoint")
+            #next
+          end
+        end
+        @logger.debug("Saving Datapoint #{datapoint}")
       
-      # see if datapoint needs to be run
-      if datapoint[:status] 
-        if datapoint[:status] == "Started"
-          @logger.debug("Skipping Started Datapoint")
-          next
-        elsif datapoint[:status] == "Complete"
-          @logger.debug("Skipping Complete Datapoint")
-          next
-        elsif datapoint[:status] == "Failed"
-          #@logger.debug("Skipping Failed Datapoint")
-          #next
+        result[key] << create_osw(datapoint_id)
+      
+        num_datapoints += 1
+        if @max_datapoints < num_datapoints
+          return result
         end
       end
-      @logger.debug("Saving Datapoint #{datapoint}")
-      
-      result << create_osw(datapoint_id)
-      
-      num_datapoints += 1
-      if @max_datapoints < num_datapoints
-        return result
-      end
-      
     end
     
     return result
@@ -493,66 +532,69 @@ class Runner
   def run_osws(dirs)
     @logger.debug("run_osws, dirs = #{dirs}")
 
-    Parallel.each(dirs, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
-      
-      md = /datapoint_(.*)/.match(osw_dir)
-      next if !md
-      
-      osw_path = File.join(osw_dir, "in.osw")
-      
-      datapoint_id = md[1].gsub('/','')
-      
-      # to run with the CLI
-      #command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
-      
-      # to run with current ruby
-      ruby_exe = File.join( RbConfig::CONFIG['bindir'], RbConfig::CONFIG['RUBY_INSTALL_NAME'] + RbConfig::CONFIG['EXEEXT'] )
-      openstudio_rb_dir = File.join(File.dirname(@openstudio_exe), "../Ruby/")
-      run_rb = File.join(File.dirname(__FILE__), "run.rb")
-      command = "bundle exec '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
-      #command = "'#{ruby_exe}' '#{ruby_exe.gsub('ruby.exe', 'bundle')}' '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
-      #command = "'#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
-      
-      @logger.info("Running command: '#{command}'")
-      @logger.info("Current directory: '#{Dir.pwd}'")
-      @logger.info("ENV['GEM_HOME']: '#{ENV['GEM_HOME']}'")
-      @logger.info("ENV['GEM_PATH']: '#{ENV['GEM_PATH']}'")
-      
-      new_env = {}
-      new_env["URBANOPT_USERNAME"] = @user_name
-      new_env["URBANOPT_PASSWORD"] = @user_pwd
-      
-      # blank out bundler and gem path modifications, will be re-setup by new call
-      new_env["BUNDLER_ORIG_MANPATH"] = nil
-      new_env["GEM_PATH"] = nil
-      new_env["GEM_HOME"] = nil
-      new_env["BUNDLER_ORIG_PATH"] = nil
-      new_env["BUNDLER_VERSION"] = nil
-      new_env["BUNDLE_BIN_PATH"] = nil
-      new_env["BUNDLE_GEMFILE"] = nil
-      new_env["RUBYLIB"] = nil
-      new_env["RUBYOPT"] = nil
-      
-      # ok to put user name and password in environment variables?
-      stdout_str, stderr_str, status = Open3.capture3(new_env, command)
-      if status.success?
-        @logger.info("'#{osw_path}' completed successfully")
-      else
-        @logger.error("Error running command: '#{command}'")
-        #@logger.error(stdout_str)
-        #@logger.error(stderr_str)
+    dirs.each do |key, dirArr|
+      # do buildings first, then district systems, then transformers
+      Parallel.each(dirArr, in_threads: [@max_datapoints,@num_parallel].min) do |osw_dir|
+        
+        md = /datapoint_(.*)/.match(osw_dir)
+        next if !md
+        
+        osw_path = File.join(osw_dir, "in.osw")
+        
+        datapoint_id = md[1].gsub('/','')
+        
+        # to run with the CLI
+        #command = "'#{@openstudio_exe}' run -w '#{osw_path}'"
+        
+        # to run with current ruby
+        ruby_exe = File.join( RbConfig::CONFIG['bindir'], RbConfig::CONFIG['RUBY_INSTALL_NAME'] + RbConfig::CONFIG['EXEEXT'] )
+        openstudio_rb_dir = File.join(File.dirname(@openstudio_exe), "../Ruby/")
+        run_rb = File.join(File.dirname(__FILE__), "run.rb")
+        command = "bundle exec '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+        #command = "'#{ruby_exe}' '#{ruby_exe.gsub('ruby.exe', 'bundle')}' '#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+        #command = "'#{ruby_exe}' '#{run_rb}' '#{openstudio_rb_dir}' '#{osw_path}'"
+        
+        @logger.info("Running command: '#{command}'")
+        @logger.info("Current directory: '#{Dir.pwd}'")
+        @logger.info("ENV['GEM_HOME']: '#{ENV['GEM_HOME']}'")
+        @logger.info("ENV['GEM_PATH']: '#{ENV['GEM_PATH']}'")
+        
+        new_env = {}
+        new_env["URBANOPT_USERNAME"] = @user_name
+        new_env["URBANOPT_PASSWORD"] = @user_pwd
+        
+        # blank out bundler and gem path modifications, will be re-setup by new call
+        new_env["BUNDLER_ORIG_MANPATH"] = nil
+        new_env["GEM_PATH"] = nil
+        new_env["GEM_HOME"] = nil
+        new_env["BUNDLER_ORIG_PATH"] = nil
+        new_env["BUNDLER_VERSION"] = nil
+        new_env["BUNDLE_BIN_PATH"] = nil
+        new_env["BUNDLE_GEMFILE"] = nil
+        new_env["RUBYLIB"] = nil
+        new_env["RUBYOPT"] = nil
+        
+        # ok to put user name and password in environment variables?
+        stdout_str, stderr_str, status = Open3.capture3(new_env, command)
+        if status.success?
+          @logger.info("'#{osw_path}' completed successfully")
+        else
+          @logger.error("Error running command: '#{command}'")
+          #@logger.error(stdout_str)
+          #@logger.error(stderr_str)
+        end
+        
+        #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
+        #  # calling wait_thr.value blocks until command is complete
+        #  if wait_thr.value.success?
+        #    @logger.info("'#{osw_path}' completed successfully")
+        #  else
+        #    @logger.error("Error running command: '#{command}'")
+        #    @logger.error("#{stdout.read}")
+        #    @logger.error("#{stderr.read}")
+        #  end
+        #end
       end
-      
-      #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|
-      #  # calling wait_thr.value blocks until command is complete
-      #  if wait_thr.value.success?
-      #    @logger.info("'#{osw_path}' completed successfully")
-      #  else
-      #    @logger.error("Error running command: '#{command}'")
-      #    @logger.error("#{stdout.read}")
-      #    @logger.error("#{stderr.read}")
-      #  end
-      #end
     end
   end
   
