@@ -43,8 +43,9 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
       return true
     end
     
-    if schedules[0].iddObject.type != "Schedule:Year".to_IddObjectType
-      runner.registerError("Transformer Output Electric Energy Schedule is not a Schedule:Year")
+    if schedules[0].iddObject.type != "Schedule:Year".to_IddObjectType and
+      schedules[0].iddObject.type != "Schedule:Compact".to_IddObjectType
+      runner.registerError("Transformer Output Electric Energy Schedule is not a Schedule:Year or a Schedule:Compact")
       return false
     end
     
@@ -55,21 +56,36 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
     
     if name_plate_rating.nil?
       max_energy = 0
-      schedules[0].targets.each do |week_target|
-        if week_target.iddObject.type == "Schedule:Week:Daily".to_IddObjectType
-          week_target.targets.each do |day_target|
-            if day_target.iddObject.type == "Schedule:Day:Interval".to_IddObjectType
-              day_target.extensibleGroups.each do |eg|
-                value = eg.getDouble(1)
-                if value.is_initialized
-                  if value.get > max_energy
-                    max_energy = value.get
+      
+      if schedules[0].iddObject.type == "Schedule:Year".to_IddObjectType
+        schedules[0].targets.each do |week_target|
+          if week_target.iddObject.type == "Schedule:Week:Daily".to_IddObjectType
+            week_target.targets.each do |day_target|
+              if day_target.iddObject.type == "Schedule:Day:Interval".to_IddObjectType
+                day_target.extensibleGroups.each do |eg|
+                  value = eg.getDouble(1)
+                  if value.is_initialized
+                    if value.get > max_energy
+                      max_energy = value.get
+                    end
                   end
                 end
               end
             end
           end
         end
+      elsif schedules[0].iddObject.type == "Schedule:Compact".to_IddObjectType
+        schedules[0].extensibleGroups.each do |eg|
+          if /\A[+-]?\d+?(_?\d+)*(\.\d+e?\d*)?\Z/.match(eg.getString(0).to_s.strip)
+            value = eg.getDouble(0)
+            if value.is_initialized
+              if value.get > max_energy
+                max_energy = value.get
+              end
+            end
+          end
+        end
+      
       end
       runner.registerInfo("Max energy is #{max_energy} J")
       
