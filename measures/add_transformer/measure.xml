@@ -1,0 +1,54 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>add_transformer</name>
+  <uid>b53bd785-b5d0-4c93-97cd-16cc558ca29a</uid>
+  <version_id>b2505c27-5d73-49fe-8017-508828c89482</version_id>
+  <version_modified>20180314T021724Z</version_modified>
+  <xml_checksum>9F9F47EF</xml_checksum>
+  <class_name>AddTransformer</class_name>
+  <display_name>Add Transformer</display_name>
+  <description>Adds a Transformer object to the model, requires Schedule named 'Transformer Output Electric Energy Schedule' to exist in the model. This schedule should be in units of Joules.</description>
+  <modeler_description></modeler_description>
+  <arguments/>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Whole Building Schedules</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>EnergyPlusMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>add_transformer_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>D0B4F68A</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>2.4.1</identifier>
+        <min_compatible>2.4.1</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>9508F84D</checksum>
+    </file>
+  </files>
+</measure>
