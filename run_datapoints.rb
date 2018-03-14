@@ -25,9 +25,9 @@ runner.update_measures
 runner.clear_results(datapoint_ids) # if clear_results
 
 dirs = []
-datapoint_ids.each do |datapoint_id|
-  dirs << runner.create_osw(datapoint_id)
-end
+
+# organize the datapoints
+dirs = runner.create_osws(datapoint_ids)
 
 runner.run_osws(dirs)
 #runner.save_results
