@@ -35,8 +35,11 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
       return false
     end
 
+    workspace.save('tempWORKSPACE.idf', true)
+
     # check for transformer schedule in the starting model
     schedules = workspace.getObjectsByName("Transformer Output Electric Energy Schedule")
+
     
     if schedules.empty?
       runner.registerAsNotApplicable("Transformer Output Electric Energy Schedule not found")
@@ -146,7 +149,7 @@ EnergyManagementSystem:Sensor,
     PowerInFromGrid,                     !- Transformer Usage
     ,                                    !- Zone Name
     ,                                    !- Radiative Fraction
-    #{unit_load_at_name_plate_efficiency},                             !- Nameplate Rating {VA}
+    #{name_plate_rating},                 !- Nameplate Rating {VA}
     3,                                   !- Phase
     Aluminum,                            !- Conductor Material
     150,                                 !- Full Load Temperature Rise { &deg;C}
@@ -154,7 +157,7 @@ EnergyManagementSystem:Sensor,
     NominalEfficiency,                   !- Performance Input Method
     ,                                    !- Rated No Load Loss {W}
     ,                                    !- Rated Load Loss {W}
-    #{name_plate_efficiency},                               !- Nameplate Efficiency
+    #{name_plate_efficiency},            !- Nameplate Efficiency
     #{unit_load_at_name_plate_efficiency},                                !- Per Unit Load for Nameplate Efficiency
     75,                                  !- Reference Temperature for Nameplate Efficiency { &deg;C}
     ,                                    !- Per Unit Load for Maximum Efficiency

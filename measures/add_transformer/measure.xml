@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>add_transformer</name>
   <uid>b53bd785-b5d0-4c93-97cd-16cc558ca29a</uid>
-  <version_id>b2505c27-5d73-49fe-8017-508828c89482</version_id>
-  <version_modified>20180314T021724Z</version_modified>
+  <version_id>8c96d576-1539-4821-9393-5d4fd3e5c7ce</version_id>
+  <version_modified>20180314T210946Z</version_modified>
   <xml_checksum>9F9F47EF</xml_checksum>
   <class_name>AddTransformer</class_name>
   <display_name>Add Transformer</display_name>
@@ -37,7 +37,13 @@
       <filename>add_transformer_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>D0B4F68A</checksum>
+      <checksum>767040D7</checksum>
+    </file>
+    <file>
+      <filename>transformer_loads.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>test</usage_type>
+      <checksum>0F84FB7D</checksum>
     </file>
     <file>
       <version>
@@ -48,7 +54,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>9508F84D</checksum>
+      <checksum>C2725A6A</checksum>
     </file>
   </files>
 </measure>

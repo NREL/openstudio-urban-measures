@@ -79,6 +79,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     
     return result
   end
+
+
   
   #short_os_fuel method
   def short_os_fuel(fuel_string)
@@ -179,7 +181,57 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       else
         @runner.registerValue(name, value, units)
       end
+    # elsif value.is_a? String
+    #   results[name] = value
+    #   @runner.registerValue(name, value)
     end
+  end
+
+   def to_displayTime( os_time )
+    js_time = os_time.to_s
+    # Replace the '-' with '/'
+    js_time = js_time.gsub('-','/')
+    # Replace month abbreviations with numbers
+    js_time = js_time.gsub('Jan','01')
+    js_time = js_time.gsub('Feb','02')
+    js_time = js_time.gsub('Mar','03')
+    js_time = js_time.gsub('Apr','04')
+    js_time = js_time.gsub('May','05')
+    js_time = js_time.gsub('Jun','06')
+    js_time = js_time.gsub('Jul','07')
+    js_time = js_time.gsub('Aug','08')
+    js_time = js_time.gsub('Sep','09')
+    js_time = js_time.gsub('Oct','10')
+    js_time = js_time.gsub('Nov','11')
+    js_time = js_time.gsub('Dec','12')
+    # Remove year
+    js_time.slice!(0,5)
+    return js_time
+  end
+
+  def get_datapoint(project_id, datapoint_id)
+    http = Net::HTTP.new(@city_db_url, @port)
+    http.read_timeout = 1000
+    if @city_db_is_https
+      http.use_ssl = true
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    end
+    
+    request = Net::HTTP::Get.new("/api/retrieve_datapoint.json?project_id=#{project_id}&datapoint_id=#{datapoint_id}")
+    request.add_field('Content-Type', 'application/json')
+    request.add_field('Accept', 'application/json')
+    request.basic_auth(ENV['URBANOPT_USERNAME'], ENV['URBANOPT_PASSWORD'])
+  
+    response = http.request(request)
+    if  response.code != '200' # success
+      @runner.registerError("Bad response #{response.code}")
+      @runner.registerError(response.body)
+      @result = false
+    end
+
+    datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
+      
+    return datapoint
   end
 
   #define what happens when the measure is run
@@ -485,16 +537,51 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     aspect_ratio ||= nil
 
     add_result(results, "aspect_ratio", aspect_ratio, "")
+
+    # KAF special transformer data
+    # get datapoint to see if it's a transformer
+    name_plate_rating = nil
+    isTransformerFlag = false
+    dp = get_datapoint(project_id, datapoint_id)
+    # if so, do some extra stuff
+    if dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] == 'Transformer'
+      isTransformerFlag = true
+    end
     
     # get timeseries
     timeseries = ["Electricity:Facility", "ElectricityProduced:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
     
+    if isTransformerFlag
+      transformerTimeseries = ["Transformer Distribution Electric Loss Energy", "Transformer Output Electric Energy", "Transformer Input Electric Energy"]
+      transformerTimeseries.each {|x| timeseries << x}
+     
+      # get workspace and transformer rating
+      workspace = runner.lastEnergyPlusWorkspace
+      if workspace.empty?
+        runner.registerError('Cannot find last idf file.')
+        return false
+      end
+      workspace = workspace.get
+
+      workspace.getObjectsByType("ElectricLoadCenter:Transformer".to_IddObjectType).each do |object|
+        name = object.nameString
+        name_plate_rating = object.getDouble(5,true)
+        if name_plate_rating.is_initialized
+          name_plate_rating = name_plate_rating.get
+          runner.registerInfo("#{name} has nameplate rating of #{name_plate_rating} VA")
+        end
+      end
+    end
+   
     n = nil
     values = []
-    timeseries.each_index do |i|
+   
+    timeseries.each_index do |i|    
       timeseries_name = timeseries[i]
+      runner.registerInfo("TIMESERIES: #{timeseries_name}")
+
       key_values = sql_file.availableKeyValues("RUN PERIOD 1", "Zone Timestep", timeseries_name)
       if key_values.empty?
         key_value = ""
@@ -511,6 +598,47 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         values[i] = ts.get.values
       else
         values[i] = Array.new(n, 0)
+      end
+
+      # keep a few special timeseries for post processing
+      if isTransformerFlag
+
+        # calculate # instances above rating
+        if timeseries_name == 'Transformer Output Electric Energy'
+
+          tsget = ts.get
+          datetimes = tsget.dateTimes
+          #runner.registerInfo("--DATETIMES!!-- #{datetimes}")
+
+          # TODO: assuming PF of 1 for now (w = VA)
+          numberTimesAboveRating = 0
+          transformer_max_peak = {index: -1, value: 0, timestamp: datetimes[0]}
+          transformer_worst_case_RPF = {index: -1, value: 1000000000000, timestamp: datetimes[0]}
+          (0..(n-1)).each do |ind|
+            numberTimesAboveRating += 1 if values[i][ind].to_f > name_plate_rating
+            if values[i][ind] > transformer_max_peak[:value]
+              transformer_max_peak[:value] = values[i][ind].to_f
+              transformer_max_peak[:index] = ind
+              transformer_max_peak[:timestamp] = datetimes[ind]
+            end
+            if values[i][ind].to_f < transformer_worst_case_RPF[:value]
+              transformer_worst_case_RPF[:value] = values[i][ind].to_f
+              transformer_worst_case_RPF[:index] = ind
+              transformer_worst_case_RPF[:timestamp] = datetimes[ind]
+            end
+          end
+          runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
+
+          # add TRANSFORMER results (max index, index of start/end of max day, )
+          add_result(results, "transformer_max_peak", transformer_max_peak[:value], "J")
+          add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
+          add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
+
+          add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "J")
+          add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
+          add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
+ 
+        end
       end
     end
 
@@ -581,8 +709,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     end
     
     #closing the sql file
-    sql_file.close
-    
+    sql_file.close  
     if datapoint_id == '0' || project_id == '0'
       File.open('report.json', 'w') do |file|
         file << JSON::pretty_generate(results)

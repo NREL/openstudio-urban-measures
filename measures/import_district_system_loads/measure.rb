@@ -241,14 +241,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       end
     end
   
-    name = "#{basename} #{ts[:name]}"
-    # adjust transformer names
-    # if ts[:name].include? 'Electricity:Facility'
-    #   name = "#{basename} transformer loads"
-    # elsif ts[:name].include? 'ElectricityProduced'
-    #   name = "#{basename} transformer PV generation"
-    # end
-
+    name =  basename.empty? ? ts[:name] : "#{basename} #{ts[:name]}"
     if maximum == minimum
       schedule = OpenStudio::Model::ScheduleConstant.new(model)
       schedule.setValue(maximum)
@@ -395,7 +388,16 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
      
     # to make one summed schedule
     timeseries.each do |ts|
-      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summmed", ts)
+      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summed", ts)
+    end
+
+    # make transformer schedule(s)
+    if district_system_type == 'Transformer'
+      transformer_values = OpenStudio::Vector.new(num_rows, 0.0)
+      (0..(num_rows-1)).each do |i|
+        transformer_values[i] = summed_values['Electricity:Facility'][i] - summed_values['ElectricityProduced:Facility'][i]
+      end
+      makeSchedule(start_date, time_step, transformer_values, model, "", {name: "Transformer Output Electric Energy Schedule", units: "J", normalize: false})
     end
       
     # todo: create a plant loop

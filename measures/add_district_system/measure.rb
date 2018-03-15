@@ -190,7 +190,10 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
   def add_transformer(model)
     # stub to get schedules to report out
-    OpenStudio::Model::addExampleModelObjects(model)
+    # add code here once object is wrapped
+
+    #remove line below when add_transformer is working
+    #OpenStudio::Model::addExampleModelObjects(model)
   end
 
   # define what happens when the measure is run
