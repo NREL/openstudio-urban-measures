@@ -430,7 +430,7 @@ def map_district_system_properties(properties)
         
       result << {:measure_dir_name => 'add_district_system', :argument => :district_system_type, :value => value}
       
-    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at, :transformer_id, :transformer_rating, :transformer_phase
+    when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at, :transformer_id, :transformer_rating, :transformer_phase, :transformer_voltage
       # no-op
       
     when :surface_elevation, :floor_area, :number_of_stories, :maximum_roof_height
