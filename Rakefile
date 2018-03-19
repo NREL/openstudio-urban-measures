@@ -1,5 +1,8 @@
 require 'fileutils'
 
+require 'openstudio_measure_tester/rake_task'
+OpenStudioMeasureTester::RakeTask.new
+
 task :default => [:setup]
 
 task :setup do
