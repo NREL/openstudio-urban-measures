@@ -1,6 +1,6 @@
 ######################################################################
 #  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
-#   
+#
 #  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
 ######################################################################
 
@@ -14,11 +14,10 @@ require 'fileutils'
 require 'csv'
 
 class DatapointReports_Test < MiniTest::Unit::TestCase
-
   def is_openstudio_2?
     begin
       workflow = OpenStudio::WorkflowJSON.new
-    rescue
+    rescue StandardError
       return false
     end
     return true
@@ -67,15 +66,14 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
   # method for running the test simulation using OpenStudio 1.x API
   def setup_test_1(test_name, epw_path)
-
     co = OpenStudio::Runmanager::ConfigOptions.new(true)
     co.findTools(false, true, false, true)
 
     if !File.exist?(sql_path(test_name))
-      puts "Running EnergyPlus"
+      puts 'Running EnergyPlus'
 
-      wf = OpenStudio::Runmanager::Workflow.new("modeltoidf->energypluspreprocess->energyplus")
-      wf.add(co.getTools())
+      wf = OpenStudio::Runmanager::Workflow.new('modeltoidf->energypluspreprocess->energyplus')
+      wf.add(co.getTools)
       job = wf.create(OpenStudio::Path.new(run_dir(test_name)), OpenStudio::Path.new(model_out_path(test_name)), OpenStudio::Path.new(epw_path))
 
       rm = OpenStudio::Runmanager::RunManager.new
@@ -86,7 +84,6 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
   # method for running the test simulation using OpenStudio 2.x API
   def setup_test_2(test_name, epw_path)
-
     if !File.exist?(sql_path(test_name))
       osw_path = File.join(run_dir(test_name), 'in.osw')
       osw_path = File.absolute_path(osw_path)
@@ -105,7 +102,6 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
   # create test files if they do not exist when the test first runs
   def setup_test(test_name, idf_output_requests, model_in_path = model_in_path_default, epw_path = epw_path_default)
-
     if !File.exist?(run_dir(test_name))
       FileUtils.mkdir_p(run_dir(test_name))
     end
@@ -122,14 +118,14 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
     end
 
     # convert output requests to OSM for testing, OS App and PAT will add these to the E+ Idf
-    workspace = OpenStudio::Workspace.new("Draft".to_StrictnessLevel, "EnergyPlus".to_IddFileType)
+    workspace = OpenStudio::Workspace.new('Draft'.to_StrictnessLevel, 'EnergyPlus'.to_IddFileType)
     workspace.addObjects(idf_output_requests)
     rt = OpenStudio::EnergyPlus::ReverseTranslator.new
     request_model = rt.translateWorkspace(workspace)
 
     translator = OpenStudio::OSVersion::VersionTranslator.new
     model = translator.loadModel(model_in_path)
-    assert((not model.empty?))
+    assert(!model.empty?)
     model = model.get
     model.addObjects(request_model.objects)
     model.save(model_out_path(test_name), true)
@@ -153,16 +149,16 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
     # get arguments
     arguments = measure.arguments
-    argument_map = OpenStudio::Measure::convertOSArgumentVectorToMap(arguments)
+    argument_map = OpenStudio::Measure.convertOSArgumentVectorToMap(arguments)
 
     # create hash of argument values.
     # If the argument has a default that you want to use, you don't need it in the hash
     args_hash = {}
-    args_hash["city_db_url"] = "http://localhost:3000"
-    args_hash["user_name"] = "test@nrel.gov"
-    args_hash["password"] = "testing123"
-    args_hash["project_id"] = "0"
-    args_hash["datapoint_id"] = "0"
+    args_hash['city_db_url'] = 'http://localhost:3000'
+    args_hash['user_name'] = 'test@nrel.gov'
+    args_hash['password'] = 'testing123'
+    args_hash['project_id'] = '0'
+    args_hash['datapoint_id'] = '0'
 
     # populate argument with specified hash value if specified
     arguments.each do |arg|
@@ -175,12 +171,12 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
 
     # get the energyplus output requests, this will be done automatically by OS App and PAT
     idf_output_requests = measure.energyPlusOutputRequests(runner, argument_map)
-    #assert_equal(3, idf_output_requests.size)
+    # assert_equal(3, idf_output_requests.size)
 
     # mimic the process of running this measure in OS App or PAT
     # todo - create alternate setup or new args to pass in IDF with tariff objects using all fuels
     epw_path = epw_path_default
-    setup_test(test_name,idf_output_requests,model_in_path)
+    setup_test(test_name, idf_output_requests, model_in_path)
 
     assert(File.exist?(model_out_path(test_name)))
     assert(File.exist?(sql_path(test_name)))
@@ -208,7 +204,6 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
       result = runner.result
       # show_output(result)
       assert_equal('Success', result.value.valueName)
-
     ensure
       Dir.chdir(start_dir)
     end
@@ -217,5 +212,4 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
     assert(File.exist?("#{run_dir(test_name)}/report.csv"))
     assert(File.exist?("#{run_dir(test_name)}/report.json"))
   end
-
 end
