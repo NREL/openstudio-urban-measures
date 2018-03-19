@@ -5,7 +5,7 @@
 ######################################################################
 
 # start the measure
-class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
+class AddDistrictSystem < OpenStudio::Measure::ModelMeasure
 
   # human readable name
   def name
@@ -24,7 +24,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
 
   # define the arguments that the user will input
   def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
 
     # the type of system to add to the building
     systems = OpenStudio::StringVector.new
@@ -32,7 +32,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     systems << "Community Photovoltaic"
     systems << "Central Hot and Chilled Water"
     systems << "Ambient Loop"
-    system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('district_system_type', systems, true)
+    system_type = OpenStudio::Measure::OSArgument::makeChoiceArgument('district_system_type', systems, true)
     system_type.setDisplayName("System Type")
     system_type.setDefaultValue("None")
     system_type.setDescription("Type of central system.")

@@ -23,7 +23,7 @@ class ImportDistrictSystemLoadsTest < MiniTest::Unit::TestCase
     measure = ImportDistrictSystemLoads.new
 
     # create an instance of a runner
-    runner = OpenStudio::Ruleset::OSRunner.new
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
 
     # get arguments
     model = OpenStudio::Model::Model.new

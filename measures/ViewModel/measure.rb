@@ -5,7 +5,7 @@ require 'erb'
 require_relative 'resources/va3c'
 
 #start the measure
-class ViewModel < OpenStudio::Ruleset::ModelUserScript
+class ViewModel < OpenStudio::Measure::ModelMeasure
   
   #define the name that a user will see
   def name
@@ -24,7 +24,7 @@ class ViewModel < OpenStudio::Ruleset::ModelUserScript
 
   #define the arguments that the user will input
   def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
     
     return args
   end 

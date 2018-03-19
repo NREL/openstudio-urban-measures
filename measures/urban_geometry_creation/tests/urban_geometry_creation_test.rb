@@ -55,7 +55,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     model = OpenStudio::Model::Model.new
 
     # create an instance of a runner
-    runner = OpenStudio::Ruleset::OSRunner.new
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
 
     # load the test model
     city_db_url = "http://localhost:3000"

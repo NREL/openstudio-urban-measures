@@ -2,7 +2,7 @@
 # http://nrel.github.io/OpenStudio-user-documentation/reference/measure_writing_guide/
 
 # start the measure
-class SetRunPeriod < OpenStudio::Ruleset::ModelUserScript
+class SetRunPeriod < OpenStudio::Measure::ModelMeasure
 
   # human readable name
   def name
@@ -21,19 +21,19 @@ class SetRunPeriod < OpenStudio::Ruleset::ModelUserScript
 
   # define the arguments that the user will input
   def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
 
-    timesteps_per_hour = OpenStudio::Ruleset::OSArgument.makeIntegerArgument("timesteps_per_hour", true)
+    timesteps_per_hour = OpenStudio::Measure::OSArgument.makeIntegerArgument("timesteps_per_hour", true)
     timesteps_per_hour.setDisplayName("Timesteps per hour")
     timesteps_per_hour.setDescription("Number of simulation timesteps per hour")
     args << timesteps_per_hour
     
-    begin_date = OpenStudio::Ruleset::OSArgument.makeStringArgument("begin_date", true)
+    begin_date = OpenStudio::Measure::OSArgument.makeStringArgument("begin_date", true)
     begin_date.setDisplayName("Begin date")
     begin_date.setDescription("Simulation start date, YYYY-MM-DD format")
     args << begin_date
     
-    end_date = OpenStudio::Ruleset::OSArgument.makeStringArgument("end_date", true)
+    end_date = OpenStudio::Measure::OSArgument.makeStringArgument("end_date", true)
     end_date.setDisplayName("End date")
     end_date.setDescription("Simulation end date, YYYY-MM-DD format")
     args << end_date

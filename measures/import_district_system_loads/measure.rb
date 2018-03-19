@@ -10,7 +10,7 @@ require 'base64'
 require 'csv'
 
 # start the measure
-class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
+class ImportDistrictSystemLoads < OpenStudio::Measure::ModelMeasure
 
   # human readable name
   def name
@@ -29,10 +29,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
 
   # define the arguments that the user will input
   def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
 
     # url of the city database
-    city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
+    city_db_url = OpenStudio::Measure::OSArgument.makeStringArgument("city_db_url", true)
     city_db_url.setDisplayName("City Database Url")
     city_db_url.setDescription("Url of the City Database")
 	  #city_db_url.setDefaultValue("http://localhost:3000")
@@ -40,19 +40,19 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     args << city_db_url
     
     # project id
-    project_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_id", true)
+    project_id = OpenStudio::Measure::OSArgument.makeStringArgument("project_id", true)
     project_id.setDisplayName("Project ID")
     project_id.setDescription("Project ID.")
     args << project_id
     
     # scenario id
-    scenario_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("scenario_id", true)
+    scenario_id = OpenStudio::Measure::OSArgument.makeStringArgument("scenario_id", true)
     scenario_id.setDisplayName("Scenario ID")
     scenario_id.setDescription("Scenario ID.")
     args << scenario_id
     
     # feature id
-    feature_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("feature_id", true)
+    feature_id = OpenStudio::Measure::OSArgument.makeStringArgument("feature_id", true)
     feature_id.setDisplayName("Feature ID")
     feature_id.setDescription("Feature ID.")
     args << feature_id

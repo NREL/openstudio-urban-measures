@@ -10,7 +10,7 @@ require 'uri'
 require 'openssl'
 
 # start the measure
-class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
+class UrbanGeometryCreation < OpenStudio::Measure::ModelMeasure
 
   attr_accessor :origin_lat_lon
   
@@ -31,10 +31,10 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
   
   # define the arguments that the user will input
   def arguments(model)
-    args = OpenStudio::Ruleset::OSArgumentVector.new
+    args = OpenStudio::Measure::OSArgumentVector.new
     
     # url of the city database
-    city_db_url = OpenStudio::Ruleset::OSArgument.makeStringArgument("city_db_url", true)
+    city_db_url = OpenStudio::Measure::OSArgument.makeStringArgument("city_db_url", true)
     city_db_url.setDisplayName("City Database Url")
     city_db_url.setDescription("Url of the City Database")
 	  #city_db_url.setDefaultValue("http://localhost:3000")
@@ -42,13 +42,13 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     args << city_db_url
     
     # project name of the building to create
-    project_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("project_id", true)
+    project_id = OpenStudio::Measure::OSArgument.makeStringArgument("project_id", true)
     project_id.setDisplayName("Project ID")
     project_id.setDescription("Project ID.")
     args << project_id
     
     # source id of the building to create
-    feature_id = OpenStudio::Ruleset::OSArgument.makeStringArgument("feature_id", true)
+    feature_id = OpenStudio::Measure::OSArgument.makeStringArgument("feature_id", true)
     feature_id.setDisplayName("Feature ID")
     feature_id.setDescription("Feature ID.")
     args << feature_id
@@ -58,7 +58,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     chs << "None"
     chs << "ShadingOnly"
     chs << "All"
-    surrounding_buildings = OpenStudio::Ruleset::OSArgument.makeChoiceArgument("surrounding_buildings", chs, true)
+    surrounding_buildings = OpenStudio::Measure::OSArgument.makeChoiceArgument("surrounding_buildings", chs, true)
     surrounding_buildings.setDisplayName("Surrounding Buildings")
     surrounding_buildings.setDescription("Select which surrounding buildings to include.")
     surrounding_buildings.setDefaultValue("ShadingOnly")

@@ -24,7 +24,7 @@ class AddDistrictSystemTest < MiniTest::Unit::TestCase
     measure = AddDistrictSystem.new
 
     # create an instance of a runner
-    runner = OpenStudio::Ruleset::OSRunner.new
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
 
     # load the test model
     translator = OpenStudio::OSVersion::VersionTranslator.new

@@ -53,7 +53,7 @@ class ViewModel_Test < MiniTest::Unit::TestCase
     measure = ViewModel.new
     
     # create an instance of a runner
-    runner = OpenStudio::Ruleset::OSRunner.new
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
     
     # get arguments and test that they are what we are expecting
     arguments = measure.arguments(model)
@@ -66,7 +66,7 @@ class ViewModel_Test < MiniTest::Unit::TestCase
     Dir.chdir(run_dir)
     
     # set argument values to good values and run the measure
-    argument_map = OpenStudio::Ruleset::OSArgumentMap.new
+    argument_map = OpenStudio::Measure::OSArgumentMap.new
     measure.run(model, runner, argument_map)
     result = runner.result
     show_output(result)

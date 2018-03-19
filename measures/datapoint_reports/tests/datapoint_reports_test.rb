@@ -149,7 +149,7 @@ class DatapointReports_Test < MiniTest::Unit::TestCase
     measure = DatapointReports.new
 
     # create an instance of a runner
-    runner = OpenStudio::Ruleset::OSRunner.new
+    runner = OpenStudio::Measure::OSRunner.new(OpenStudio::WorkflowJSON.new)
 
     # get arguments
     arguments = measure.arguments

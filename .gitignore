@@ -9,3 +9,4 @@ data/co_tracts/
 config.rb
 Gemfile.lock
 openstudio-measures
+measures/test_results
