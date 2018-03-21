@@ -2,14 +2,24 @@
   <schema_version>3.0</schema_version>
   <name>add_transformer</name>
   <uid>b53bd785-b5d0-4c93-97cd-16cc558ca29a</uid>
-  <version_id>8c96d576-1539-4821-9393-5d4fd3e5c7ce</version_id>
-  <version_modified>20180314T210946Z</version_modified>
+  <version_id>564c7609-d730-4659-8f09-27a563c0aa1c</version_id>
+  <version_modified>20180315T170915Z</version_modified>
   <xml_checksum>9F9F47EF</xml_checksum>
   <class_name>AddTransformer</class_name>
   <display_name>Add Transformer</display_name>
   <description>Adds a Transformer object to the model, requires Schedule named 'Transformer Output Electric Energy Schedule' to exist in the model. This schedule should be in units of Joules.</description>
   <modeler_description></modeler_description>
-  <arguments/>
+  <arguments>
+    <argument>
+      <name>name_plate_rating</name>
+      <display_name>Transformer rating</display_name>
+      <type>Double</type>
+      <units>VA</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
+    </argument>
+  </arguments>
   <outputs/>
   <provenances/>
   <tags>
@@ -54,7 +64,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>C2725A6A</checksum>
+      <checksum>400219A2</checksum>
     </file>
   </files>
 </measure>

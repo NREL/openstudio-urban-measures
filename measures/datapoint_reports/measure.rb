@@ -551,10 +551,10 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     # get timeseries
     timeseries = ["Electricity:Facility", "ElectricityProduced:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
-                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
-    
+                  "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]        
+
     if isTransformerFlag
-      transformerTimeseries = ["Transformer Distribution Electric Loss Energy", "Transformer Output Electric Energy", "Transformer Input Electric Energy"]
+      transformerTimeseries = ["Transformer Distribution Electric Loss Energy", "Transformer Output Electric Energy", "Transformer Input Electric Energy", "Transformer Output Electric Power"]
       transformerTimeseries.each {|x| timeseries << x}
      
       # get workspace and transformer rating
@@ -583,6 +583,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       runner.registerInfo("TIMESERIES: #{timeseries_name}")
 
       key_values = sql_file.availableKeyValues("RUN PERIOD 1", "Zone Timestep", timeseries_name)
+
       if key_values.empty?
         key_value = ""
       else
@@ -612,7 +613,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
 
           # TODO: assuming PF of 1 for now (w = VA)
           numberTimesAboveRating = 0
-          transformer_max_peak = {index: -1, value: 0, timestamp: datetimes[0]}
+          transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
           transformer_worst_case_RPF = {index: -1, value: 1000000000000, timestamp: datetimes[0]}
           (0..(n-1)).each do |ind|
             numberTimesAboveRating += 1 if values[i][ind].to_f > name_plate_rating
@@ -628,16 +629,40 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             end
           end
           runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
+          hoursAboveRating = numberTimesAboveRating.to_f / 4
+          runner.registerInfo("Hours above rating: #{hoursAboveRating}")
 
-          # add TRANSFORMER results (max index, index of start/end of max day, )
+          # get start/end of max and worst days
+          indexes_per_day = 24 * timesteps_per_hour  
+          mult = (transformer_max_peak[:index].to_f / indexes_per_day.to_f).floor
+          max_start = (mult * indexes_per_day).to_i - 1
+          max_end = ((mult + 1) * indexes_per_day).to_i - 2
+          runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
+
+          mult = (transformer_worst_case_RPF[:index].to_f / indexes_per_day.to_f).floor
+          worst_start = (mult * indexes_per_day).to_i - 1
+          worst_end = ((mult + 1) * indexes_per_day).to_i - 2
+          runner.registerInfo("worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
+
+
+          # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
           add_result(results, "transformer_max_peak", transformer_max_peak[:value], "J")
           add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
           add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
+          add_result(results, "transformer_max_peak_start_day_index", max_start, "")
+          add_result(results, "transformer_max_peak_start_day_timestamp", to_displayTime(datetimes[max_start]), "")
+          add_result(results, "transformer_max_peak_end_day_index", max_end, "")
+          add_result(results, "transformer_max_peak_end_day_timestamp", to_displayTime(datetimes[max_end]), "")
 
           add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "J")
           add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
           add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
- 
+          add_result(results, "transformer_worst_case_RPF_start_day_index", worst_start, "")
+          add_result(results, "transformer_worst_case_RPF_start_day_timestamp", to_displayTime(datetimes[worst_start]), "")
+          add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
+          add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
+
+          add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
         end
       end
     end

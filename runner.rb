@@ -75,7 +75,7 @@ class Runner
       json_request = JSON.generate('project_id' => @project_id, 'datapoint' => datapoint)
       
       existing_datapoint = get_datapoint(datapoint_id)
-      @logger.debug("existing_datapoint = #{existing_datapoint}")
+      #@logger.debug("existing_datapoint = #{existing_datapoint}")
       
       if existing_datapoint[:datapoint_files]
         existing_datapoint[:datapoint_files].each do |file|

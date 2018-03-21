@@ -23,6 +23,13 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
   def arguments(workspace)
     args = OpenStudio::Measure::OSArgumentVector.new
 
+     #make an argument for your name
+    name_plate_rating = OpenStudio::Ruleset::OSArgument::makeDoubleArgument("name_plate_rating",true)
+    name_plate_rating.setDisplayName("Transformer rating")
+    name_plate_rating.setDefaultValue(0)  # assume unknown if 0, will auto-size
+    name_plate_rating.setUnits("VA")
+    args << name_plate_rating
+
     return args
   end
 
@@ -34,6 +41,10 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
     if !runner.validateUserArguments(arguments(workspace), user_arguments)
       return false
     end
+
+    # assign the user inputs to variables
+    name_plate_rating = runner.getStringArgumentValue('name_plate_rating', user_arguments)
+
 
     workspace.save('tempWORKSPACE.idf', true)
 
@@ -55,9 +66,8 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
     # DLM: these could be inputs
     name_plate_efficiency = 0.985
     unit_load_at_name_plate_efficiency = 0.35
-    name_plate_rating = nil
     
-    if name_plate_rating.nil?
+    if name_plate_rating === 0
       max_energy = 0
       
       if schedules[0].iddObject.type == "Schedule:Year".to_IddObjectType
