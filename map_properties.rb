@@ -431,8 +431,8 @@ def map_district_system_properties(properties)
       result << {:measure_dir_name => 'add_district_system', :argument => :district_system_type, :value => value}
     
     when :transformer_rating
-      # use transformer_rating for name_plate_rating argument
-      result << {:measure_dir_name => 'add_transformer', :argument => :name_plate_rating, :value => value}
+      # use transformer_rating for name_plate_rating argument. convert kVA to VA
+      result << {:measure_dir_name => 'add_transformer', :argument => :name_plate_rating, :value => (value.to_f * 1000)}
 
     when :address, :created_at, :footprint_area, :footprint_perimeter, :geojson_id, :id, :legal_name, :name, :project_id, :source_id, :source_name, :type, :updated_at, :transformer_id, :transformer_phase, :transformer_voltage
       # no-op

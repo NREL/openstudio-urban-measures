@@ -45,13 +45,12 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
     # assign the user inputs to variables
     name_plate_rating = runner.getStringArgumentValue('name_plate_rating', user_arguments)
 
-
-    workspace.save('tempWORKSPACE.idf', true)
+    # temp for debug
+    # workspace.save('tempWORKSPACE.idf', true)
 
     # check for transformer schedule in the starting model
     schedules = workspace.getObjectsByName("Transformer Output Electric Energy Schedule")
 
-    
     if schedules.empty?
       runner.registerAsNotApplicable("Transformer Output Electric Energy Schedule not found")
       return true

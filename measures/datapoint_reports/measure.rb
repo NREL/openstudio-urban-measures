@@ -547,11 +547,23 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     if dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] == 'Transformer'
       isTransformerFlag = true
     end
+
     
     # get timeseries
     timeseries = ["Electricity:Facility", "ElectricityProduced:Facility", "Gas:Facility", "DistrictCooling:Facility", "DistrictHeating:Facility", 
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]        
+
+    # add additional power timeseries (for calculating transformer loads) in W
+    powerTimeseries = ["Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power"]
+    timeseries += powerTimeseries
+    runner.registerInfo("All timeseries: #{timeseries}")
+    tsToKeep = ["Electricity:Facility", "ElectricityProduced:Facility"]
+    tsToKeepIndexes = {}
+
+    # use power_factor from datapoint, otherwise default to 0.9
+    # TODO: have default based on building type
+    powerFactor = dp[:power_factor].nil? ? 0.9 : dp[:power_factor]
 
     if isTransformerFlag
       transformerTimeseries = ["Transformer Distribution Electric Loss Energy", "Transformer Output Electric Energy", "Transformer Input Electric Energy", "Transformer Output Electric Power"]
@@ -590,7 +602,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         key_value = key_values[0]
       end
       ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
-      runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
+      #runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
       if n.nil? 
         # first timeseries should always be set
         values[i] = ts.get.values
@@ -601,22 +613,67 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         values[i] = Array.new(n, 0)
       end
 
-      # keep a few special timeseries for post processing
-      if isTransformerFlag
+      # keep certain timeseries to calculate power
+      if tsToKeep.include? timeseries_name
+        tsToKeepIndexes[timeseries_name] = i
+      end
 
+      # special processing: power
+      if powerTimeseries.include? timeseries_name
+        runner.registerInfo("found timeseries: #{timeseries_name}")
+        tsToKeepIndexes.each do |key, indexValue|
+          if timeseries_name.include? key
+            # use this timeseries
+            newVals = Array.new(n,0)
+            # Apparent power calc
+            if timeseries_name.include? 'Apparent'
+              (0..n-1).each do |j|
+                newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
+                j += 1
+              end
+            else
+              # Power calc
+              (0..n-1).each do |j|
+                newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
+                j += 1
+              end
+            end
+            values[i] = newVals
+          end
+        end
+      end
+
+      # transformer timeseries
+      if isTransformerFlag
+        
         # calculate # instances above rating
-        if timeseries_name == 'Transformer Output Electric Energy'
+        if timeseries_name == 'Electricity:Facility Apparent Power'
+          numberTimesAboveRating = 0
+          max = 0
+          (0..(n-1)).each do |ind|
+            if values[i][ind].to_f > name_plate_rating
+              numberTimesAboveRating += 1 
+            end
+            if values[i][ind].to_f > max
+              max = values[i][ind]
+            end
+          end
+          runner.registerInfo("name plate rating: #{name_plate_rating}")
+          runner.registerInfo("max VA found: #{max}")
+          runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
+          hoursAboveRating = numberTimesAboveRating.to_f / 4
+          runner.registerInfo("Hours above rating: #{hoursAboveRating}")
+          add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
+        # calculate max and worst days
+        elsif timeseries_name == 'Transformer Output Electric Energy'
 
           tsget = ts.get
           datetimes = tsget.dateTimes
-          #runner.registerInfo("--DATETIMES!!-- #{datetimes}")
 
           # TODO: assuming PF of 1 for now (w = VA)
-          numberTimesAboveRating = 0
           transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
           transformer_worst_case_RPF = {index: -1, value: 1000000000000, timestamp: datetimes[0]}
           (0..(n-1)).each do |ind|
-            numberTimesAboveRating += 1 if values[i][ind].to_f > name_plate_rating
             if values[i][ind] > transformer_max_peak[:value]
               transformer_max_peak[:value] = values[i][ind].to_f
               transformer_max_peak[:index] = ind
@@ -628,9 +685,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               transformer_worst_case_RPF[:timestamp] = datetimes[ind]
             end
           end
-          runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
-          hoursAboveRating = numberTimesAboveRating.to_f / 4
-          runner.registerInfo("Hours above rating: #{hoursAboveRating}")
 
           # get start/end of max and worst days
           indexes_per_day = 24 * timesteps_per_hour  
@@ -643,7 +697,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           worst_start = (mult * indexes_per_day).to_i - 1
           worst_end = ((mult + 1) * indexes_per_day).to_i - 2
           runner.registerInfo("worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
-
 
           # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
           add_result(results, "transformer_max_peak", transformer_max_peak[:value], "J")
@@ -662,7 +715,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
           add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
 
-          add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
         end
       end
     end
