@@ -348,15 +348,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
                   {name: "District Heating Hot Water Rate", units: "W", normalize: false},
                   {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true},
                   {name: "Electricity:Facility", units: "J", normalize: false}, 
-                  {name: "ElectricityProduced:Facility", units: "J", normalize: false}]
-                  
-    # add additional schedules for transformer aggregations
-    transformerTimeseries = [{name: 'Electricity:Facility Power', units: "W", normalized: false}, 
-                             {name: 'ElectricityProduced:Facility Power', units: "W", normalized: false},
-                             {name: 'Electricity:Facility Apparent Power', units: "VA", normalized: false},
-                             {name: 'ElectricityProduced:Facility Apparent Power', units: "VA", normalized: false}]
-
-    timeseries += transformerTimeseries                         
+                  {name: "ElectricityProduced:Facility", units: "J", normalize: false}]                    
 
     summed_values = {}
     datapoint_files.each do |file|

@@ -554,8 +554,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]        
 
-    # add additional power timeseries (for calculating transformer loads) in W
-    powerTimeseries = ["Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power"]
+    # add additional power timeseries (for calculating transformer apparent power to compare to rating ) in VA
+    powerTimeseries = ["Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power", "Net Power", "Net Apparent Power"]
     timeseries += powerTimeseries
     runner.registerInfo("All timeseries: #{timeseries}")
     tsToKeep = ["Electricity:Facility", "ElectricityProduced:Facility"]
@@ -566,8 +566,15 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     powerFactor = dp[:power_factor].nil? ? 0.9 : dp[:power_factor]
 
     if isTransformerFlag
-      transformerTimeseries = ["Transformer Distribution Electric Loss Energy", "Transformer Output Electric Energy", "Transformer Input Electric Energy", "Transformer Output Electric Power"]
-      transformerTimeseries.each {|x| timeseries << x}
+      # These are net energy and power
+      transformerTimeseries = [
+              "Transformer Distribution Electric Loss Energy", 
+              "Transformer Output Electric Energy", 
+              "Transformer Input Electric Energy", 
+              "Transformer Output Electric Power", 
+              "Transformer Input Electric Power"]
+
+      timeseries += transformerTimeseries
      
       # get workspace and transformer rating
       workspace = runner.lastEnergyPlusWorkspace
@@ -621,24 +628,44 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       # special processing: power
       if powerTimeseries.include? timeseries_name
         runner.registerInfo("found timeseries: #{timeseries_name}")
-        tsToKeepIndexes.each do |key, indexValue|
-          if timeseries_name.include? key
-            # use this timeseries
-            newVals = Array.new(n,0)
-            # Apparent power calc
-            if timeseries_name.include? 'Apparent'
-              (0..n-1).each do |j|
-                newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
-                j += 1
-              end
-            else
-              # Power calc
-              (0..n-1).each do |j|
-                newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
-                j += 1
-              end
+        # special case, net series (subtract generation from load)
+        if timeseries_name.include? 'Net'
+          runner.registerInfo("NET timeseries found!!")
+          newVals = Array.new(n,0)
+          # Apparent power calc
+          if timeseries_name.include? 'Apparent'
+           (0..n-1).each do |j|
+              newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour / powerFactor
+              j += 1
             end
-            values[i] = newVals
+          else
+            # Power calc
+            (0..n-1).each do |j|
+              newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour
+              j += 1
+            end
+          end
+          values[i] = newVals
+        else
+          tsToKeepIndexes.each do |key, indexValue|
+            if timeseries_name.include? key
+              # use this timeseries
+              newVals = Array.new(n,0)
+              # Apparent power calc
+              if timeseries_name.include? 'Apparent'
+                (0..n-1).each do |j|
+                  newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
+                  j += 1
+                end
+              else
+                # Power calc
+                (0..n-1).each do |j|
+                  newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
+                  j += 1
+                end
+              end
+              values[i] = newVals
+            end
           end
         end
       end
@@ -647,7 +674,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       if isTransformerFlag
         
         # calculate # instances above rating
-        if timeseries_name == 'Electricity:Facility Apparent Power'
+        if timeseries_name == 'Net Apparent Power'
           numberTimesAboveRating = 0
           max = 0
           (0..(n-1)).each do |ind|
@@ -670,7 +697,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           tsget = ts.get
           datetimes = tsget.dateTimes
 
-          # TODO: assuming PF of 1 for now (w = VA)
           transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
           transformer_worst_case_RPF = {index: -1, value: 1000000000000, timestamp: datetimes[0]}
           (0..(n-1)).each do |ind|
