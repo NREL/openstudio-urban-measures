@@ -181,9 +181,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       else
         @runner.registerValue(name, value, units)
       end
-    # elsif value.is_a? String
-    #   results[name] = value
-    #   @runner.registerValue(name, value)
     end
   end
 
@@ -674,6 +671,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       if isTransformerFlag
         
         # calculate # instances above rating
+        # the features & power factors were calculated in VA, then aggregated to get this series
         if timeseries_name == 'Net Apparent Power'
           numberTimesAboveRating = 0
           max = 0
@@ -692,13 +690,13 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           runner.registerInfo("Hours above rating: #{hoursAboveRating}")
           add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
         # calculate max and worst days
-        elsif timeseries_name == 'Transformer Output Electric Energy'
+        elsif timeseries_name == 'Transformer Output Electric Power'
 
           tsget = ts.get
           datetimes = tsget.dateTimes
 
           transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
-          transformer_worst_case_RPF = {index: -1, value: 1000000000000, timestamp: datetimes[0]}
+          transformer_worst_case_RPF = {index: -1, value: 100000000000000, timestamp: datetimes[0]}
           (0..(n-1)).each do |ind|
             if values[i][ind] > transformer_max_peak[:value]
               transformer_max_peak[:value] = values[i][ind].to_f
@@ -714,33 +712,50 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
 
           # get start/end of max and worst days
           indexes_per_day = 24 * timesteps_per_hour  
-          mult = (transformer_max_peak[:index].to_f / indexes_per_day.to_f).floor
-          max_start = (mult * indexes_per_day).to_i - 1
-          max_end = ((mult + 1) * indexes_per_day).to_i - 2
-          runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
-
-          mult = (transformer_worst_case_RPF[:index].to_f / indexes_per_day.to_f).floor
-          worst_start = (mult * indexes_per_day).to_i - 1
-          worst_end = ((mult + 1) * indexes_per_day).to_i - 2
-          runner.registerInfo("worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
-
-          # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
-          add_result(results, "transformer_max_peak", transformer_max_peak[:value], "J")
-          add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
-          add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
-          add_result(results, "transformer_max_peak_start_day_index", max_start, "")
-          add_result(results, "transformer_max_peak_start_day_timestamp", to_displayTime(datetimes[max_start]), "")
-          add_result(results, "transformer_max_peak_end_day_index", max_end, "")
-          add_result(results, "transformer_max_peak_end_day_timestamp", to_displayTime(datetimes[max_end]), "")
-
-          add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "J")
-          add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
-          add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
-          add_result(results, "transformer_worst_case_RPF_start_day_index", worst_start, "")
-          add_result(results, "transformer_worst_case_RPF_start_day_timestamp", to_displayTime(datetimes[worst_start]), "")
-          add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
-          add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
-
+          if (transformer_max_peak[:index] == -1) 
+            runner.registerWarning('No Max Peak found for this transformer!')
+          else 
+            mult = (transformer_max_peak[:index].to_f / indexes_per_day.to_f).floor
+            max_start = (mult * indexes_per_day).to_i 
+            max_end = ((mult + 1) * indexes_per_day).to_i - 1
+            runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
+            max_range = []
+            (max_start..max_end).each do |j|
+              max_range << values[i][j]
+            end
+         
+            # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
+            add_result(results, "transformer_max_peak", transformer_max_peak[:value], "W")  
+            add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
+            add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
+            add_result(results, "transformer_max_peak_start_day_index", max_start, "")
+            add_result(results, "transformer_max_peak_start_day_timestamp", to_displayTime(datetimes[max_start]), "")
+            add_result(results, "transformer_max_peak_end_day_index", max_end, "")
+            add_result(results, "transformer_max_peak_end_day_timestamp", to_displayTime(datetimes[max_end]), "")
+            add_result(results, "transformer_max_peak_range", max_range.join(','), "")
+          end
+          
+          if (transformer_worst_case_RPF[:index] == -1)
+            runner.registerWarning('No Worst Case RPF found to this transformer!')
+          else
+            mult = (transformer_worst_case_RPF[:index].to_f / indexes_per_day.to_f).floor
+            worst_start = (mult * indexes_per_day).to_i
+            worst_end = ((mult + 1) * indexes_per_day).to_i - 1
+            runner.registerInfo("worst index: #{transformer_worst_case_RPF[:index]}, worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
+            worst_range = []
+            (worst_start..worst_end).each do |j|
+              worst_range << values[i][j]
+            end
+          
+            add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "W")
+            add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
+            add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
+            add_result(results, "transformer_worst_case_RPF_start_day_index", worst_start, "")
+            add_result(results, "transformer_worst_case_RPF_start_day_timestamp", to_displayTime(datetimes[worst_start]), "")
+            add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
+            add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
+            add_result(results, "transformer_worst_case_RPF_range", worst_range.join(','), "")
+          end
         end
       end
     end
