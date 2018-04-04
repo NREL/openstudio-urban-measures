@@ -405,8 +405,6 @@ class Runner
 	
       result[key] = []
 	 
-	  puts "num_datapoints = #{num_datapoints}"
-	 
 	  n_remaining = [0,@max_datapoints - num_datapoints].max
 	  n = [dpArr.size,n_remaining].min
 	  dpArr = dpArr[0,n]
