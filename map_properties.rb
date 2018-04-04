@@ -398,7 +398,10 @@ def map_building_properties(properties)
       
     when :fill, :"fill-opacity", :geometryType, :height, :stroke, :"stroke-opacity", :"stroke-width"
       # no-op
-
+	  
+	when :transformer_id
+		# no-op
+		
     else 
       @logger.warn("Unmapped building property '#{name}' with value '#{value}'") if @logger
     end

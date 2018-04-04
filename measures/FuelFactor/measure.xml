@@ -1,0 +1,58 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>fuel_factor</name>
+  <uid>97cc276e-ae64-4e94-b711-5f5261a4bc4a</uid>
+  <version_id>cb8fb0f4-059b-4097-864a-945293920d05</version_id>
+  <version_modified>20170929T185936Z</version_modified>
+  <xml_checksum>84EE5CB0</xml_checksum>
+  <class_name>FuelFactor</class_name>
+  <display_name>FuelFactor</display_name>
+  <description>Add site to source Emissions factors to an EnergyPlus Model for a prescribed fuel type.</description>
+  <modeler_description>This Measure adds FuelFactor Object to an EnergyPlus Model.</modeler_description>
+  <arguments>
+    <argument>
+      <name>fuelfactor_file_name</name>
+      <display_name>FuelFactor File Name</display_name>
+      <description>Name of the FuelFactor IDF to change to. This is the full filename with extension (e.g. Electricity.idf).</description>
+      <type>String</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>Electricity.idf</default_value>
+    </argument>
+  </arguments>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Reporting.QAQC</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>EnergyPlusMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>2.2.2</identifier>
+        <min_compatible>2.2.2</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>85073E02</checksum>
+    </file>
+  </files>
+</measure>

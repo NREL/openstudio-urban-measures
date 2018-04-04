@@ -399,35 +399,39 @@ class Runner
     all_datapoint_ids = get_datapoint_ids_by_type(datapoint_ids)
     
     # loop over all combinations
-    num_datapoints = 1
-    all_datapoint_ids.each do |key, dpArr|
+    num_datapoints = 0
+	
+	all_datapoint_ids.each do |key, dpArr|
+	
       result[key] = []
+	 
+	  n_remaining = [0,@max_datapoints - num_datapoints].max
+	  n = [dpArr.size,n_remaining].min
+	  dpArr = dpArr[0,n]
+	  num_datapoints += n
 
-      dpArr.each do |datapoint_id|
-    
-        datapoint = get_datapoint(datapoint_id) 
-      
-        # see if datapoint needs to be run
-        if datapoint[:status] 
-          if datapoint[:status] == "Started"
-            @logger.debug("Skipping Started Datapoint")
-            next
-          elsif datapoint[:status] == "Complete"
-            @logger.debug("Skipping Complete Datapoint")
-            next
-          elsif datapoint[:status] == "Failed"
-            #@logger.debug("Skipping Failed Datapoint")
-            #next
-          end
-        end
-        @logger.debug("Saving Datapoint #{datapoint}")
-      
-        result[key] << create_osw(datapoint_id)
-      
-        num_datapoints += 1
-        if @max_datapoints < num_datapoints
-          return result
-        end
+      #dpArr.each do |datapoint_id|
+	  Parallel.each(dpArr, in_threads: [@max_datapoints,@num_parallel].min) do |datapoint_id|
+			
+		datapoint = get_datapoint(datapoint_id) 
+		
+		# see if datapoint needs to be run
+		if datapoint[:status] 
+		  if datapoint[:status] == "Started"
+			@logger.debug("Skipping Started Datapoint")
+			next
+		  elsif datapoint[:status] == "Complete"
+			@logger.debug("Skipping Complete Datapoint")
+			next
+		  elsif datapoint[:status] == "Failed"
+			#@logger.debug("Skipping Failed Datapoint")
+			#next
+		  end
+		end
+		@logger.debug("Saving Datapoint #{datapoint}")
+	  
+		result[key] << create_osw(datapoint_id)
+
       end
     end
     
