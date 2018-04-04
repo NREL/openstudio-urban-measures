@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>remove_hvac_systems</name>
   <uid>f69dcdd8-1ff8-41f8-bd80-dcf7f581df7c</uid>
-  <version_id>5f785316-6df8-4295-9ecb-6b10b8bc7098</version_id>
-  <version_modified>20171002T214849Z</version_modified>
+  <version_id>f9f5772b-9fc6-4be8-bfcb-f55ff05d2260</version_id>
+  <version_modified>20180404T035956Z</version_modified>
   <xml_checksum>36560A37</xml_checksum>
   <class_name>RemoveHVACSystems</class_name>
   <display_name>Remove HVAC Systems</display_name>
@@ -76,7 +76,7 @@
       <filename>OsLib_HVAC.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>DD15D25B</checksum>
+      <checksum>94E8C60D</checksum>
     </file>
     <file>
       <version>
@@ -87,7 +87,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>597B30F5</checksum>
+      <checksum>5D767DA0</checksum>
     </file>
   </files>
 </measure>
