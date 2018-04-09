@@ -73,6 +73,9 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", 
                   "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
 
+    # add all transformer tiemseries here
+                  
+
     timeseries.each do |ts|
       result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},Timestep;").get
     end
@@ -552,7 +555,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]        
 
     # add additional power timeseries (for calculating transformer apparent power to compare to rating ) in VA
-    powerTimeseries = ["Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power", "Net Power", "Net Apparent Power"]
+    powerTimeseries = ["Net Electric Energy", "Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power", "Net Power", "Net Apparent Power"]
     timeseries += powerTimeseries
     runner.registerInfo("All timeseries: #{timeseries}")
     tsToKeep = ["Electricity:Facility", "ElectricityProduced:Facility"]
@@ -569,7 +572,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               "Transformer Output Electric Energy", 
               "Transformer Input Electric Energy", 
               "Transformer Output Electric Power", 
-              "Transformer Input Electric Power"]
+              "Transformer Input Electric Power", 
+              "Schedule Value"]
 
       timeseries += transformerTimeseries
      
@@ -593,172 +597,203 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
    
     n = nil
     values = []
-   
+    #new_timeseries = []
     timeseries.each_index do |i|    
       timeseries_name = timeseries[i]
       runner.registerInfo("TIMESERIES: #{timeseries_name}")
 
       key_values = sql_file.availableKeyValues("RUN PERIOD 1", "Zone Timestep", timeseries_name)
-
+      runner.registerInfo("KEY VALUES: #{key_values}")
       if key_values.empty?
         key_value = ""
       else
         key_value = key_values[0]
       end
-      ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
-      #runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
-      if n.nil? 
-        # first timeseries should always be set
-        values[i] = ts.get.values
-        n = values[i].size 
-      elsif ts.is_initialized
-        values[i] = ts.get.values
-      else
-        values[i] = Array.new(n, 0)
-      end
 
-      # keep certain timeseries to calculate power
-      if tsToKeep.include? timeseries_name
-        tsToKeepIndexes[timeseries_name] = i
-      end
+      #key_values.each_with_index do |key_value, key_index|
 
-      # special processing: power
-      if powerTimeseries.include? timeseries_name
-        runner.registerInfo("found timeseries: #{timeseries_name}")
-        # special case, net series (subtract generation from load)
-        if timeseries_name.include? 'Net'
-          runner.registerInfo("NET timeseries found!!")
-          newVals = Array.new(n,0)
-          # Apparent power calc
-          if timeseries_name.include? 'Apparent'
-           (0..n-1).each do |j|
-              newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour / powerFactor
-              j += 1
-            end
-          else
-            # Power calc
-            (0..n-1).each do |j|
-              newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour
-              j += 1
-            end
-          end
-          values[i] = newVals
+        # if key_values.size == 1
+        #   # use timeseries name when only 1 keyvalue
+        #   new_timeseries << timeseries[i]
+        # else
+        #   # use key_value name
+        #   new_timeseries << key_value
+        # end
+
+        ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
+        runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
+        if n.nil? 
+          # first timeseries should always be set
+          values[i] = ts.get.values
+          n = values[i].size 
+        elsif ts.is_initialized
+          values[i] = ts.get.values
         else
-          tsToKeepIndexes.each do |key, indexValue|
-            if timeseries_name.include? key
-              # use this timeseries
-              newVals = Array.new(n,0)
-              # Apparent power calc
-              if timeseries_name.include? 'Apparent'
+          values[i] = Array.new(n, 0)
+        end
+
+        # keep certain timeseries to calculate power
+        if tsToKeep.include? timeseries_name
+          tsToKeepIndexes[timeseries_name] = i
+        end
+
+        # special processing: power
+        if powerTimeseries.include? timeseries_name
+          runner.registerInfo("found timeseries: #{timeseries_name}")
+          # special case, net series (subtract generation from load)
+          if timeseries_name.include? 'Net'
+            runner.registerInfo("Net timeseries found!")
+            newVals = Array.new(n,0)
+            # Apparent power calc -- only for non-transformers
+            
+            if timeseries_name.include?('Apparent') 
+              if !isTransformerFlag
+                runner.registerInfo("Apparent and !isTransformer")
                 (0..n-1).each do |j|
-                  newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
-                  j += 1
-                end
-              else
-                # Power calc
-                (0..n-1).each do |j|
-                  newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
+                  newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour / powerFactor
                   j += 1
                 end
               end
-              values[i] = newVals
+            elsif timeseries_name.include? 'Net Electric Energy'
+               (0..n-1).each do |j|
+                newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f)
+                j += 1
+              end
+            else
+              runner.registerInfo("Power calc")
+              # Power calc
+              (0..n-1).each do |j|
+                newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour
+                j += 1
+              end
             end
-          end
-        end
-      end
 
-      # transformer timeseries
-      if isTransformerFlag
-        
-        # calculate # instances above rating
-        # the features & power factors were calculated in VA, then aggregated to get this series
-        if timeseries_name == 'Net Apparent Power'
-          numberTimesAboveRating = 0
-          max = 0
-          (0..(n-1)).each do |ind|
-            if values[i][ind].to_f > name_plate_rating
-              numberTimesAboveRating += 1 
-            end
-            if values[i][ind].to_f > max
-              max = values[i][ind]
-            end
-          end
-          runner.registerInfo("name plate rating: #{name_plate_rating}")
-          runner.registerInfo("max VA found: #{max}")
-          runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
-          hoursAboveRating = numberTimesAboveRating.to_f / 4
-          runner.registerInfo("Hours above rating: #{hoursAboveRating}")
-          add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
-        # calculate max and worst days
-        elsif timeseries_name == 'Transformer Output Electric Power'
-
-          tsget = ts.get
-          datetimes = tsget.dateTimes
-
-          transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
-          transformer_worst_case_RPF = {index: -1, value: 100000000000000, timestamp: datetimes[0]}
-          (0..(n-1)).each do |ind|
-            if values[i][ind] > transformer_max_peak[:value]
-              transformer_max_peak[:value] = values[i][ind].to_f
-              transformer_max_peak[:index] = ind
-              transformer_max_peak[:timestamp] = datetimes[ind]
-            end
-            if values[i][ind].to_f < transformer_worst_case_RPF[:value]
-              transformer_worst_case_RPF[:value] = values[i][ind].to_f
-              transformer_worst_case_RPF[:index] = ind
-              transformer_worst_case_RPF[:timestamp] = datetimes[ind]
-            end
-          end
-
-          # get start/end of max and worst days
-          indexes_per_day = 24 * timesteps_per_hour  
-          if (transformer_max_peak[:index] == -1) 
-            runner.registerWarning('No Max Peak found for this transformer!')
-          else 
-            mult = (transformer_max_peak[:index].to_f / indexes_per_day.to_f).floor
-            max_start = (mult * indexes_per_day).to_i 
-            max_end = ((mult + 1) * indexes_per_day).to_i - 1
-            runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
-            max_range = []
-            (max_start..max_end).each do |j|
-              max_range << values[i][j]
-            end
-         
-            # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
-            add_result(results, "transformer_max_peak", transformer_max_peak[:value], "W")  
-            add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
-            add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
-            add_result(results, "transformer_max_peak_start_day_index", max_start, "")
-            add_result(results, "transformer_max_peak_start_day_timestamp", to_displayTime(datetimes[max_start]), "")
-            add_result(results, "transformer_max_peak_end_day_index", max_end, "")
-            add_result(results, "transformer_max_peak_end_day_timestamp", to_displayTime(datetimes[max_end]), "")
-            add_result(results, "transformer_max_peak_range", max_range.join(','), "")
-          end
-          
-          if (transformer_worst_case_RPF[:index] == -1)
-            runner.registerWarning('No Worst Case RPF found to this transformer!')
+            values[i] = newVals
           else
-            mult = (transformer_worst_case_RPF[:index].to_f / indexes_per_day.to_f).floor
-            worst_start = (mult * indexes_per_day).to_i
-            worst_end = ((mult + 1) * indexes_per_day).to_i - 1
-            runner.registerInfo("worst index: #{transformer_worst_case_RPF[:index]}, worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
-            worst_range = []
-            (worst_start..worst_end).each do |j|
-              worst_range << values[i][j]
+            tsToKeepIndexes.each do |key, indexValue|
+              if timeseries_name.include? key
+                runner.registerInfo("timeseries_name: #{timeseries_name}, key: #{key}")
+                # use this timeseries
+                newVals = Array.new(n,0)
+                # Apparent power calc
+                if timeseries_name.include?('Apparent')
+                  if !isTransformerFlag
+                    (0..n-1).each do |j|
+                      newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
+                      j += 1
+                    end
+                  end
+                else
+                  # Power calc
+                  (0..n-1).each do |j|
+                    newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
+                    j += 1
+                  end
+                end
+                values[i] = newVals
+              end
             end
-          
-            add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "W")
-            add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
-            add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
-            add_result(results, "transformer_worst_case_RPF_start_day_index", worst_start, "")
-            add_result(results, "transformer_worst_case_RPF_start_day_timestamp", to_displayTime(datetimes[worst_start]), "")
-            add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
-            add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
-            add_result(results, "transformer_worst_case_RPF_range", worst_range.join(','), "")
           end
         end
-      end
+
+        # transformer timeseries
+        if isTransformerFlag
+          
+          # calculate # instances above rating
+          # the features & power factors were calculated in VA, then aggregated to get this series
+          if timeseries_name == 'Net Apparent Power'
+            numberTimesAboveRating = 0
+            max = 0
+            (0..(n-1)).each do |ind|
+              if values[i][ind].to_f > name_plate_rating
+                numberTimesAboveRating += 1 
+              end
+              if values[i][ind].to_f > max
+                max = values[i][ind]
+              end
+            end
+            runner.registerInfo("name plate rating: #{name_plate_rating}")
+            runner.registerInfo("max VA found: #{max}")
+            runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
+            hoursAboveRating = numberTimesAboveRating.to_f / 4
+            runner.registerInfo("Hours above rating: #{hoursAboveRating}")
+            add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
+          # calculate max and worst days
+          elsif timeseries_name == 'Transformer Output Electric Power'
+
+            tsget = ts.get
+            datetimes = tsget.dateTimes
+
+            transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
+            transformer_worst_case_RPF = {index: -1, value: 100000000000000, timestamp: datetimes[0]}
+            (0..(n-1)).each do |ind|
+              if values[i][ind] > transformer_max_peak[:value]
+                transformer_max_peak[:value] = values[i][ind].to_f
+                transformer_max_peak[:index] = ind
+                transformer_max_peak[:timestamp] = datetimes[ind]
+              end
+              if values[i][ind].to_f < transformer_worst_case_RPF[:value]
+                transformer_worst_case_RPF[:value] = values[i][ind].to_f
+                transformer_worst_case_RPF[:index] = ind
+                transformer_worst_case_RPF[:timestamp] = datetimes[ind]
+              end
+            end
+
+            # get start/end of max and worst days
+            indexes_per_day = 24 * timesteps_per_hour  
+            if (transformer_max_peak[:index] == -1) 
+              runner.registerWarning('No Max Peak found for this transformer!')
+            else 
+              mult = (transformer_max_peak[:index].to_f / indexes_per_day.to_f).floor
+              runner.registerInfo("MULTIPLIER: #{mult}")
+              max_start = (mult * indexes_per_day).to_i 
+              max_end = ((mult + 1) * indexes_per_day).to_i - 1
+              runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
+              max_range = []
+              (max_start..max_end).each do |j|
+                max_range << values[i][j]
+              end
+              runner.registerInfo("MAX RANGE: #{max_range}")
+           
+              # add TRANSFORMER results (max index, index of start/end of max day, hours above rating)
+              add_result(results, "transformer_max_peak", transformer_max_peak[:value], "W")  
+              add_result(results, "transformer_max_peak_index", transformer_max_peak[:index], "")
+              add_result(results, "transformer_max_peak_timestamp", to_displayTime(transformer_max_peak[:timestamp]), "")
+              add_result(results, "transformer_max_peak_start_day_index", max_start, "")
+              add_result(results, "transformer_max_peak_start_day_timestamp", to_displayTime(datetimes[max_start]), "")
+              add_result(results, "transformer_max_peak_end_day_index", max_end, "")
+              add_result(results, "transformer_max_peak_end_day_timestamp", to_displayTime(datetimes[max_end]), "")
+              add_result(results, "transformer_max_peak_range", max_range.join(','), "")
+            end
+            
+            if (transformer_worst_case_RPF[:index] == -1)
+              runner.registerWarning('No Worst Case RPF found to this transformer!')
+            else
+              mult = (transformer_worst_case_RPF[:index].to_f / indexes_per_day.to_f).floor
+              worst_start = (mult * indexes_per_day).to_i
+              worst_end = ((mult + 1) * indexes_per_day).to_i - 1
+              runner.registerInfo("worst index: #{transformer_worst_case_RPF[:index]}, worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
+              worst_range = []
+              (worst_start..worst_end).each do |j|
+                worst_range << values[i][j]
+              end
+            
+              add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "W")
+              add_result(results, "transformer_worst_case_RPF_index", transformer_worst_case_RPF[:index], "")
+              add_result(results, "transformer_worst_case_RPF_timestamp", to_displayTime(transformer_worst_case_RPF[:timestamp]), "")
+              add_result(results, "transformer_worst_case_RPF_start_day_index", worst_start, "")
+              add_result(results, "transformer_worst_case_RPF_start_day_timestamp", to_displayTime(datetimes[worst_start]), "")
+              add_result(results, "transformer_worst_case_RPF_end_day_index", worst_end, "")
+              add_result(results, "transformer_worst_case_RPF_end_day_timestamp", to_displayTime(datetimes[worst_end]), "")
+              add_result(results, "transformer_worst_case_RPF_range", worst_range.join(','), "")
+            end
+          end
+        end
+      #end
     end
+
+    #runner.registerInfo("new timeseries: #{new_timeseries}")
+    runner.registerInfo("size of value array: #{values.length}")
 
     File.open("report.csv", 'w') do |file|
       file.puts(timeseries.join(','))
@@ -778,9 +813,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     end
     
     month_map = {0=>"jan", 1=>"feb", 2=>"mar", 3=>"apr", 4=>"may", 5=>"jun", 6=>"jul", 7=>"aug", 8=>"sep", 9=>"oct", 10=>"nov", 11=>"dec"}
-    
+    tempIndex = 0
     values.each do |value|
-
       runner.registerValue(value[0], value[1..-1].inject(0){|sum, x| sum + x})
       add_result(results, value[0], value[1..-1].inject(0){|sum, x| sum + x}, "")
       

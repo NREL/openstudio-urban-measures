@@ -227,7 +227,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     if ts[:name].include? "Mass Flow Rate"
       values *= 0.001 # kg to m^3 of water, which is 1000 kg/m^3
     end
-  
+
     maximum = OpenStudio::maximum(values)
     minimum = OpenStudio::minimum(values)
     if ts[:normalize]
@@ -259,7 +259,6 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       end
       schedule = schedule.get
     end
-  
     schedule.setName(name)
     schedule.setComment("Maximum = #{maximum}")
     return schedule
@@ -348,7 +347,21 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
                   {name: "District Heating Hot Water Rate", units: "W", normalize: false},
                   {name: "District Heating Mass Flow Rate", units: "kg/s", normalize: true},
                   {name: "Electricity:Facility", units: "J", normalize: false}, 
-                  {name: "ElectricityProduced:Facility", units: "J", normalize: false}]                    
+                  {name: "ElectricityProduced:Facility", units: "J", normalize: false}]      
+
+    transformerTimeseries = [{name: "Electricity:Facility", units: "J", normalize: false}, 
+                             {name: "ElectricityProduced:Facility", units: "J", normalize: false},   
+                             {name: "Electricity:Facility Power", units: "W", normalize: false},
+                             {name: "ElectricityProduced:Facility Power", units: "W", normalize: false},
+                             {name: "Net Electric Energy", units: "J", normalize: false},
+                             {name: "Net Power", units: "W", normalize: false},
+                             {name: "Net Apparent Power", units: "W", normalize: false}]                            
+
+    if district_system_type == 'Transformer'
+      transformerTimeseries[2..6].each do |t|
+        timeseries << t
+      end
+    end
 
     summed_values = {}
     datapoint_files.each do |file|
@@ -380,18 +393,22 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
         i += 1
       end
       
-      # to make one individual schedules
-      #timeseries.each do |ts|
-      #  makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
-      #end
+      # make schedules for all 'Electricity' rows for all features connected to transformer
+      if district_system_type == 'Transformer'
+        transformerTimeseries.each do |ts|
+          makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
+        end
+      end
     end
      
+    runner.registerInfo("TIMESERIES: #{timeseries}") 
     # to make one summed schedule
     timeseries.each do |ts|
+      runner.registerInfo("TS: #{ts[:name]}")
       makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summed", ts)
     end
 
-    # make transformer schedule(s)
+    # make transformer schedule
     if district_system_type == 'Transformer'
       transformer_values = OpenStudio::Vector.new(num_rows, 0.0)
       (0..(num_rows-1)).each do |i|

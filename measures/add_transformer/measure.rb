@@ -51,7 +51,7 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
     # check for transformer schedule in the starting model
     schedules = workspace.getObjectsByName("Transformer Output Electric Energy Schedule")
 
-    if schedules.empty?
+     if schedules.empty?
       runner.registerAsNotApplicable("Transformer Output Electric Energy Schedule not found")
       return true
     end
@@ -61,7 +61,7 @@ class AddTransformer < OpenStudio::Measure::EnergyPlusMeasure
       runner.registerError("Transformer Output Electric Energy Schedule is not a Schedule:Year or a Schedule:Compact")
       return false
     end
-    
+
     # DLM: these could be inputs
     name_plate_efficiency = 0.985
     unit_load_at_name_plate_efficiency = 0.35
@@ -185,10 +185,34 @@ EnergyManagementSystem:Sensor,
   Output:Variable,*,Transformer Thermal Loss Rate,Timestep; !- HVAC Average [W]
   Output:Variable,*,Transformer Thermal Loss Energy,Timestep; !- HVAC Sum [J]
   Output:Variable,*,Transformer Distribution Electric Loss Energy,Timestep; !- HVAC Sum [J]
-      "
-      
+  "
+  
+    # schedule format example:
+    # Output:Variable,Transformer Output Electric Energy Schedule, Schedule Value, Timestep; !- HVAC Sum [J]
+    # get all schedules and add output variables
+    allSchedules = workspace.getObjectsByType("Schedule:Compact".to_IddObjectType)
+    runner.registerInfo("number of schedule retrieved:  #{allSchedules.size}")
+
+    (0...allSchedules.size).each do |index|
+      tmpName = allSchedules[index].getString(0).to_s
+      tmpUnits = ''
+      if tmpName.include? ('Apparent Power')
+        tmpUnits = 'VA'
+      elsif tmpName.include? ('Power')
+        tmpUnits = 'W'
+      else
+        tmpUnits = 'J'
+      end
+      tmpStr = "Output:Variable,#{tmpName}, Schedule Value, Timestep; !- HVAC Sum [#{tmpUnits}]"
+      formattedStr ="#{tmpStr}"
+
+      idf_text += "#{tmpStr}
+  "
+    end   
+
+    #runner.registerInfo("IDF STRING: #{idf_text}")
     File.open('temp.idf', 'w') do |file|
-      file << idf_text
+      file << idf_text 
     end
     
     idfFile = OpenStudio::IdfFile::load(OpenStudio::Path.new('temp.idf'))
