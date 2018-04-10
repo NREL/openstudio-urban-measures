@@ -597,7 +597,9 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
    
     n = nil
     values = []
-    #new_timeseries = []
+    # Since schedule value will have a bunch of key_values, we need to keep track of these as additional timeseries
+    key_cnt = 0
+    new_timeseries = []
     timeseries.each_index do |i|    
       timeseries_name = timeseries[i]
       runner.registerInfo("TIMESERIES: #{timeseries_name}")
@@ -605,36 +607,40 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       key_values = sql_file.availableKeyValues("RUN PERIOD 1", "Zone Timestep", timeseries_name)
       runner.registerInfo("KEY VALUES: #{key_values}")
       if key_values.empty?
-        key_value = ""
-      else
-        key_value = key_values[0]
+        key_values = [""]
+      # else
+      #   key_values = key_values[0]
       end
+      
+      # sort keys
+      new_keys = key_values.sort
 
-      #key_values.each_with_index do |key_value, key_index|
+      new_keys.each_with_index do |key_value, key_i|
 
-        # if key_values.size == 1
-        #   # use timeseries name when only 1 keyvalue
-        #   new_timeseries << timeseries[i]
-        # else
-        #   # use key_value name
-        #   new_timeseries << key_value
-        # end
+        if key_values.size == 1
+          # use timeseries name when only 1 keyvalue
+          new_timeseries << timeseries_name
+        else
+          # use key_value name
+          new_timeseries << key_value
+        end
 
         ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
         runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
         if n.nil? 
           # first timeseries should always be set
           values[i] = ts.get.values
-          n = values[i].size 
+          
+          n = values[key_cnt].size 
         elsif ts.is_initialized
-          values[i] = ts.get.values
+          values[key_cnt] = ts.get.values
         else
-          values[i] = Array.new(n, 0)
+          values[key_cnt] = Array.new(n, 0)
         end
 
         # keep certain timeseries to calculate power
         if tsToKeep.include? timeseries_name
-          tsToKeepIndexes[timeseries_name] = i
+          tsToKeepIndexes[timeseries_name] = key_cnt
         end
 
         # special processing: power
@@ -668,7 +674,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               end
             end
 
-            values[i] = newVals
+            values[key_cnt] = newVals
           else
             tsToKeepIndexes.each do |key, indexValue|
               if timeseries_name.include? key
@@ -690,7 +696,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                     j += 1
                   end
                 end
-                values[i] = newVals
+                values[key_cnt] = newVals
               end
             end
           end
@@ -705,11 +711,11 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             numberTimesAboveRating = 0
             max = 0
             (0..(n-1)).each do |ind|
-              if values[i][ind].to_f > name_plate_rating
+              if values[key_cnt][ind].to_f > name_plate_rating
                 numberTimesAboveRating += 1 
               end
-              if values[i][ind].to_f > max
-                max = values[i][ind]
+              if values[key_cnt][ind].to_f > max
+                max = values[key_cnt][ind]
               end
             end
             runner.registerInfo("name plate rating: #{name_plate_rating}")
@@ -727,13 +733,13 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             transformer_max_peak = {index: -1, value: -1, timestamp: datetimes[0]}
             transformer_worst_case_RPF = {index: -1, value: 100000000000000, timestamp: datetimes[0]}
             (0..(n-1)).each do |ind|
-              if values[i][ind] > transformer_max_peak[:value]
-                transformer_max_peak[:value] = values[i][ind].to_f
+              if values[key_cnt][ind] > transformer_max_peak[:value]
+                transformer_max_peak[:value] = values[key_cnt][ind].to_f
                 transformer_max_peak[:index] = ind
                 transformer_max_peak[:timestamp] = datetimes[ind]
               end
-              if values[i][ind].to_f < transformer_worst_case_RPF[:value]
-                transformer_worst_case_RPF[:value] = values[i][ind].to_f
+              if values[key_cnt][ind].to_f < transformer_worst_case_RPF[:value]
+                transformer_worst_case_RPF[:value] = values[key_cnt][ind].to_f
                 transformer_worst_case_RPF[:index] = ind
                 transformer_worst_case_RPF[:timestamp] = datetimes[ind]
               end
@@ -751,7 +757,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               runner.registerInfo("max_start: #{max_start}, max_end: #{max_end}, timestamp start: #{datetimes[max_start]}, timestamp end: #{datetimes[max_end]}")
               max_range = []
               (max_start..max_end).each do |j|
-                max_range << values[i][j]
+                max_range << values[key_cnt][j]
               end
               runner.registerInfo("MAX RANGE: #{max_range}")
            
@@ -775,7 +781,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               runner.registerInfo("worst index: #{transformer_worst_case_RPF[:index]}, worst_start: #{worst_start}, worst_end: #{worst_end}, timestamp start: #{datetimes[worst_start]}, timestamp end: #{datetimes[worst_end]}")
               worst_range = []
               (worst_start..worst_end).each do |j|
-                worst_range << values[i][j]
+                worst_range << values[key_cnt][j]
               end
             
               add_result(results, "transformer_worst_case_RPF", transformer_worst_case_RPF[:value], "W")
@@ -789,14 +795,17 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             end
           end
         end
-      #end
+        #increment key_cnt in new_keys loop
+        key_cnt += 1
+      end
     end
 
-    #runner.registerInfo("new timeseries: #{new_timeseries}")
+    runner.registerInfo("new timeseries size: #{new_timeseries.size}")
     runner.registerInfo("size of value array: #{values.length}")
 
     File.open("report.csv", 'w') do |file|
-      file.puts(timeseries.join(','))
+      file.puts(new_timeseries.join(','))
+      #file.puts(timeseries.join(','))
       (0...n).each do |i|
         line = []
         values.each_index do |j|
