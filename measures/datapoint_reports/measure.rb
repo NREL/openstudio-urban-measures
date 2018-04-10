@@ -706,8 +706,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         if isTransformerFlag
           
           # calculate # instances above rating
-          # the features & power factors were calculated in VA, then aggregated to get this series
-          if timeseries_name == 'Net Apparent Power'
+          # the features & power factors were calculated in VA, then aggregated to get this series (VA)
+          if timeseries_name == 'Schedule Value' && key_value == 'SUMMED NET APPARENT POWER'
             numberTimesAboveRating = 0
             max = 0
             (0..(n-1)).each do |ind|
