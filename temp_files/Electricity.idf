@@ -1,0 +1,40 @@
+  FuelFactors,        !  USA national average based on eGRID, EIA 1605
+  Electricity,        !- Existing Fuel Resource Name
+  kg,                 !- Units of Measure (kg or m3)
+  ,                   !- Energy per Unit Factor
+  2.253,              !- Source Energy Factor {J/J}
+  ,                   !- Source Energy Schedule Name
+  168.33317,          !- CO2 Emission Factor {g/MJ}
+  ,                   !- CO2 Emission Factor Schedule Name
+  4.20616E-02,        !- CO Emission Factor {g/MJ}
+  ,                   !- CO Emission Factor Schedule Name
+  1.39858E-03,        !- CH4 Emission Factor {g/MJ}
+  ,                   !- CH4 Emission Factor Schedule Name
+  4.10753E-01,        !- NOx Emission Factor {g/MJ}
+  ,                   !- NOx Emission Factor Schedule Name
+  2.41916E-03,        !- N2O Emission Factor {g/MJ}
+  ,                   !- N2O Emission Factor Schedule Name
+  8.65731E-01,        !- SO2 Emission Factor {g/MJ}
+  ,                   !- SO2 Emission Factor Schedule Name
+  2.95827E-02,        !- PM Emission Factor {g/MJ}
+  ,                   !- PM Emission Factor Schedule Name
+  1.80450E-02,        !- PM10 Emission Factor {g/MJ}
+  ,                   !- PM10 Emission Factor Schedule Name
+  1.15377E-02,        !- PM2.5 Emission Factor {g/MJ}
+  ,                   !- PM2.5 Emission Factor Schedule Name
+  1.10837E-03,        !- NH3 Emission Factor {g/MJ}
+  ,                   !- NH3 Emission Factor Schedule Name
+  3.72332E-03,        !- NMVOC Emission Factor {g/MJ}
+  ,                   !- NMVOC Emission Factor Schedule Name
+  3.36414E-06,        !- Hg Emission Factor {g/MJ}
+  ,                   !- Hg Emission Factor Schedule Name
+  0,                  !- Pb Emission Factor {g/MJ}
+  ,                   !- Pb Emission Factor Schedule Name
+  2.10074,            !- Water Emission Factor {L/MJ}
+  ,                   !- Water Emission Factor Schedule Name
+  0,                  !- Nuclear High Level Emission Factor {g/MJ}
+  ,                   !- Nuclear High Level Emission Factor Schedule Name
+  0;                  !- Nuclear Low Level Emission Factor {m3/MJ}
+
+  Output:EnvironmentalImpactFactors,    !- Add EnvironmentalImpactFactors Report
+  Hourly;                               !- Reporting_Frequency
