@@ -575,7 +575,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               "Transformer Input Electric Power", 
               "Schedule Value"]
 
-      timeseries += transformerTimeseries
+      # Only do transformer timeseries for transformers (skip the others as they don't really make sense)
+      timeseries = transformerTimeseries
      
       # get workspace and transformer rating
       workspace = runner.lastEnergyPlusWorkspace
@@ -612,8 +613,23 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       #   key_values = key_values[0]
       end
       
+      # get seconds to convert J to W  (J/sec = W)
+      power_conversion = (60 / timesteps_per_hour) * 60
       # sort keys
-      new_keys = key_values.sort
+      sorted_keys = key_values.sort
+      summed_list = ['SUMMED ELECTRICITY:FACILITY', 'SUMMED ELECTRICITY:FACILITY POWER', 'SUMMED ELECTRICITYPRODUCED:FACILITY', 'SUMMED ELECTRICITYPRODUCED:FACILITY POWER', 'SUMMED NET APPARENT POWER', 'SUMMED NET ELECTRIC ENERGY', 'SUMMED NET POWER', 'TRANSFORMER OUTPUT ELECTRIC ENERGY SCHEDULE']
+      new_keys = []
+      # make sure aggregated timeseries are listd in sorted order before all individual feature timeseries
+      sorted_keys.each do |k|
+        if summed_list.include? k
+          new_keys << k
+        end
+      end
+      sorted_keys.each do |k|
+        if !summed_list.include? k
+          new_keys << k
+        end
+      end
 
       new_keys.each_with_index do |key_value, key_i|
 
@@ -656,7 +672,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               if !isTransformerFlag
                 runner.registerInfo("Apparent and !isTransformer")
                 (0..n-1).each do |j|
-                  newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour / powerFactor
+                  newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / power_conversion / powerFactor
                   j += 1
                 end
               end
@@ -669,7 +685,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               runner.registerInfo("Power calc")
               # Power calc
               (0..n-1).each do |j|
-                newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / 3600 / timesteps_per_hour
+                newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / power_conversion
                 j += 1
               end
             end
@@ -685,14 +701,14 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                 if timeseries_name.include?('Apparent')
                   if !isTransformerFlag
                     (0..n-1).each do |j|
-                      newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour / powerFactor
+                      newVals[j] = values[indexValue][j].to_f / power_conversion / powerFactor
                       j += 1
                     end
                   end
                 else
                   # Power calc
                   (0..n-1).each do |j|
-                    newVals[j] = values[indexValue][j].to_f / 3600 / timesteps_per_hour
+                    newVals[j] = values[indexValue][j].to_f / power_conversion
                     j += 1
                   end
                 end

@@ -5,6 +5,7 @@
   "root_directory": null,
   "run_directory": "./run",
   "file_paths": [
+    "./../project_files/",
     "./../../../weather/"
   ],
   "measure_paths": [
