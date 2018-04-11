@@ -190,11 +190,22 @@ EnergyManagementSystem:Sensor,
     # schedule format example:
     # Output:Variable,Transformer Output Electric Energy Schedule, Schedule Value, Timestep; !- HVAC Sum [J]
     # get all schedules and add output variables
-    allSchedules = workspace.getObjectsByType("Schedule:Compact".to_IddObjectType)
-    runner.registerInfo("number of schedule retrieved:  #{allSchedules.size}")
+    compactSchedules = workspace.getObjectsByType("Schedule:Compact".to_IddObjectType)
+    runner.registerInfo("number of compact schedule retrieved:  #{compactSchedules.size}")
+    constantSchedules = workspace.getObjectsByType("Schedule:Constant".to_IddObjectType)
+    runner.registerInfo("number of constant schedules: #{constantSchedules.size}")
+
+    allSchedules = []
+    allSchedules << compactSchedules << constantSchedules
+    allSchedules.flatten!
+    runner.registerInfo("all schedules retrieved:  #{allSchedules.size}")
+    ignoreList = ['Always On Continuous', 'Always Off Discrete', 'Always On Discrete', 'Summed District Heating Mass Flow Rate', 'Summed District Heating Hot Water Rate', 'Summed District Cooling Chilled Water Rate', 'Summed District Cooling Mass Flow Rate']
 
     (0...allSchedules.size).each do |index|
       tmpName = allSchedules[index].getString(0).to_s
+      next if ignoreList.include? tmpName
+
+      runner.registerInfo("Schedule: #{tmpName}")
       tmpUnits = ''
       if tmpName.include? ('Apparent Power')
         tmpUnits = 'VA'
