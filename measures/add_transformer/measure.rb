@@ -145,7 +145,7 @@ EnergyManagementSystem:Sensor,
 
   EnergyManagementSystem:ProgramCallingManager,
     DummyManager, ! Name
-    EndOfZoneTimestepBeforeZoneReporting,       ! EnergyPlus Model Calling Point
+    BeginTimestepBeforePredictor,       ! EnergyPlus Model Calling Point
     DummyProgram;
 
   EnergyManagementSystem:Program,
