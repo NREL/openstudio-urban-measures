@@ -709,10 +709,14 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           # the features & power factors were calculated in VA, then aggregated to get this series (VA)
           if timeseries_name == 'Schedule Value' && key_value == 'SUMMED NET APPARENT POWER'
             numberTimesAboveRating = 0
+            numberTimesExtremeRating = 0
             max = 0
             (0..(n-1)).each do |ind|
               if values[key_cnt][ind].to_f > name_plate_rating
                 numberTimesAboveRating += 1 
+              end
+              if values[key_cnt][ind].to_f > (name_plate_rating * 1.20)
+                numberTimesExtremeRating += 1
               end
               if values[key_cnt][ind].to_f > max
                 max = values[key_cnt][ind]
@@ -722,8 +726,10 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             runner.registerInfo("max VA found: #{max}")
             runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
             hoursAboveRating = numberTimesAboveRating.to_f / 4
+            hoursExtremeAboveRating = numberTimesExtremeRating.to_f / 4
             runner.registerInfo("Hours above rating: #{hoursAboveRating}")
             add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
+            add_result(results, "transformer_hours_extreme_above_rating", hoursExtremeAboveRating, "hrs")
           # calculate max and worst days
           elsif timeseries_name == 'Transformer Output Electric Power'
 
