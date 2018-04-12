@@ -130,7 +130,9 @@ class Runner
       # base64 decode and write to run_dir/project_files (overwrite)
       raw_data = Base64.strict_decode64(file_data)
       file_path = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}")
-      File.write(file_path, raw_data)
+      File.open(file_path, 'wb' ) do |the_file|
+        the_file.write raw_data
+      end
     end
     
     return result
