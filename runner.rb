@@ -122,6 +122,7 @@ class Runner
     end
     # download all project files
     @logger.debug("get_project_files")
+    epw_names = []
     result[:project_files].each do |file|
       request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
       response = request["/api/retrieve_project_file?project_id=#{@project_id.to_s}&file_name=#{file[:file_name]}"].get(content_type: :json, accept: :json)
@@ -132,6 +133,32 @@ class Runner
       file_path = File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}")
       File.open(file_path, 'wb' ) do |the_file|
         the_file.write raw_data
+      end
+      # hack: find name of epw file
+      if file[:type] == 'epw'
+        epw_names << file[:file_name]
+      end
+    end
+    @logger.debug("epws found: #{epw_names}")
+    # hack for weather files (epw, stat, and ddy must have exactly the same name)
+    epw_names.each do |epw|
+      epw = epw.gsub('.epw', '')
+      last_part = epw.split('_').last 
+      if !last_part.include?('TMY')
+        @logger.debug("Fixing stat and ddy filename to match epw for: #{epw}")
+        tmp = epw.split('_')
+        basename = tmp[0..(tmp.size - 2)].join('_')
+
+        # ensure same last part        
+        result[:project_files].each do |file|
+          if (file[:type] === 'ddy' || file[:type] === 'stat') && file[:file_name].include?(basename)
+            # fix filename on disk (check that is hasn't been renamed already)
+
+            if File.exist?(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"))
+              File.rename(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"), File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{epw}.#{file[:type]}"))
+            end
+          end
+        end
       end
     end
     
