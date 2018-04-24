@@ -1,0 +1,17 @@
+{
+   "created_at" : "20180417T160602Z",
+   "seed_file" : "../EnvelopeAndLoadTestModel_01.osm",
+   "steps" : [
+      {
+         "arguments" : {
+            "tariff" : "sce_CI_TOU_GS-3_less2kV"
+         },
+         "description" : "",
+         "measure_dir_name" : "apply_sce_tariffs 1",
+         "modeler_description" : "Adds the .idf text for the selected Xcel Energy tariffs, sets the timestep to 15min so that the demand window and the timestep align, and sets the lifecycle costing parameters to use NIST 2012 inflation and fuel escalation numbers.  These NIST numbers will not affect the Xcel EDA results.",
+         "name" : "ApplySceTariffs"
+      }
+   ],
+   "updated_at" : "20180424T215457Z",
+   "weather_file" : "DEU_Berlin.103840_IWEC.epw"
+}

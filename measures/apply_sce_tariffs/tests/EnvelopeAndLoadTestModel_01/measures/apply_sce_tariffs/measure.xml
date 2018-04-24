@@ -1,0 +1,124 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>apply_sce_tariffs</name>
+  <uid>64108fa6-f380-49da-8361-1ee8f97c88ef</uid>
+  <version_id>4dc72561-0fb7-408c-a175-b1337af3563e</version_id>
+  <version_modified>20180419T214443Z</version_modified>
+  <xml_checksum>ED085E62</xml_checksum>
+  <class_name>ApplySceTariffs</class_name>
+  <display_name>ApplySceTariffs</display_name>
+  <description></description>
+  <modeler_description>Adds the .idf text for the selected Xcel Energy tariffs, sets the timestep to 15min so that the demand window and the timestep align, and sets the lifecycle costing parameters to use NIST 2012 inflation and fuel escalation numbers.  These NIST numbers will not affect the Xcel EDA results.</modeler_description>
+  <arguments>
+    <argument>
+      <name>tariff</name>
+      <display_name>Utility Rate Scheme</display_name>
+      <description></description>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <choices>
+        <choice>
+          <value>sce_res_d</value>
+          <display_name>Residential D Tiered</display_name>
+        </choice>
+        <choice>
+          <value>sce_res_d-care</value>
+          <display_name>Residential D-Care Tiered</display_name>
+        </choice>
+        <choice>
+          <value>sce_res_d-fera</value>
+          <display_name>Residential D-FERA Tiered</display_name>
+        </choice>
+      </choices>
+    </argument>
+  </arguments>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Economics.Life Cycle Cost Analysis</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Function</name>
+      <value>Measure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Requires EnergyPlus Results</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+    <attribute>
+      <name>Uses SketchUp API</name>
+      <value>false</value>
+      <datatype>boolean</datatype>
+    </attribute>
+    <attribute>
+      <name>Measure Type</name>
+      <value>EnergyPlusMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>XcelEDATariffSelectionandModelSetup_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>7D0F99C7</checksum>
+    </file>
+    <file>
+      <filename>EnvelopeAndLoadTestModel_01.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>2DA37402</checksum>
+    </file>
+    <file>
+      <filename>sce_CI_TOU_8_B_2-50kV.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>3F35D94A</checksum>
+    </file>
+    <file>
+      <filename>sce_CI_TOU_8_B_less2kV.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>3F35D94A</checksum>
+    </file>
+    <file>
+      <filename>sce_CI_TOU.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>CEE1A9FE</checksum>
+    </file>
+    <file>
+      <filename>sce_res_d-care.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>BA15D046</checksum>
+    </file>
+    <file>
+      <filename>sce_res_d-fera.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>CE1144E1</checksum>
+    </file>
+    <file>
+      <filename>sce_res_d.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>2F17E5D7</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>0.11.3</identifier>
+        <min_compatible>0.11.3</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>3A4956A3</checksum>
+    </file>
+  </files>
+</measure>
