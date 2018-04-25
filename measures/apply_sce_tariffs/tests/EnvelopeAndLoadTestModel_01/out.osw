@@ -1,0 +1,52 @@
+{
+   "completed_at" : "20180424T215456Z",
+   "completed_status" : "Success",
+   "created_at" : "20180417T160602Z",
+   "current_step" : 1,
+   "eplusout_err" : "Program Version,EnergyPlus, Version 8.8.0-7c3bbe4830, YMD=2018.04.24 15:54,IDD_Version 8.8.0\n   ** Warning ** ProcessScheduleInput: Schedule:Compact=\"TWOSEASONSCHEDULE\", Blank Schedule Type Limits Name input -- will not be validated.\n   ** Warning ** ProcessScheduleInput: Schedule:Compact=\"TIMEOFDAYSCHEDULE\", Blank Schedule Type Limits Name input -- will not be validated.\n   ** Warning ** ProcessScheduleInput: Schedule:Constant=\"ALWAYS OFF DISCRETE\", Blank Schedule Type Limits Name input -- will not be validated.\n   ** Warning ** ProcessScheduleInput: Schedule:Constant=\"ALWAYS ON CONTINUOUS\", Blank Schedule Type Limits Name input -- will not be validated.\n   ** Warning ** GetHTSurfaceData: Surfaces with interface to Ground found but no \"Ground Temperatures\" were input.\n   **   ~~~   ** Found first in surface=SURFACE 1\n   **   ~~~   ** Defaults, constant throughout the year of (18.0) will be used.\n   ** Warning ** GetSurfaceData: InterZone Surface Areas do not match as expected and might not satisfy conservation of energy:\n   **   ~~~   ** ...use Output:Diagnostics,DisplayExtraWarnings; to show more details on individual mismatches.\n   ** Warning ** GetSurfaceData: There are 1 window/glass door(s) that may cause inaccurate shadowing due to Solar Distribution.\n   **   ~~~   ** For explicit details on each window, use Output:Diagnostics,DisplayExtraWarnings;\n   ** Warning ** CheckUsedConstructions: There are 271 nominally unused constructions in input.\n   **   ~~~   ** For explicit details on each unused construction, use Output:Diagnostics,DisplayExtraWarnings;\n   ** Warning ** GetInternalHeatGains: People=\"ASHRAE_189.1-2009_CLIMATEZONE 1-3_LARGEHOTEL_BANQUET_PEOPINST\", Activity Level Schedule Name values\n   **   ~~~   ** fall outside typical range [70,1000] W/person for Thermal Comfort Reporting.\n   **   ~~~   ** Odd comfort values may result; Schedule=\"LARGEHOTEL_ACTIVITY\".\n   **   ~~~   ** Entered min/max range=[0.0,120.0] W/person.\n   ** Warning ** GetInternalHeatGains: People=\"ASHRAE_189.1-2009_CLIMATEZONE 1-3_LARGEHOTEL_CAFE_PEOPINST\", Activity Level Schedule Name values\n   **   ~~~   ** fall outside typical range [70,1000] W/person for Thermal Comfort Reporting.\n   **   ~~~   ** Odd comfort values may result; Schedule=\"LARGEHOTEL_ACTIVITY\".\n   **   ~~~   ** Entered min/max range=[0.0,120.0] W/person.\n   ** Warning ** GetInternalHeatGains: People=\"ASHRAE_189.1-2009_CLIMATEZONE 1-3_LARGEHOTEL_LOBBY_PEOPINST\", Activity Level Schedule Name values\n   **   ~~~   ** fall outside typical range [70,1000] W/person for Thermal Comfort Reporting.\n   **   ~~~   ** Odd comfort values may result; Schedule=\"LARGEHOTEL_ACTIVITY\".\n   **   ~~~   ** Entered min/max range=[0.0,120.0] W/person.\n   ** Warning ** Output:Meter: invalid Key Name=\"GAS:FACILITY\" - not found.\n   ** Warning ** Output:Meter: invalid Key Name=\"DISTRICTCOOLING:FACILITY\" - not found.\n   ** Warning ** Output:Meter: invalid Key Name=\"DISTRICTHEATING:FACILITY\" - not found.\n   ** Warning ** Output:Meter:MeterFileOnly: invalid Key Name=\"GAS:FACILITY\" - not found.\n   ** Warning ** Output:Meter:MeterFileOnly requested for \"Electricity:Facility\" (TimeStep), already on \"Output:Meter\". Will report to both eplusout.eso and eplusout.mtr\n   ************* Testing Individual Branch Integrity\n   ************* All Branches passed integrity testing\n   ************* Testing Individual Supply Air Path Integrity\n   ************* All Supply Air Paths passed integrity testing\n   ************* Testing Individual Return Air Path Integrity\n   ************* All Return Air Paths passed integrity testing\n   ************* No node connection errors were found.\n   ************* Beginning Simulation\n   ** Warning ** Processing Monthly Tabular Reports: Variable names not valid for this simulation\n   **   ~~~   ** ...use Output:Diagnostics,DisplayExtraWarnings; to show more details on individual variables.\n   ** Warning ** The resource referenced by LifeCycleCost:UsePriceEscalation= \"U.S. AVG  COMMERCIAL-ELECTRICITY\" has no energy cost. \n   **   ~~~   ** ... It is likely that the wrong resource is used. The resource should match the meter used in Utility:Tariff.\n   ** Warning ** The resource referenced by LifeCycleCost:UsePriceEscalation= \"U.S. AVG  COMMERCIAL-DISTILLATE OIL\" has no energy cost. \n   **   ~~~   ** ... It is likely that the wrong resource is used. The resource should match the meter used in Utility:Tariff.\n   ** Warning ** The resource referenced by LifeCycleCost:UsePriceEscalation= \"U.S. AVG  COMMERCIAL-RESIDUAL OIL\" has no energy cost. \n   **   ~~~   ** ... It is likely that the wrong resource is used. The resource should match the meter used in Utility:Tariff.\n   ** Warning ** The resource referenced by LifeCycleCost:UsePriceEscalation= \"U.S. AVG  COMMERCIAL-NATURAL GAS\" has no energy cost. \n   **   ~~~   ** ... It is likely that the wrong resource is used. The resource should match the meter used in Utility:Tariff.\n   ** Warning ** The resource referenced by LifeCycleCost:UsePriceEscalation= \"U.S. AVG  COMMERCIAL-COAL\" has no energy cost. \n   **   ~~~   ** ... It is likely that the wrong resource is used. The resource should match the meter used in Utility:Tariff.\n   ************* Simulation Error Summary *************\n   ** Warning ** The following Report Variables were requested but not generated -- check.rdd file\n   **   ~~~   ** Either the IDF did not contain these elements, the variable name is misspelled,\n   **   ~~~   ** or the requested variable is an advanced output which requires Output : Diagnostics, DisplayAdvancedReportVariables;\n   ************* Key=*, VarName=ZONE/SYS SENSIBLE HEATING RATE, Frequency=Hourly\n   ************* Key=*, VarName=ZONE/SYS SENSIBLE COOLING RATE, Frequency=Hourly\n   ************* There are 22 unused schedules in input.\n   ************* There are 25 unused week schedules in input.\n   ************* There are 85 unused day schedules in input.\n   ************* Use Output:Diagnostics,DisplayUnusedSchedules; to see them.\n   *************\n   ************* ===== Final Error Summary =====\n   ************* The following error categories occurred.  Consider correcting or noting.\n   ************* InterZone Surface Areas -- mismatch\n   ************* ..Area mismatch errors happen when the interzone surface in zone A is\n   ************* ..not the same size as it's companion in zone B.\n   ************* Nominally Unused Constructions\n   ************* ..The nominally unused constructions warning is provided to alert you to potential conditions that can cause\n   ************* ..extra time during simulation. Each construction is calculated by the algorithm indicated in the HeatBalanceAlgorithm\n   ************* ..object. You may remove the constructions indicated (when you use the DisplayExtraWarnings option).\n   *************\n   ************* EnergyPlus Warmup Error Summary. During Warmup: 0 Warning; 0 Severe Errors.\n   ************* EnergyPlus Sizing Error Summary. During Sizing: 0 Warning; 0 Severe Errors.\n   ************* EnergyPlus Completed Successfully-- 23 Warning; 0 Severe Errors; Elapsed Time=00hr 00min  3.46sec\n",
+   "hash" : "D3D7F3D9",
+   "seed_file" : "../EnvelopeAndLoadTestModel_01.osm",
+   "started_at" : "20180424T215438Z",
+   "steps" : [
+      {
+         "arguments" : {
+            "tariff" : "sce_CI_TOU_GS-3_less2kV"
+         },
+         "description" : "",
+         "measure_dir_name" : "apply_sce_tariffs 1",
+         "modeler_description" : "Adds the .idf text for the selected Xcel Energy tariffs, sets the timestep to 15min so that the demand window and the timestep align, and sets the lifecycle costing parameters to use NIST 2012 inflation and fuel escalation numbers.  These NIST numbers will not affect the Xcel EDA results.",
+         "name" : "ApplySceTariffs",
+         "result" : {
+            "completed_at" : "20180424T215444Z",
+            "measure_class_name" : "ApplySceTariffs",
+            "measure_display_name" : "ApplySceTariffs",
+            "measure_name" : "apply_sce_tariffs",
+            "measure_taxonomy" : "Economics.Life Cycle Cost Analysis",
+            "measure_type" : "EnergyPlusMeasure",
+            "measure_uid" : "64108fa6-f380-49da-8361-1ee8f97c88ef",
+            "measure_version_id" : "84fbb665-ad2e-4a22-a43a-031b3df969ff",
+            "measure_version_modified" : "20180424T215420Z",
+            "measure_xml_checksum" : "ED085E62",
+            "started_at" : "20180424T215444Z",
+            "stderr" : "",
+            "stdout" : "",
+            "step_errors" : [],
+            "step_files" : [],
+            "step_info" : [
+               "added 8 rate/tariff object(s) from file sce_CI_TOU_GS-3_less2kV.idf",
+               "set the simulation timestep to 15 min to match the demand window of the tariffs"
+            ],
+            "step_result" : "Success",
+            "step_values" : [
+               {
+                  "name" : "tariff",
+                  "value" : "sce_CI_TOU_GS-3_less2kV"
+               }
+            ],
+            "step_warnings" : []
+         }
+      }
+   ],
+   "updated_at" : "20180424T215456Z",
+   "weather_file" : "DEU_Berlin.103840_IWEC.epw"
+}
