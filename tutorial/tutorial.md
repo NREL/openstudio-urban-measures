@@ -38,6 +38,9 @@ The following tutorial describes the process of performing urban modeling with O
 ![sitetab](./sitetab.png)
 Alternatively, if you have features defined in GeoJSON format&mdash;generated from either another URBANopt project or an online editor such as [geojson.io](http://geojson.io)&mdash;, you can import it into your project from any page by selecting *File -> Import GeoJSON* from the left navigation menu.  Example GeoJSON files can be found in the *data* directory of the openstudio-urban-measures repo.  Project GeoJSON can also be exported by selecting *File -> Export* from the left navigation menu.
 
+For easier feature drawing or data entry, the map area can be resized by dragging the gray line directly below the map. Additionally, features can be selected on the map or in the properties table.  
+![map.png](./map.png)
+
 ### District System Connections
 
 TODO: district systems connected to buildings (draw connectors)
