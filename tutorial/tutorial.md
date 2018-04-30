@@ -16,7 +16,7 @@ The following tutorial describes the process of performing urban modeling with O
  
 1.  Install git.  On Windows we use [Git for Windows](https://git-scm.com/download/win).
 1.  Install Ruby. On Mac we install ruby via rbenv.  On Windows we use [RubyInstaller](http://rubyinstaller.org/downloads/).  Make sure Ruby is in your path so you can run Ruby commands.  Install the version of ruby supported by OpenStudio; currently v2.2.4. [Check the OpenStudio Compatibility Matrix](https://github.com/NREL/OpenStudio/wiki/OpenStudio-Version-Compatibility-Matrix)  
-1.  On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit follow the [instructions here](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit] to install it.
+1.  On Windows, you will need to install Ruby DevKit.  Go on [this page](http://rubyinstaller.org/downloads/) and search for “Development Kit” then choose the right version based on your version of Ruby.  After you install DevKit, [follow the instructions](https://github.com/oneclick/rubyinstaller/wiki/Development-Kit) to install it.
 1.  Install OpenStudio.  We currently recommend v2.4.1.
 1.  Checkout a copy of the [openstudio-urban-measures](https://github.com/NREL/openstudio-urban-measures) repository.  This repo will be used to run the local analyses.
 
