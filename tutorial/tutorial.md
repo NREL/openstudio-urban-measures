@@ -34,7 +34,7 @@ The following tutorial describes the process of performing urban modeling with O
 ![projectfiles.png](./projectfiles.png)
 
 ### Add Features
-1.  There are different feature types supported by URBANopt: Regions, Taxlots, Buildings, and District Systems are the main ones. The *Site* page is used to enter Region and Taxlot features, the *Buildings* page for buildings, and the *District Systems* page for district systems.  The features can be drawn on the map by selecting *Draw -> Rectangle* or *Draw -> Polygon* from the left navigation menu.  Once drawn, the feature will appear in the table below the map, where its properties can be entered.  
+There are different feature types supported by URBANopt: Regions, Taxlots, Buildings, and District Systems are the main ones. The *Site* page is used to enter Region and Taxlot features, the *Buildings* page for buildings, and the *District Systems* page for district systems.  The features can be drawn on the map by selecting *Draw -> Rectangle* or *Draw -> Polygon* from the left navigation menu.  Once drawn, the feature will appear in the table below the map, where its properties can be entered.  
 ![sitetab](./sitetab.png)
 Alternatively, if you have features defined in GeoJSON format&mdash;generated from either another URBANopt project or an online editor such as [geojson.io](http://geojson.io)&mdash;, you can import it into your project from any page by selecting *File -> Import GeoJSON* from the left navigation menu.  Example GeoJSON files can be found in the *data* directory of the openstudio-urban-measures repo.  Project GeoJSON can also be exported by selecting *File -> Export* from the left navigation menu.
 
@@ -43,10 +43,25 @@ For easier feature drawing or data entry, the map area can be resized by draggin
 
 ### District System Connections
 
-TODO: district systems connected to buildings (draw connectors)
+District systems of the following types can be connected to the buildings they serve:
+
+- Central Hot Water
+- Central Hot and Cold Water
+- Central Chilled Water
+- Central Ambient Water
+
+To add a connector between a valid district system and a building:
+
+1. Navigate to the *District Systems* page.
+1. Select *Draw -> Connector* from the left navigation menu.  
+1. Hover over the district systems on the map. The cursor will change from an arrow to a blue circle when it is over a valid district system.  
+1. Click on the district system to start a connector line.  Double click on the building to end the connector line.
+1. The drawn connections will be listed in the table in the *Connectors* tab below the map, and can be edited or deleted from there.
+
+![connectors.png](./connectors.png)
 
 #### Special Case: Transformers
-1. Transformers are a type of district system that can be modeled in URBANopt.  They are entered in the *District Systems* page, and transformer-specific fields such as rating, voltage, phase, and type should be filled out in the *District Properties* table below the map. Rather than using the connectors functionality to connect buildings to transformers, each building can be assigned a transformer on the *Building Properties* table below the map on the *Buildings* page. A custom power factor can be added to the table for apparent power calculations. If blank, a default of 0.9 is used.  Once transformers are assigned, a list of all buildings assigned to a particular transformer can be accessed on the *Transformers* tab of the *District Systems* page. 
+Transformers are a type of district system that can be modeled in URBANopt.  They are entered in the *District Systems* page, and transformer-specific fields such as rating, voltage, phase, and type should be filled out in the *District Properties* table below the map. Rather than using the connectors functionality to connect buildings to transformers, each building can be assigned a transformer on the *Building Properties* table below the map on the *Buildings* page. A custom power factor can be added to the table for apparent power calculations. If blank, a default of 0.9 is used.  Once transformers are assigned, a list of all buildings assigned to a particular transformer can be accessed on the *Transformers* tab of the *District Systems* page. 
 ![transformers](./transformers.png)
 
 ### Edit and Visualize Features
@@ -174,4 +189,61 @@ Project results can be viewed on the *Results* tab.
 
 
 ## <a name="workflows"></a>Custom Workflows
- TODO: how to create workflows and edit existing workflows for use on URBANopt
+The URBANopt 	website is pre-loaded with a default workflow for buildings and district systems.  These workflows contain a default set of measures that can be configured&mdash;by changing argument values or skipping an entire measure&mdash;from the *Design Alternatives* tab of the *Buildings* and *District Systems* pages.
+
+If the choice of measures included in the default workflow is insufficient to meet your project's needs, you can create a custom workflow and upload it to the URBANopt website.  The custom workflow will then be used in the analysis instead of the default one.  
+
+Example workflows can be found in the *workflows* directory of the *openstudio-urban-measures* repo.  It is suggested to use one of these workflows as a starting point.
+
+###Deleting a Measure from a Workflow
+
+1. Open the workflow osw file and locate the measure you want to remove within the *"steps"* array. 
+1. Save the workflow osw file.
+1. Upload the workflow osw file to URBANopt (see directions below)
+
+###Adding a Measure to a Workflow
+1.  Open the workflow osw file and locate the *"steps"* array.
+1.  Add a hash to the array with the name, measure_dir_name, and arguments of the new measure.  Note that you do not need to list all arguments that exist in the measure in the arguments section; rather, you only need to list the arguments where you want to specify a default value different than the existing default value. You can also allow measures to be skipped by adding a special *SKIP* argument to the arguments section.  The value of the *SKIP* argument represents whether or not the measure appears skipped by default when creating a new Design Alternative in the URBANopt website. For example:
+
+	```
+	{
+      "name": "example_measure", 
+      "measure_dir_name": "example_measure",
+      "arguments": {
+      		"__SKIP__": false,
+      		"climate_zone": "5B"
+      }
+    }
+    ```
+**Important Note**&mdash;Make sure to insert the new measure in the correct order within the workflow.  Measures of type 'ModelMeasure' should be placed first, followed by type 'EnergyPlusMeasure', and, finally, 'ReportingMeasure'.  The measure's type can be found by searching for the *Measure Type* attribute in the measure.xml file.  To quickly inspect the workflow's order, run the *workflow_checker* script in a terminal window with the following command:
+
+	```
+	bundle exec ruby workflow_checker.rb <path-to-workflow>
+	```
+    where `<path-to-workflow>` is the path to your workflow osw file.
+    
+1. In order for the URBANopt website to correctly display the workflow's measures and allow its configuration, a *measure_definition* section is required on each measure section in the osw.  The *add_measure_definitions.rb* script in the *openstudio-urban-measures* repo will do this automatically.  To run the script, type the following command in a terminal window:
+	
+	```
+	bundle exec ruby add_measure_definitions.rb <path-to-workflow> 
+	```
+where `<path-to-workflow>` is the path to your workflow osw file.  The script will create a new file named the same as your workflow, plus '.out', in the same directory where your workflow is located.  
+1. Copy the workflow.out file created by the `add_measure_definitions.rb` back to your <workflow>.osw file.  
+1. Upload the new workflow osw file to URBANopt (see instructions below)
+
+
+###Editing Existing Measures (Adding or Removing Arguments)
+Existing measures can be editing without the need to edit the workflow file.  If, however, editing includes the addition or removal or arguments, you will need to follow the steps in the section above to re-run the `add_measure_definitions.rb` script and re-upload the workflow to the URBANopt website.
+
+###Uploading a Custom Workflow to URBANopt Website
+Follow these steps to upload a custom workflow to URBANopt.
+
+1. Navigate to the *Buildings* or *District Systems* page, depending on the type of workflow you want to upload.
+1. Click on the *Design Alternatives* tab below the map. 
+
+	- If you have not already visited this tab, you will see 2 buttons: *Upload Custom Workflow* and *Use Default Workflow*. Click on the *Upload Custom Workflow* button and upload your workflow osw file.
+![workflowbuttons](./workflowbuttons.png)
+
+	- If you have already selected a workflow and created design alternatives, you will see a ![switch](./switch.png) button on the right side of the tab.  Click this button to upload the custom workflow.  (If you have not made a design alternative already, create one and the ![switch](./switch.png) button will appear.)  You will then see a dialog box with the choice to either *Upload a new  Workflow* or *Edit Current Workflow*.  
+![switchworkflowdialog](switchworkflowdialog.png)
+You can select either option to upload your custom workflow, but the *Edit Current Workflow* option will attempt to preserve any existing design alternatives, which is practical if making small changes to measures or adding a measure to a workflow.  The *Upload a new Workflow* option will delete all existing design alternatives.
