@@ -195,13 +195,13 @@ If the choice of measures included in the default workflow is insufficient to me
 
 Example workflows can be found in the *workflows* directory of the *openstudio-urban-measures* repo.  It is suggested to use one of these workflows as a starting point.
 
-###Deleting a Measure from a Workflow
+### Deleting a Measure from a Workflow
 
 1. Open the workflow osw file and locate the measure you want to remove within the *"steps"* array. 
 1. Save the workflow osw file.
 1. Upload the workflow osw file to URBANopt (see directions below)
 
-###Adding a Measure to a Workflow
+### Adding a Measure to a Workflow
 1.  Open the workflow osw file and locate the *"steps"* array.
 1.  Add a hash to the array with the name, measure_dir_name, and arguments of the new measure.  Note that you do not need to list all arguments that exist in the measure in the arguments section; rather, you only need to list the arguments where you want to specify a default value different than the existing default value. You can also allow measures to be skipped by adding a special *SKIP* argument to the arguments section.  The value of the *SKIP* argument represents whether or not the measure appears skipped by default when creating a new Design Alternative in the URBANopt website. For example:
 
@@ -232,10 +232,10 @@ where `<path-to-workflow>` is the path to your workflow osw file.  The script wi
 1. Upload the new workflow osw file to URBANopt (see instructions below)
 
 
-###Editing Existing Measures (Adding or Removing Arguments)
+### Editing Existing Measures (Adding or Removing Arguments)
 Existing measures can be editing without the need to edit the workflow file.  If, however, editing includes the addition or removal or arguments, you will need to follow the steps in the section above to re-run the `add_measure_definitions.rb` script and re-upload the workflow to the URBANopt website.
 
-###Uploading a Custom Workflow to URBANopt Website
+### Uploading a Custom Workflow to URBANopt Website
 Follow these steps to upload a custom workflow to URBANopt.
 
 1. Navigate to the *Buildings* or *District Systems* page, depending on the type of workflow you want to upload.
