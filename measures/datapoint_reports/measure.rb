@@ -73,9 +73,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", 
                   "District Heating Inlet Temperature", "District Heating Outlet Temperature"]
 
-    # add all transformer tiemseries here
-                  
-
     timeseries.each do |ts|
       result << OpenStudio::IdfObject.load("Output:Variable,*,#{ts},Timestep;").get
     end
@@ -83,8 +80,6 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     return result
   end
 
-
-  
   #short_os_fuel method
   def short_os_fuel(fuel_string)
     val = nil
@@ -554,6 +549,11 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
                   "District Cooling Chilled Water Rate", "District Cooling Mass Flow Rate", "District Cooling Inlet Temperature", "District Cooling Outlet Temperature", 
                   "District Heating Hot Water Rate", "District Heating Mass Flow Rate", "District Heating Inlet Temperature", "District Heating Outlet Temperature"]        
 
+    # add additional thermal comfort timeseries            
+    comfortTimeseries = ["Zone Thermal Comfort Fanger Model PMV", "Zone Thermal Comfort Fanger Model PPD", "Zone Thermal Comfort ASHRAE 55 Simple Model Summer Clothes Not Comfortable Time",
+                  "Zone Thermal Comfort ASHRAE 55 Simple Model Winter Clothes Not Comfortable Time", "Zone Thermal Comfort ASHRAE 55 Simple Model Summer or Winter Clothes Not Comfortable Time"]  
+    timeseries += comfortTimeseries
+
     # add additional power timeseries (for calculating transformer apparent power to compare to rating ) in VA
     powerTimeseries = ["Net Electric Energy", "Electricity:Facility Power", "ElectricityProduced:Facility Power", "Electricity:Facility Apparent Power", "ElectricityProduced:Facility Apparent Power", "Net Power", "Net Apparent Power"]
     timeseries += powerTimeseries
@@ -598,6 +598,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
    
     n = nil
     values = []
+    tmpArray = []
     # Since schedule value will have a bunch of key_values, we need to keep track of these as additional timeseries
     key_cnt = 0
     new_timeseries = []
@@ -619,7 +620,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       sorted_keys = key_values.sort
       summed_list = ['SUMMED ELECTRICITY:FACILITY', 'SUMMED ELECTRICITY:FACILITY POWER', 'SUMMED ELECTRICITYPRODUCED:FACILITY', 'SUMMED ELECTRICITYPRODUCED:FACILITY POWER', 'SUMMED NET APPARENT POWER', 'SUMMED NET ELECTRIC ENERGY', 'SUMMED NET POWER', 'TRANSFORMER OUTPUT ELECTRIC ENERGY SCHEDULE']
       new_keys = []
-      # make sure aggregated timeseries are listd in sorted order before all individual feature timeseries
+      # make sure aggregated timeseries are listed in sorted order before all individual feature timeseries
       sorted_keys.each do |k|
         if summed_list.include? k
           new_keys << k
@@ -633,24 +634,35 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
 
       new_keys.each_with_index do |key_value, key_i|
 
+        new_name = ''
+
         if key_values.size == 1
           # use timeseries name when only 1 keyvalue
-          new_timeseries << timeseries_name
+          new_name = timeseries_name
         else
           # use key_value name
-          new_timeseries << key_value
+          # special case for Zone Thermal Comfort: use both timeseries_name and key_value
+          if timeseries_name.include? 'Zone Thermal Comfort'
+            new_name = timeseries_name + ' ' + key_value
+          else
+            new_name = key_value
+          end
         end
+        new_timeseries << new_name
 
         ts = sql_file.timeSeries("RUN PERIOD 1", "Zone Timestep", timeseries_name, key_value)
-        runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
+        #runner.registerWarning("attempting to get ts for timeseries_name: #{timeseries_name}, key_value: #{key_value}, ts: #{ts}")
         if n.nil? 
           # first timeseries should always be set
+          runner.registerInfo("First timeseries")
           values[i] = ts.get.values
           
           n = values[key_cnt].size 
         elsif ts.is_initialized
+          runner.registerInfo('Is Initialized')
           values[key_cnt] = ts.get.values
         else
+          runner.registerInfo('Is NOT Initialized')
           values[key_cnt] = Array.new(n, 0)
         end
 
@@ -661,16 +673,16 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
 
         # special processing: power
         if powerTimeseries.include? timeseries_name
-          runner.registerInfo("found timeseries: #{timeseries_name}")
+          #runner.registerInfo("found timeseries: #{timeseries_name}")
           # special case, net series (subtract generation from load)
           if timeseries_name.include? 'Net'
-            runner.registerInfo("Net timeseries found!")
+            #runner.registerInfo("Net timeseries found!")
             newVals = Array.new(n,0)
             # Apparent power calc -- only for non-transformers
             
             if timeseries_name.include?('Apparent') 
               if !isTransformerFlag
-                runner.registerInfo("Apparent and !isTransformer")
+                #runner.registerInfo("Apparent and !isTransformer")
                 (0..n-1).each do |j|
                   newVals[j] = (values[tsToKeepIndexes["Electricity:Facility"]][j].to_f - values[tsToKeepIndexes["ElectricityProduced:Facility"]][j].to_f) / power_conversion / powerFactor
                   j += 1
@@ -718,6 +730,59 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           end
         end
 
+        if comfortTimeseries.include? timeseries_name
+          # these usually have multiple timeseries (per zone), aggregate into a single series with consistent name and use worst value at each timestep
+          
+          # set up array if 1st key_value
+          if (key_i == 0)
+            runner.registerInfo("SETTING UP NEW ARRAY FOR: #{timeseries_name}")
+            tmpArray = Array.new(n, 0)
+          end
+
+          # add to array (keep max value at each timestep)
+          (0..(n-1)).each do |ind|
+            # process negative and positive values differently
+            tVal = values[key_cnt][ind].to_f
+            if tVal < 0
+              tmpArray[ind] = [tVal, tmpArray[ind]].min
+            else
+              tmpArray[ind] = [tVal, tmpArray[ind]].max
+            end
+          end
+
+          # aggregate and save when all keyvalues have been processed
+          if (key_i == new_keys.size - 1)
+
+            hrsOutOfBounds = 0
+            if timeseries_name === 'Zone Thermal Comfort Fanger Model PMV'
+              (0..(n-1)).each do |ind|
+                # -0.5 < x < 0.5 is within bounds
+                if values[key_cnt][ind].to_f > 0.5 || values[key_cnt][ind].to_f < -0.5
+                  hrsOutOfBounds += 1
+                end
+              end
+              hrsOutOfBounds = hrsOutOfBounds.to_f / timesteps_per_hour
+            elsif timeseries_name === 'Zone Thermal Comfort Fanger Model PPD'
+              (0..(n-1)).each do |ind|
+                # > 20 is outside bounds
+                if values[key_cnt][ind].to_f > 20
+                  hrsOutOfBounds += 1
+                end
+              end
+              hrsOutOfBounds = hrsOutOfBounds.to_f / timesteps_per_hour
+            else
+              # this one is already scaled by timestep, no need to divide total
+              (0..(n-1)).each do |ind|
+                hrsOutOfBounds += values[key_cnt][ind].to_f if values[key_cnt][ind].to_f > 0
+              end
+            end
+
+            # save variable
+            runner.registerInfo("timeseries #{timeseries_name}: hours out of nounds: #{hrsOutOfBounds}")
+            add_result(results, timeseries_name.gsub(' ', '_') + '_hours_out_of_bounds', hrsOutOfBounds, "hrs")
+          end
+        end
+
         # transformer timeseries
         if isTransformerFlag
           
@@ -741,8 +806,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
             runner.registerInfo("name plate rating: #{name_plate_rating}")
             runner.registerInfo("max VA found: #{max}")
             runner.registerInfo("Number of times above transformer rating: #{numberTimesAboveRating}")
-            hoursAboveRating = numberTimesAboveRating.to_f / 4
-            hoursExtremeAboveRating = numberTimesExtremeRating.to_f / 4
+            hoursAboveRating = numberTimesAboveRating.to_f / timesteps_per_hour
+            hoursExtremeAboveRating = numberTimesExtremeRating.to_f / timesteps_per_hour
             runner.registerInfo("Hours above rating: #{hoursAboveRating}")
             add_result(results, "transformer_hours_above_rating", hoursAboveRating, "hrs")
             add_result(results, "transformer_hours_extreme_above_rating", hoursExtremeAboveRating, "hrs")

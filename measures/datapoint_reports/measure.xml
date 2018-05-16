@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-  <version_id>c79b8cfa-a5b7-40dc-a12a-3158906eacb9</version_id>
-  <version_modified>20180411T194327Z</version_modified>
+  <version_id>6a479af6-3cd4-4b7f-9d9f-eb3ecb4e78b5</version_id>
+  <version_modified>20180516T003157Z</version_modified>
   <xml_checksum>FB304155</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
@@ -83,7 +83,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>9AA039D1</checksum>
+      <checksum>71C3F0BB</checksum>
     </file>
   </files>
 </measure>
