@@ -327,7 +327,8 @@
       "arguments": {
         "template": "90.1-2004",
         "add_thermostat": false,
-        "add_hvac": false
+        "add_hvac": false,
+        "add_elevators": false
       },
       "measure_definition": {
         "name": "create_typical_building_from_model",
