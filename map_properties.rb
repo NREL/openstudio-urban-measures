@@ -1,4 +1,4 @@
-######################################################################
+x######################################################################
 #  Copyright © 2016-2017 the Alliance for Sustainable Energy, LLC, All Rights Reserved
 #   
 #  This computer software was produced by Alliance for Sustainable Energy, LLC under Contract No. DE-AC36-08GO28308 with the U.S. Department of Energy. For 5 years from the date permission to assert copyright was obtained, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, and perform publicly and display publicly, by or on behalf of the Government. There is provision for the possible extension of the term of this license. Subsequent to that period or any extension granted, the Government is granted for itself and others acting on its behalf a nonexclusive, paid-up, irrevocable worldwide license in this software to reproduce, prepare derivative works, distribute copies to the public, perform publicly and display publicly, and to permit others to do so. The specific term of the license can be identified by inquiry made to Contractor or DOE. NEITHER ALLIANCE FOR SUSTAINABLE ENERGY, LLC, THE UNITED STATES NOR THE UNITED STATES DEPARTMENT OF ENERGY, NOR ANY OF THEIR EMPLOYEES, MAKES ANY WARRANTY, EXPRESS OR IMPLIED, OR ASSUMES ANY LEGAL LIABILITY OR RESPONSIBILITY FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF ANY DATA, APPARATUS, PRODUCT, OR PROCESS DISCLOSED, OR REPRESENTS THAT ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS.
@@ -33,12 +33,14 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
 
+  selected_template = project.key?("template") ? project[:template] : nil
+
   # configure with region first
   workflow = merge_workflow(workflow, map_project_properties(prop))
 
   # configure with feature next
   if feature[:properties][:type] == "Building"
-    workflow = merge_workflow(workflow, map_building_properties(feature[:properties]))
+    workflow = merge_workflow(workflow, map_building_properties(feature[:properties], selected_template))
   elsif feature[:properties][:type] == "District System"
     workflow = merge_workflow(workflow, map_district_system_properties(feature[:properties]))
   end
@@ -87,7 +89,7 @@ def map_project_properties(properties)
   return result
 end
 
-def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=nil)
+def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=nil, template=nil)
   # TODO: find real cut off values based on square footage
   case value
   
@@ -211,7 +213,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
       
 end
 
-def map_building_properties(properties)
+def map_building_properties(properties, template = nil)
   result = []
   
   # default properties
@@ -250,7 +252,7 @@ def map_building_properties(properties)
         number_of_residential_units = 1
       end
       
-      value, num_units = map_building_type(value, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
+      value, num_units = map_building_type(value, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
 
       if value == "Mixed use"
         
@@ -267,13 +269,13 @@ def map_building_properties(properties)
         mixed_type_4_percentage = properties[:mixed_type_4_percentage].to_f / 100.0
         
         if mixed_type_1 and mixed_type_1_percentage
-          mixed_type_1, mixed_type_1_num_units = map_building_type(mixed_type_1, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
+          mixed_type_1, mixed_type_1_num_units = map_building_type(mixed_type_1, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a, :value => mixed_type_1}
           result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :bldg_type_a_num_units, :value => mixed_type_1_num_units}
         end
 
         if mixed_type_2 and mixed_type_2_percentage
-          mixed_type_2, mixed_type_2_num_units = map_building_type(mixed_type_2, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
+          mixed_type_2, mixed_type_2_num_units = map_building_type(mixed_type_2, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
           if mixed_type_1 == mixed_type_2
             mixed_type_2 = nil
           end
@@ -285,7 +287,7 @@ def map_building_properties(properties)
         end
 
         if mixed_type_3 and mixed_type_3_percentage
-          mixed_type_3, mixed_type_3_num_units = map_building_type(mixed_type_3, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
+          mixed_type_3, mixed_type_3_num_units = map_building_type(mixed_type_3, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
           if mixed_type_1 == mixed_type_3 or mixed_type_2 == mixed_type_3
             mixed_type_3 = nil
             result.each do |argument|
@@ -301,7 +303,7 @@ def map_building_properties(properties)
         end
 
         if mixed_type_4 and mixed_type_4_percentage
-          mixed_type_4, mixed_type_4_num_units = map_building_type(mixed_type_4, properties[:floor_area], properties[:number_of_stories], number_of_residential_units)
+          mixed_type_4, mixed_type_4_num_units = map_building_type(mixed_type_4, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
           if mixed_type_1 == mixed_type_4 or mixed_type_3 == mixed_type_4
             mixed_type_4 = nil
             result.each do |argument|
