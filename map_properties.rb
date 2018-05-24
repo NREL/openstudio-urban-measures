@@ -94,117 +94,221 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
   case value
   
   when "Education"
-    value = "PrimarySchool"
+    if template.include? "DEER"
+      value = "EPr"
+    else
+      value = "PrimarySchool"
+    end
     num_units = 1
     
   when "Enclosed mall"
-    value = "RetailStripmall"
+    if template.include? "DEER"
+      value = "RtL"
+    else
+      value = "RetailStripmall"
+    end
     num_units = 1
     
   when "Food sales"
     #value = "SuperMarket" # not working
-    value = "FullServiceRestaurant"
+    if template.include? "DEER"
+      value = "RSD"
+    else
+      value = "FullServiceRestaurant"
+    end
     num_units = 1
-    
+
   when "Food service"
-    value = "FullServiceRestaurant"
+    if template.include? "DEER"    
+      value = "RSD"
+    else
+      value = "FullServiceRestaurant"
+    end
     num_units = 1
     
   when "Inpatient health care"
-    value = "Outpatient"
+    if template.include? "DEER" 
+      value = "Nrs"
+    else
+      value = "Outpatient"
+    end
     num_units = 1
     
   when "Laboratory"
-    value = "Hospital"
+    if template.include? "DEER"
+      value = "Hsp"
+    else
+      value = "Hospital"
+    end
     num_units = 1
-    
+
   when "Lodging"
-    if number_of_stories
-      if number_of_stories.to_i > 3
-        value = "LargeHotel"
-      else
-        value = "SmallHotel"
+    if template.include? "DEER"
+      value = "Htl"
+      end
+    else
+      if number_of_stories
+        if number_of_stories.to_i > 3
+          value = "LargeHotel"
+        else
+          value = "SmallHotel"
+        end
       end
     end
     num_units = 1
     
   when "Mixed use"
-    value = "Mixed use"
+    if template.include? "DEER"
+      value = "ECC"
+    else
+      value = "Mixed use"
+    end
+    num_units = 1
     
   when "Mobile Home"
-    value = "MidriseApartment"
+    if template.include? "DEER"
+      value = "DMo"
+    else
+      value = "MidriseApartment"
+    end
+    num_units = 1
     
   when "Multifamily (2 to 4 units)"
-    value = "MidriseApartment"
+    if template.include? "DEER"
+      value = "MFm"
+    else
+      value = "MidriseApartment"
+    end
     if num_units < 2 or num_units > 4
       num_units = 2
     end
     
   when "Multifamily (5 or more units)"
-    value = "MidriseApartment"
+     if template.include? "DEER"
+      value = "MFm"
+    else
+      value = "MidriseApartment"
+    end
     if num_units < 5
       num_units = 5
-    end      
+    end
     
   when "Nonrefrigerated warehouse"
-    value = "Warehouse"
+    if template.include? "DEER"
+      value = "SUn"
+    else
+      value = "Warehouse"
+    end
     num_units = 1
-    
+
   when "Nursing"
-    value = "Outpatient"
+    if template.include? "DEER"
+      value = "Nrs"
+    else
+      value = "Outpatient"
+    end
     num_units = 1
     
   when "Office"
-    if floor_area
-      if floor_area.to_f < 20000
-        value = "SmallOffice"
-      elsif floor_area.to_f > 100000
-        value = "LargeOffice"
-      else
-        value = "MediumOffice"
+    if template.include? "DEER"
+      if floor_area
+        if floor_area.to_f > 100000
+          value = "OfL"
+        else
+          value = "OfS"
+        end
       end
-    end
+    else
+      if floor_area
+        if floor_area.to_f < 20000
+          value = "SmallOffice"
+        elsif floor_area.to_f > 100000
+          value = "LargeOffice"
+        else
+          value = "MediumOffice"
+        end
+      end
     num_units = 1
   
   when "Outpatient health care"
-    value = "Outpatient"
+    if template.include? "DEER"
+      value = "Nrs"
+    else
+      value = "Outpatient"
+    end
     num_units = 1
     
   when "Public assembly"
-    value = "MediumOffice"
+    if template.include? "DEER"    
+      value = "Asm"
+    else
+      value = "MediumOffice"
+    end
     num_units = 1
     
-  when "Public order and safety"
-    value = "MediumOffice"
+  when "Public order and safety"    
+    if template.include? "DEER"    
+      value = "Asm"
+    else
+      value = "MediumOffice"
+    end
     num_units = 1
     
   when "Refrigerated warehouse"
     #value = "SuperMarket" # not working
-    value = "Warehouse"
+    if template.include? "DEER"
+      value = "WRf"
+    else
+      value = "Warehouse"
+    end
     num_units = 1
-    
+
   when "Religious worship"
-    value = "MediumOffice"
+    if template.include? "DEER"
+      value = "Asm"
+    else
+      value = "MediumOffice"
+    end
     num_units = 1
     
   when "Retail other than mall"
-    value = "RetailStandalone"
+    if template.include? "DEER"
+      value = "RtS"
+    else
+      value = "RetailStandalone"
+    end
     num_units = 1
     
   when "Service"
-    value = "MediumOffice"
+    if template.include? "DEER"
+      value = "MLi"
+    else
+      value = "MediumOffice"
+    end
     num_units = 1
     
   when "Single-Family"
-    value = "MidriseApartment"
+    if template.include? "DEER"
+      value = "SFm"
+    else
+      value = "MidriseApartment"
+    end
     num_units = 1
     
   when "Strip shopping mall"
-    value = "RetailStripmall"
+    if template.include? "DEER"
+      value = "RtL"
+    else
+      value = "RetailStripmall"
+    end
     num_units = 1
     
   when "Vacant"
-    value = "Warehouse"
+    if template.include? "DEER"
+      value = "SUn"
+    else
+      value = "Warehouse"
+    end
     num_units = 1
     
   end
