@@ -29,6 +29,8 @@ end
 
 workflow[:steps].each do |step|
   measure_dir_name = step[:measure_dir_name]
+
+  puts "scanning measure '#{measure_dir_name}' for args"
   
   definition = nil
   UrbanOptConfig::OPENSTUDIO_MEASURES.each do |dir|
