@@ -145,7 +145,6 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
   when "Lodging"
     if template.include? "DEER"
       value = "Htl"
-      end
     else
       if number_of_stories
         if number_of_stories.to_i > 3
@@ -184,7 +183,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     end
     
   when "Multifamily (5 or more units)"
-     if template.include? "DEER"
+    if template.include? "DEER"
       value = "MFm"
     else
       value = "MidriseApartment"
@@ -228,6 +227,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
           value = "MediumOffice"
         end
       end
+    end
     num_units = 1
   
   when "Outpatient health care"
