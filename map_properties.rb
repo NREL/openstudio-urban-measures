@@ -289,7 +289,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Service"
     if template.include? "DEER"
-      value = "MLi"
+      value = "MLI"
     else
       value = "MediumOffice"
     end
@@ -297,7 +297,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Single-Family"
     if template.include? "DEER"
-      value = "SFm"
+      value = "MFm" #single family not in the gem as of 2018.05.29
     else
       value = "MidriseApartment"
     end
