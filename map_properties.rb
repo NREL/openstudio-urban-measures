@@ -32,8 +32,10 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop = {}
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
+  prop[:template] = project[:template]
 
-  selected_template = project.key?("template") ? project[:template] : nil
+  selected_template = project.key?(:template) ? project[:template] : nil
+  #@logger.info("getting template #{project.inspect} selected template = #{selected_template}")
 
   # configure with region first
   workflow = merge_workflow(workflow, map_project_properties(prop))
@@ -80,7 +82,13 @@ def map_project_properties(properties)
     when :weather_file_name
       next if value.nil?
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
-  
+
+    when :template
+      next if value.nil?
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => value}
+      result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => value}
+      result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => value}
+
     else
       @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
     end
@@ -174,7 +182,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Multifamily (2 to 4 units)"
     if template.include? "DEER"
-      value = "MFm"
+      value = "ECC"
     else
       value = "MidriseApartment"
     end
@@ -184,7 +192,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Multifamily (5 or more units)"
     if template.include? "DEER"
-      value = "MFm"
+      value = "ECC"
     else
       value = "MidriseApartment"
     end

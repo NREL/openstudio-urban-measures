@@ -195,8 +195,11 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
 
     end
     # set climate zone
-    climateZones.setClimateZone("ASHRAE",climate_zone)
-    runner.registerInfo("Setting Climate Zone to #{climateZones.getClimateZones("ASHRAE").first.value}")
+    # NOTE, hard coded for OakView UO Testing
+    # climateZones.setClimateZone("ASHRAE",climate_zone)
+    climateZones.setClimateZone("CEC", "9")
+    #runner.registerInfo("Setting Climate Zone to #{climateZones.getClimateZones("ASHRAE").first.value}")
+    runner.registerInfo("Hand setting Climate Zone to CEC 9")
 
     # add final condition
     runner.registerFinalCondition("The final weather file is #{model.getWeatherFile.city} and the model has #{model.getDesignDays.size} design day objects.")

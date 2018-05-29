@@ -43,6 +43,7 @@ class Runner
     @logger.info("Current directory: '#{Dir.pwd}'")
     Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
       # calling wait_thr.value blocks until command is complete
+      @logger.info("trying to update measures")
       if wait_thr.value.success?
         @logger.info("Command completed successfully")
       else
@@ -139,28 +140,32 @@ class Runner
         epw_names << file[:file_name]
       end
     end
-    @logger.debug("epws found: #{epw_names}")
-    # hack for weather files (epw, stat, and ddy must have exactly the same name)
-    epw_names.each do |epw|
-      epw = epw.gsub('.epw', '')
-      last_part = epw.split('_').last 
-      if !last_part.include?('TMY')
-        @logger.debug("Fixing stat and ddy filename to match epw for: #{epw}")
-        tmp = epw.split('_')
-        basename = tmp[0..(tmp.size - 2)].join('_')
 
-        # ensure same last part        
-        result[:project_files].each do |file|
-          if (file[:type] === 'ddy' || file[:type] === 'stat') && file[:file_name].include?(basename)
-            # fix filename on disk (check that is hasn't been renamed already)
+    # commented out for UCI, solves file perms issue
+    # use 'temp_files' folder solution instead...
 
-            if File.exist?(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"))
-              File.rename(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"), File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{epw}.#{file[:type]}"))
-            end
-          end
-        end
-      end
-    end
+    # @logger.debug("epws found: #{epw_names}")
+    # # hack for weather files (epw, stat, and ddy must have exactly the same name)
+    # epw_names.each do |epw|
+    #   epw = epw.gsub('.epw', '')
+    #   last_part = epw.split('_').last 
+    #   if !last_part.include?('TMY')
+    #     @logger.debug("Fixing stat and ddy filename to match epw for: #{epw}")
+    #     tmp = epw.split('_')
+    #     basename = tmp[0..(tmp.size - 2)].join('_')
+
+    #     # ensure same last part        
+    #     result[:project_files].each do |file|
+    #       if (file[:type] === 'ddy' || file[:type] === 'stat') && file[:file_name].include?(basename)
+    #         # fix filename on disk (check that is hasn't been renamed already)
+
+    #         if File.exist?(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"))
+    #           File.rename(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"), File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{epw}.#{file[:type]}"))
+    #         end
+    #       end
+    #     end
+    #   end
+    # end
     
     return result
   end  
