@@ -297,7 +297,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Single-Family"
     if template.include? "DEER"
-      value = "MFm" #single family not in the gem as of 2018.05.29
+      value = "Htl" #single family not in the gem as of 2018.05.29
     else
       value = "MidriseApartment"
     end
@@ -495,8 +495,7 @@ def map_building_properties(properties, template = nil)
 
     when :year_built
       next if value.nil?
-      #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
-
+      
     when :exclude_hvac
       next if value.nil?
       result << {:measure_dir_name => 'remove_hvac_systems', :argument => 'remove_all_equipment', :value => value}
