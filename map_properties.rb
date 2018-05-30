@@ -32,6 +32,9 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop = {}
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
+  prop[:template] = project[:template]
+
+  selected_template = project.key?(:template) ? project[:template] : nil
 
   # configure with region first
   workflow = merge_workflow(workflow, map_project_properties(prop))
@@ -78,7 +81,16 @@ def map_project_properties(properties)
     when :weather_file_name
       next if value.nil?
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
-  
+    
+    when :template
+      # template is used in multiple measures
+      # note: this is the default, but may be adjusted later based on year-built argument in map_building_properties section
+      @logger.info("**** SETTING TEMPLATE TO: #{value}")
+      next if value.nil?
+      result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => value}
+      result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => value}
+      result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => value}
+
     else
       @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
     end
@@ -382,6 +394,38 @@ def map_building_properties(properties)
     when :year_built
       next if value.nil?
       #result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => 'weather_file_name', :value => value}
+
+      # adjust standard based on year_built
+      # assuming ASHRAE only for now
+      # 'DOE Ref Pre-1980'
+      # 'DOE Ref 1980-2004'
+      # '90.1-2004'
+      # '90.1-2007'
+      # '90.1-2010'
+      # '90.1-2013'
+
+      the_val = value.to_i
+      the_std = nil
+      if the_val < 1980
+        the_std = 'DOE Ref Pre-1980'
+      elsif the_val <= 2004
+        the_std = 'DOE Ref 1980-2004'
+      elsif the_val <= 2007
+        the_std = '90.1-2004'
+      elsif the_val <= 2010
+        the_std = '90.1-2007'
+      elsif the_val <= 2013
+        the_std = '90.1-2010'
+      elsif the_val > 2013
+        the_std = '90.1-2013'
+      end
+
+      if !the_std.nil?
+        @logger.info("**** OVERRIDING standard with year-built info, setting to: #{the_std}")
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => the_std}
+        result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => the_std}
+        result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => the_std}
+      end
 
     when :exclude_hvac
       next if value.nil?
