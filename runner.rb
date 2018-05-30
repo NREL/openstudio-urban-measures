@@ -140,27 +140,29 @@ class Runner
       end
     end
     @logger.debug("epws found: #{epw_names}")
-    # hack for weather files (epw, stat, and ddy must have exactly the same name)
-    epw_names.each do |epw|
-      epw = epw.gsub('.epw', '')
-      last_part = epw.split('_').last 
-      if !last_part.include?('TMY')
-        @logger.debug("Fixing stat and ddy filename to match epw for: #{epw}")
-        tmp = epw.split('_')
-        basename = tmp[0..(tmp.size - 2)].join('_')
+    # NOTE: commenting this out as it does not work for UCI (file permission issues)
+    #       use the 'temp_files' directory method instead
+    # # hack for weather files (epw, stat, and ddy must have exactly the same name)
+    # epw_names.each do |epw|
+    #   epw = epw.gsub('.epw', '')
+    #   last_part = epw.split('_').last 
+    #   if !last_part.include?('TMY')
+    #     @logger.debug("Fixing stat and ddy filename to match epw for: #{epw}")
+    #     tmp = epw.split('_')
+    #     basename = tmp[0..(tmp.size - 2)].join('_')
 
-        # ensure same last part        
-        result[:project_files].each do |file|
-          if (file[:type] === 'ddy' || file[:type] === 'stat') && file[:file_name].include?(basename)
-            # fix filename on disk (check that is hasn't been renamed already)
+    #     # ensure same last part        
+    #     result[:project_files].each do |file|
+    #       if (file[:type] === 'ddy' || file[:type] === 'stat') && file[:file_name].include?(basename)
+    #         # fix filename on disk (check that is hasn't been renamed already)
 
-            if File.exist?(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"))
-              File.rename(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"), File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{epw}.#{file[:type]}"))
-            end
-          end
-        end
-      end
-    end
+    #         if File.exist?(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"))
+    #           File.rename(File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{file[:file_name]}"), File.join(File.dirname(__FILE__), "/run/#{result[:name]}/project_files/#{epw}.#{file[:type]}"))
+    #         end
+    #       end
+    #     end
+    #   end
+    # end
     
     return result
   end  
