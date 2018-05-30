@@ -930,7 +930,7 @@
             "model_dependent": false,
             "default_value": "*Entire Building*",
             "choice_values": [
-              "{b87d219e-c90d-4378-94d8-bec41a905294}"
+              "{feaa9434-ba27-4e9b-b465-0f9c06d485a5}"
             ],
             "choice_display_names": [
               "*Entire Building*"
@@ -1277,7 +1277,7 @@
             "model_dependent": false,
             "default_value": "*Entire Building*",
             "choice_values": [
-              "{7ac7d3d4-846d-4396-a993-c15491b68566}"
+              "{813e60ee-d492-45cf-b7df-0592dbad90fa}"
             ],
             "choice_display_names": [
               "*Entire Building*"
@@ -1424,7 +1424,7 @@
             "model_dependent": false,
             "default_value": "*Entire Building*",
             "choice_values": [
-              "{17b181e0-1a0a-4608-b2b1-b4150c46b9a6}"
+              "{e3fec883-92c9-4c5b-b863-3c6553aae215}"
             ],
             "choice_display_names": [
               "*Entire Building*"
@@ -1800,9 +1800,9 @@
         "name": "predicted_mean_vote",
         "uid": "11cd3144-dac6-4f64-90e4-b8804c6bfc5e",
         "uuid": "{11cd3144-dac6-4f64-90e4-b8804c6bfc5e}",
-        "version_id": "40afc025-9c99-4618-a8aa-4fdcb01799ab",
-        "version_uuid": "{40afc025-9c99-4618-a8aa-4fdcb01799ab}",
-        "version_modified": "20180501T192515Z",
+        "version_id": "c724be0d-0b2c-4054-939f-87d4d6c5a0df",
+        "version_uuid": "{c724be0d-0b2c-4054-939f-87d4d6c5a0df}",
+        "version_modified": "20180514T201947Z",
         "xml_checksum": "0CA4D54C",
         "display_name": "Predicted Mean Vote",
         "class_name": "PredictedMeanVote",
@@ -1863,7 +1863,7 @@
               "ZoneAveraged",
               "SurfaceWeighted"
             ],
-            "visible": true
+            "visible": false
           },
           {
             "name": "workEfficiencySchedule",
@@ -1967,6 +1967,85 @@
             "required": true,
             "model_dependent": false,
             "default_value": "Electricity.idf",
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ApplySceTariffs",
+      "measure_dir_name": "apply_sce_tariffs",
+      "arguments": {
+        "__SKIP__": false,
+        "tariff": "sce_res_d"
+      },
+      "measure_definition": {
+        "name": "apply_sce_tariffs",
+        "uid": "64108fa6-f380-49da-8361-1ee8f97c88ef",
+        "uuid": "{64108fa6-f380-49da-8361-1ee8f97c88ef}",
+        "version_id": "84fbb665-ad2e-4a22-a43a-031b3df969ff",
+        "version_uuid": "{84fbb665-ad2e-4a22-a43a-031b3df969ff}",
+        "version_modified": "20180424T215420Z",
+        "xml_checksum": "ED085E62",
+        "display_name": "ApplySceTariffs",
+        "class_name": "ApplySceTariffs",
+        "description": "",
+        "modeler_description": "Adds the .idf text for the selected Xcel Energy tariffs, sets the timestep to 15min so that the demand window and the timestep align, and sets the lifecycle costing parameters to use NIST 2012 inflation and fuel escalation numbers.  These NIST numbers will not affect the Xcel EDA results.",
+        "tags": [
+          "Economics.Life Cycle Cost Analysis"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Function",
+            "display_name": "Measure Function",
+            "value": "Measure"
+          },
+          {
+            "name": "Requires EnergyPlus Results",
+            "display_name": "Requires EnergyPlus Results",
+            "value": false
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          },
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "EnergyPlusMeasure"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "tariff",
+            "display_name": "Utility Rate Scheme",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "choice_values": [
+              "sce_CI_TOU_8_B_less2kV",
+              "sce_CI_TOU_8_B_2-50kV",
+              "sce_CI_TOU_GS-3_less2kV",
+              "sce_res_d",
+              "sce_res_d-care",
+              "sce_res_d-fera",
+              "sce_res_tou_d-a"
+            ],
+            "choice_display_names": [
+              "Comm/Industrial TOU 8 B <2kV",
+              "Comm/Industrial TOU 8 B 2-50kV",
+              "Comm/Industrial TOU-GS-3 <2kV",
+              "Residential D Tiered",
+              "Residential D-Care Tiered",
+              "Residential D-FERA Tiered",
+              "Residential TOU D-A"
+            ],
             "visible": true
           }
         ],
@@ -2629,9 +2708,9 @@
         "name": "datapoint_reports",
         "uid": "635ed4fb-6d66-42df-8d2f-26f652f8fd01",
         "uuid": "{635ed4fb-6d66-42df-8d2f-26f652f8fd01}",
-        "version_id": "c79b8cfa-a5b7-40dc-a12a-3158906eacb9",
-        "version_uuid": "{c79b8cfa-a5b7-40dc-a12a-3158906eacb9}",
-        "version_modified": "20180411T194327Z",
+        "version_id": "6a479af6-3cd4-4b7f-9d9f-eb3ecb4e78b5",
+        "version_uuid": "{6a479af6-3cd4-4b7f-9d9f-eb3ecb4e78b5}",
+        "version_modified": "20180516T003157Z",
         "xml_checksum": "FB304155",
         "display_name": "DatapointReports",
         "class_name": "DatapointReports",
