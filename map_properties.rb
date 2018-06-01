@@ -33,6 +33,9 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
   prop[:template] = project[:template]
+  prop[:timesteps_per_hour] = project[:timesteps_per_hour]
+  prop[:begin_date] = project[:begin_date]
+  prop[:end_date] = project[:end_date]
 
   selected_template = project.key?(:template) ? project[:template] : nil
 
@@ -91,6 +94,12 @@ def map_project_properties(properties)
       result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => value}
       result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => value}
 
+    when :timesteps_per_hour
+      result << {:measure_dir_name => 'set_run_period', :argument => :timesteps_per_hour, :value => value}
+    when :begin_date
+      result << {:measure_dir_name => 'set_run_period', :argument => :begin_date, :value => value}
+    when :end_date
+      result << {:measure_dir_name => 'set_run_period', :argument => :end_date, :value => value}
     else
       @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
     end
