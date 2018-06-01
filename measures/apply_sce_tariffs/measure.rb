@@ -116,8 +116,8 @@ class ApplySceTariffs < OpenStudio::Ruleset::WorkspaceUserScript
 
     # set the simulation timestep to 15min (4 per hour) to match the demand window of the tariffs
     if !workspace.getObjectsByType('Timestep'.to_IddObjectType).empty?
-      workspace.getObjectsByType('Timestep'.to_IddObjectType)[0].setString(0, '4')
-      runner.registerInfo('set the simulation timestep to 15 min to match the demand window of the tariffs')
+      workspace.getObjectsByType('Timestep'.to_IddObjectType)[0].setString(0, '1')
+      runner.registerInfo('set the simulation timestep to 60 min')
     else
       runner.registerError('there was no timestep object to alter')
     end
