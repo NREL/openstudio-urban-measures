@@ -100,6 +100,13 @@
       "measure_dir_name": "openstudio_results",
       "arguments": {
       }
+    },
+    {
+      "name": "enduse_timeseries_csv_export",
+      "measure_dir_name": "enduse_timeseries_csv_export",
+      "arguments": {
+        "reporting_frequency": "Timestep"
+      }
     }
   ]
 }
