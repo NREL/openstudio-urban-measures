@@ -161,6 +161,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
         value = "MediumOffice"
       end
     end
+    value = "MediumOffice"
     num_units = 1
   
   when "Outpatient health care"
