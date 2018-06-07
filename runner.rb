@@ -41,16 +41,14 @@ class Runner
     command = "'#{@openstudio_exe}' measure -t '#{measure_dir}'"
     @logger.info("Running command: '#{command}'")
     @logger.info("Current directory: '#{Dir.pwd}'")
-    Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
-      # calling wait_thr.value blocks until command is complete
-      @logger.info("trying to update measures")
-      if wait_thr.value.success?
-        @logger.info("Command completed successfully")
-      else
-        @logger.error("Error running command: '#{command}'")
-        @logger.error("#{stdout.read}")
-        @logger.error("#{stderr.read}")
-      end
+    @logger.info("trying to update measures")
+    stdout_str, stderr_str, s = Open3.capture3(command)
+    if s.success?
+      @logger.info("Command completed successfully")
+    else
+      @logger.error("Error running command: '#{command}'")
+      @logger.error("#{stdout_str}")
+      @logger.error("#{stderr_str}")
     end
   end
   
