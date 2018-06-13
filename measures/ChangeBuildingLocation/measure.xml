@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>change_building_location</name>
   <uid>d4db4971-f5ba-11e3-a3ac-0800200c9a66</uid>
-  <version_id>d5325e62-188a-449f-bf3a-8674f2200043</version_id>
-  <version_modified>20180418T194337Z</version_modified>
+  <version_id>a1d855e4-28aa-4f98-b33c-6b461d1afeaa</version_id>
+  <version_modified>20180607T230533Z</version_modified>
   <xml_checksum>057E8D9D</xml_checksum>
   <class_name>ChangeBuildingLocation</class_name>
   <display_name>ChangeBuildingLocation</display_name>
@@ -230,7 +230,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>E097B20D</checksum>
+      <checksum>33E5FC39</checksum>
     </file>
   </files>
 </measure>

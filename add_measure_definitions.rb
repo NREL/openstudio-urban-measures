@@ -15,13 +15,11 @@ end
 def get_measure_definition(measure_dir)
   result = nil
   command = "'#{UrbanOptConfig::OPENSTUDIO_EXE}' measure -a '#{measure_dir}'"
-  Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
-    # calling wait_thr.value blocks until command is complete
-    if wait_thr.value.success?
-      result =  JSON::parse(stdout.read, :symbolize_names => true)
-      result.delete(:directory)
-      result.delete(:measure_dir)
-    end
+  stdout_str, stderr_str, s = Open3.capture3(command)
+  if s.success?
+    result =  JSON::parse(stdout_str, :symbolize_names => true)
+    result.delete(:directory)
+    result.delete(:measure_dir)
   end
   
   return result
@@ -42,6 +40,7 @@ workflow[:steps].each do |step|
     end
     
     if File.exists?(measure_dir) 
+      puts "found measure in: #{measure_dir}"
       definition = get_measure_definition(measure_dir)
       break
     end
@@ -49,6 +48,7 @@ workflow[:steps].each do |step|
   
   if definition
     definition[:visible] = true
+    puts "found #{definition[:arguments].size} arguments"
     definition[:arguments].each do |argument|
       argument[:visible] = true
     end
