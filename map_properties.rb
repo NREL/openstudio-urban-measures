@@ -33,6 +33,9 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
   prop[:template] = project[:template]
+  prop[:timesteps_per_hour] = project[:timesteps_per_hour]
+  prop[:begin_date] = project[:begin_date]
+  prop[:end_date] = project[:end_date]
 
   selected_template = project.key?(:template) ? project[:template] : nil
   #@logger.info("getting template #{project.inspect} selected template = #{selected_template}")
@@ -84,10 +87,20 @@ def map_project_properties(properties)
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
 
     when :template
+      # template is used in multiple measures
+      # note: this is the default, but may be adjusted later based on year-built argument in map_building_properties section
+      @logger.info("**** setting template to default value: #{value}.  This may be modified based on year built")
       next if value.nil?
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => value}
       result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => value}
       result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => value}
+
+    when :timesteps_per_hour
+      result << {:measure_dir_name => 'set_run_period', :argument => :timesteps_per_hour, :value => value}
+    when :begin_date
+      result << {:measure_dir_name => 'set_run_period', :argument => :begin_date, :value => value}
+    when :end_date
+      result << {:measure_dir_name => 'set_run_period', :argument => :end_date, :value => value}
 
     else
       @logger.warn("Unmapped project property '#{name}' with value '#{value}'") if @logger
@@ -495,6 +508,72 @@ def map_building_properties(properties, template = nil)
 
     when :year_built
       next if value.nil?
+
+      # adjust standard based on year_built
+      # ASHRAE:
+      # 'DOE Ref Pre-1980'
+      # 'DOE Ref 1980-2004'
+      # '90.1-2004'
+      # '90.1-2007'
+      # '90.1-2010'
+      # '90.1-2013'
+      
+      # DEER:
+      # 'DEER 1985',
+      # 'DEER 1996',
+      # 'DEER 2003',
+      # 'DEER 2007',
+      # 'DEER 2011',
+      # 'DEER 2014',
+      # 'DEER 2015',
+      # 'DEER 2017'
+
+      # NREL ZNE Ready 2017
+
+      the_val = value.to_i
+      the_std = nil
+      if template.include? "DEER"
+        if the_val <= 1996
+          the_std = 'DEER 1985'
+        elsif the_val <= 2003
+          the_std = 'DEER 1996'
+        elsif the_val <= 2007  
+          the_std = 'DEER 2003'
+        elsif the_val <= 2011
+          the_std = 'DEER 2007'
+        elsif the_val <= 2014
+          the_std = 'DEER 2011'
+        elsif the_val <= 2015
+          the_std = 'DEER 2014'
+        elsif the_val <= 2017
+          the_std = 'DEER 2015'
+        else
+          the std = 'DEER 2017'
+        end        
+      elsif template.include? "NREL ZNE Ready"
+        # TODO: do anything about NREL ZNE Ready 2017?
+      else
+        # ASHRAE    
+        if the_val < 1980
+          the_std = 'DOE Ref Pre-1980'
+        elsif the_val <= 2004
+          the_std = 'DOE Ref 1980-2004'
+        elsif the_val <= 2007
+          the_std = '90.1-2004'
+        elsif the_val <= 2010
+          the_std = '90.1-2007'
+        elsif the_val <= 2013
+          the_std = '90.1-2010'
+        else 
+          the_std = '90.1-2013'
+        end
+      end  
+      if !the_std.nil?
+        @logger.info("**** OVERRIDING standard with year-built info, setting template to: #{the_std}")
+        result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => the_std}
+        result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => the_std}
+        result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => the_std}
+      end
       
     when :exclude_hvac
       next if value.nil?
