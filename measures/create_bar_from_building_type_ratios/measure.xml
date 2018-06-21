@@ -1,9 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
+  <error>Unable to extract OpenStudio::Measure::OSMeasure object from /Users/rgugliel/src/openstudio-urban-measures/measures/create_bar_from_building_type_ratios/measure.rb. The script should contain a class that derives from OpenStudio::Measure::OSMeasure and should close with a line stating the class name followed by .new.registerWithApplication.</error>
   <name>create_bar_from_building_type_ratios</name>
   <uid>6e3a14f8-c3c7-4e03-bc51-bef8a52e1a05</uid>
-  <version_id>d6192bc1-ab66-4395-8a6e-46245fcaffea</version_id>
-  <version_modified>20180620T170711Z</version_modified>
+  <version_id>731b7427-aad0-4a05-b38c-49a02da08bda</version_id>
+  <version_modified>20180621T204135Z</version_modified>
   <xml_checksum>2AF3A68E</xml_checksum>
   <class_name>CreateBarFromBuildingTypeRatios</class_name>
   <display_name>Create Bar From Building Type Ratios</display_name>
@@ -1105,7 +1106,7 @@
       <filename>os_lib_model_generation.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>92FE9C7D</checksum>
+      <checksum>8363B41E</checksum>
     </file>
   </files>
 </measure>

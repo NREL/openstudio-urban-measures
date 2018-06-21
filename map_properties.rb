@@ -203,7 +203,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Multifamily (2 to 4 units)"
     if template.include? "DEER"
-      value = "ECC"
+      value = "MFm"
     else
       value = "MidriseApartment"
     end
@@ -213,7 +213,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Multifamily (5 or more units)"
     if template.include? "DEER"
-      value = "ECC"
+      value = "MFm"
     else
       value = "MidriseApartment"
     end
@@ -318,7 +318,7 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
     
   when "Single-Family"
     if template.include? "DEER"
-      value = "Htl" #single family not in the gem as of 2018.05.29
+      value = "MFm"
     else
       value = "MidriseApartment"
     end

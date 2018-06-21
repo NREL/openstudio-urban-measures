@@ -30,6 +30,7 @@ module OsLib_ModelGeneration
     array << 'Hsp'
     array << 'Nrs'
     array << 'Htl'
+    array << 'MFm'
     array << 'Mtl'
     array << 'MBT'
     array << 'MLI'
@@ -124,6 +125,7 @@ module OsLib_ModelGeneration
     hash['Hsp'] = { aspect_ratio: 1.33, wwr: 0.16, typical_story: 14.0 } # Hospital
     hash['Nrs'] = { aspect_ratio: 3.0, wwr: 0.11, typical_story: 9.0, first_story: 11.0 } # SmallHotel
     hash['Htl'] = { aspect_ratio: 5.1, wwr: 0.27, typical_story: 10.0, first_story: 13.0 } # LargeHotel
+    hash['MFm'] = { aspect_ratio: 1.2, wwr: 0.20, typical_story: 9.0, first_story: 11.0 } # Multifamily
     hash['Mtl'] = { aspect_ratio: 3.0, wwr: 0.11, typical_story: 9.0, first_story: 11.0 } # SmallHotel 
     hash['MBT'] = { aspect_ratio: 1.5, wwr: 0.33, typical_story: 13.0 } # MediumOffice
     hash['MLI'] = { aspect_ratio: 2.2, wwr: 0.71, typical_story: 28.0 } # Warehouse
