@@ -1,5 +1,6 @@
 # Authors : Nicholas Long, David Goldwasser
 # Simple measure to load the EPW file and DDY file
+# KFLEMING 6/2018: adding support for CEC climate zones
 require_relative 'resources/stat_file'
 require_relative 'resources/epw'
 
@@ -40,10 +41,33 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
     choices << "7"
     choices << "8"
     choices << "Lookup From Stat File"
+    # also add CEC ones
+    choices << "1"
+    choices << "2"
+    choices << "3"
+    choices << "4"
+    choices << "5"
+    choices << "6"
+    choices << "9"
+    choices << "10"
+    choices << "11"
+    choices << "12"
+    choices << "13"
+    choices << "14"
+    choices << "15"
+    choices << "16"
     climate_zone = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("climate_zone", choices,true)
-    climate_zone.setDisplayName("Climate Zone.")
+    climate_zone.setDisplayName("Climate Zone")
     climate_zone.setDefaultValue("Lookup From Stat File")
     args << climate_zone
+
+    choices = OpenStudio::StringVector.new
+    choices << 'ASHRAE'
+    choices << 'CEC'
+    climate_zone_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument("climate_zone_type", choices, true)
+    climate_zone_type.setDisplayName("Climate Zone Type")
+    climate_zone_type.setDefaultValue("ASHRAE")
+    args << climate_zone_type
 
     args
   end
@@ -67,6 +91,7 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
     # get variables
     weather_file_name = runner.getStringArgumentValue("weather_file_name", user_arguments)
     climate_zone = runner.getStringArgumentValue("climate_zone",user_arguments)
+    climate_zone_type = runner.getStringArgumentValue("climate_zone_type",user_arguments)
 
     # find weather file
     osw_file = runner.workflow.findFile(weather_file_name)
@@ -182,24 +207,35 @@ class ChangeBuildingLocation < OpenStudio::Ruleset::ModelUserScript
         text = f.read.force_encoding('iso-8859-1')
       end
 
-      # Get Climate zone.
-      # - Climate type "3B" (ASHRAE Standard 196-2006 Climate Zone)**
-      # - Climate type "6A" (ASHRAE Standards 90.1-2004 and 90.2-2004 Climate Zone)**
-      regex = /Climate type \"(.*?)\" \(ASHRAE Standards?(.*)\)\*\*/
-      match_data = text.match(regex)
-      if match_data.nil?
-        runner.registerWarning("Can't find ASHRAE climate zone in stat file.")
-      else
-        climate_zone = match_data[1].to_s.strip
+      # Get Climate zone from stat file
+      if climate_zone_type == 'CEC'
+        regex = /Location -- Climate Zone \"(.*?)\" CA USA/
+        match_data = text.match(regex)
+        if match_data.nil?
+          runner.registerWarning("Can't find CEC climate zone in stat file.")
+          runner.registerInfo("Setting Climate Zone to default: #{climateZones.getClimateZones("CEC").first.value}")
+          climate_zone = climateZones.getClimateZones("CEC").first.value
+        else
+          climate_zone = match_data[1].to_s.strip
+        end
+      else  
+        # assume ASHRAE
+        # - Climate type "3B" (ASHRAE Standard 196-2006 Climate Zone)**
+        # - Climate type "6A" (ASHRAE Standards 90.1-2004 and 90.2-2004 Climate Zone)**
+        regex = /Climate type \"(.*?)\" \(ASHRAE Standards?(.*)\)\*\*/
+        match_data = text.match(regex)
+        if match_data.nil?
+          runner.registerWarning("Can't find ASHRAE climate zone in stat file.")
+          runner.registerInfo("Setting Climate Zone to default: #{climateZones.getClimateZones("ASHRAE").first.value}")
+          climate_zone = climateZones.getClimateZones("ASHRAE").first.value
+        else
+          climate_zone = match_data[1].to_s.strip
+        end
       end
-
     end
-    # set climate zone
-    # NOTE, hard coded for OakView UO Testing
-    # climateZones.setClimateZone("ASHRAE",climate_zone)
-    climateZones.setClimateZone("CEC", "9")
-    #runner.registerInfo("Setting Climate Zone to #{climateZones.getClimateZones("ASHRAE").first.value}")
-    runner.registerInfo("Hand setting Climate Zone to CEC 9")
+    # set climate zone (CEC vs ASHRAE + climate zone)
+    climateZones.setClimateZone(climate_zone_type, climate_zone)
+    runner.registerInfo("Climate Zone set to: #{climate_zone_type} - #{climate_zone}")
 
     # add final condition
     runner.registerFinalCondition("The final weather file is #{model.getWeatherFile.city} and the model has #{model.getDesignDays.size} design day objects.")

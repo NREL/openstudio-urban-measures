@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>change_building_location</name>
   <uid>d4db4971-f5ba-11e3-a3ac-0800200c9a66</uid>
-  <version_id>a1d855e4-28aa-4f98-b33c-6b461d1afeaa</version_id>
-  <version_modified>20180607T230533Z</version_modified>
+  <version_id>9ea5cefa-a33c-48bc-b2b4-55388a783ace</version_id>
+  <version_modified>20180621T034432Z</version_modified>
   <xml_checksum>057E8D9D</xml_checksum>
   <class_name>ChangeBuildingLocation</class_name>
   <display_name>ChangeBuildingLocation</display_name>
@@ -20,7 +20,7 @@
     </argument>
     <argument>
       <name>climate_zone</name>
-      <display_name>Climate Zone.</display_name>
+      <display_name>Climate Zone</display_name>
       <type>Choice</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -97,6 +97,80 @@
         <choice>
           <value>Lookup From Stat File</value>
           <display_name>Lookup From Stat File</display_name>
+        </choice>
+        <choice>
+          <value>1</value>
+          <display_name>1</display_name>
+        </choice>
+        <choice>
+          <value>2</value>
+          <display_name>2</display_name>
+        </choice>
+        <choice>
+          <value>3</value>
+          <display_name>3</display_name>
+        </choice>
+        <choice>
+          <value>4</value>
+          <display_name>4</display_name>
+        </choice>
+        <choice>
+          <value>5</value>
+          <display_name>5</display_name>
+        </choice>
+        <choice>
+          <value>6</value>
+          <display_name>6</display_name>
+        </choice>
+        <choice>
+          <value>9</value>
+          <display_name>9</display_name>
+        </choice>
+        <choice>
+          <value>10</value>
+          <display_name>10</display_name>
+        </choice>
+        <choice>
+          <value>11</value>
+          <display_name>11</display_name>
+        </choice>
+        <choice>
+          <value>12</value>
+          <display_name>12</display_name>
+        </choice>
+        <choice>
+          <value>13</value>
+          <display_name>13</display_name>
+        </choice>
+        <choice>
+          <value>14</value>
+          <display_name>14</display_name>
+        </choice>
+        <choice>
+          <value>15</value>
+          <display_name>15</display_name>
+        </choice>
+        <choice>
+          <value>16</value>
+          <display_name>16</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>climate_zone_type</name>
+      <display_name>Climate Zone Type</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>ASHRAE</default_value>
+      <choices>
+        <choice>
+          <value>ASHRAE</value>
+          <display_name>ASHRAE</display_name>
+        </choice>
+        <choice>
+          <value>CEC</value>
+          <display_name>CEC</display_name>
         </choice>
       </choices>
     </argument>
@@ -230,7 +304,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>33E5FC39</checksum>
+      <checksum>D6E5A091</checksum>
     </file>
   </files>
 </measure>
