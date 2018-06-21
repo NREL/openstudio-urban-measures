@@ -32,6 +32,7 @@ def configure_workflow(workflow, feature, project, is_retrofit = false)
   prop = {}
   prop[:weather_file_name] = project[:weather_filename]
   prop[:climate_zone] = project[:climate_zone]
+  prop[:cec_climate_zone] = project[:cec_climate_zone] 
   prop[:template] = project[:template]
   prop[:timesteps_per_hour] = project[:timesteps_per_hour]
   prop[:begin_date] = project[:begin_date]
@@ -80,8 +81,15 @@ def map_project_properties(properties)
     case name
     when :climate_zone
       next if value.nil?
+      next if !properties[:cec_climate_zone].nil?  # CEC climate zone takes precedence if set
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
-      
+    
+    when :cec_climate_zone
+      # set climate zone type to CEC (default is ASHRAE) and climate zone when CEC climate zone is set
+      next if value.nil?
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone, :value => value}
+      result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :climate_zone_type, :value => 'CEC'}
+
     when :weather_file_name
       next if value.nil?
       result << {:measure_dir_name => 'ChangeBuildingLocation', :argument => :weather_file_name, :value => value}
