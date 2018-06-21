@@ -8,3 +8,5 @@ gem 'parallel'
 gem 'openstudio-workflow', '1.3.1'
 
 gem 'openstudio-standards', '0.2.2'
+
+gem 'openstudio_measure_tester'
