@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>apply_sce_tariffs</name>
   <uid>64108fa6-f380-49da-8361-1ee8f97c88ef</uid>
-  <version_id>84fbb665-ad2e-4a22-a43a-031b3df969ff</version_id>
-  <version_modified>20180424T215420Z</version_modified>
+  <version_id>bb32b6a5-6298-48ad-b6ab-af6eb243873b</version_id>
+  <version_modified>20180622T033332Z</version_modified>
   <xml_checksum>ED085E62</xml_checksum>
   <class_name>ApplySceTariffs</class_name>
   <display_name>ApplySceTariffs</display_name>
@@ -140,7 +140,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>1A2920BF</checksum>
+      <checksum>16362946</checksum>
     </file>
   </files>
 </measure>

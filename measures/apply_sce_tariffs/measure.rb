@@ -67,6 +67,15 @@ class ApplySceTariffs < OpenStudio::Ruleset::WorkspaceUserScript
       return false
     end
 
+    # get the last model and sql file
+    model = runner.lastOpenStudioModel
+    if model.empty?
+      runner.registerError("Cannot find last model.")
+      return false
+    end
+    model = model.get
+
+
     # assign the user inputs to variables
     elec_tariff = runner.getStringArgumentValue('tariff', user_arguments)
     #gas_tar = runner.getStringArgumentValue('gas_tar', user_arguments)
@@ -114,10 +123,17 @@ class ApplySceTariffs < OpenStudio::Ruleset::WorkspaceUserScript
 
     end
 
-    # set the simulation timestep to 15min (4 per hour) to match the demand window of the tariffs
+    # use the simulation timestep
+    timesteps_per_hour = model.getTimestep.numberOfTimestepsPerHour
+    runner.registerInfo("Timesteps_per_hour is set to: #{timesteps_per_hour}")
+    #add_result(results, "timesteps_per_hour", timesteps_per_hour, "")
     if !workspace.getObjectsByType('Timestep'.to_IddObjectType).empty?
-      workspace.getObjectsByType('Timestep'.to_IddObjectType)[0].setString(0, '4')
-      runner.registerInfo('set the simulation timestep to 15 min to match the demand window of the tariffs')
+      if !timesteps_per_hour.nil?
+        workspace.getObjectsByType('Timestep'.to_IddObjectType)[0].setString(0, timesteps_per_hour.to_s)
+      else
+        workspace.getObjectsByType('Timestep'.to_IddObjectType)[0].setString(0, '4')
+      end
+      runner.registerInfo("set the simulation timestep to #{timesteps_per_hour}")
     else
       runner.registerError('there was no timestep object to alter')
     end
