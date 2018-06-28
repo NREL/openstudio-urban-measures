@@ -8,7 +8,8 @@ require 'pathname'
 
 # read in OSW
 workflow = nil
-File.open(ARGV[0], 'r') do |file|
+workflow_path = ARGV[0]
+File.open(workflow_path, 'r') do |file|
   workflow = JSON::parse(file.read, :symbolize_names => true)
 end
 
@@ -23,10 +24,20 @@ def get_measure_definition(measure_dir)
       result.delete(:measure_dir)
     end
   end
-  
+
+  # Check that the measure definition was created successfully
+  if result.nil?
+    # Nothing returned for this measure
+    puts "ERROR getting measure definition for #{measure_dir}: No error message returned from measure manager"
+  elsif result[:error]
+    # Partial completion with error message
+    puts "ERROR getting measure definition for #{measure_dir}: #{result[:error]}"
+  end
+
   return result
 end
 
+# Add metadata for each measure in the workflow
 workflow[:steps].each do |step|
   measure_dir_name = step[:measure_dir_name]
   
@@ -55,7 +66,7 @@ workflow[:steps].each do |step|
 end
 
 # write modified workflow
-File.open(ARGV[0] + '.out', 'w') do |file|
+File.open(workflow_path + '.out', 'w') do |file|
   file << JSON::pretty_generate(workflow)
 end
 
