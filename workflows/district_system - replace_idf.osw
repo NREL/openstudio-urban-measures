@@ -1,0 +1,92 @@
+{
+  "feature_type": "District System",
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": "./run",
+  "file_paths": [
+    "./../../../weather/"
+  ],
+  "measure_paths": [
+    "./../../../measures/",
+    "./../../../../OpenStudio-measures/NREL working measures/",
+    "./../../../../OpenStudio-measures/NREL internal measures/"
+  ],
+  "steps": [
+    {
+      "name": "gem_env_report",
+      "measure_dir_name": "gem_env_report",
+      "arguments": {
+      }
+    },
+    {
+      "name": "set_run_period",
+      "measure_dir_name": "set_run_period",
+      "arguments": {
+        "__SKIP__": false,
+        "timesteps_per_hour": 4,
+        "begin_date": "2017-01-01",
+        "end_date": "2017-12-31"
+      }
+    },
+    {
+      "name": "ChangeBuildingLocation",
+      "measure_dir_name": "ChangeBuildingLocation",
+      "arguments": {
+        "__SKIP__": false,
+        "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5B"
+      }
+    },
+    {
+      "name": "urban_geometry_creation",
+      "measure_dir_name": "urban_geometry_creation",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "feature_id": null,
+        "surrounding_buildings": "None"
+      }
+    },
+    {
+      "name": "import_district_system_loads",
+      "measure_dir_name": "import_district_system_loads",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "scenario_id": null,
+        "feature_id": null
+      }
+    },
+    {
+      "name": "add_district_system",
+      "measure_dir_name": "add_district_system",
+      "arguments": {
+        "district_system_type": null
+      }
+    },
+    {
+      "name": "ViewModel",
+      "measure_dir_name": "ViewModel",
+      "arguments": {
+      }
+    },
+	 {
+      "name": "Replace with IDF",
+      "measure_dir_name": "replace_idf",
+      "arguments": {
+        "__SKIP__": true,
+        "external_idf_name": "RefBldgMediumOfficeNew2004_v14_72_5B_USA_CO_BOULDER.idf"
+      }
+	  },
+    {
+      "name": "datapoint_reports_mod",
+      "measure_dir_name": "datapoint_reports_mod",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      }
+    }
+  ]
+}

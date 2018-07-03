@@ -11,6 +11,7 @@ require 'base64'
 require 'csv'
 require 'open3'
 require 'rbconfig'
+require 'date'
 
 require_relative 'map_properties'
 
@@ -335,7 +336,7 @@ class Runner
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
       datapoint_files.each do |datapoint_file|
-        if /datapoint_reports_report\.csv/.match( datapoint_file[:file_name] )
+        if /datapoint_reports_mod_report\.csv/.match( datapoint_file[:file_name] ) ##AA added for modified measure. 
           file_name = datapoint_file[:file_name]
           file_id = datapoint_file[:_id][:$oid]
 
@@ -599,7 +600,11 @@ class Runner
             end_month = datapoint[:results][:end_month]
             end_day_of_month = datapoint[:results][:end_day_of_month]
             begin_year = datapoint[:results][:begin_year]
-          
+			
+			# @logger.debug("DATAPOINT ID: #{datapoint_id}")
+			# @logger.debug("begin_month: #{datapoint[:results][:begin_month]}, end_month:#{datapoint[:results][:end_month]}") 
+        
+
             end_year = begin_year
             if end_month < begin_month  
               end_year = begin_year + 1
@@ -631,9 +636,12 @@ class Runner
         if file.nil?
           missing_results << datapoint_id
         elsif summed_results.nil?
+		# @logger.debug("In summed results") 
           summed_results = CSV.parse(file)
+		  # @logger.debug("Summed results:#{summed_results.size}") 
         else
           results = CSV.parse(file)
+		  # @logger.debug("size: #{results.size},class:#{results.class}")
           results.each_index do |i|
             next if i < 1 # header
             
