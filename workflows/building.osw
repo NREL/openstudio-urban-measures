@@ -11,7 +11,7 @@
     "./../../../measures/",
     "./../../../../OpenStudio-measures/nrel_published/",
     "./../../../../OpenStudio-measures/nrel_dev/",
-    "./../../../../OpenStudio-measures/austin_published/"  
+    "./../../../../OpenStudio-measures/austin_published/"
   ],
   "steps": [
     {
@@ -277,12 +277,11 @@
       },
       "measure_definition": {
         "name": "create_bar_from_building_type_ratios",
-        "error": "Unable to extract OpenStudio::Measure::OSMeasure object from C:/GitRepos/OpenStudio-measures/nrel_dev/create_bar_from_building_type_ratios/measure.rb. The script should contain a class that derives from OpenStudio::Measure::OSMeasure and should close with a line stating the class name followed by .new.registerWithApplication.",
         "uid": "6e3a14f8-c3c7-4e03-bc51-bef8a52e1a05",
         "uuid": "{6e3a14f8-c3c7-4e03-bc51-bef8a52e1a05}",
-        "version_id": "722b502c-d288-42c9-8fcb-008314a22ab2",
-        "version_uuid": "{722b502c-d288-42c9-8fcb-008314a22ab2}",
-        "version_modified": "20180606T213047Z",
+        "version_id": "ca822a81-34e1-442c-8efc-5a32cb44abb3",
+        "version_uuid": "{ca822a81-34e1-442c-8efc-5a32cb44abb3}",
+        "version_modified": "20180522T170859Z",
         "xml_checksum": "2AF3A68E",
         "display_name": "Create Bar From Building Type Ratios",
         "class_name": "CreateBarFromBuildingTypeRatios",
@@ -334,8 +333,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -353,8 +352,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -392,8 +391,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -411,8 +410,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -460,8 +459,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -479,8 +478,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -528,8 +527,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -547,8 +546,8 @@
               "SmallHotel",
               "LargeHotel",
               "Warehouse",
-              "RetailStandalone",
-              "RetailStripmall",
+              "Retail",
+              "StripMall",
               "QuickServiceRestaurant",
               "FullServiceRestaurant",
               "MidriseApartment",
@@ -836,9 +835,9 @@
         "name": "create_typical_building_from_model",
         "uid": "339a2e3a-273c-4494-bb50-bfe586a0647c",
         "uuid": "{339a2e3a-273c-4494-bb50-bfe586a0647c}",
-        "version_id": "1f0c312b-e57b-436a-8af7-f81dda82caa4",
-        "version_uuid": "{1f0c312b-e57b-436a-8af7-f81dda82caa4}",
-        "version_modified": "20180501T192446Z",
+        "version_id": "6e1d2662-57ad-4733-891a-9f37b73357ab",
+        "version_uuid": "{6e1d2662-57ad-4733-891a-9f37b73357ab}",
+        "version_modified": "20180531T153915Z",
         "xml_checksum": "EE13F09F",
         "display_name": "Create Typical Building from Model",
         "class_name": "CreateTypicalBuildingFromModel",
@@ -1237,6 +1236,139 @@
       }
     },
     {
+      "name": "Add EV Charging Load",
+      "measure_dir_name": "add_ev_load",
+      "arguments": {
+        "__SKIP__": false,
+		"chg_station_type":"Pena Station Next Analysis"
+      },
+      "measure_definition": {
+        "name": "add_ev_load",
+        "uid": "a23e0493-7357-48ca-b089-4d902efd6b50",
+        "uuid": "{a23e0493-7357-48ca-b089-4d902efd6b50}",
+        "version_id": "90114cb9-17df-4656-baf5-a06df2d65e84",
+        "version_uuid": "{90114cb9-17df-4656-baf5-a06df2d65e84}",
+        "version_modified": "20180703T152046Z",
+        "xml_checksum": "9A202986",
+        "display_name": "Add_EV_Load",
+        "class_name": "AddEVLoad",
+        "description": "This measure adds a load associated with charging of electric vehicles (EVs) to a building in URBANopt. EV load profiles were generated in EVI-Pro for specific building types. This measure allows running of customized load profiles for buildings in the Pena Station Next project, and also for generating typical charging load profiles based on the location type (home, public, or office).",
+        "modeler_description": "This measure adds an EV charging load to a building model. Load profiles for EV charging were generated in EVI-Pro. Different options are available for charging control type and charging behavior.",
+        "tags": [
+          "Equipment.Electric Equipment"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "delay_type",
+            "display_name": "Charging Flexibility Option",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Min Delay",
+            "choice_values": [
+              "Max Delay",
+              "Min Delay",
+              "Min Power"
+            ],
+            "choice_display_names": [
+              "Max Delay",
+              "Min Delay",
+              "Min Power"
+            ],
+            "visible": true
+          },
+          {
+            "name": "charge_behavior",
+            "display_name": "Consumer Charging Behavior",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Business as Usual",
+            "choice_values": [
+              "Business as Usual",
+              "Free Workplace Charging at Project Site",
+              "Free Workplace Charging Across Metro Area"
+            ],
+            "choice_display_names": [
+              "Business as Usual",
+              "Free Workplace Charging at Project Site",
+              "Free Workplace Charging Across Metro Area"
+            ],
+            "visible": true
+          },
+          {
+            "name": "chg_station_type",
+            "display_name": "Charging Station Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Typical Public",
+            "choice_values": [
+              "Pena Station Next Analysis",
+              "Typical Home",
+              "Typical Public",
+              "Typical Work"
+            ],
+            "choice_display_names": [
+              "Pena Station Next Analysis",
+              "Typical Home",
+              "Typical Public",
+              "Typical Work"
+            ],
+            "visible": true
+          },
+          {
+            "name": "building_name",
+            "display_name": "Building Name",
+            "description": "This argument is used only if charging station type is Pena Station Next Analysis.",
+            "type": "String",
+            "required": false,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "ev_percent",
+            "display_name": "Percent of Vehicles Parked at Building That Are EVs",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
       "name": "ViewModel",
       "measure_dir_name": "ViewModel",
       "arguments": {
@@ -1284,6 +1416,70 @@
         "city_db_url": null,
         "project_id": null,
         "datapoint_id": null
+      },
+	  "measure_definition": {
+        "name": "datapoint_reports",
+        "uid": "635ed4fb-6d66-42df-8d2f-26f652f8fd01",
+        "uuid": "{635ed4fb-6d66-42df-8d2f-26f652f8fd01}",
+        "version_id": "6a479af6-3cd4-4b7f-9d9f-eb3ecb4e78b5",
+        "version_uuid": "{6a479af6-3cd4-4b7f-9d9f-eb3ecb4e78b5}",
+        "version_modified": "20180516T003157Z",
+        "xml_checksum": "FB304155",
+        "display_name": "DatapointReports",
+        "class_name": "DatapointReports",
+        "description": "Updates Datapoint in CityDB with simulation results",
+        "modeler_description": "",
+        "tags": [
+          "Reporting.QAQC"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ReportingMeasure"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Automatic Report Generation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          },
+          {
+            "name": "datapoint_id",
+            "display_name": "Datapoint ID",
+            "description": "Datapoint ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          }
+        ],
+        "visible": true
       }
     },
     {
