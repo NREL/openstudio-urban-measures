@@ -360,6 +360,14 @@ class Runner
     
     # connect to database, get list of all datapoint ids
     all_datapoint_ids = get_all_datapoint_ids()
+	
+    # check to ensure that there is at least one datapoint.
+    # If not, the user probably forgot to create a Scenario in UrbanOpt
+    if all_datapoint_ids.size.zero?
+      @logger.error("Error in create_osws: there are zero datapoints, you probably forgot to create a Scenario in UrbanOpt.")
+	  exit 
+    end 
+ 
 
     # loop over all combinations
     num_datapoints = 1
