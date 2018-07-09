@@ -238,6 +238,8 @@ def map_building_properties(properties)
     
     value = properties[name]
     case name
+    when :name 
+      result << {:measure_dir_name => 'add_ev_load', :argument => :building_name, :value => value}
     when :building_status
       next if value.nil?
       #result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => 'bldg_type_a', :value => value}
