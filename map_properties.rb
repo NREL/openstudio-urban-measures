@@ -359,6 +359,7 @@ def map_building_properties(properties, template = nil)
   end
   
   if properties[:floor_area].nil?
+    @logger.warn("*** FLOOR AREA IS NIL... using footprint_area x #stories ***") if @logger
     if properties[:footprint_area]
       if properties[:number_of_stories] > 0
         properties[:floor_area] = properties[:footprint_area]*properties[:number_of_stories]

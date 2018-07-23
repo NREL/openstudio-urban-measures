@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>urban_geometry_creation</name>
   <uid>5ab85d6b-c9af-4361-8ab9-613ee99a5666</uid>
-  <version_id>23876c7e-3633-4906-95dc-1de5e657b059</version_id>
-  <version_modified>20180307T003223Z</version_modified>
+  <version_id>95a82bdf-13fe-4dbf-978a-4ba8f3fb85bd</version_id>
+  <version_modified>20180723T171447Z</version_modified>
   <xml_checksum>D254E772</xml_checksum>
   <class_name>UrbanGeometryCreation</class_name>
   <display_name>UrbanGeometryCreation</display_name>
@@ -58,6 +58,24 @@
         </choice>
       </choices>
     </argument>
+    <argument>
+      <name>scale_footprint_area_by_floor_area</name>
+      <display_name>Scale Footprint Area by the Floor Area?</display_name>
+      <description>If true, the footprint area from GeoJSON will be scaled by the floor_area provided by the user in URBANopt.</description>
+      <type>Boolean</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <choices>
+        <choice>
+          <value>true</value>
+          <display_name>true</display_name>
+        </choice>
+        <choice>
+          <value>false</value>
+          <display_name>false</display_name>
+        </choice>
+      </choices>
+    </argument>
   </arguments>
   <outputs/>
   <provenances/>
@@ -101,7 +119,7 @@
       <filename>urban_geometry_creation_test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>924F52EF</checksum>
+      <checksum>C6AC102A</checksum>
     </file>
     <file>
       <version>
@@ -112,7 +130,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>087975A2</checksum>
+      <checksum>8B2C1377</checksum>
     </file>
   </files>
 </measure>

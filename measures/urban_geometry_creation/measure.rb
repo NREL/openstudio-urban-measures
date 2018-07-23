@@ -8,6 +8,104 @@ require 'json'
 require 'net/http'
 require 'uri'
 require 'openssl'
+require 'bigdecimal/newton'
+
+# I don't know why the module include statements in core lib don't include these module functions
+# seems like a bug in Ruby, patch here
+module Newton
+  def self.jacobian(f,fx,x)
+    Jacobian.jacobian(f,fx,x)
+  end
+  def self.ludecomp(a,n,zero=0,one=1)
+    LUSolve.ludecomp(a,n,zero,one)
+  end
+  def self.lusolve(a,b,ps,zero=0.0)
+    LUSolve.lusolve(a,b,ps,zero)
+  end
+end
+
+# class that does the iteration
+class AreaReducer
+  attr_reader :zero, :one, :two, :ten, :eps
+  
+   def initialize(vertices, desired_area, eps = 0.1)
+    @vertices = vertices
+    @centroid = OpenStudio::getCentroid(vertices)
+    fail "Cannot compute centroid for '#{vertices}'" if @centroid.empty?
+    @centroid = @centroid.get
+    @desired_area = desired_area
+    @new_vertices = vertices
+    
+    @zero = BigDecimal::new("0.0")
+    @one  = BigDecimal::new("1.0")
+    @two  = BigDecimal::new("2.0")
+    @ten  = BigDecimal::new("10.0")
+    @eps  = eps #BigDecimal::new(eps)
+  end
+  
+  def fancy_new_method(perimeter_depth)
+    result = []
+    
+    t_inv = OpenStudio::Transformation.alignFace(@vertices)
+    t = t_inv.inverse
+        
+    vertices = t * @vertices
+    new_vertices = OpenStudio::Point3dVector.new
+    n = vertices.size
+    (0...n).each do |i|
+      vertex_1 = nil
+      vertex_2 = nil 
+      vertex_3 = nil
+      if (i==0)
+        vertex_1 = vertices[n-1]
+        vertex_2 = vertices[i] 
+        vertex_3 = vertices[i+1]          
+      elsif (i==(n-1))
+        vertex_1 = vertices[i-1]
+        vertex_2 = vertices[i] 
+        vertex_3 = vertices[0]
+      else
+        vertex_1 = vertices[i-1]
+        vertex_2 = vertices[i] 
+        vertex_3 = vertices[i+1]
+      end
+      
+      vector_1 = (vertex_2 - vertex_1)
+      vector_2 = (vertex_3 - vertex_2)
+      
+      angle_1 = Math.atan2(vector_1.y, vector_1.x) + Math::PI/2.0
+      angle_2 = Math.atan2(vector_2.y, vector_2.x) + Math::PI/2.0
+      
+      vector = OpenStudio::Vector3d.new(Math.cos(angle_1) + Math.cos(angle_2), Math.sin(angle_1) + Math.sin(angle_2), 0)
+      vector.setLength(perimeter_depth)
+      
+      new_point = vertices[i] + vector
+      new_vertices << new_point
+    end
+    
+    return t_inv * new_vertices
+  end
+  
+  
+  # compute value
+  def values(x)
+  
+    #@new_vertices = OpenStudio::moveVerticesTowardsPoint(@vertices, @centroid, x[0].to_f)
+    @new_vertices = fancy_new_method(x[0].to_f)
+    
+    new_area = OpenStudio::getArea(@new_vertices)
+    fail "Cannot compute area for '#{@new_vertices}'" if new_area.empty?
+    new_area = new_area.get
+    
+    puts "x = #{x[0].to_f}, new_area = #{new_area}"
+    
+    return [new_area-@desired_area]
+  end
+  
+  def new_vertices
+    @new_vertices
+  end
+end
 
 # start the measure
 class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
@@ -64,7 +162,22 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     surrounding_buildings.setDefaultValue("ShadingOnly")
     args << surrounding_buildings    
 
+    scale_footprint_area_by_floor_area = OpenStudio::Ruleset::OSArgument.makeBoolArgument("scale_footprint_area_by_floor_area", true)
+    scale_footprint_area_by_floor_area.setDisplayName("Scale Footprint Area by the Floor Area?")
+    scale_footprint_area_by_floor_area.setDescription("If true, the footprint area from GeoJSON will be scaled by the floor_area provided by the user in URBANopt.")
+    scale_footprint_area_by_floor_area.setDefaultValue(0.0)
+    args << scale_footprint_area_by_floor_area
+
     return args
+  end
+
+  # scale footprint to desired area, keeping the shape
+  def adjust_vertices_to_area(vertices, desired_area, eps = 0.1)
+    ar = AreaReducer.new(vertices, desired_area, eps)
+  
+    n = Newton::nlsolve(ar,[0])
+  
+    return ar.new_vertices
   end
   
   def create_space_type(bldg_use, space_use, model)
@@ -100,7 +213,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return multi_polygons
   end
   
-  def floor_print_from_polygon(polygon, elevation)
+  def floor_print_from_polygon(polygon, elevation, scaled_footprint_area)
   
     floor_print = OpenStudio::Point3dVector.new
     polygon.each do |p|
@@ -125,11 +238,28 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       floor_print = OpenStudio::reverse(floor_print)
       @runner.registerWarning("Reversing floor print")
     end
-    
+
+    if scaled_footprint_area > 0
+      # scale
+
+      # check that the scaled_footprint_area desired is no less than X % of the original
+      original_floor_print_area = OpenStudio::getArea(floor_print).get
+
+      if scaled_footprint_area / original_floor_print_area <= 0.5 || scaled_footprint_area / original_floor_print_area >= 2
+        # TOO MUCH SCALING...using original footprint when scaled is 2x bigger or smaller than the original
+        @runner.registerWarning("Desired scaled_footprint_area is a factor of 2 of the original footprint...keeping original footprint (no scaling!)")
+      else
+        new_floor_print = adjust_vertices_to_area(floor_print, scaled_footprint_area)
+        new_footprint_area = OpenStudio::getArea(new_floor_print).get
+        @runner.registerInfo("New floor area: #{new_footprint_area}, compared to scaled area desired: #{scaled_footprint_area}")
+        floor_print = new_floor_print
+      end  
+    end
+
     return floor_print
   end
 
-  def create_building(building_json, create_method, model)
+  def create_building(building_json, create_method, model, scaled_footprint_area)
     
     properties = building_json[:properties]
     number_of_stories = properties[:number_of_stories]
@@ -205,17 +335,17 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     spaces = []
     if create_method == :space_per_floor
       (-number_of_stories_below_ground+1..number_of_stories_above_ground).each do |story_number|
-        new_spaces = create_space_per_floor(building_json, story_number, floor_to_floor_height, model)
+        new_spaces = create_space_per_floor(building_json, story_number, floor_to_floor_height, model, scaled_footprint_area)
         spaces.concat(new_spaces)
       end
     elsif create_method == :space_per_building
-      spaces = create_space_per_building(building_json, -number_of_stories_below_ground*floor_to_floor_height, number_of_stories_above_ground*floor_to_floor_height, model)
+      spaces = create_space_per_building(building_json, -number_of_stories_below_ground*floor_to_floor_height, number_of_stories_above_ground*floor_to_floor_height, model, scaled_footprint_area)
     end
 
     return spaces
   end
 
-  def create_space_per_floor(building_json, story_number, floor_to_floor_height, model)
+  def create_space_per_floor(building_json, story_number, floor_to_floor_height, model, scaled_footprint_area)
   
     geometry = building_json[:geometry] 
     properties = building_json[:properties]
@@ -230,7 +360,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       
       multi_polygon.each do |polygon|
         elevation = (story_number-1)*floor_to_floor_height
-        floor_print = floor_print_from_polygon(polygon, elevation)
+        floor_print = floor_print_from_polygon(polygon, elevation, scaled_footprint_area)
         if floor_print
           floor_prints << floor_print
         else 
@@ -289,7 +419,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     return result
   end
   
-  def create_space_per_building(building_json, min_elevation, max_elevation, model)
+  def create_space_per_building(building_json, min_elevation, max_elevation, model, scaled_footprint_area)
   
     geometry = building_json[:geometry] 
     properties = building_json[:properties]
@@ -304,7 +434,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
       
       multi_polygon.each do |polygon|
-        floor_print = floor_print_from_polygon(polygon, min_elevation)
+        floor_print = floor_print_from_polygon(polygon, min_elevation, scaled_footprint_area)
         if floor_print
           floor_prints << floor_print
         else 
@@ -394,7 +524,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     multi_polygons.each do |multi_polygon|
       multi_polygon.each do |polygon|
         elevation = 0
-        floor_print = floor_print_from_polygon(polygon, elevation)
+        floor_print = floor_print_from_polygon(polygon, elevation, 0)
         floor_print.each do |point|
           building_points << point
         end
@@ -442,7 +572,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         multi_polygons = get_multi_polygons(other_building)
         multi_polygons.each do |multi_polygon|
           multi_polygon.each do |polygon|
-            floor_print = floor_print_from_polygon(polygon, other_height)
+            floor_print = floor_print_from_polygon(polygon, other_height, 0)
             floor_print.each do |point|
               other_building_points << point
             end
@@ -467,7 +597,6 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     end
     
     return convert_to_shades
-
   end
   
   def convert_to_shading_surface_group(space)
@@ -727,12 +856,16 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if !runner.validateUserArguments(arguments(model), user_arguments)
       return false
     end
+
+    # higher debug level
+    OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Debug)
      
     # assign the user inputs to variables
     city_db_url = runner.getStringArgumentValue("city_db_url", user_arguments)
     project_id = runner.getStringArgumentValue("project_id", user_arguments)
     feature_id = runner.getStringArgumentValue("feature_id", user_arguments)
     surrounding_buildings = runner.getStringArgumentValue("surrounding_buildings", user_arguments)
+    scale_footprint_area_by_floor_area = runner.getBoolArgumentValue("scale_footprint_area_by_floor_area", user_arguments)
     
     # pull information from the previous model 
     #model.save('initial.osm', true)
@@ -835,7 +968,18 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
     if feature_type == 'Building'
     
       # make requested building
-      spaces = create_building(feature, :space_per_floor, model)
+      # pass in scaled_footprint_area (calculated from floor_area / number_of_stories)
+      scaled_footprint_area = 0
+      if scale_footprint_area_by_floor_area 
+        if feature[:properties][:number_of_stories] && feature[:properties][:floor_area]
+          scaled_footprint_area = feature[:properties][:floor_area].to_f / feature[:properties][:number_of_stories].to_f
+          #@runner.registerInfo("Desired footprint area in ft2: #{scaled_footprint_area}")
+          # convert to metric
+          scaled_footprint_area = OpenStudio::convert(scaled_footprint_area, 'ft^2', 'm^2').get
+        end
+      end
+
+      spaces = create_building(feature, :space_per_floor, model, scaled_footprint_area)
       if spaces.nil? 
         @runner.registerError("Failed to create spaces for building '#{name}'")
         return false
@@ -890,9 +1034,12 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
         end
       end
       
+      # # save temp model
+      # @runner.registerInfo("saving temp model")
+      # model.save('temp.osm', true)
+      # @runner.registerInfo("model saved!")
       # change adjacent surfaces to adiabatic
-      @runner.registerInfo("Changing adjacent surfaces to adiabatic")
-      model.getSurfaces.each do |surface|
+      model.getSurfaces.each do |surface|      
         adjacent_surface = surface.adjacentSurface
         if !adjacent_surface.empty?
           surface_construction = surface.construction
@@ -949,9 +1096,7 @@ class UrbanGeometryCreation < OpenStudio::Ruleset::ModelUserScript
       end
     end
     
-
     return true
-
   end
   
 end

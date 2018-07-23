@@ -17,6 +17,72 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
 
   # def teardown
   # end
+
+ def test_vertices()
+    meas = UrbanGeometryCreation.new
+
+    vertices = OpenStudio::Point3dVector.new
+    vertices << OpenStudio::Point3d.new(0,1,0)
+    vertices << OpenStudio::Point3d.new(0,0,0)
+    vertices << OpenStudio::Point3d.new(1,0,0)
+    vertices << OpenStudio::Point3d.new(1,1,0)
+    
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(1.0, area.get, 0.1)
+    
+    new_vertices = meas.adjust_vertices_to_area(vertices, 2.0, 0.01)
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(1.0, area.get, 0.1)
+    new_area = OpenStudio::getArea(new_vertices)
+    assert(new_area.is_initialized)
+    assert_in_delta(2.0, new_area.get, 0.1)
+    #puts new_vertices
+    
+    new_vertices = meas.adjust_vertices_to_area(vertices, 0.5, 0.01)
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(1.0, area.get, 0.1)
+    new_area = OpenStudio::getArea(new_vertices)
+    assert(new_area.is_initialized)
+    assert_in_delta(0.5, new_area.get, 0.1)
+    #puts new_vertices
+  end
+  
+  def test_Lshape_vertices()
+    meas = UrbanGeometryCreation.new
+
+    vertices = OpenStudio::Point3dVector.new
+    vertices << OpenStudio::Point3d.new(0,2,0)
+    vertices << OpenStudio::Point3d.new(0,0,0)
+    vertices << OpenStudio::Point3d.new(1,0,0)
+    vertices << OpenStudio::Point3d.new(1,1,0)
+    vertices << OpenStudio::Point3d.new(2,1,0)
+    vertices << OpenStudio::Point3d.new(2,2,0)
+    
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(3.0, area.get, 0.1)
+    
+    new_vertices = meas.adjust_vertices_to_area(vertices, 4.0, 0.01)
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(3.0, area.get, 0.1)
+    new_area = OpenStudio::getArea(new_vertices)
+    assert(new_area.is_initialized)
+    assert_in_delta(4.0, new_area.get, 0.1)
+    puts new_vertices
+    
+    new_vertices = meas.adjust_vertices_to_area(vertices, 1.0, 0.01)
+    area = OpenStudio::getArea(vertices)
+    assert(area.is_initialized)
+    assert_in_delta(3.0, area.get, 0.1)
+    new_area = OpenStudio::getArea(new_vertices)
+    assert(new_area.is_initialized)
+    assert_in_delta(1.0, new_area.get, 0.1)
+    puts new_vertices
+  end
   
   def test_is_shadowed
   
@@ -104,5 +170,7 @@ class UrbanGeometryCreationTest < MiniTest::Unit::TestCase
     # assert that it ran correctly
     assert_equal("Success", result.value.valueName)
   end
+
+ 
 
 end

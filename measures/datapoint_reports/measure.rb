@@ -316,6 +316,11 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         short_name = "#{short_os_fuel(fuel_str)} Total"
         site_energy_use += fuel_type_aggregation if fuel_str != "Water"
       end
+
+      if fuel_type == 'Electricity'
+        unit_str = 'kW'
+
+      end
     end
 
     add_result(results, 'site_energy_use', site_energy_use, "kBtu", "GJ")
@@ -331,13 +336,29 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       if fuel_str == "Water"
         next
       end
+
+      demand_aggregation = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       OpenStudio::MonthOfYear.getValues.each do |month|
         if month >= 1 and month <= 12
           fuel_and_month_aggregation = 0.0
+          
           OpenStudio::EndUseCategoryType::getValues.each do |category_type|
             if sql_file.energyConsumptionByMonth(OpenStudio::EndUseFuelType.new(fuel_str), OpenStudio::EndUseCategoryType.new(category_type), OpenStudio::MonthOfYear.new(month)).is_initialized
               val_in_j = sql_file.energyConsumptionByMonth(OpenStudio::EndUseFuelType.new(fuel_str), OpenStudio::EndUseCategoryType.new(category_type), OpenStudio::MonthOfYear.new(month)).get
               fuel_and_month_aggregation += val_in_j
+            end
+
+            if fuel_str == 'Electricity'
+              if !sql_file.peakEnergyDemandByMonth(OpenStudio::EndUseFuelType.new(fuel_type),
+                                                OpenStudio::EndUseCategoryType.new(category_type),
+                                                OpenStudio::MonthOfYear.new(month)).empty?
+                valInJ = sql_file.peakEnergyDemandByMonth(OpenStudio::EndUseFuelType.new(fuel_type),
+                                                       OpenStudio::EndUseCategoryType.new(category_type),
+                                                       OpenStudio::MonthOfYear.new(month)).get
+                valInUnits = OpenStudio.convert(valInJ, 'W', 'kW').get
+                demand_aggregation[(month-1)] += valInUnits
+                #runner.registerInfo("#DEMAND AGGREGATION: #{demand_aggregation}")
+              end
             end
           end
           fuel_and_month_aggregation *= mult_factor
@@ -347,6 +368,18 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
           short_name = "#{month_str[0..2]} #{short_os_fuel(fuel_str)} EUI"
         end
       end
+
+      if fuel_str == 'Electricity'
+        # for monthly peak demand
+        runner.registerInfo("fuel_type: #{fuel_type}, fuel_str: #{fuel_str}")
+        demand_aggregation.each_with_index do |v, k|
+          runner.registerInfo("K: #{k}, v: #{v}")
+          month_str = OpenStudio::MonthOfYear.new(k+1).valueDescription
+          prefix_str = OpenStudio::toUnderscoreCase("#{month_str}_peak_demand")
+          add_result(results, prefix_str, v, 'kW')
+        end
+      end
+      
     end
 
     # queries that don't have API methods yet
