@@ -151,7 +151,8 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
       datapoint_files.each do |datapoint_file|
-        if /datapoint_reports_report\.csv/.match( datapoint_file[:file_name] )
+      ##Line below edited by AA 7/23 for modified version of reporting measure. 
+        if /datapoint_reports_mod_report\.csv/.match( datapoint_file[:file_name] )
           file_name = datapoint_file[:file_name]
           file_id = datapoint_file[:_id][:$oid]
 
@@ -284,9 +285,10 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     end
     
     datapoint_ids = get_datapoint_ids(project_id, scenario_id)
-    
+    runner.registerInfo("Datapoint IDs listed below")
     datapoint_files = []
     datapoint_ids.each do |datapoint_id|
+    runner.registerInfo("Datapoint #{datapoint_id}")
       datapoint_file = download_datapoint(project_id, datapoint_id)
       if datapoint_file
         datapoint_files << datapoint_file
@@ -343,7 +345,8 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
      
     # to make one summed schedule
     timeseries.each do |ts|
-      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summmed", ts)
+      makeSchedule(start_date, time_step, summed_values[ts[:name]], model, "Summed", ts)
+      runner.registerInfo("Summed schedule for #{ts} #{summed_values[ts[:name]]}")
     end
       
     # todo: create a plant loop

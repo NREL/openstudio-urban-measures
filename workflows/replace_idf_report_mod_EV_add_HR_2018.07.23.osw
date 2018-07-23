@@ -1,0 +1,3998 @@
+{
+  "feature_type": "Building",
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": "./run",
+  "file_paths": [
+    "./../../../weather/"
+  ],
+  "measure_paths": [
+    "./../../../measures/",
+    "./../../../../OpenStudio-measures/NREL working measures/",
+    "./../../../../OpenStudio-measures/NREL internal measures/"
+  ],
+  "steps": [
+    {
+      "name": "gem_env_report",
+      "measure_dir_name": "gem_env_report",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "gem_environment_report",
+        "uid": "3f9f1a2f-0e8a-4c88-b817-10494fc3e73a",
+        "uuid": "{3f9f1a2f-0e8a-4c88-b817-10494fc3e73a}",
+        "version_id": "c2787324-da95-4957-a79d-6bca7211f5b9",
+        "version_uuid": "{c2787324-da95-4957-a79d-6bca7211f5b9}",
+        "version_modified": "20170322T154845Z",
+        "xml_checksum": "D1F10311",
+        "display_name": "gem environment report",
+        "class_name": "GemEnvironmentReport",
+        "description": "For OpenStudio testing and development; this measure reports out information about the gem path and gems that are available and loaded.  Used for debugging different runtime environments.",
+        "modeler_description": "For OpenStudio testing and development; this measure reports out information about the gem path and gems that are available and loaded.  Used for debugging different runtime environments.",
+        "tags": [
+          "Reporting.Troubleshooting"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "set_run_period",
+      "measure_dir_name": "set_run_period",
+      "arguments": {
+        "__SKIP__": false,
+        "timesteps_per_hour": 4,
+        "begin_date": "2017-01-01",
+        "end_date": "2017-12-31"
+      },
+      "measure_definition": {
+        "name": "set_run_period",
+        "uid": "7a84292a-3975-4ab3-9284-6edabcbe750b",
+        "uuid": "{7a84292a-3975-4ab3-9284-6edabcbe750b}",
+        "version_id": "d44923db-6aaf-46b6-9d93-3bb27a1816ff",
+        "version_uuid": "{d44923db-6aaf-46b6-9d93-3bb27a1816ff}",
+        "version_modified": "20170615T203344Z",
+        "xml_checksum": "2AF3A68E",
+        "display_name": "SetRunPeriod",
+        "class_name": "SetRunPeriod",
+        "description": "Sets the run period and timestep for simulation",
+        "modeler_description": "",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "timesteps_per_hour",
+            "display_name": "Timesteps per hour",
+            "description": "Number of simulation timesteps per hour",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "begin_date",
+            "display_name": "Begin date",
+            "description": "Simulation start date, YYYY-MM-DD format",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "end_date",
+            "display_name": "End date",
+            "description": "Simulation end date, YYYY-MM-DD format",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ChangeBuildingLocation",
+      "measure_dir_name": "ChangeBuildingLocation",
+      "arguments": {
+        "__SKIP__": false,
+        "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5B"
+      },
+      "measure_definition": {
+        "name": "change_building_location",
+        "uid": "d4db4971-f5ba-11e3-a3ac-0800200c9a66",
+        "uuid": "{d4db4971-f5ba-11e3-a3ac-0800200c9a66}",
+        "version_id": "a1a43470-d0b4-4e0f-845f-e36688605cbe",
+        "version_uuid": "{a1a43470-d0b4-4e0f-845f-e36688605cbe}",
+        "version_modified": "20180501T192511Z",
+        "xml_checksum": "057E8D9D",
+        "display_name": "ChangeBuildingLocation",
+        "class_name": "ChangeBuildingLocation",
+        "description": "Change the building location",
+        "modeler_description": "Change the building location",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "weather_file_name",
+            "display_name": "Weather File Name",
+            "description": "Name of the weather file to change to. This is the filename with the extension (e.g. NewWeather.epw). Optionally this can inclucde the full file path, but for most use cases should just be file name.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "climate_zone",
+            "display_name": "Climate Zone.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Lookup From Stat File",
+            "choice_values": [
+              "1A",
+              "1B",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "3C",
+              "4A",
+              "4B",
+              "4C",
+              "5A",
+              "5B",
+              "5C",
+              "6A",
+              "6B",
+              "7",
+              "8",
+              "Lookup From Stat File"
+            ],
+            "choice_display_names": [
+              "1A",
+              "1B",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "3C",
+              "4A",
+              "4B",
+              "4C",
+              "5A",
+              "5B",
+              "5C",
+              "6A",
+              "6B",
+              "7",
+              "8",
+              "Lookup From Stat File"
+            ],
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "create_bar_from_building_type_ratios",
+      "measure_dir_name": "create_bar_from_building_type_ratios",
+      "arguments": {
+        "__SKIP__": false,
+        "bldg_type_a": null,
+        "bldg_type_a_num_units": null,
+        "bldg_type_b": null,
+        "bldg_type_b_fract_bldg_area": null,
+        "bldg_type_b_num_units": null,
+        "bldg_type_c": null,
+        "bldg_type_c_fract_bldg_area": null,
+        "bldg_type_c_num_units": null,
+        "bldg_type_d": null,
+        "bldg_type_d_fract_bldg_area": null,
+        "bldg_type_d_num_units": null,
+        "total_bldg_floor_area": null,
+        "floor_height": 0,
+        "num_stories_above_grade": null,
+        "num_stories_below_grade": null,
+        "building_rotation": 0,
+        "template": "90.1-2004",
+        "ns_to_ew_ratio": 0,
+        "wwr": 0,
+        "party_wall_fraction": 0,
+        "story_multiplier": "None",
+        "bar_division_method": "Multiple Space Types - Individual Stories Sliced"
+      },
+      "measure_definition": {
+        "name": "create_bar_from_building_type_ratios",
+        "uid": "6e3a14f8-c3c7-4e03-bc51-bef8a52e1a05",
+        "uuid": "{6e3a14f8-c3c7-4e03-bc51-bef8a52e1a05}",
+        "version_id": "2f53e3eb-52a3-4a3e-a0a0-3524ae572517",
+        "version_uuid": "{2f53e3eb-52a3-4a3e-a0a0-3524ae572517}",
+        "version_modified": "20180705T211614Z",
+        "xml_checksum": "2AF3A68E",
+        "display_name": "Create Bar From Building Type Ratios",
+        "class_name": "CreateBarFromBuildingTypeRatios",
+        "description": "Create a core and perimeter bar sliced by space type.",
+        "modeler_description": "Space Type collections are made from one or more building types passed in with user arguments.",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "bldg_type_a",
+            "display_name": "Primary Building Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "SmallOffice",
+            "choice_values": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "choice_display_names": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "visible": true
+          },
+          {
+            "name": "bldg_type_a_num_units",
+            "display_name": "Primary Building Type Number of Units",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_b",
+            "display_name": "Building Type B",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "SmallOffice",
+            "choice_values": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "choice_display_names": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "visible": true
+          },
+          {
+            "name": "bldg_type_b_fract_bldg_area",
+            "display_name": "Building Type B Fraction of Building Floor Area",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_b_num_units",
+            "display_name": "Building Type B Number of Units",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_c",
+            "display_name": "Building Type C",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "SmallOffice",
+            "choice_values": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "choice_display_names": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "visible": true
+          },
+          {
+            "name": "bldg_type_c_fract_bldg_area",
+            "display_name": "Building Type C Fraction of Building Floor Area",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_c_num_units",
+            "display_name": "Building Type C Number of Units",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_d",
+            "display_name": "Building Type D",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "SmallOffice",
+            "choice_values": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "choice_display_names": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "RetailStandalone",
+              "RetailStripmall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "visible": true
+          },
+          {
+            "name": "bldg_type_d_fract_bldg_area",
+            "display_name": "Building Type D Fraction of Building Floor Area",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "bldg_type_d_num_units",
+            "display_name": "Building Type D Number of Units",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          },
+          {
+            "name": "single_floor_area",
+            "display_name": "Single Floor Area",
+            "description": "Non-zero value will fix the single floor area, overriding a user entry for Total Building Floor Area",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "ft^2",
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "total_bldg_floor_area",
+            "display_name": "Total Building Floor Area",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "ft^2",
+            "default_value": 10000.0,
+            "visible": true
+          },
+          {
+            "name": "floor_height",
+            "display_name": "Typical Floor to FLoor Height",
+            "description": "Selecting a typical floor height of 0 will trigger a smart building type default.",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "ft",
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "num_stories_above_grade",
+            "display_name": "Number of Stories Above Grade",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          },
+          {
+            "name": "num_stories_below_grade",
+            "display_name": "Number of Stories Below Grade",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "building_rotation",
+            "display_name": "Building Rotation",
+            "description": "Set Building Rotation off of North (positive value is clockwise).",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "Degrees",
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "template",
+            "display_name": "Target Standard",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "90.1-2004",
+            "choice_values": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "choice_display_names": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "visible": true
+          },
+          {
+            "name": "ns_to_ew_ratio",
+            "display_name": "Ratio of North/South Facade Length Relative to East/West Facade Length.",
+            "description": "Selecting an aspect ratio of 0 will trigger a smart building type default. Aspect ratios less than one are not recommended for sliced bar geometry, instead rotate building and use a greater than 1 aspect ratio",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "wwr",
+            "display_name": "Window to Wall Ratio.",
+            "description": "Selecting a window to wall ratio of 0 will trigger a smart building type default.",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "party_wall_fraction",
+            "display_name": "Fraction of Exterior Wall Area with Adjacent Structure",
+            "description": "This will impact how many above grade exterior walls are modeled with adiabatic boundary condition.",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "party_wall_stories_north",
+            "display_name": "Number of North facing stories with party wall",
+            "description": "This will impact how many above grade exterior north walls are modeled with adiabatic boundary condition. If this is less than the number of above grade stoes, upper flor will reamin exterior",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "party_wall_stories_south",
+            "display_name": "Number of South facing stories with party wall",
+            "description": "This will impact how many above grade exterior south walls are modeled with adiabatic boundary condition. If this is less than the number of above grade stoes, upper flor will reamin exterior",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "party_wall_stories_east",
+            "display_name": "Number of East facing stories with party wall",
+            "description": "This will impact how many above grade exterior east walls are modeled with adiabatic boundary condition. If this is less than the number of above grade stoes, upper flor will reamin exterior",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "party_wall_stories_west",
+            "display_name": "Number of West facing stories with party wall",
+            "description": "This will impact how many above grade exterior west walls are modeled with adiabatic boundary condition. If this is less than the number of above grade stoes, upper flor will reamin exterior",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "bottom_story_ground_exposed_floor",
+            "display_name": "Is the Bottom Story Exposed to Ground?",
+            "description": "This should be true unless you are modeling a partial building which doesn't include the lowest story. The bottom story floor will have an adiabatic boundary condition when false.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "top_story_exterior_exposed_roof",
+            "display_name": "Is the Top Story an Exterior Roof?",
+            "description": "This should be true unless you are modeling a partial building which doesn't include the highest story. The top story ceiling will have an adiabatic boundary condition when false.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "story_multiplier",
+            "display_name": "Calculation Method for Story Multiplier",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Basements Ground Mid Top",
+            "choice_values": [
+              "None",
+              "Basements Ground Mid Top"
+            ],
+            "choice_display_names": [
+              "None",
+              "Basements Ground Mid Top"
+            ],
+            "visible": true
+          },
+          {
+            "name": "bar_division_method",
+            "display_name": "Division Method for Bar Space Types.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Multiple Space Types - Individual Stories Sliced",
+            "choice_values": [
+              "Multiple Space Types - Simple Sliced",
+              "Multiple Space Types - Individual Stories Sliced",
+              "Single Space Type - Core and Perimeter"
+            ],
+            "choice_display_names": [
+              "Multiple Space Types - Simple Sliced",
+              "Multiple Space Types - Individual Stories Sliced",
+              "Single Space Type - Core and Perimeter"
+            ],
+            "visible": true
+          },
+          {
+            "name": "make_mid_story_surfaces_adiabatic",
+            "display_name": "Make Mid Story Floor Surfaces Adibatic",
+            "description": "If set to true, this will skip surface intersection and make mid story floors and celings adiabiatc, not just at multiplied gaps.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Space Type and Construction Set Wizard",
+      "measure_dir_name": "SpaceTypeAndConstructionSetWizard",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "space_type_and_construction_set_wizard",
+        "uid": "7c65af63-4316-47c9-b7a5-68d7a019e533",
+        "uuid": "{7c65af63-4316-47c9-b7a5-68d7a019e533}",
+        "version_id": "5003d3e8-33db-4513-ab87-003d1fcd78fd",
+        "version_uuid": "{5003d3e8-33db-4513-ab87-003d1fcd78fd}",
+        "version_modified": "20180530T202157Z",
+        "xml_checksum": "057E8D9D",
+        "display_name": "Space Type and Construction Set Wizard",
+        "class_name": "SpaceTypeAndConstructionSetWizard",
+        "description": "Create space types and or construction sets for the requested building type, climate zone, and target.",
+        "modeler_description": "The data for this measure comes from the openstudio-standards Ruby Gem. They are no longer created from the same JSON file that was used to make the OpenStudio templates. Optionally this will also set the building default space type and construction set.",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "building_type",
+            "display_name": "Building Type.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "SmallOffice",
+            "choice_values": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "Retail",
+              "StripMall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "choice_display_names": [
+              "SecondarySchool",
+              "PrimarySchool",
+              "SmallOffice",
+              "MediumOffice",
+              "LargeOffice",
+              "SmallHotel",
+              "LargeHotel",
+              "Warehouse",
+              "Retail",
+              "StripMall",
+              "QuickServiceRestaurant",
+              "FullServiceRestaurant",
+              "MidriseApartment",
+              "HighriseApartment",
+              "Hospital",
+              "Outpatient",
+              "SuperMarket"
+            ],
+            "visible": true
+          },
+          {
+            "name": "template",
+            "display_name": "Template.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "90.1-2010",
+            "choice_values": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013"
+            ],
+            "choice_display_names": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013"
+            ],
+            "visible": true
+          },
+          {
+            "name": "climate_zone",
+            "display_name": "Climate Zone.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "ASHRAE 169-2006-2A",
+            "choice_values": [
+              "ASHRAE 169-2006-1A",
+              "ASHRAE 169-2006-1B",
+              "ASHRAE 169-2006-2A",
+              "ASHRAE 169-2006-2B",
+              "ASHRAE 169-2006-3A",
+              "ASHRAE 169-2006-3B",
+              "ASHRAE 169-2006-3C",
+              "ASHRAE 169-2006-4A",
+              "ASHRAE 169-2006-4B",
+              "ASHRAE 169-2006-4C",
+              "ASHRAE 169-2006-5A",
+              "ASHRAE 169-2006-5B",
+              "ASHRAE 169-2006-5C",
+              "ASHRAE 169-2006-6A",
+              "ASHRAE 169-2006-6B",
+              "ASHRAE 169-2006-7A",
+              "ASHRAE 169-2006-8A"
+            ],
+            "choice_display_names": [
+              "ASHRAE 169-2006-1A",
+              "ASHRAE 169-2006-1B",
+              "ASHRAE 169-2006-2A",
+              "ASHRAE 169-2006-2B",
+              "ASHRAE 169-2006-3A",
+              "ASHRAE 169-2006-3B",
+              "ASHRAE 169-2006-3C",
+              "ASHRAE 169-2006-4A",
+              "ASHRAE 169-2006-4B",
+              "ASHRAE 169-2006-4C",
+              "ASHRAE 169-2006-5A",
+              "ASHRAE 169-2006-5B",
+              "ASHRAE 169-2006-5C",
+              "ASHRAE 169-2006-6A",
+              "ASHRAE 169-2006-6B",
+              "ASHRAE 169-2006-7A",
+              "ASHRAE 169-2006-8A"
+            ],
+            "visible": true
+          },
+          {
+            "name": "create_space_types",
+            "display_name": "Create Space Types?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "create_construction_set",
+            "display_name": "Create Construction Set?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "set_building_defaults",
+            "display_name": "Set Building Defaults Using New Objects?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Bar Aspect Ratio Sliced By SpaceType",
+      "measure_dir_name": "BarAspectRatioSlicedBySpaceType",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "bar_aspect_ratio_sliced_by_space_type",
+        "uid": "3e988765-9673-46f8-9b65-99d5b86c2b22",
+        "uuid": "{3e988765-9673-46f8-9b65-99d5b86c2b22}",
+        "version_id": "fe0bccff-f00e-4407-a9f5-563382c2481d",
+        "version_uuid": "{fe0bccff-f00e-4407-a9f5-563382c2481d}",
+        "version_modified": "20180716T202347Z",
+        "xml_checksum": "49BEF039",
+        "display_name": "BarAspectRatioSlicedBySpaceType",
+        "class_name": "BarAspectRatioSlicedBySpaceType",
+        "description": "This measure will create a building envelope based on a target floor area, aspect ratio, floor to floor height, and a collectin of space types and fraction of building using that space type.",
+        "modeler_description": "This is based on the SketchUp Plugin user script to create a rectangular building, but just uses different inputs. The resulting building will have a core and perimeter zoning, unless it is too small, in which case eac floor will have a single zone. This uses a floor multiplier for buildings taller than three stories. Below is an example of what the space tyep hash might look like. Sum of hash values should equal 1.0. \"{:189.1-2009 - Office - Corridor - CZ1-3 => '0.3', :189.1-2009 - Office - Conference - CZ1-3 => '0.2', :189.1-2009 - Office - ClosedOffice - CZ1-3 => '0.5' }\"",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Measure Function",
+            "display_name": "Measure Function",
+            "value": "Measure"
+          },
+          {
+            "name": "Requires EnergyPlus Results",
+            "display_name": "Requires EnergyPlus Results",
+            "value": false
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "total_bldg_area_ip",
+            "display_name": "Total Building Floor Area (ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 10000.0,
+            "visible": true
+          },
+          {
+            "name": "ns_to_ew_ratio",
+            "display_name": "Ratio of North/South Facade Length Relative to East/West Facade Length.",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 2.0,
+            "visible": true
+          },
+          {
+            "name": "num_floors",
+            "display_name": "Number of Floors.",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 2,
+            "visible": true
+          },
+          {
+            "name": "floor_to_floor_height_ip",
+            "display_name": "Floor to Floor Height (ft).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 10.0,
+            "visible": true
+          },
+          {
+            "name": "spaceTypeHashString",
+            "display_name": "Hash of Space Types with Name as Key and Fraction as value.",
+            "description": "",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "create_typical_building_from_model 1",
+      "measure_dir_name": "create_typical_building_from_model",
+      "arguments": {
+        "template": "90.1-2004",
+        "add_thermostat": false,
+        "add_hvac": false
+      },
+      "measure_definition": {
+        "name": "create_typical_building_from_model",
+        "uid": "339a2e3a-273c-4494-bb50-bfe586a0647c",
+        "uuid": "{339a2e3a-273c-4494-bb50-bfe586a0647c}",
+        "version_id": "a8bda5f0-4a45-4073-9e48-baf89879c951",
+        "version_uuid": "{a8bda5f0-4a45-4073-9e48-baf89879c951}",
+        "version_modified": "20180716T202352Z",
+        "xml_checksum": "EE13F09F",
+        "display_name": "Create Typical Building from Model",
+        "class_name": "CreateTypicalBuildingFromModel",
+        "description": "Takes a model with space and stub space types, and assigns constructions, schedules, internal loads, hvac, and other loads such as exterior lights and service water heating. The end result is somewhat like a custom protptye model with user geometry, but it may use different HVAC systems.",
+        "modeler_description": "Initially this was intended for stub space types, but it is possible that it will be run on models tha talready have internal loads, schedules, or constructions that should be preserved. Set it up to support addition at later date of bool args to skip specific types of model elements.",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "template",
+            "display_name": "Target Standard",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "90.1-2010",
+            "choice_values": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "choice_display_names": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "visible": true
+          },
+          {
+            "name": "system_type",
+            "display_name": "HVAC System Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Inferred",
+            "choice_values": [
+              "Inferred",
+              "Ideal Air Loads",
+              "PTAC with hot water heat",
+              "PTAC with gas coil heat",
+              "PTAC with electric baseboard heat",
+              "PTAC with no heat",
+              "PTAC with district hot water heat",
+              "PTHP",
+              "PSZ-AC with gas coil heat",
+              "PSZ-AC with electric baseboard heat",
+              "PSZ-AC with no heat",
+              "PSZ-AC with district hot water heat",
+              "PSZ-HP",
+              "Fan coil district chilled water with no heat",
+              "Fan coil district chilled water and boiler",
+              "Fan coil district chilled water unit heaters",
+              "Fan coil district chilled water electric baseboard heat",
+              "Fan coil district hot and chilled water",
+              "Fan coil district hot water and chiller",
+              "Fan coil chiller with no heat",
+              "Baseboard district hot water heat",
+              "Baseboard district hot water heat with direct evap coolers",
+              "Baseboard electric heat",
+              "Baseboard electric heat with direct evap coolers",
+              "Baseboard hot water heat",
+              "Baseboard hot water heat with direct evap coolers",
+              "Window AC with no heat",
+              "Window AC with forced air furnace",
+              "Window AC with district hot water baseboard heat",
+              "Window AC with hot water baseboard heat",
+              "Window AC with electric baseboard heat",
+              "Window AC with unit heaters",
+              "Direct evap coolers",
+              "Direct evap coolers with unit heaters",
+              "Unit heaters",
+              "Heat pump heat with no cooling",
+              "Heat pump heat with direct evap cooler",
+              "VAV with reheat",
+              "VAV with PFP boxes",
+              "VAV with gas reheat",
+              "VAV with zone unit heaters",
+              "VAV with electric baseboard heat",
+              "VAV cool with zone heat pump heat",
+              "PVAV with reheat",
+              "PVAV with PFP boxes",
+              "Residential forced air",
+              "Residential forced air cooling hot water baseboard heat",
+              "Residential forced air with district hot water",
+              "Residential heat pump",
+              "Forced air furnace",
+              "Forced air furnace district chilled water fan coil",
+              "Forced air furnace direct evap cooler",
+              "Residential AC with no heat",
+              "Residential AC with electric baseboard heat"
+            ],
+            "choice_display_names": [
+              "Inferred",
+              "Ideal Air Loads",
+              "PTAC with hot water heat",
+              "PTAC with gas coil heat",
+              "PTAC with electric baseboard heat",
+              "PTAC with no heat",
+              "PTAC with district hot water heat",
+              "PTHP",
+              "PSZ-AC with gas coil heat",
+              "PSZ-AC with electric baseboard heat",
+              "PSZ-AC with no heat",
+              "PSZ-AC with district hot water heat",
+              "PSZ-HP",
+              "Fan coil district chilled water with no heat",
+              "Fan coil district chilled water and boiler",
+              "Fan coil district chilled water unit heaters",
+              "Fan coil district chilled water electric baseboard heat",
+              "Fan coil district hot and chilled water",
+              "Fan coil district hot water and chiller",
+              "Fan coil chiller with no heat",
+              "Baseboard district hot water heat",
+              "Baseboard district hot water heat with direct evap coolers",
+              "Baseboard electric heat",
+              "Baseboard electric heat with direct evap coolers",
+              "Baseboard hot water heat",
+              "Baseboard hot water heat with direct evap coolers",
+              "Window AC with no heat",
+              "Window AC with forced air furnace",
+              "Window AC with district hot water baseboard heat",
+              "Window AC with hot water baseboard heat",
+              "Window AC with electric baseboard heat",
+              "Window AC with unit heaters",
+              "Direct evap coolers",
+              "Direct evap coolers with unit heaters",
+              "Unit heaters",
+              "Heat pump heat with no cooling",
+              "Heat pump heat with direct evap cooler",
+              "VAV with reheat",
+              "VAV with PFP boxes",
+              "VAV with gas reheat",
+              "VAV with zone unit heaters",
+              "VAV with electric baseboard heat",
+              "VAV cool with zone heat pump heat",
+              "PVAV with reheat",
+              "PVAV with PFP boxes",
+              "Residential forced air",
+              "Residential forced air cooling hot water baseboard heat",
+              "Residential forced air with district hot water",
+              "Residential heat pump",
+              "Forced air furnace",
+              "Forced air furnace district chilled water fan coil",
+              "Forced air furnace direct evap cooler",
+              "Residential AC with no heat",
+              "Residential AC with electric baseboard heat"
+            ],
+            "visible": true
+          },
+          {
+            "name": "hvac_delivery_type",
+            "display_name": "HVAC System Delivery Type",
+            "description": "How the HVAC system delivers heating or cooling to the zone.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Forced Air",
+            "choice_values": [
+              "Forced Air",
+              "Hydronic"
+            ],
+            "choice_display_names": [
+              "Forced Air",
+              "Hydronic"
+            ],
+            "visible": true
+          },
+          {
+            "name": "htg_src",
+            "display_name": "HVAC Heating Source",
+            "description": "The primary source of heating used by HVAC systems in the model.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "NaturalGas",
+            "choice_values": [
+              "Electricity",
+              "NaturalGas",
+              "DistrictHeating",
+              "DistrictAmbient"
+            ],
+            "choice_display_names": [
+              "Electricity",
+              "NaturalGas",
+              "DistrictHeating",
+              "DistrictAmbient"
+            ],
+            "visible": true
+          },
+          {
+            "name": "clg_src",
+            "display_name": "HVAC Cooling Source",
+            "description": "The primary source of cooling used by HVAC systems in the model.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Electricity",
+            "choice_values": [
+              "Electricity",
+              "DistrictCooling",
+              "DistrictAmbient"
+            ],
+            "choice_display_names": [
+              "Electricity",
+              "DistrictCooling",
+              "DistrictAmbient"
+            ],
+            "visible": true
+          },
+          {
+            "name": "kitchen_makeup",
+            "display_name": "Kitchen Exhaust MakeUp Air Calculation Method",
+            "description": "Determine logic to identify dining or cafe zones to provide makeup air to kitchen exhaust.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Adjacent",
+            "choice_values": [
+              "None",
+              "Largest Zone",
+              "Adjacent"
+            ],
+            "choice_display_names": [
+              "None",
+              "Largest Zone",
+              "Adjacent"
+            ],
+            "visible": true
+          },
+          {
+            "name": "exterior_lighting_zone",
+            "display_name": "Exterior Lighting Zone",
+            "description": "Identify the Exterior Lighitng Zone for the Building Site.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "3 - All Other Areas",
+            "choice_values": [
+              "0 - Undeveloped Areas Parks",
+              "1 - Developed Areas Parks",
+              "2 - Neighborhood",
+              "3 - All Other Areas",
+              "4 - High Activity"
+            ],
+            "choice_display_names": [
+              "0 - Undeveloped Areas Parks",
+              "1 - Developed Areas Parks",
+              "2 - Neighborhood",
+              "3 - All Other Areas",
+              "4 - High Activity"
+            ],
+            "visible": true
+          },
+          {
+            "name": "add_constructions",
+            "display_name": "Add Constructions to Model",
+            "description": "Construction Set will be appied to entire building",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_space_type_loads",
+            "display_name": "Add Space Type Loads to Model",
+            "description": "Populate existing space types in model with internal loads.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_elevators",
+            "display_name": "Add Elevators to Model",
+            "description": "Elevators will be add directly to space in model vs. being applied to a space type.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_exterior_lights",
+            "display_name": "Add Exterior Lights to Model",
+            "description": "Multiple exterior lights objects will be added for different classes of lighting such as parking and facade.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "onsite_parking_fraction",
+            "display_name": "Onsite Parking Fraction",
+            "description": "If set to 0 no exterior lighting for parking will be added",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          },
+          {
+            "name": "add_exhaust",
+            "display_name": "Add Exhaust Fans to Model",
+            "description": "Depending upon building type exhaust fans can be in kitchens, restrooms or other space types",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_swh",
+            "display_name": "Add Service Water Heating to Model",
+            "description": "This will add both the supply and demand side of service water heating.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_thermostat",
+            "display_name": "Add Thermostats",
+            "description": "Add Thermost to model based on Space Type Standards information of spaces assigned to thermal zones.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_hvac",
+            "display_name": "Add HVAC System to Model",
+            "description": "Add HVAC System and thermostats to model",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "remove_objects",
+            "display_name": "Clean Model of non-gemoetry objects",
+            "description": "Only removes objects of type that are selected to be added.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "blended_space_type_from_model",
+      "measure_dir_name": "blended_space_type_from_model",
+      "arguments": {
+        "blend_method": "Building Story",
+        "__SKIP__": false
+      },
+      "measure_definition": {
+        "name": "blended_space_type_from_model",
+        "uid": "667c2f1f-0927-4dbd-a7be-1087b5c15181",
+        "uuid": "{667c2f1f-0927-4dbd-a7be-1087b5c15181}",
+        "version_id": "a05667a9-2db4-4cdf-926b-852af5cfe892",
+        "version_uuid": "{a05667a9-2db4-4cdf-926b-852af5cfe892}",
+        "version_modified": "20180501T192445Z",
+        "xml_checksum": "28AD5222",
+        "display_name": "Blended Space Type from Model",
+        "class_name": "BlendedSpaceTypeFromModel",
+        "description": "This measure will remove all space type assignemnts and hard assigned internal loads from spaces that are included in the building floor area. Spaces such as plenums and attics will be left alone. A blended space type will be created from the original internal loads and assigned at the building level. Thermostats, Service Water Heating, and HVAC systems will not be altered. Any constructions associated with space types will be hard assigned prior to the space type assignemnt being removed.",
+        "modeler_description": "The goal of this measure is to create a single space type that represents the loads and schedules of a collection of space types in a model. When possible the measure will create mulitple load instances of a specific type in the resulting blended space type. This allows the original schedules to be used, and can allow for down stream EE measures on specific internal loads. Design Ventilation Outdoor Air objects will have to be merged into a single object. Will try to maintain the load design type (power, per area, per person) when possible. Need to account for zone multipliers when createding blended internal loads. Also address what happens to daylighting control objets. Original space types will be left in the model, some may still be assigned to spaces not included in the building area.",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Analysis Spreadsheet"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "blend_method",
+            "display_name": "Blend Space Types that are part of the same",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Building",
+            "choice_values": [
+              "Building Type",
+              "Building Story",
+              "Building"
+            ],
+            "choice_display_names": [
+              "Building Type",
+              "Building Story",
+              "Building"
+            ],
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "urban_geometry_creation",
+      "measure_dir_name": "urban_geometry_creation",
+      "arguments": {
+        "__SKIP__": true,
+        "city_db_url": null,
+        "project_id": null,
+        "feature_id": null,
+        "surrounding_buildings": "None"
+      },
+      "measure_definition": {
+        "name": "urban_geometry_creation",
+        "uid": "5ab85d6b-c9af-4361-8ab9-613ee99a5666",
+        "uuid": "{5ab85d6b-c9af-4361-8ab9-613ee99a5666}",
+        "version_id": "8eb43ab1-15cc-4fcd-a77b-a9f31a0332f5",
+        "version_uuid": "{8eb43ab1-15cc-4fcd-a77b-a9f31a0332f5}",
+        "version_modified": "20180529T211340Z",
+        "xml_checksum": "D254E772",
+        "display_name": "UrbanGeometryCreation",
+        "class_name": "UrbanGeometryCreation",
+        "description": "This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures.",
+        "modeler_description": "",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Analysis Spreadsheet"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "http://insight4.hpc.nrel.gov:8081/",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "feature_id",
+            "display_name": "Feature ID",
+            "description": "Feature ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "surrounding_buildings",
+            "display_name": "Surrounding Buildings",
+            "description": "Select which surrounding buildings to include.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "ShadingOnly",
+            "choice_values": [
+              "None",
+              "ShadingOnly",
+              "All"
+            ],
+            "choice_display_names": [
+              "None",
+              "ShadingOnly",
+              "All"
+            ],
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "create_typical_building_from_model 2",
+      "measure_dir_name": "create_typical_building_from_model",
+      "arguments": {
+        "template": "90.1-2004",
+        "add_constructions": false,
+        "add_space_type_loads": false,
+        "add_elevators": false,
+        "add_exterior_lights": false,
+        "add_exhaust": false,
+        "add_swh": false,
+        "remove_objects": false,
+        "clg_src": "Electricity",
+        "htg_src": "NaturalGas",
+        "hvac_delivery_type": "Forced Air",
+        "system_type": "Inferred"
+      },
+      "measure_definition": {
+        "name": "create_typical_building_from_model",
+        "uid": "339a2e3a-273c-4494-bb50-bfe586a0647c",
+        "uuid": "{339a2e3a-273c-4494-bb50-bfe586a0647c}",
+        "version_id": "a8bda5f0-4a45-4073-9e48-baf89879c951",
+        "version_uuid": "{a8bda5f0-4a45-4073-9e48-baf89879c951}",
+        "version_modified": "20180716T202352Z",
+        "xml_checksum": "EE13F09F",
+        "display_name": "Create Typical Building from Model",
+        "class_name": "CreateTypicalBuildingFromModel",
+        "description": "Takes a model with space and stub space types, and assigns constructions, schedules, internal loads, hvac, and other loads such as exterior lights and service water heating. The end result is somewhat like a custom protptye model with user geometry, but it may use different HVAC systems.",
+        "modeler_description": "Initially this was intended for stub space types, but it is possible that it will be run on models tha talready have internal loads, schedules, or constructions that should be preserved. Set it up to support addition at later date of bool args to skip specific types of model elements.",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "template",
+            "display_name": "Target Standard",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "90.1-2010",
+            "choice_values": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "choice_display_names": [
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "NREL ZNE Ready 2017"
+            ],
+            "visible": true
+          },
+          {
+            "name": "system_type",
+            "display_name": "HVAC System Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Inferred",
+            "choice_values": [
+              "Inferred",
+              "Ideal Air Loads",
+              "PTAC with hot water heat",
+              "PTAC with gas coil heat",
+              "PTAC with electric baseboard heat",
+              "PTAC with no heat",
+              "PTAC with district hot water heat",
+              "PTHP",
+              "PSZ-AC with gas coil heat",
+              "PSZ-AC with electric baseboard heat",
+              "PSZ-AC with no heat",
+              "PSZ-AC with district hot water heat",
+              "PSZ-HP",
+              "Fan coil district chilled water with no heat",
+              "Fan coil district chilled water and boiler",
+              "Fan coil district chilled water unit heaters",
+              "Fan coil district chilled water electric baseboard heat",
+              "Fan coil district hot and chilled water",
+              "Fan coil district hot water and chiller",
+              "Fan coil chiller with no heat",
+              "Baseboard district hot water heat",
+              "Baseboard district hot water heat with direct evap coolers",
+              "Baseboard electric heat",
+              "Baseboard electric heat with direct evap coolers",
+              "Baseboard hot water heat",
+              "Baseboard hot water heat with direct evap coolers",
+              "Window AC with no heat",
+              "Window AC with forced air furnace",
+              "Window AC with district hot water baseboard heat",
+              "Window AC with hot water baseboard heat",
+              "Window AC with electric baseboard heat",
+              "Window AC with unit heaters",
+              "Direct evap coolers",
+              "Direct evap coolers with unit heaters",
+              "Unit heaters",
+              "Heat pump heat with no cooling",
+              "Heat pump heat with direct evap cooler",
+              "VAV with reheat",
+              "VAV with PFP boxes",
+              "VAV with gas reheat",
+              "VAV with zone unit heaters",
+              "VAV with electric baseboard heat",
+              "VAV cool with zone heat pump heat",
+              "PVAV with reheat",
+              "PVAV with PFP boxes",
+              "Residential forced air",
+              "Residential forced air cooling hot water baseboard heat",
+              "Residential forced air with district hot water",
+              "Residential heat pump",
+              "Forced air furnace",
+              "Forced air furnace district chilled water fan coil",
+              "Forced air furnace direct evap cooler",
+              "Residential AC with no heat",
+              "Residential AC with electric baseboard heat"
+            ],
+            "choice_display_names": [
+              "Inferred",
+              "Ideal Air Loads",
+              "PTAC with hot water heat",
+              "PTAC with gas coil heat",
+              "PTAC with electric baseboard heat",
+              "PTAC with no heat",
+              "PTAC with district hot water heat",
+              "PTHP",
+              "PSZ-AC with gas coil heat",
+              "PSZ-AC with electric baseboard heat",
+              "PSZ-AC with no heat",
+              "PSZ-AC with district hot water heat",
+              "PSZ-HP",
+              "Fan coil district chilled water with no heat",
+              "Fan coil district chilled water and boiler",
+              "Fan coil district chilled water unit heaters",
+              "Fan coil district chilled water electric baseboard heat",
+              "Fan coil district hot and chilled water",
+              "Fan coil district hot water and chiller",
+              "Fan coil chiller with no heat",
+              "Baseboard district hot water heat",
+              "Baseboard district hot water heat with direct evap coolers",
+              "Baseboard electric heat",
+              "Baseboard electric heat with direct evap coolers",
+              "Baseboard hot water heat",
+              "Baseboard hot water heat with direct evap coolers",
+              "Window AC with no heat",
+              "Window AC with forced air furnace",
+              "Window AC with district hot water baseboard heat",
+              "Window AC with hot water baseboard heat",
+              "Window AC with electric baseboard heat",
+              "Window AC with unit heaters",
+              "Direct evap coolers",
+              "Direct evap coolers with unit heaters",
+              "Unit heaters",
+              "Heat pump heat with no cooling",
+              "Heat pump heat with direct evap cooler",
+              "VAV with reheat",
+              "VAV with PFP boxes",
+              "VAV with gas reheat",
+              "VAV with zone unit heaters",
+              "VAV with electric baseboard heat",
+              "VAV cool with zone heat pump heat",
+              "PVAV with reheat",
+              "PVAV with PFP boxes",
+              "Residential forced air",
+              "Residential forced air cooling hot water baseboard heat",
+              "Residential forced air with district hot water",
+              "Residential heat pump",
+              "Forced air furnace",
+              "Forced air furnace district chilled water fan coil",
+              "Forced air furnace direct evap cooler",
+              "Residential AC with no heat",
+              "Residential AC with electric baseboard heat"
+            ],
+            "visible": true
+          },
+          {
+            "name": "hvac_delivery_type",
+            "display_name": "HVAC System Delivery Type",
+            "description": "How the HVAC system delivers heating or cooling to the zone.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Forced Air",
+            "choice_values": [
+              "Forced Air",
+              "Hydronic"
+            ],
+            "choice_display_names": [
+              "Forced Air",
+              "Hydronic"
+            ],
+            "visible": true
+          },
+          {
+            "name": "htg_src",
+            "display_name": "HVAC Heating Source",
+            "description": "The primary source of heating used by HVAC systems in the model.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "NaturalGas",
+            "choice_values": [
+              "Electricity",
+              "NaturalGas",
+              "DistrictHeating",
+              "DistrictAmbient"
+            ],
+            "choice_display_names": [
+              "Electricity",
+              "NaturalGas",
+              "DistrictHeating",
+              "DistrictAmbient"
+            ],
+            "visible": true
+          },
+          {
+            "name": "clg_src",
+            "display_name": "HVAC Cooling Source",
+            "description": "The primary source of cooling used by HVAC systems in the model.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Electricity",
+            "choice_values": [
+              "Electricity",
+              "DistrictCooling",
+              "DistrictAmbient"
+            ],
+            "choice_display_names": [
+              "Electricity",
+              "DistrictCooling",
+              "DistrictAmbient"
+            ],
+            "visible": true
+          },
+          {
+            "name": "kitchen_makeup",
+            "display_name": "Kitchen Exhaust MakeUp Air Calculation Method",
+            "description": "Determine logic to identify dining or cafe zones to provide makeup air to kitchen exhaust.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Adjacent",
+            "choice_values": [
+              "None",
+              "Largest Zone",
+              "Adjacent"
+            ],
+            "choice_display_names": [
+              "None",
+              "Largest Zone",
+              "Adjacent"
+            ],
+            "visible": true
+          },
+          {
+            "name": "exterior_lighting_zone",
+            "display_name": "Exterior Lighting Zone",
+            "description": "Identify the Exterior Lighitng Zone for the Building Site.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "3 - All Other Areas",
+            "choice_values": [
+              "0 - Undeveloped Areas Parks",
+              "1 - Developed Areas Parks",
+              "2 - Neighborhood",
+              "3 - All Other Areas",
+              "4 - High Activity"
+            ],
+            "choice_display_names": [
+              "0 - Undeveloped Areas Parks",
+              "1 - Developed Areas Parks",
+              "2 - Neighborhood",
+              "3 - All Other Areas",
+              "4 - High Activity"
+            ],
+            "visible": true
+          },
+          {
+            "name": "add_constructions",
+            "display_name": "Add Constructions to Model",
+            "description": "Construction Set will be appied to entire building",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_space_type_loads",
+            "display_name": "Add Space Type Loads to Model",
+            "description": "Populate existing space types in model with internal loads.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_elevators",
+            "display_name": "Add Elevators to Model",
+            "description": "Elevators will be add directly to space in model vs. being applied to a space type.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_exterior_lights",
+            "display_name": "Add Exterior Lights to Model",
+            "description": "Multiple exterior lights objects will be added for different classes of lighting such as parking and facade.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "onsite_parking_fraction",
+            "display_name": "Onsite Parking Fraction",
+            "description": "If set to 0 no exterior lighting for parking will be added",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          },
+          {
+            "name": "add_exhaust",
+            "display_name": "Add Exhaust Fans to Model",
+            "description": "Depending upon building type exhaust fans can be in kitchens, restrooms or other space types",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_swh",
+            "display_name": "Add Service Water Heating to Model",
+            "description": "This will add both the supply and demand side of service water heating.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_thermostat",
+            "display_name": "Add Thermostats",
+            "description": "Add Thermost to model based on Space Type Standards information of spaces assigned to thermal zones.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "add_hvac",
+            "display_name": "Add HVAC System to Model",
+            "description": "Add HVAC System and thermostats to model",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "remove_objects",
+            "display_name": "Clean Model of non-gemoetry objects",
+            "description": "Only removes objects of type that are selected to be added.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "AedgK12ElectricEquipmentControls",
+      "measure_dir_name": "AedgK12ElectricEquipmentControls",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "aedg_k_12_electric_equipment_controls",
+        "uid": "285bc263-7429-4049-a0ce-f60fabf46eec",
+        "uuid": "{285bc263-7429-4049-a0ce-f60fabf46eec}",
+        "version_id": "49d8f290-67e0-41d1-a08d-6a576fdf0578",
+        "version_uuid": "{49d8f290-67e0-41d1-a08d-6a576fdf0578}",
+        "version_modified": "20180501T192506Z",
+        "xml_checksum": "1F21832E",
+        "display_name": "AedgK12ElectricEquipmentControls",
+        "class_name": "AedgK12ElectricEquipmentControls",
+        "description": "This measure reduces the values associated with electric equipment schedules to simulate reductions due to equipment controls throughout the building. This includes occupancy based outlets or adapters, as well as network or timer based controls. Kitchen equipment controls are not altered by this measure. The kitchen has a dedicated measure of its own which includes equipment controls.",
+        "modeler_description": "This measure is intended to be used on schedules that have not previously been adjusted for advanced controls. If you run this measure multiple times you will end up with more schedule reduction than is appropriate. The schedules used in the OpenStudio templates have not been adjusted for advanced controls, so it is appropriate to run them through this measure to simulation their impact on energy use. This measure applies a reduction of 0.15 to schedule values that are below 0.5 start with, no reduction is applied to values that are at or above 0.5 to start with. As a result the lower the initial fractional value the higher the percentage reduction it will receive. Values won't be lowered to a value below 0.1. Values already below this level will keep their original value.",
+        "tags": [
+          "Equipment.Equipment Controls"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "costTotal",
+            "display_name": "Total cost for all Equipment Controls in the Building ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Adjust Electric Equipment Loads by Space Type",
+      "measure_dir_name": "adjust_electric_equipment_loads_by_name_of_space_type",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "adjust_electric_equipment_loads_by_name_of_space_type",
+        "uid": "01d659f3-a8b9-4e77-b546-490a91590a8c",
+        "uuid": "{01d659f3-a8b9-4e77-b546-490a91590a8c}",
+        "version_id": "2c4dc30d-cc54-4e27-9848-1c0cfafe4486",
+        "version_uuid": "{2c4dc30d-cc54-4e27-9848-1c0cfafe4486}",
+        "version_modified": "20180717T202001Z",
+        "xml_checksum": "976EB6EB",
+        "display_name": "Adjust Electric Equipment Loads by Name of Space Type ",
+        "class_name": "AdjustElectricEquipmentLoadsByNameOfSpaceType",
+        "description": "Replace this text with an explanation of what the measure does in terms that can be understood by a general building professional audience (building owners, architects, engineers, contractors, etc.).  This description will be used to create reports aimed at convincing the owner and/or design team to implement the measure in the actual building design.  For this reason, the description may include details about how the measure would be implemented, along with explanations of qualitative benefits associated with the measure.  It is good practice to include citations in the measure if the description is taken from a known source or if specific benefits are listed.",
+        "modeler_description": "Replace this text with an explanation for the energy modeler specifically.  It should explain how the measure is modeled, including any requirements about how the baseline model must be set up, major assumptions, citations of references to applicable modeling resources, etc.  The energy modeler should be able to read this description and understand what changes the measure is making to the model and why these changes are being made.  Because the Modeler Description is written for an expert audience, using common abbreviations for brevity is good practice.",
+        "tags": [
+          "Equipment.Equipment Controls"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "space_type",
+            "display_name": "Apply the Measure to a Specific Space Type or to the Entire Model.",
+            "description": "",
+            "type": "String",
+            "required": false,
+            "model_dependent": false,
+            "default_value": "Hospital Lab - 90.1-2010",
+            "visible": true
+          },
+          {
+            "name": "elecequip_power_reduction_percent",
+            "display_name": "Electric Equipment Power Reduction (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 30.0,
+            "visible": true
+          },
+          {
+            "name": "material_and_installation_cost",
+            "display_name": "Increase in Material and Installation Cost for Electric Equipment per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost",
+            "display_name": "Increase in Demolition Costs for Electric Equipment per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 15,
+            "visible": true
+          },
+          {
+            "name": "om_cost",
+            "display_name": "Increase O & M Costs for Electric Equipment per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Adjust Design Specification Outdoor Air",
+      "measure_dir_name": "add_design_specification_outdoor_air",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "add_design_specification_outdoor_air",
+        "uid": "0a6c7a8c-fa3b-4025-b909-a32096c01144",
+        "uuid": "{0a6c7a8c-fa3b-4025-b909-a32096c01144}",
+        "version_id": "8e55ca76-05a1-4955-8d09-9875a4c1c164",
+        "version_uuid": "{8e55ca76-05a1-4955-8d09-9875a4c1c164}",
+        "version_modified": "20180718T154948Z",
+        "xml_checksum": "266557E5",
+        "display_name": "Add Design Specification Outdoor Air",
+        "class_name": "AddDesignSpecificationOutdoorAir",
+        "description": "Replace this text with an explanation of what the measure does in terms that can be understood by a general building professional audience (building owners, architects, engineers, contractors, etc.).  This description will be used to create reports aimed at convincing the owner and/or design team to implement the measure in the actual building design.  For this reason, the description may include details about how the measure would be implemented, along with explanations of qualitative benefits associated with the measure.  It is good practice to include citations in the measure if the description is taken from a known source or if specific benefits are listed.",
+        "modeler_description": "Replace this text with an explanation for the energy modeler specifically.  It should explain how the measure is modeled, including any requirements about how the baseline model must be set up, major assumptions, citations of references to applicable modeling resources, etc.  The energy modeler should be able to read this description and understand what changes the measure is making to the model and why these changes are being made.  Because the Modeler Description is written for an expert audience, using common abbreviations for brevity is good practice.",
+        "tags": [
+          "HVAC.Ventilation"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "space_type",
+            "display_name": "Apply the Measure to this Space Type.",
+            "description": "",
+            "type": "String",
+            "required": false,
+            "model_dependent": false,
+            "default_value": "Hospital Lab - 90.1-2010",
+            "visible": true
+          },
+          {
+            "name": "flow_rate",
+            "display_name": "Desired OA Flow Rate Specification, in ACH",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 6.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Add Konvekta Heat Recovery Coils",
+      "measure_dir_name": "add_heat_recovery_and_direct_evaporative_precooling",
+      "arguments": {
+        "__SKIP__": true
+      }
+    },
+    {
+      "name": "ReduceLightingLoadsByPercentage",
+      "measure_dir_name": "ReduceLightingLoadsByPercentage",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "reduce_lighting_loads_by_percentage",
+        "uid": "791f3404-a28b-4a80-ba3f-e15b339e39ea",
+        "uuid": "{791f3404-a28b-4a80-ba3f-e15b339e39ea}",
+        "version_id": "a6ebe2f3-1887-41ad-9c89-b023f6a82303",
+        "version_uuid": "{a6ebe2f3-1887-41ad-9c89-b023f6a82303}",
+        "version_modified": "20180501T192515Z",
+        "xml_checksum": "293730A7",
+        "display_name": "Reduce Lighting Loads by Percentage",
+        "class_name": "ReduceLightingLoadsByPercentage",
+        "description": "The lighting system in this building uses more power per area than is required with the latest lighting technologies.  Replace the lighting system with a newer, more efficient lighting technology.  Newer technologies provide the same amount of light but use less energy in the process.",
+        "modeler_description": "This measure supports models which have a mixture of lighting assigned to spaces and space types.  The lighting may be specified as individual luminaires, lighting equipment level, lighting power per area, or lighting power per person.\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\nLoop through all lights and luminaires in the specified space type or the entire building. Clone the definition if it is shared by other lights, rename and adjust the power based on the specified percentage. Link the new definition to the existing lights or luminaire instance.  Adjust the power for lighting equipment assigned to a particular space but only if that space is part of the selected space type by  looping through the objects first in space types and then in spaces, but again only for spaces that are in the specified space type (unless the entire building has been chosen).  Material and installation cost increases will be applied to all costs related to both the definition and instance of the lighting object.  If this measure includes baseline costs, then the material and installation costs of the lighting objects in the baseline model will be summed together and added as a capital cost on the building object.",
+        "tags": [
+          "Electric Lighting.Lighting Equipment"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Measure Function",
+            "display_name": "Measure Function",
+            "value": "Measure"
+          },
+          {
+            "name": "Requires EnergyPlus Results",
+            "display_name": "Requires EnergyPlus Results",
+            "value": false
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "space_type",
+            "display_name": "Apply the Measure to a Specific Space Type or to the Entire Model.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "*Entire Building*",
+            "choice_values": [
+              "{cc7decdc-a25b-4b5a-b516-e9e071e3a596}"
+            ],
+            "choice_display_names": [
+              "*Entire Building*"
+            ],
+            "visible": true
+          },
+          {
+            "name": "lighting_power_reduction_percent",
+            "display_name": "Lighting Power Reduction (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 30.0,
+            "visible": true
+          },
+          {
+            "name": "material_and_installation_cost",
+            "display_name": "Increase in Material and Installation Cost for Lighting per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost",
+            "display_name": "Increase in Demolition Costs for Lighting per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 15,
+            "visible": true
+          },
+          {
+            "name": "om_cost",
+            "display_name": "Increase O & M Costs for Lighting per Floor Area (%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "AedgK12InteriorLightingControls",
+      "measure_dir_name": "AedgK12InteriorLightingControls",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "aedg_k_12_interior_lighting_controls",
+        "uid": "9f395ee4-5f82-4ca6-8a50-cb854893827e",
+        "uuid": "{9f395ee4-5f82-4ca6-8a50-cb854893827e}",
+        "version_id": "69197f97-0c1c-4740-9e1b-a3997ed5a94b",
+        "version_uuid": "{69197f97-0c1c-4740-9e1b-a3997ed5a94b}",
+        "version_modified": "20180501T192508Z",
+        "xml_checksum": "9B7BB4D8",
+        "display_name": "AedgK12InteriorLightingControls",
+        "class_name": "AedgK12InteriorLightingControls",
+        "description": "This measure reduces the values associated with lighting schedules to simulate reductions due to vacancy sensors throughout the building.",
+        "modeler_description": "This measure is intended to be used on schedules that have not previously been adjusted for advanced controls. If you run this measure multiple times you will end up with more schedule reduction than is appropriate. The schedules used in the OpenStudio templates have not been adjusted for vacancy controls, so it is appropriate to run them through this measure to simulation their impact on energy use. This measure applies a 15% reduction to the fractional schedule values.",
+        "tags": [
+          "Electric Lighting.Electric Lighting Controls"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "costTotal",
+            "display_name": "Total cost for all Lighting Controls in the Building ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "AdjustSystemEfficiencies",
+      "measure_dir_name": "AdjustSystemEfficiencies",
+      "arguments": {
+        "__SKIP__": true,
+        "heating_efficiency_multiplier": 1.0,
+        "cooling_cop_multiplier": 1.0
+      },
+      "measure_definition": {
+        "name": "adjust_system_efficiencies",
+        "uid": "edeaff3d-3ae4-4487-b4a4-5cf08ea14510",
+        "uuid": "{edeaff3d-3ae4-4487-b4a4-5cf08ea14510}",
+        "version_id": "168d9329-ba07-4ff6-b538-431ecb6198aa",
+        "version_uuid": "{168d9329-ba07-4ff6-b538-431ecb6198aa}",
+        "version_modified": "20180501T192444Z",
+        "xml_checksum": "4435983D",
+        "display_name": "AdjustSystemEfficiencies",
+        "class_name": "AdjustSystemEfficiencies",
+        "description": "Updates heating and cooling efficiencies of all equipment in a model by a multiplier.",
+        "modeler_description": "This measure will search through all air loops, plant loops, and thermal zones in the model and adjust heating and cooling efficiencies of all relevant objects found.",
+        "tags": [
+          "HVAC.Whole System"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "heating_efficiency_multiplier",
+            "display_name": "Heating Efficiency Multiplier",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          },
+          {
+            "name": "cooling_cop_multiplier",
+            "display_name": "Cooling COP Multiplier",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ImproveFanBeltEfficiency",
+      "measure_dir_name": "ImproveFanBeltEfficiency",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "improve_fan_belt_efficiency",
+        "uid": "ebeca0aa-a432-4283-a714-17116f7c8f8c",
+        "uuid": "{ebeca0aa-a432-4283-a714-17116f7c8f8c}",
+        "version_id": "3c2e7e39-4b05-47a5-9fb0-8d9b03fb7ce9",
+        "version_uuid": "{3c2e7e39-4b05-47a5-9fb0-8d9b03fb7ce9}",
+        "version_modified": "20180501T192513Z",
+        "xml_checksum": "F78494F2",
+        "display_name": "Improve Fan Belt Efficiency",
+        "class_name": "ImproveFanBeltEfficiency",
+        "description": "The assessment team observed opportunities for fan belt improvements on HVAC fan drives. These motors are asynchronous induction motors.\r\r\r\r\r\r\n\r\r\r\r\r\r\nImprovements in belt efficiency result in energy savings at the motor. The three common belt efficiency measures are belt tightening (1%-5% savings per motor), replace standard v-belts with cogged v-belts (2% savings per motor), and replace standard belts with synchronous belts (3% savings per motor).\r\r\r\r\r\r\n\r\r\r\r\r\r\nWell-adjusted belts run cooler, last longer, and operate at higher efficiency than standard belts. The belts associated with the largest motors, longest run times, and that are run closest to full load should be given priority when making replacements.\r\r\r\r\r\r\n  ",
+        "modeler_description": "This measure alters fans on all or a single air loop in the building. The three belt ECMs options are then exposed as three user argument fields with a default populated for each. The range of efficiency improvements will be listed in the user argument description. The three user arguments will be summed and added to the existing motor efficiency. The cost arguments are user arguments that are also populated with a default.  If arguments are left blank, the user is notified that the model has not changed in the run manager. A warning is issued if the motor efficiency >96% and an error is issued if efficiency is >100%.",
+        "tags": [
+          "HVAC.Distribution"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "object",
+            "display_name": "Choose an Air Loop to Alter.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "*All Air Loops*",
+            "choice_values": [
+              "{4f3f1bc4-ae1c-4e62-856e-1fecad0aa6d5}"
+            ],
+            "choice_display_names": [
+              "*All Air Loops*"
+            ],
+            "visible": true
+          },
+          {
+            "name": "motor_eff",
+            "display_name": "Motor Efficiency Improvement Due to Fan Belt Improvements(%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 3.0,
+            "visible": true
+          },
+          {
+            "name": "remove_costs",
+            "display_name": "Remove Baseline Costs From Effected Fans?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "material_cost",
+            "display_name": "Material and Installation Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost",
+            "display_name": "Demolition Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 20,
+            "visible": true
+          },
+          {
+            "name": "om_cost",
+            "display_name": "O & M Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ImproveMotorEfficiency",
+      "measure_dir_name": "ImproveMotorEfficiency",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "improve_motor_efficiency",
+        "uid": "52013ba9-7b9b-4ffd-bc67-d4c0fa05d7ae",
+        "uuid": "{52013ba9-7b9b-4ffd-bc67-d4c0fa05d7ae}",
+        "version_id": "6a2f7311-0129-4f61-90cb-481ee04050f4",
+        "version_uuid": "{6a2f7311-0129-4f61-90cb-481ee04050f4}",
+        "version_modified": "20180501T192513Z",
+        "xml_checksum": "F78494F2",
+        "display_name": "Improve Motor Efficiency in Selected Fans and Pumps",
+        "class_name": "ImproveMotorEfficiency",
+        "description": "The assessment team observed opportunities for motor efficiency improvements on HVAC systems. These motors are asynchronous induction motors.\rThere are currently motors on the market that are far superior to standard efficiency motors. These come in both premium efficiency and ultra-efficiency which exceed NEMA Premium standards. These motors utilize a die cast copper rotor which reduces the energy requirements of the motor and allows the motor to run cooler. The motor also features an improved heat dissipation system and new low-friction bearings; both of which help extend the life of the motor. The motor also has a smaller weight and size compared to the standard efficiency motors. These high efficiency motors are showing efficiency improvements on the order of 3-10% more efficient than current standard efficiency motors.\rFor all of the three-phase, asynchronous induction motors feeding AHU supply fans, specify premium or ultra-efficiency motors. The belts associated with the largest motors, longest run times, and that run closest to full load should be given priority when making replacements.",
+        "modeler_description": "This measure alters motors for fans and pumps in all or a single air/plant loop in the building. The text before each user argument should include the motor location and motor HP. The default value for the user argument field will be the existing motor efficiency. After each user argument there will be a check box to specify which of the motors the calculation will be applied to. For each object with a check box, the efficiency in the user argument field is replaced as the motor efficiency.\r\r\r\r\r\r\n\r\r\r\r\r\r\nThe cost arguments are user arguments that start with a default of $0. Operations and maintenance cost is applied to both baseline and new measure cash flows. Salvage value can only be applied at year 0 and only if material and installation cost for baseline measure = 0. If arguments are left blank, the user is notified that the model has not changed in the run manager. A warning is issued if the motor efficiency >96% and an error is issued if efficiency is >100%.",
+        "tags": [
+          "HVAC.Distribution"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "object",
+            "display_name": "Choose a Plant or Air Loop to Alter.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "*All Plant and Air Loops*",
+            "choice_values": [
+              "{77641a1f-7c4f-4f90-a623-5bd18380ab87}"
+            ],
+            "choice_display_names": [
+              "*All Plant and Air Loops*"
+            ],
+            "visible": true
+          },
+          {
+            "name": "motor_eff",
+            "display_name": "Set Motor Efficiency(%).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 96.0,
+            "visible": true
+          },
+          {
+            "name": "remove_costs",
+            "display_name": "Remove Baseline Costs From Effected Fans and Pumps?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "material_cost",
+            "display_name": "Material and Installation Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost",
+            "display_name": "Demolition Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 20,
+            "visible": true
+          },
+          {
+            "name": "om_cost",
+            "display_name": "O & M Costs per Motor ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "add_rooftop_pv",
+      "measure_dir_name": "add_rooftop_pv",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "add_rooftop_pv",
+        "uid": "34550614-0c87-44db-9252-0ca0915b1e64",
+        "uuid": "{34550614-0c87-44db-9252-0ca0915b1e64}",
+        "version_id": "12e446fd-7ddf-4b58-8c02-b53db910cbab",
+        "version_uuid": "{12e446fd-7ddf-4b58-8c02-b53db910cbab}",
+        "version_modified": "20180501T192506Z",
+        "xml_checksum": "178163B6",
+        "display_name": "Add Rooftop PV",
+        "class_name": "AddRooftopPV",
+        "description": "This measure will create new shading surface geometry above the roof for each thermal zone inyour model where the surface azmith falls within the user specified range. Arguments are exposed for panel efficiency, inverter efficiency, and the fraction of each roof surface that has PV",
+        "modeler_description": "The fraction of surface containing PV will not only set the PV properties, but will also change the transmittance value for the shading surface. This allows the measure to avoid attempting to layout the panels. Simple PV will be used to model the PV.",
+        "tags": [
+          "Onsite Power Generation.Photovoltaic"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Analysis Spreadsheet"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "New Construction EE"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Retrofit EE"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "fraction_of_surface",
+            "display_name": "Fraction of Surface Area with Active Solar Cells",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "fraction",
+            "default_value": 0.75,
+            "visible": true
+          },
+          {
+            "name": "cell_efficiency",
+            "display_name": "Cell Efficiency",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "fraction",
+            "default_value": 0.18,
+            "visible": true
+          },
+          {
+            "name": "inverter_efficiency",
+            "display_name": "Inverter Efficiency",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "fraction",
+            "default_value": 0.98,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "AedgSmallToMediumOfficeElectricEquipment",
+      "measure_dir_name": "AedgSmallToMediumOfficeElectricEquipment",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "aedg_small_to_medium_office_electric_equipment",
+        "uid": "2b50c112-4ee3-42b2-8c7f-d76d752cd0b4",
+        "uuid": "{2b50c112-4ee3-42b2-8c7f-d76d752cd0b4}",
+        "version_id": "3b2b7831-75f2-45ca-a843-5614601e8cab",
+        "version_uuid": "{3b2b7831-75f2-45ca-a843-5614601e8cab}",
+        "version_modified": "20180501T192509Z",
+        "xml_checksum": "126F1C43",
+        "display_name": "AedgSmallToMediumOfficeElectricEquipment",
+        "class_name": "AedgSmallToMediumOfficeElectricEquipment",
+        "description": "This measure removes all existing electric equipment from spaces recognized as office building space types. New electric objects will be added based on the 50% Small to Medium Office AEDG recommendations.",
+        "modeler_description": "Equipment in un-recognized spaces will be left alone. This measure will attempt to retain schedules from the initial model. If the initial model contained multiple electric equipment objects associated with multiple schedules, then one of those schedules will be picked for the new electric equipment.",
+        "tags": [
+          "Equipment.Electric Equipment"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "material_cost_ip",
+            "display_name": "Material and Installation Costs for Electric Equipment per Floor Area ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Increase R-value of Insulation for Exterior Walls to a Specific Value",
+      "measure_dir_name": "IncreaseInsulationRValueForExteriorWalls",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "increase_insulation_r_value_for_exterior_walls",
+        "uid": "3fdf9c39-d305-449b-a4b5-077166af5a67",
+        "uuid": "{3fdf9c39-d305-449b-a4b5-077166af5a67}",
+        "version_id": "75ba0e4e-f291-49be-b0ca-a580db49abdc",
+        "version_uuid": "{75ba0e4e-f291-49be-b0ca-a580db49abdc}",
+        "version_modified": "20180501T192513Z",
+        "xml_checksum": "0F858D9E",
+        "display_name": "Increase R-value of Insulation for Exterior Walls to a Specific Value",
+        "class_name": "IncreaseInsulationRValueForExteriorWalls",
+        "description": "Set the R-Value of exterior wall insulation to a specified value.  Higher R-Values provide better insulation, lowering heat loss and heat gain through the exterior walls. Costs for a construction can be adjusted",
+        "modeler_description": "Set the R-Value (ft^2*h*R/Btu) of the insulation material layer in air exposed exterior walls to a specified value. Find constructions used for exterior walls, make copies of these and assign them to the appropriate construction sets or surfaces. Identify which layer of the construction is the insulation layer. Layer to change could be Material, No Mass Material, or Air Gap Material. If the Insulation layer is \"Material? the thickness will be changed to attain the desired R-Value. If the insulation layer is \"No Mass Material? or \"Air Gap Material? the Thermal Resistance can be directly entered. If the construction doesn't appear to have an insulation layer it will not be altered. Surfaces with \"Adiabatic\" boundary conditions are not specifically assumed to be interior or exterior. As a result constructions used on \"Adiabatic\" surfaces will not be altered. Constructions for surfaces with a \"Ground\" boundary condition will also not be altered. Constructions with an insulation layer that already exceeds the requested R-Value will also not be altered.\r\r\r\r\r\r\n\r\r\r\r\r\r\nThe resulting construction will retain the cost data from the source construction, however material and installation cost can be increased which will affect replacement cost if it happens during the analysis period. Additionally a one-time cost can be added to reflect any retrofit costs that occur at some point prior to replacement.\r\r\r\r\r\r\n  ",
+        "tags": [
+          "Envelope.Opaque"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Measure Function",
+            "display_name": "Measure Function",
+            "value": "Measure"
+          },
+          {
+            "name": "Requires EnergyPlus Results",
+            "display_name": "Requires EnergyPlus Results",
+            "value": false
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "r_value",
+            "display_name": "Insulation R-value (ft^2*h*R/Btu).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 13.0,
+            "visible": true
+          },
+          {
+            "name": "allow_reduction",
+            "display_name": "Allow both increase and decrease in R-value to reach requested target?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "material_cost_increase_ip",
+            "display_name": "Increase in Material and Installation Costs for Construction per Area Used ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "one_time_retrofit_cost_ip",
+            "display_name": "One Time Retrofit Cost to Add Insulation to Construction ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_retrofit_cost",
+            "display_name": "Year to Incur One Time Retrofit Cost (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Replace Exterior Window Constructions with a Different Construction from the Model",
+      "measure_dir_name": "ReplaceExteriorWindowConstruction",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "replace_exterior_window_construction",
+        "uid": "95116deb-0716-4cdc-af27-09c463befc7c",
+        "uuid": "{95116deb-0716-4cdc-af27-09c463befc7c}",
+        "version_id": "ebd16610-0d91-4541-b49b-0b4ac61a7536",
+        "version_uuid": "{ebd16610-0d91-4541-b49b-0b4ac61a7536}",
+        "version_modified": "20180501T192516Z",
+        "xml_checksum": "6DE831F7",
+        "display_name": "Replace Exterior Window Constructions with a Different Construction from the Model.",
+        "class_name": "ReplaceExteriorWindowConstruction",
+        "description": "Replace existing windows with different windows to change thermal or lighting performance.  Window technology has improved drastically over the years, and double or triple-pane high performance windows currently on the market can cut down on envelope loads greatly.  Window frames with thermal breaks reduce the considerable energy that can transfer through thermally unbroken frames.  High performance windows typically also come with low-emissivity (low?e) glass to keep radiant heat on the same side of the glass from where the heat originated. This means that during the cooling months a low-e glass would tend to keep radiant heat from the sun on the outside of the window, which would keep the inside of a building cooler. Conversely, during heating months low-e glass helps keep radiant heat from inside the building on the inside, which would keep the inside of a building warmer.  Life cycle cost values may be added for the new window applied by the measure.",
+        "modeler_description": "Replace fixed and/or operable exterior window constructions with another construction in the model.  Skylights (windows in roofs vs. walls) will not be altered. Windows in surfaces with \"Adiabatic\" boundary conditions are not specifically assumed to be interior or exterior. As a result constructions used on windows in \"Adiabatic\" surfaces will not be altered. Material & installation, demolition, and O&M costs can be added to the applied window construction. Optionally any prior costs associated with construction can be removed.\r\r\r\r\r\r\n\r\r\r\r\r\r\nFor costs added as part of a design alternatives \"Years Until Costs Start? is typically \"0?. For a new construction scenario \"Demolition Costs Occur During Initial Construction?? is \"false?. For retrofit scenario \"Demolition Costs Occur During Initial Construction?? is \"true?. O&M cost and frequency can be whatever is appropriate for the component.\r\r\r\r\r\r\n  ",
+        "tags": [
+          "Envelope.Fenestration"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Measure Function",
+            "display_name": "Measure Function",
+            "value": "Measure"
+          },
+          {
+            "name": "Requires EnergyPlus Results",
+            "display_name": "Requires EnergyPlus Results",
+            "value": false
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "construction",
+            "display_name": "Pick a Window Construction From the Model to Replace Existing Window Constructions.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "choice_values": [
+
+            ],
+            "choice_display_names": [
+
+            ],
+            "visible": true
+          },
+          {
+            "name": "change_fixed_windows",
+            "display_name": "Change Fixed Windows?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "change_operable_windows",
+            "display_name": "Change Operable Windows?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "remove_costs",
+            "display_name": "Remove Existing Costs?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "material_cost_ip",
+            "display_name": "Material and Installation Costs for Construction per Area Used ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost_ip",
+            "display_name": "Demolition Costs for Construction per Area Used ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 20,
+            "visible": true
+          },
+          {
+            "name": "om_cost_ip",
+            "display_name": "O & M Costs for Construction per Area Used ($/ft^2).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "AedgOfficeHvacRadiantDoas",
+      "measure_dir_name": "AedgOfficeHvacRadiantDoas",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "aedg_office_hvac_radiant_doas",
+        "uid": "3d7edb7b-aeff-4a59-87f2-138766b48c11",
+        "uuid": "{3d7edb7b-aeff-4a59-87f2-138766b48c11}",
+        "version_id": "748a8d36-770c-40b8-8048-d22987f20a2c",
+        "version_uuid": "{748a8d36-770c-40b8-8048-d22987f20a2c}",
+        "version_modified": "20180501T192508Z",
+        "xml_checksum": "4435983D",
+        "display_name": "AedgOfficeHvacRadiantDoas",
+        "class_name": "AedgOfficeHvacRadiantDoas",
+        "description": "Measure replaces existing HVAC system (if any) with a Radiant Heating and Cooling with DOAS HVAC system (one DOAS per floor).  The radiant with DOAS system (centralized DOAS, with zone level conditioning) is applied to all space types.  In select cases, the user is given the option to preserve existing HVAC schedules.  In other cases, new schedules are generated that align with AEDG recommendations.  The resulting HVAC system reflects the HVAC recommendations of the 50% Small and Medium Office AEDG.",
+        "modeler_description": "Airloops are dedicated to ventilation (DOAS) and have constant speed fan operation, hot water coil heating, and single speed DX cooling.  Conditioning is provided at the zone level with low temperature radiant, high thermal mass floor slabs.  Chiller for DOAS and radiant cooling is air-cooled.",
+        "tags": [
+          "HVAC.Whole System"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "ceilingReturnPlenumSpaceType",
+            "display_name": "This space type should be part of a ceiling return air plenum.",
+            "description": "",
+            "type": "Choice",
+            "required": false,
+            "model_dependent": false,
+            "choice_values": [
+
+            ],
+            "choice_display_names": [
+
+            ],
+            "visible": true
+          },
+          {
+            "name": "costTotalHVACSystem",
+            "display_name": "Total Cost for HVAC System ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "remake_schedules",
+            "display_name": "Apply recommended availability and ventilation schedules for air handlers?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Set COP for Single Speed DX Cooling Units",
+      "measure_dir_name": "SetCOPforSingleSpeedDXCoolingUnits",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "set_co_pfor_single_speed_dx_cooling_units",
+        "uid": "a4a7297e-8314-4df7-86b5-bec18cdd0a3a",
+        "uuid": "{a4a7297e-8314-4df7-86b5-bec18cdd0a3a}",
+        "version_id": "1c131297-8e31-456a-9192-4665454707e4",
+        "version_uuid": "{1c131297-8e31-456a-9192-4665454707e4}",
+        "version_modified": "20180501T192516Z",
+        "xml_checksum": "9E2537CD",
+        "display_name": "Set COP for Single Speed DX Cooling Units",
+        "class_name": "SetCOPforSingleSpeedDXCoolingUnits",
+        "description": "This measure will find single speed DX cooling units in the model and will alter the Rated COP to a specified value. It can be run on a single or all air loops in the model.",
+        "modeler_description": "Loop through air loops in the building and find and change the COP of any OS:Coil:Cooling:DX:SingleSpeed objects you find. Note the pre-adjusted COP and also the name of the loop. For the starting condition note the range of COP values for the units, and for the final condition do the same, to confirm that they were all changed.",
+        "tags": [
+          "HVAC.Cooling"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "object",
+            "display_name": "Choose an Air Loop with a single speed DX Cooling Unit to Alter.",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "*All Air Loops*",
+            "choice_values": [
+              "{c707e822-0977-4f5b-b05b-5a0aee06df1f}"
+            ],
+            "choice_display_names": [
+              "*All Air Loops*"
+            ],
+            "visible": true
+          },
+          {
+            "name": "cop",
+            "display_name": "Rated COP",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 4.0,
+            "visible": true
+          },
+          {
+            "name": "remove_costs",
+            "display_name": "Remove Baseline Costs From Effected Cooling Coil DX Single Speed Units?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          },
+          {
+            "name": "material_cost",
+            "display_name": "Material and Installation Costs per Cooling Coil DX Single Speed Unit ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "demolition_cost",
+            "display_name": "Demolition Costs per Cooling Coil DX Single Speed Unit ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "years_until_costs_start",
+            "display_name": "Years Until Costs Start (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0,
+            "visible": true
+          },
+          {
+            "name": "demo_cost_initial_const",
+            "display_name": "Demolition Costs Occur During Initial Construction?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": false,
+            "visible": true
+          },
+          {
+            "name": "expected_life",
+            "display_name": "Expected Life (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 20,
+            "visible": true
+          },
+          {
+            "name": "om_cost",
+            "display_name": "O & M Costs per Cooling Coil DX Single Speed Unit ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "om_frequency",
+            "display_name": "O & M Frequency (whole years).",
+            "description": "",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ZEDG VRF with DOAS",
+      "measure_dir_name": "zedgk_12_hvac_vrf_with_doas",
+      "arguments": {
+        "__SKIP__": true
+      },
+      "measure_definition": {
+        "name": "zedgvrf_with_doas",
+        "uid": "633b8efc-7bcb-4aa0-8821-d0ee08f960db",
+        "uuid": "{633b8efc-7bcb-4aa0-8821-d0ee08f960db}",
+        "version_id": "7a423e6c-395a-41e9-b9c0-4e5a9340964f",
+        "version_uuid": "{7a423e6c-395a-41e9-b9c0-4e5a9340964f}",
+        "version_modified": "20180501T192450Z",
+        "xml_checksum": "87BA8B1E",
+        "display_name": "ZEDG VRF with DOAS",
+        "class_name": "ZEDGVRFWithDOAS",
+        "description": "Adds VRF system with multiple indoor units connected to an outdoor unit.",
+        "modeler_description": "Multiple units allows for capacity variation and simultaneous heating and cooling. Each zone in the model was served by a VRF indoor terminal unit and the DOAS. Performance curves for the outdoor terminal unit entered into the model with a resistive defrost and heat recovery. Kitchen, gym and the cafeteria were served by their own outdoor units.\n  ",
+        "tags": [
+          "HVAC.Whole System"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          },
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "ceilingReturnPlenumSpaceType",
+            "display_name": "This space type should be part of a ceiling return air plenum.",
+            "description": "",
+            "type": "Choice",
+            "required": false,
+            "model_dependent": false,
+            "choice_values": [
+
+            ],
+            "choice_display_names": [
+
+            ],
+            "visible": true
+          },
+          {
+            "name": "costTotalHVACSystem",
+            "display_name": "Total Cost for HVAC System ($).",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 0.0,
+            "visible": true
+          },
+          {
+            "name": "remake_schedules",
+            "display_name": "Apply recommended availability and ventilation schedules for air handlers?",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": true,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Add EV Charger Load",
+      "measure_dir_name": "add_ev_load",
+      "arguments": {
+        "__SKIP__": false
+      },
+      "measure_definition": {
+        "name": "add_ev_load",
+        "uid": "a23e0493-7357-48ca-b089-4d902efd6b50",
+        "uuid": "{a23e0493-7357-48ca-b089-4d902efd6b50}",
+        "version_id": "206ec73f-9567-4a1d-9ca5-c9d69b0d5535",
+        "version_uuid": "{206ec73f-9567-4a1d-9ca5-c9d69b0d5535}",
+        "version_modified": "20180703T212840Z",
+        "xml_checksum": "9A202986",
+        "display_name": "Add_EV_Load",
+        "class_name": "AddEVLoad",
+        "description": "This measure adds a load associated with charging of electric vehicles (EVs) to a building in URBANopt. EV load profiles were generated in EVI-Pro for specific building types. This measure allows running of customized load profiles for buildings in the Pena Station Next project, and also for generating typical charging load profiles based on the location type (home, public, or office).",
+        "modeler_description": "This measure adds an EV charging load to a building model. Load profiles for EV charging were generated in EVI-Pro. Different options are available for charging control type and charging behavior.",
+        "tags": [
+          "Equipment.Electric Equipment"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "delay_type",
+            "display_name": "Charging Flexibility Option",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Min Delay",
+            "choice_values": [
+              "Max Delay",
+              "Min Delay",
+              "Min Power"
+            ],
+            "choice_display_names": [
+              "Max Delay",
+              "Min Delay",
+              "Min Power"
+            ],
+            "visible": true
+          },
+          {
+            "name": "charge_behavior",
+            "display_name": "Consumer Charging Behavior",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Business as Usual",
+            "choice_values": [
+              "Business as Usual",
+              "Free Workplace Charging at Project Site",
+              "Free Workplace Charging Across Metro Area"
+            ],
+            "choice_display_names": [
+              "Business as Usual",
+              "Free Workplace Charging at Project Site",
+              "Free Workplace Charging Across Metro Area"
+            ],
+            "visible": true
+          },
+          {
+            "name": "chg_station_type",
+            "display_name": "Charging Station Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Typical Public",
+            "choice_values": [
+              "Pena Station Next Analysis",
+              "Typical Home",
+              "Typical Public",
+              "Typical Work"
+            ],
+            "choice_display_names": [
+              "Pena Station Next Analysis",
+              "Typical Home",
+              "Typical Public",
+              "Typical Work"
+            ],
+            "visible": true
+          },
+          {
+            "name": "building_name",
+            "display_name": "Building Name",
+            "description": "This argument is used only if charging station type is Pena Station Next Analysis.",
+            "type": "String",
+            "required": false,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "ev_percent",
+            "display_name": "Percent of Vehicles Parked at Building That Are EVs",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "default_value": 1.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ViewModel",
+      "measure_dir_name": "ViewModel",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "view_model",
+        "uid": "f4669f10-fda5-489d-8e1c-7ca3c2d40378",
+        "uuid": "{f4669f10-fda5-489d-8e1c-7ca3c2d40378}",
+        "version_id": "bd64b522-f949-4210-ac7d-73a75ee27763",
+        "version_uuid": "{bd64b522-f949-4210-ac7d-73a75ee27763}",
+        "version_modified": "20170428T221620Z",
+        "xml_checksum": "1E1F8B97",
+        "display_name": "ViewModel",
+        "class_name": "ViewModel",
+        "description": "Visualize an OpenStudio model in a web based viewer",
+        "modeler_description": "Converts the OpenStudio model to vA3C JSON format and renders using Three.js",
+        "tags": [
+          "Reporting.QAQC"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "Replace with IDF",
+      "measure_dir_name": "replace_idf",
+      "arguments": {
+        "__SKIP__": true,
+        "external_idf_name": "RefBldgMediumOfficeNew2004_v14_72_5B_USA_CO_BOULDER.idf"
+      },
+      "measure_definition": {
+        "name": "replace_idf",
+        "uid": "05229e67-7ca0-439e-a5fe-2328b6a05066",
+        "uuid": "{05229e67-7ca0-439e-a5fe-2328b6a05066}",
+        "version_id": "f8ca8e90-d00c-4211-9622-e32336d786ed",
+        "version_uuid": "{f8ca8e90-d00c-4211-9622-e32336d786ed}",
+        "version_modified": "20180709T172132Z",
+        "xml_checksum": "08362F07",
+        "display_name": "Replace Idf",
+        "class_name": "ReplaceIdf",
+        "description": "Replace OpenStudio generated IDF file with user specified IDF file.",
+        "modeler_description": "Additional EnergyPlus measures and reporting measures can be placed after this measure in the workflow. Weather file should be desribed in the seed OSM file or in the OSW file used to run the simulation.",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "EnergyPlusMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Analysis Spreadsheet"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "external_idf_name",
+            "display_name": "External IDF File Name",
+            "description": "Name of the IDF file to replalace current IDF. This is the filename with the extension (e.g. MyModel.idf). Optionally this can inclucde the full file path, but for most use cases should just be file name.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "datapoint_reports_mod",
+      "measure_dir_name": "datapoint_reports_mod",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      },
+      "measure_definition": {
+        "name": "datapoint_reports",
+        "uid": "88b401d6-e056-4fd1-b5ee-eff3c6c46f5f",
+        "uuid": "{88b401d6-e056-4fd1-b5ee-eff3c6c46f5f}",
+        "version_id": "f91544cb-2baf-4dd8-954b-f4ff644d1c36",
+        "version_uuid": "{f91544cb-2baf-4dd8-954b-f4ff644d1c36}",
+        "version_modified": "20180606T210910Z",
+        "xml_checksum": "C14BD7D9",
+        "display_name": "DatapointReports",
+        "class_name": "DatapointReports",
+        "description": "Updates Datapoint in CityDB with simulation results",
+        "modeler_description": "",
+        "tags": [
+          "Reporting.QAQC"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Automatic Report Generation"
+          },
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ReportingMeasure"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Automatic Report Generation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          },
+          {
+            "name": "datapoint_id",
+            "display_name": "Datapoint ID",
+            "description": "Datapoint ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    }
+  ]
+}
