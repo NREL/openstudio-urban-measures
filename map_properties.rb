@@ -346,6 +346,54 @@ def map_building_type(value, floor_area=nil, number_of_stories=nil, num_units=ni
       
 end
 
+def map_tariff(value)
+  # adds support for building type-specific tariffs
+
+  case value
+  
+  when "Education",
+    "Enclosed mall",
+    "Food sales",
+    "Food service",
+    "Inpatient health care",
+    "Laboratory",
+    "Lodging",
+    "Mixed use",
+    "Strip shopping mall",
+    "Nonrefrigerated warehouse",
+    "Nursing",
+    "Office",
+    "Outpatient health care",
+    "Public assembly",
+    "Public order and safety",
+    "Refrigerated warehouse",
+    "Religious worship",
+    "Retail other than mall",
+    "Service"
+
+    value = 'commercial'
+
+  when "Mobile Home",
+    "Multifamily (2 to 4 units)",
+    "Multifamily (5 or more units)",
+    "Single-Family",
+    "Vacant"
+
+    value = 'residential'
+    
+  end
+  
+  if value == 'commercial'
+    value = 'sce_CI_TOU_8_B_less2kV'
+  else
+    value = 'sce_res_d'
+  end
+
+  return value
+      
+end
+
+
 def map_building_properties(properties, template = nil)
   result = []
   
@@ -386,6 +434,10 @@ def map_building_properties(properties, template = nil)
         number_of_residential_units = 1
       end
       
+      # add tariff
+      tariff_fn = map_tariff(value)
+      result << {:measure_dir_name => 'apply_sce_tariffs', :argument => :tariff, :value => tariff_fn}
+
       value, num_units = map_building_type(value, properties[:floor_area], properties[:number_of_stories], number_of_residential_units, template)
 
       if value == "Mixed use"
