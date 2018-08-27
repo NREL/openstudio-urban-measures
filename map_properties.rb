@@ -102,6 +102,7 @@ def map_project_properties(properties)
       result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => value}
       result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => value}
       result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => value}
+      result << {:measure_dir_name => 'swap_hvac_systems', :argument => :template, :value => value}
 
     when :timesteps_per_hour
       result << {:measure_dir_name => 'set_run_period', :argument => :timesteps_per_hour, :value => value}
@@ -634,6 +635,7 @@ def map_building_properties(properties, template = nil)
         result << {:measure_dir_name => 'create_bar_from_building_type_ratios', :argument => :template, :value => the_std}
         result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => the_std}
         result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => the_std}
+        result << {:measure_dir_name => 'swap_hvac_systems', :argument => :template, :value => the_std}
       end
 
       when :heating_vac
@@ -643,6 +645,10 @@ def map_building_properties(properties, template = nil)
       when :cooling_vac
         next if value.nil?
         result << {:measure_dir_name => 'swap_hvac_systems', :argument => 'clg_src', :value => value}
+
+      when :exclude_hvac
+        next if value.nil?
+        result << {:measure_dir_name => 'remove_hvac_systems', :argument => 'remove_all_equipment', :value => value}  
 
     when :number_of_stories_above_ground
       # no-op, handled under number_of_stories
