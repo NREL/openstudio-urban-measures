@@ -2205,10 +2205,42 @@
             "name":"template",
             "display_name":"Target Standard",
             "description":"",
-            "type":"Boolean",
+            "type":"Choice",
             "required":true,
             "model_dependent":false,
-            "default_value":"true",
+            "default_value":"90.1-2010",
+            "choice_values":[  
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "DEER 1985",
+              "DEER 1996",
+              "DEER 2003",
+              "DEER 2007",
+              "DEER 2011",
+              "DEER 2014",
+              "DEER 2015",
+              "DEER 2017"
+            ],
+            "choice_display_names":[  
+              "DOE Ref Pre-1980",
+              "DOE Ref 1980-2004",
+              "90.1-2004",
+              "90.1-2007",
+              "90.1-2010",
+              "90.1-2013",
+              "DEER 1985",
+              "DEER 1996",
+              "DEER 2003",
+              "DEER 2007",
+              "DEER 2011",
+              "DEER 2014",
+              "DEER 2015",
+              "DEER 2017"
+            ],
             "visible":true
           },
           {
@@ -2218,17 +2250,35 @@
             "type": "Choice",
             "required": true,
             "model_dependent": false,
-            "default_value": "true",
+            "default_value": "NaturalGas",
+            "choice_values":[  
+              "NaturalGas",
+              "Electricity",
+              "None"
+            ],
+            "choice_display_names":[  
+              "NaturalGas",
+              "Electricity",
+              "None"
+            ],
             "visible": true
           },
           {
             "name": "clg_src",
             "display_name": "HVAC Cooling Fuel Type",
             "description": "",
-            "type": "Boolean",
+            "type": "Choice",
             "required": true,
             "model_dependent": false,
-            "default_value": "true",
+            "default_value": "Electricity",
+            "choice_values":[  
+              "Electricity",
+              "None"
+            ],
+            "choice_display_names":[  
+              "Electricity",
+              "None"
+            ],
             "visible": true
           }
         ],
