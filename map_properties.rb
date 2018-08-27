@@ -635,10 +635,14 @@ def map_building_properties(properties, template = nil)
         result << {:measure_dir_name => 'create_typical_building_from_model_1', :argument => :template, :value => the_std}
         result << {:measure_dir_name => 'create_typical_building_from_model_2', :argument => :template, :value => the_std}
       end
-      
-    when :exclude_hvac
-      next if value.nil?
-      result << {:measure_dir_name => 'remove_hvac_systems', :argument => 'remove_all_equipment', :value => value}
+
+      when :heating_vac
+        next if value.nil?
+        result << {:measure_dir_name => 'swap_hvac_systems', :argument => 'htg_src', :value => value}
+
+      when :cooling_vac
+        next if value.nil?
+        result << {:measure_dir_name => 'swap_hvac_systems', :argument => 'clg_src', :value => value}
 
     when :number_of_stories_above_ground
       # no-op, handled under number_of_stories

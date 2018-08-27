@@ -2140,23 +2140,23 @@
       }
     },
     {  
-      "name":"remove_hvac_systems",
-      "measure_dir_name":"remove_hvac_systems",
+      "name":"swap_hvac_systems",
+      "measure_dir_name":"swap_hvac_systems",
       "arguments":{  
         "__SKIP__":true
       },
       "measure_definition":{  
-        "name":"remove_hvac_systems",
-        "uid":"f69dcdd8-1ff8-41f8-bd80-dcf7f581df7c",
-        "uuid":"{f69dcdd8-1ff8-41f8-bd80-dcf7f581df7c}",
-        "version_id":"f9f5772b-9fc6-4be8-bfcb-f55ff05d2260",
-        "version_uuid":"{f9f5772b-9fc6-4be8-bfcb-f55ff05d2260}",
-        "version_modified":"20180404T035956Z",
-        "xml_checksum":"36560A37",
-        "display_name":"Remove HVAC Systems",
-        "class_name":"RemoveHVACSystems",
-        "description":"Removes all existing HVAC systems.",
-        "modeler_description":"Removes all existing Air and Plant Loops from Model",
+        "name":"swap_hvac_systems",
+        "uid":"339a2e3a-273c-4494-bb50-bfe586a0647c",
+        "uuid":"{339a2e3a-273c-4494-bb50-bfe586a0647c}",
+        "version_id":"80490c39-5012-4905-a52a-36dde8e140ad",
+        "version_uuid":"{80490c39-5012-4905-a52a-36dde8e140ad}",
+        "version_modified":"20180827T153041Z",
+        "xml_checksum":"5E2576E4",
+        "display_name":"Swap HVAC systems based on specified fuel types and standard",
+        "class_name":"swap_hvac_systems",
+        "description":"Swap HVAC systems based on specified fuel types and standard",
+        "modeler_description":"Initially this was intended for stub space types, but it is possible that it will be run on models tha talready have internal loads, schedules, or constructions that should be preserved. Set it up to support addition at later date of bool args to skip specific types of model elements.",
         "tags":[  
           "HVAC.Whole System"
         ],
@@ -2202,14 +2202,34 @@
         ],
         "arguments":[  
           {  
-            "name":"remove_all_equipment",
-            "display_name":"Remove all HVAC systems and equipment?",
+            "name":"template",
+            "display_name":"Target Standard",
             "description":"",
             "type":"Boolean",
             "required":true,
             "model_dependent":false,
-            "default_value":true,
+            "default_value":"true",
             "visible":true
+          },
+          {
+            "name": "htg_src",
+            "display_name": "HVAC Heating Source",
+            "description": "The primary source of heating used by HVAC systems in the model.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "true",
+            "visible": true
+          },
+          {
+            "name": "clg_src",
+            "display_name": "HVAC Cooling Fuel Type",
+            "description": "",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "true",
+            "visible": true
           }
         ],
         "visible":true
@@ -3747,6 +3767,7 @@
         "name":"openstudio_results",
         "uid":"a25386cd-60e4-46bc-8b11-c755f379d916",
         "uuid":"{a25386cd-60e4-46bc-8b11-c755f379d916}",
+        "New item - 2": "80490c39-5012-4905-a52a-36dde8e140ad",
         "version_id":"861c42ba-2105-49e6-b727-9fc3567f4834",
         "version_uuid":"{861c42ba-2105-49e6-b727-9fc3567f4834}",
         "version_modified":"20170323T160651Z",
