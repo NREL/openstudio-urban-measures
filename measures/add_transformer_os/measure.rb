@@ -170,6 +170,7 @@ class AddTransformerOS < OpenStudio::Measure::ModelMeasure
     transformer.setReferenceTemperatureforNameplateEfficiency(75)
     transformer.setConsiderTransformerLossforUtilityCost(true)
     transformer.addMeter("Transformer:ExteriorEquipment:Electricity")  
+    runner.registerInfo("Added ElectricLoadCenterTransformer: #{transformer.name}")
     
     outputVariable = OpenStudio::Model::OutputVariable.new("Transformer Efficiency", model)
     outputVariable.setReportingFrequency("Timestep")

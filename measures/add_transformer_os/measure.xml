@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>add_transformer_os</name>
   <uid>b53bd785-b5d0-4c93-97cd-16cc558ca28a</uid>
-  <version_id>56479791-3b3d-4833-9e6b-326e13198c9b</version_id>
-  <version_modified>20180712T203644Z</version_modified>
+  <version_id>08e38c56-207f-455e-9940-b178d4d703e1</version_id>
+  <version_modified>20180830T154943Z</version_modified>
   <xml_checksum>06DA00AF</xml_checksum>
   <class_name>AddTransformerOS</class_name>
   <display_name>Add Transformer OS Version</display_name>
@@ -58,13 +58,13 @@
     <file>
       <version>
         <software_program>OpenStudio</software_program>
-        <identifier>2.4.1</identifier>
-        <min_compatible>2.4.1</min_compatible>
+        <identifier>2.6.1</identifier>
+        <min_compatible>2.6.1</min_compatible>
       </version>
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>1F3CBBD0</checksum>
+      <checksum>CB912648</checksum>
     </file>
   </files>
 </measure>
