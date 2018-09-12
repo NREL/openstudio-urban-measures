@@ -572,7 +572,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     isTransformerFlag = false
     dp = get_datapoint(project_id, datapoint_id)
     # if so, do some extra stuff
-    if dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] == 'Transformer'
+    if dp[:feature_type] == 'District System' && dp[:district_system_type] && (dp[:district_system_type] == 'Transformer' || dp[:district_system_type] == 'Transformer with Storage')
       isTransformerFlag = true
     end
 

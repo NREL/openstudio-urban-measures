@@ -33,6 +33,7 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     systems << "Central Hot and Chilled Water"
     systems << "Ambient Loop"
     systems << "Transformer"
+    systems << "Transformer with Storage"
     system_type = OpenStudio::Ruleset::OSArgument::makeChoiceArgument('district_system_type', systems, true)
     system_type.setDisplayName("System Type")
     system_type.setDefaultValue("None")
@@ -184,16 +185,6 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
       chiller.setReferenceCapacity(1.2*total_cooling_capacity)
       chiller.setReferenceChilledWaterFlowRate(total_cooling_flow_rate)
     end
-    
-    
-  end
-
-  def add_transformer(model)
-    # stub to get schedules to report out
-    # add code here once object is wrapped
-
-    #remove line below when add_transformer is working
-    #OpenStudio::Model::addExampleModelObjects(model)
   end
 
   # define what happens when the measure is run
@@ -213,7 +204,9 @@ class AddDistrictSystem < OpenStudio::Ruleset::ModelUserScript
     elsif system_type == 'Community Photovoltaic'
       # already done?
     elsif system_type == 'Transformer'
-       add_transformer(model)
+      # taken care of by add_transformer measure
+    elsif system_type == 'Transformer with Storage'
+      # taken care of by add_transformer_with_storage measure   
     elsif system_type == 'Central Hot and Chilled Water'
       # todo: check commercial vs residential
       add_system_7_commercial(model)

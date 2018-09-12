@@ -377,6 +377,7 @@ class CreateTypicalBuildingFromModel < OpenStudio::Measure::ModelMeasure
         runner.registerInfo("Adding default construction set named #{bldg_def_const_set.name}")
       else
         runner.registerError("Could not create default construction set for the building type #{lookup_building_type} in climate zone #{climate_zone}.")
+        log_messages_to_runner(runner, debug = true)
         return false
       end
 
@@ -398,7 +399,6 @@ class CreateTypicalBuildingFromModel < OpenStudio::Measure::ModelMeasure
 
       # set ground temperatures from DOE prototype buildings
       standard.model_add_ground_temperatures(model, primary_bldg_type, climate_zone)
-
     end
 
     # add elevators (returns ElectricEquipment object)
@@ -554,14 +554,24 @@ class CreateTypicalBuildingFromModel < OpenStudio::Measure::ModelMeasure
         end
       end
     end
-
+    
     # add hvac system
     if args['add_hvac']
-
+      
       # remove HVAC objects
       if args['remove_objects']
         standard.model_remove_prm_hvac(model)
       end
+
+      # ENSURE THAT ORPHAN EQUIPMENT ARE DELETED
+      model.getZoneHVACEquipmentLists.each do |obj|
+        begin
+            zone = obj.thermalZone
+        rescue StandardError => e
+            runner.registerInfo("REMOVING orphan object:  #{obj.name}")
+            obj.remove
+        end   
+      end      
 
       case args['system_type']
         when 'Inferred'
@@ -576,12 +586,18 @@ class CreateTypicalBuildingFromModel < OpenStudio::Measure::ModelMeasure
 
           # Group the zones by occupancy type.  Only split out
           # non-dominant groups if their total area exceeds the limit.
+          climate_zone = standard.model_get_building_climate_zone_and_building_type(model)['climate_zone']
+          runner.registerInfo("HEY HEY CLIMATE ZONE: #{climate_zone}")
           sys_groups = standard.model_group_zones_by_type(model, OpenStudio.convert(20_000, 'ft^2', 'm^2').get)
 
           # For each group, infer the HVAC system type.
           sys_groups.each do |sys_group|
             # Infer the primary system type
             runner.registerInfo("template = #{args['template']}, climate_zone = #{climate_zone}, occ_type = #{sys_group['type']}, hvac_delivery = #{hvac_delivery}, htg_src = #{args['htg_src']}, clg_src = #{args['clg_src']}, area_ft2 = #{sys_group['area_ft2']}, num_stories = #{sys_group['stories']}")
+            listequ = model.getZoneHVACEquipmentLists
+            listequ.each do |item|
+                runner.registerInfo("!! model hvac equ list item: #{item}")
+            end        
             sys_type, central_htg_fuel, zone_htg_fuel, clg_fuel = standard.model_typical_hvac_system_type(model,
                                                                                                           climate_zone,
                                                                                                           sys_group['type'],
@@ -647,7 +663,7 @@ class CreateTypicalBuildingFromModel < OpenStudio::Measure::ModelMeasure
 
           # Perform a sizing run
           if standard.model_run_sizing_run(model, "#{Dir.pwd}/SR1") == false
-            log_messages_to_runner(runner, debug = false)
+            log_messages_to_runner(runner, debug = true)
             return false
           end
 

@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>apply_sce_tariffs</name>
   <uid>64108fa6-f380-49da-8361-1ee8f97c88ef</uid>
-  <version_id>af6e491f-b868-43ea-8aa4-cdcb6c460e75</version_id>
-  <version_modified>20180725T182236Z</version_modified>
+  <version_id>747c8eb5-c7c4-4e86-ab09-51d0966c7633</version_id>
+  <version_modified>20180827T184705Z</version_modified>
   <xml_checksum>ED085E62</xml_checksum>
   <class_name>ApplySceTariffs</class_name>
   <display_name>ApplySceTariffs</display_name>
@@ -130,12 +130,6 @@
       <filetype>idf</filetype>
       <usage_type>resource</usage_type>
       <checksum>EA079258</checksum>
-    </file>
-    <file>
-      <filename>test02.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>917633CF</checksum>
     </file>
     <file>
       <version>

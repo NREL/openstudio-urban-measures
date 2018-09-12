@@ -1,0 +1,70 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>add_transformer_with_storage</name>
+  <uid>b53bd785-b5d0-4c93-97cd-16cc558ca17a</uid>
+  <version_id>13af654f-e78a-49bb-9d30-5a3454ddb5d0</version_id>
+  <version_modified>20180912T224122Z</version_modified>
+  <xml_checksum>06DA00AF</xml_checksum>
+  <class_name>AddTransformerWithStorage</class_name>
+  <display_name>Add Transformer With Storage</display_name>
+  <description>Adds an ELC:Transformer, a ELC:storage-simple and an ELC:distribution objects to the model, requires Schedule named 'Transformer Output Electric Energy Schedule' to exist in the model. This schedule should be in units of Joules.</description>
+  <modeler_description></modeler_description>
+  <arguments>
+    <argument>
+      <name>name_plate_rating</name>
+      <display_name>Transformer rating</display_name>
+      <type>Double</type>
+      <units>VA</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0</default_value>
+    </argument>
+  </arguments>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Whole Building.Whole Building Schedules</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Measure Type</name>
+      <value>ModelMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>add_transformer_test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>767040D7</checksum>
+    </file>
+    <file>
+      <filename>transformer_loads.idf</filename>
+      <filetype>idf</filetype>
+      <usage_type>test</usage_type>
+      <checksum>0F84FB7D</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>2.6.1</identifier>
+        <min_compatible>2.6.1</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>5FDDB74D</checksum>
+    </file>
+  </files>
+</measure>
