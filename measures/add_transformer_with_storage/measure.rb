@@ -55,12 +55,13 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
       runner.registerAsNotApplicable("Transformer Output Electric Energy Schedule not found")
       return true
     end
-    
-    # if schedules[0].iddObject.type != "OS:Schedule:Year".to_IddObjectType and
-    #   schedules[0].iddObject.type != "OS:Schedule:Compact".to_IddObjectType
-    #   runner.registerError("Transformer Output Electric Energy Schedule is not a Schedule:Year or a Schedule:Compact")
-    #   return false
-    # end
+
+    runner.registerInfo("Schedule (iddObject.name)? #{schedules[0].iddObject.name}")
+
+    if schedules[0].iddObject.name != "OS:Schedule:Year" and schedules[0].iddObject.name != "OS:Schedule:Compact" and schedules[0].iddObject.name != "OS:Schedule:FixedInterval"
+      runner.registerError("Transformer Output Electric Energy Schedule is not a Schedule:FixedInterval, Schedule:Year, or a Schedule:Compact.  It is of type: #{schedules[0].iddObject.name}")
+      return false
+    end
 
     # DLM: these could be inputs
     name_plate_efficiency = 0.985
@@ -69,11 +70,11 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
     if name_plate_rating === 0
       max_energy = 0
       
-      if schedules[0].iddObject.type == "Schedule:Year".to_IddObjectType
+      if schedules[0].iddObject.name == "OS:Schedule:Year"
         schedules[0].targets.each do |week_target|
-          if week_target.iddObject.type == "Schedule:Week:Daily".to_IddObjectType
+          if week_target.iddObject.name == "OS:Schedule:Week:Daily"
             week_target.targets.each do |day_target|
-              if day_target.iddObject.type == "Schedule:Day:Interval".to_IddObjectType
+              if day_target.iddObject.name == "OS:Schedule:Day:Interval"
                 day_target.extensibleGroups.each do |eg|
                   value = eg.getDouble(1)
                   if value.is_initialized
@@ -86,7 +87,7 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
             end
           end
         end
-      elsif schedules[0].iddObject.type == "Schedule:Compact".to_IddObjectType
+      elsif schedules[0].iddObject.name == "OS:Schedule:Compact" || schedules[0].iddObject.name == "OS:Schedule:FixedInterval"
         schedules[0].extensibleGroups.each do |eg|
           if /\A[+-]?\d+?(_?\d+)*(\.\d+e?\d*)?\Z/.match(eg.getString(0).to_s.strip)
             value = eg.getDouble(0)
@@ -102,14 +103,12 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
       runner.registerInfo("Max energy is #{max_energy} J")
       
       minutes_per_timestep = nil
-      model.getObjectsByType("Timestep".to_IddObjectType).each do |timestep|
-        timestep_per_hour = timestep.getDouble(0)
-        if timestep_per_hour.empty? 
-          runner.registerError("Cannot determine timesteps per hour")
-          return false
-        end
-        minutes_per_timestep = 60 / timestep_per_hour.get
+      timestep_per_hour = model.getTimestep.numberOfTimestepsPerHour
+      if timestep_per_hour.nil?
+        runner.registerError("Cannot determine timesteps per hour")
+        return false
       end
+      minutes_per_timestep = 60 / timestep_per_hour
       
       if minutes_per_timestep.nil? 
         runner.registerError("Cannot determine minutes per timestep")
@@ -123,6 +122,7 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
       
       name_plate_rating = max_power/unit_load_at_name_plate_efficiency
     end
+    
     sensor = OpenStudio::Model::EnergyManagementSystemSensor.new(model,"Schedule Value")
     sensor.setKeyName("Transformer Output Electric Energy Schedule")
     sensor.setName("TransformerOutputElectricEnergyScheduleEMSSensor")   
@@ -174,6 +174,14 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
     
     storage = OpenStudio::Model::ElectricLoadCenterStorageSimple.new(model)
     runner.registerInfo("Added ElectricLoadCenterStorageSimple: #{storage.name}")
+
+    # KAF - does this work?
+    storage.outputVariableNames.each do |var|
+      outVar = OpenStudio::Model::OutputVariable.new(var, model)
+      outVar.setReportingFrequency("Timestep")
+      runner.registerInfo("ADDING STORAGE OUTPUT VAR: #{var}")
+    end
+
     
     distribution = OpenStudio::Model::ElectricLoadCenterDistribution.new(model)
     distribution.setGeneratorOperationSchemeType("Baseload")
@@ -181,6 +189,22 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
     distribution.setElectricalStorage(storage)
     distribution.setElectricalBussType("AlternatingCurrentWithStorage")
     distribution.setStorageOperationScheme("TrackFacilityElectricDemandStoreExcessOnSite")
+
+    # KAF - add generator  (TESTING)
+    generator = OpenStudio::Model::GeneratorMicroTurbine.new(model)
+    distribution.addGenerator(generator)
+    generator.outputVariableNames.each do |var|
+      outVar = OpenStudio::Model::OutputVariable.new(var, model)
+      outVar.setReportingFrequency("Timestep")
+      runner.registerInfo("ADDING GENERATOR OUTPUT VAR: #{var}")
+    end
+
+    distribution.outputVariableNames.each do |var|
+      outVar = OpenStudio::Model::OutputVariable.new(var, model)
+      outVar.setReportingFrequency("Timestep")
+      runner.registerInfo("ADDING DISTRIBUTION OUTPUT VAR: #{var}")
+    end
+
     runner.registerInfo("Added ElectricLoadCenterDistribution: #{distribution.name}")
         
     outputVariable = OpenStudio::Model::OutputVariable.new("Transformer Efficiency", model)
@@ -226,7 +250,6 @@ class AddTransformerWithStorage < OpenStudio::Measure::ModelMeasure
     (0...allSchedules.size).each do |index|
       tmpName = allSchedules[index].getString(0).to_s
       next if ignoreList.include? tmpName
-
       runner.registerInfo("Schedule: #{tmpName}")
       outputVariable = OpenStudio::Model::OutputVariable.new("Schedule Value", model)
       outputVariable.setKeyValue("#{tmpName}")

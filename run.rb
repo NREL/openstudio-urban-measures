@@ -20,9 +20,9 @@ require 'openstudio/workflow/adapters/output_adapter'
 
 # Log lever
 $logger = Logger.new(STDOUT)
-#$logger.level = Logger::ERROR
+$logger.level = Logger::ERROR
 #$logger.level = Logger::WARN
-$logger.level = Logger::DEBUG
+#$logger.level = Logger::DEBUG
 
 OpenStudio::Logger.instance.standardOutLogger.enable
 #OpenStudio::Logger.instance.standardOutLogger.setLogLevel(OpenStudio::Error)
