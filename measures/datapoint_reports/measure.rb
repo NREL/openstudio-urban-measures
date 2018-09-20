@@ -373,7 +373,7 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
         # for monthly peak demand
         runner.registerInfo("fuel_type: #{fuel_type}, fuel_str: #{fuel_str}")
         demand_aggregation.each_with_index do |v, k|
-          runner.registerInfo("K: #{k}, v: #{v}")
+          #runner.registerInfo("K: #{k}, v: #{v}")
           month_str = OpenStudio::MonthOfYear.new(k+1).valueDescription
           prefix_str = OpenStudio::toUnderscoreCase("#{month_str}_peak_demand")
           add_result(results, prefix_str, v, 'kW')
@@ -608,6 +608,21 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
               "Transformer Input Electric Power", 
               "Schedule Value"]
 
+      # SPECIAL CASE: transformer with battery, report out Additional timeseries   
+      if dp[:district_system_type] == 'Transformer with Storage'
+        storageTimeseries = [
+          'Electric Storage Charge Energy',
+          'Electric Storage Charge Power',
+          'Electric Storage Simple Charge State',
+          'Electric Storage Discharge Power',
+          'Electric Storage Discharge Energy',
+          'Electric Load Center Requested Electric Power',
+          'Electric Load Center Produced Electric Power',
+          'Electric Load Center Produced Electric Energy'
+        ]
+        transformerTimeseries += storageTimeseries
+      end
+
       # Only do transformer timeseries for transformers (skip the others as they don't really make sense)
       timeseries = transformerTimeseries
      
@@ -668,6 +683,8 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
       new_keys.each_with_index do |key_value, key_i|
 
         new_name = ''
+
+        runner.registerInfo("!! TIMESERIES NAME: #{timeseries_name} AND key_value: #{key_value}")
 
         if key_values.size == 1
           # use timeseries name when only 1 keyvalue

@@ -8,6 +8,7 @@ require 'json'
 require 'net/http'
 require 'base64'
 require 'csv'
+require 'FileUtils'
 
 # start the measure
 class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
@@ -175,6 +176,14 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @result = false
     end
 
+    # # TEMP: TO USE LOCAL CSV (FOR TESTING) INSTEAD OF DOWNLOADING A DATAPOINT
+    # # copy file over
+    # filename = "#{datapoint_id}_timeseries.csv"
+    # file = FileUtils.cp("../../../datapoint_#{datapoint_id}/reports/datapoint_reports_report.csv", filename)
+    # return filename
+    # # END TEMP
+
+    # REAL
     datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
@@ -214,6 +223,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
         end
       end
     end
+    # END REAL
     
     return nil
   end
