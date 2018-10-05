@@ -1,0 +1,50 @@
+! ***START EDIT***
+
+Output:Variable,*,Site Outdoor Air Drybulb Temperature,timestep;
+
+Output:Variable,*,Facility Total Electric Demand Power,timestep;
+Output:Variable,*,Facility Total HVAC Electric Demand Power,timestep;
+
+Output:Variable,*,District Cooling Rate,timestep;
+Output:Variable,*,District Cooling Inlet Temperature,timestep;
+Output:Variable,*,District Cooling Outlet Temperature,timestep;
+Output:Variable,*,District Cooling Mass Flow Rate,timestep;
+
+Output:Variable,*,District Heating Rate,timestep;
+Output:Variable,*,District Heating Inlet Temperature,timestep;
+Output:Variable,*,District Heating Outlet Temperature,timestep;
+Output:Variable,*,District Heating Mass Flow Rate,timestep;
+
+Output:Variable,*,Chiller Electric Power,timestep;
+Output:Variable,*,Chiller Condenser Heat Transfer Rate,timestep;
+Output:Variable,*,Chiller Evaporator Cooling Rate,timestep;
+Output:Variable,*,Chiller Evaporator Inlet Temperature,timestep;
+Output:Variable,*,Chiller Evaporator Mass Flow Rate,timestep;
+Output:Variable,*,Chiller Evaporator Outlet Temperature,timestep;
+Output:Variable,*,Chiller Part Load Ratio,timestep;
+
+Output:Variable,*,Boiler Electric Power,timestep;
+Output:Variable,*,Boiler Heating Rate,timestep;
+Output:Variable,*,Boiler Inlet Temperature,timestep;
+Output:Variable,*,Boiler Mass Flow Rate,timestep;
+Output:Variable,*,Boiler Outlet Temperature,timestep;
+Output:Variable,*,Boiler Part Load Ratio,timestep;
+
+Output:Variable,*,Plant Supply Side Inlet Temperature,timestep;
+Output:Variable,*,Plant Supply Side Outlet Temperature,timestep;
+Output:Variable,*,Plant Supply Side Cooling Demand Rate,timestep;
+Output:Variable,*,Plant Supply Side Heating Demand Rate,timestep;
+Output:Variable,*,Plant Supply Side Unmet Demand Rate,timestep;
+
+Output:Variable,*,Pump Electric Power,timestep;
+Output:Variable,*,Pump Fluid Heat Gain Rate,timestep;
+Output:Variable,*,Pump Mass Flow Rate,timestep;
+Output:Variable,*,Pump Outlet Temperature,timestep;
+
+Output:Variable,*,Fluid Heat Exchanger Heat Transfer Rate,timestep;
+Output:Variable,*,Fluid Heat Exchanger Loop Demand Side Inlet Temperature,timestep;
+Output:Variable,*,Fluid Heat Exchanger Loop Demand Side Outlet Temperature,timestep;
+Output:Variable,*,Fluid Heat Exchanger Loop Supply Side Inlet Temperature,timestep;
+Output:Variable,*,Fluid Heat Exchanger Loop Supply Side Outlet Temperature,timestep;
+
+! ***END EDIT***
