@@ -189,7 +189,27 @@ class Runner
     
     return result
   end
-  
+
+  def get_addresses(feature_type)
+    @logger.debug("get_all_feature_ids, feature_type = #{feature_type}")
+
+    result = []
+    begin
+      json_request = JSON.generate('types' => [feature_type], 'project_id' => @project_id)
+      request = RestClient::Resource.new("#{@url}/api/export", user: @user_name, password: @user_pwd)
+      response = request.post(json_request, content_type: :json, accept: :json)
+
+      buildings = JSON.parse(response.body, :symbolize_names => true)
+      buildings[:features].each do |building|
+        result << building[:properties][:name]
+      end
+    rescue => e
+      @logger.error("Error in get_all_feature_ids: #{e.response}")
+    end
+
+    return result
+  end
+
   def get_all_workflow_ids(feature_type)
     @logger.debug("get_all_workflow_ids, feature_type = #{feature_type}")
     
@@ -324,8 +344,24 @@ class Runner
     end   
     
     return result
+   end
+
+  def get_properties(datapoint_id)
+    @logger.debug("get_properties, datapoint_id = #{datapoint_id}")
+
+    result = nil
+    begin
+      request = RestClient::Resource.new("#{@url}", user: @user_name, password: @user_pwd)
+      response = request["/api/retrieve_datapoint?project_id=#{@project_id}&datapoint_id=#{datapoint_id}"].get(content_type: :json, accept: :json)
+      datapoint = JSON.parse(response.body, :symbolize_names => true)
+      result = datapoint[:properties]
+    rescue => e
+      @logger.error("Error in get_properties: #{e.response}")
+    end
+
+    return result
   end
-  
+
   def get_option_set(option_set_id)
     @logger.debug("get_option_set, option_set_id = #{option_set_id}")
     
@@ -875,5 +911,115 @@ class Runner
     html_out_path = File.join(File.dirname(__FILE__), "/run/#{@project_name}/scenario_comparison.html")
     FileUtils.cp(html_in_path, html_out_path)
   end
-  
+
+
+  def cslo_results(save_datapoint_files = false)
+    @logger.debug("cslo_results")
+    puts('entered')
+    all_scenario_ids = get_all_scenario_ids()
+
+    CSV.open("CSLO_OUTPUTS.csv", "wb") do |csv|
+      csv << ["UO DataPoint",
+              "Address",
+              "Building Type",
+              "Area [sqft]",
+              "EUI [kBtu/sqft]",
+              "Total Electricity End-Use Consumption [kBtu]",
+              "Total Natural Gas End-Use Consumption [kBtu]",
+              "January Peak Demand [kW]",
+              "February Peak Demand [kW]",
+              "March Peak Demand [kW]",
+              "April Peak Demand [kW]",
+              "May Peak Demand [kW]",
+              "June Peak Demand [kW]",
+              "July Peak Demand [kW]",
+              "August Peak Demand [kW]",
+              "September Peak Demand [kW]",
+              "October Peak Demand [kW]",
+              "November Peak Demand [kW]",
+              "December Peak Demand [kW]",
+              "Electricty Cost",
+              "Gas Cost",
+              "Other Cost",
+              "Total Cost",
+              "Scenario Name"]
+
+
+      # feature="Building"
+      # address = get_addresses(feature)
+
+
+      all_scenario_ids.each do |scenario_id|
+        scenario = get_scenario(scenario_id)
+        scenario_name = scenario[:name]
+
+        # i=0
+        scenario[:datapoints].each do |datapoint|
+          datapoint_id = datapoint[:id]
+
+          datapoint = get_datapoint(datapoint_id)
+
+          if (datapoint.key?(:results))
+            
+            bldg_type=datapoint[:results][:building_type]
+            area=datapoint[:results][:building_area]
+            eui = datapoint[:results][:net_site_eui]
+            electricity = datapoint[:results][:total_electricity_end_use]
+            gas=datapoint[:results][:total_natural_gas_end_use]
+            jan_peak=datapoint[:results][:january_peak_demand]
+            feb_peak=datapoint[:results][:february_peak_demand]
+            march_peak=datapoint[:results][:march_peak_demand]
+            april_peak=datapoint[:results][:april_peak_demand]
+            may_peak=datapoint[:results][:may_peak_demand]
+            june_peak=datapoint[:results][:june_peak_demand]
+            july_peak=datapoint[:results][:july_peak_demand]
+            august_peak=datapoint[:results][:august_peak_demand]
+            sept_peak=datapoint[:results][:september_peak_demand]
+            oct_peak=datapoint[:results][:october_peak_demand]
+            nov_peak=datapoint[:results][:november_peak_demand]
+            dec_peak=datapoint[:results][:december_peak_demand]
+            elec_cost=datapoint[:results][:energy_cost_electricity]
+            gas_cost=datapoint[:results][:energy_cost_natural_gas]
+            other_cost=datapoint[:results][:energy_cost_other]
+            total_cost=datapoint[:results][:energy_cost_total]
+            address=datapoint[:results][:building_name]
+
+          else
+            # set these to 0 for failed datapoints
+            bldg_type=0
+            area=0
+            eui = 0
+            electricity =0
+            gas=0
+            jan_peak=0
+            feb_peak=0
+            march_peak=0
+            april_peak=0
+            may_peak=0
+            june_peak=0
+            july_peak=0
+            august_peak=0
+            sept_peak=0
+            oct_peak=0
+            nov_peak=0
+            dec_peak=0
+            elec_cost=0
+            gas_cost=0
+            other_cost=0
+            total_cost=0
+            address=0
+
+          end
+
+          csv << [datapoint_id,address,bldg_type,area,eui,electricity,gas,jan_peak,feb_peak,march_peak,april_peak,
+                  may_peak,june_peak,july_peak,august_peak,sept_peak,oct_peak,nov_peak,dec_peak,
+                  elec_cost, gas_cost, other_cost, total_cost, scenario_name]
+          # i=i+1
+        end
+
+      end
+    end
+  end
+
+
 end

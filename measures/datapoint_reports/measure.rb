@@ -450,6 +450,22 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     weather_file = sql_query(runner, sql_file, "InputVerificationandResultsSummary", "TableName='General' AND RowName='Weather File' AND ColumnName='Value'")
     add_result(results, "weather_file", weather_file, "deg")
 
+    energy_cost_total = sql_query(runner, sql_file, "LEEDsummary", "TableName='EAp2-7. Energy Cost Summary' AND RowName='Total' AND ColumnName='Total Energy Cost'")
+    add_result(results, "energy_cost_total", energy_cost_total, "$")
+
+    energy_cost_electricity = sql_query(runner, sql_file, "LEEDsummary", "TableName='EAp2-7. Energy Cost Summary' AND RowName='Electricity' AND ColumnName='Total Energy Cost'")
+    add_result(results, "energy_cost_electricity", energy_cost_electricity, "$")
+
+    energy_cost_natural_gas = sql_query(runner, sql_file, "LEEDsummary", "TableName='EAp2-7. Energy Cost Summary' AND RowName='Natural Gas' AND ColumnName='Total Energy Cost'")
+    add_result(results, "energy_cost_natural_gas", energy_cost_natural_gas, "$")
+
+    energy_cost_other = sql_query(runner, sql_file, "LEEDsummary", "TableName='EAp2-7. Energy Cost Summary' AND RowName='Other' AND ColumnName='Total Energy Cost'")
+    add_result(results, "energy_cost_other", energy_cost_other, "$")
+    
+    # building_name = sql_query(runner, sql_file, "Initializationsummary", "TableName='Building Information' AND RowName='1' AND ColumnName='Building Name'")
+    # add_result(results, "building_name", building_name.to_s,building_name.to_s)
+
+
     # queries with one-line API methods
     
     timesteps_per_hour = model.getTimestep.numberOfTimestepsPerHour
@@ -503,6 +519,9 @@ class DatapointReports < OpenStudio::Measure::ReportingMeasure
     building_type = building.standardsBuildingType.to_s if building.standardsBuildingType.is_initialized
     building_type ||= nil
     add_result(results, "building_type", building_type, "")
+
+    building_name = model.getBuilding.name.to_s
+    add_result(results, "building_name", building_name, "")
 
     #get exterior wall, exterior roof, and ground plate areas
     exterior_wall_area = 0.0

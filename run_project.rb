@@ -21,14 +21,21 @@ project_id = UrbanOptConfig::PROJECT_ID
 datapoint_ids = UrbanOptConfig::DATAPOINT_IDS
 
 runner = Runner.new(url, openstudio_exe, openstudio_measures, openstudio_files, project_id, user_name, user_pwd, max_datapoints, num_parallel, logger)
-puts "updating measures"
-#runner.update_measures
-#puts "clearing results" if clear_results
-#runner.clear_results if clear_results
+## puts "updating measures"
+## runner.update_measures
+
+
+puts "clearing results" if clear_results
+runner.clear_results if clear_results
 puts "creating osws"
 dirs = runner.create_osws
 puts "running osws"
 runner.run_osws(dirs)
+
 puts "saving results"
 runner.save_results
+
+puts "saving CSLO results"
+runner.cslo_results
+
 puts "done"

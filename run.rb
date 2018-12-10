@@ -37,6 +37,22 @@ run_options = Hash.new
 run_options[:debug] = debug
 run_options[:preserve_run_dir] = true # because we are running in .
 
+# do this if you want to postprocess 
+# run_options[:jobs] = [
+# { state: :queued, next_state: :initialization, options: { initial: true } },
+# { state: :initialization, next_state: :reporting_measures, job: :RunInitialization,
+#   file: 'openstudio/workflow/jobs/run_initialization.rb', options: {} },
+# { state: :reporting_measures, next_state: :postprocess, job: :RunReportingMeasures,
+#   file: 'openstudio/workflow/jobs/run_reporting_measures.rb', options: {} },
+# { state: :postprocess, next_state: :finished, job: :RunPostprocess,
+#   file: 'openstudio/workflow/jobs/run_postprocess.rb', options: {} },
+# { state: :finished },
+# { state: :errored }
+# ]
+# run_options[:preserve_run_dir] = true
+
+
+
 # do the run
 k = OpenStudio::Workflow::Run.new(osw_path, run_options)
 final_state = k.run

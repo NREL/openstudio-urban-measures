@@ -1,0 +1,397 @@
+<measure>
+  <schema_version>3.0</schema_version>
+  <name>TariffSelectionTimeAndDateDependentWithOffPeakDemandCharge</name>
+  <uid>58c60180-4d4e-42fe-a5f8-cff8bfe58a64</uid>
+  <version_id>fcaa034f-002d-460e-a676-f401c8600da4</version_id>
+  <version_modified>20181130T234329Z</version_modified>
+  <xml_checksum>92578CE8</xml_checksum>
+  <class_name>TariffSelectionTimeAndDateDependentWithOffPeakDemandCharge</class_name>
+  <display_name>TariffSelectionTimeAndDateDependentWithOffPeakDemandCharge</display_name>
+  <description>This measure sets flat rates for gas, water, district heating, and district cooling but has peak, part-peak, and off-peak summer rates and part-peak, and off-peak winter rates for electricity.  The measure also exposes inputs for peak and part-peak hours start and stop times and summer period start and stop dates.  Seasonal maximum demand charges are not included.</description>
+  <modeler_description>Will add the necessary UtilityCost objects and associated seasonal and time of use schedules into the model.  Maximum demand charges are not included.</modeler_description>
+  <arguments>
+    <argument>
+      <name>demand_window_length</name>
+      <display_name>Demand Window Length</display_name>
+      <type>Choice</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>QuarterHour</default_value>
+      <choices>
+        <choice>
+          <value>QuarterHour</value>
+          <display_name>QuarterHour</display_name>
+        </choice>
+        <choice>
+          <value>HalfHour</value>
+          <display_name>HalfHour</display_name>
+        </choice>
+        <choice>
+          <value>FullHour</value>
+          <display_name>FullHour</display_name>
+        </choice>
+      </choices>
+    </argument>
+    <argument>
+      <name>summer_start_month</name>
+      <display_name>Month Summer Begins</display_name>
+      <description>1-12</description>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>5</default_value>
+    </argument>
+    <argument>
+      <name>summer_start_day</name>
+      <display_name>Day Summer Begins</display_name>
+      <description>1-31</description>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>1</default_value>
+    </argument>
+    <argument>
+      <name>summer_end_month</name>
+      <display_name>Month Summer Ends</display_name>
+      <description>1-12</description>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>10</default_value>
+    </argument>
+    <argument>
+      <name>summer_end_day</name>
+      <display_name>Day Summer Ends</display_name>
+      <description>1-31</description>
+      <type>Integer</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>31</default_value>
+    </argument>
+    <argument>
+      <name>partpeak_start_hour</name>
+      <display_name>Hour Part-Peak Begins: All Year</display_name>
+      <description>1-24</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>8.5</default_value>
+    </argument>
+    <argument>
+      <name>peak_start_hour</name>
+      <display_name>Hour Peak Begins: Summer</display_name>
+      <description>1-24</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>12</default_value>
+    </argument>
+    <argument>
+      <name>peak_end_hour</name>
+      <display_name>Hour Peak Ends: Summer</display_name>
+      <description>1-24</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>18</default_value>
+    </argument>
+    <argument>
+      <name>partpeak_end_hour</name>
+      <display_name>Hour Part-Peak Ends: All Year</display_name>
+      <description>1-24</description>
+      <type>Double</type>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>21.5</default_value>
+    </argument>
+    <argument>
+      <name>elec_rate_sum_peak</name>
+      <display_name>Electric Rate Summer Peak</display_name>
+      <type>Double</type>
+      <units>$/kWh</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.17891</default_value>
+    </argument>
+    <argument>
+      <name>elec_rate_sum_partpeak</name>
+      <display_name>Electric Rate Summer Part-Peak</display_name>
+      <type>Double</type>
+      <units>$/kWh</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.17087</default_value>
+    </argument>
+    <argument>
+      <name>elec_rate_sum_offpeak</name>
+      <display_name>Electric Rate Summer Off-Peak</display_name>
+      <type>Double</type>
+      <units>$/kWh</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.14642</default_value>
+    </argument>
+    <argument>
+      <name>elec_rate_win_partpeak</name>
+      <display_name>Electric Rate Winter Part-Peak</display_name>
+      <type>Double</type>
+      <units>$/kWh</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.1275</default_value>
+    </argument>
+    <argument>
+      <name>elec_rate_win_offpeak</name>
+      <display_name>Electric Rate Winter Off-Peak</display_name>
+      <type>Double</type>
+      <units>$/kWh</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.10654</default_value>
+    </argument>
+    <argument>
+      <name>elec_demand_sum_peak</name>
+      <display_name>Electric Demand Charge Summer Peak</display_name>
+      <type>Double</type>
+      <units>$/kW</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>16.23</default_value>
+    </argument>
+    <argument>
+      <name>elec_demand_sum_partpeak</name>
+      <display_name>Electric Demand Charge Summer Part-Peak</display_name>
+      <type>Double</type>
+      <units>$/kW</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>16.23</default_value>
+    </argument>
+    <argument>
+      <name>elec_demand_sum_offpeak</name>
+      <display_name>Electric Demand Charge Summer Off-Peak</display_name>
+      <type>Double</type>
+      <units>$/kW</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>16.23</default_value>
+    </argument>
+    <argument>
+      <name>elec_demand_win_partpeak</name>
+      <display_name>Electric Demand Charge Winter Part-Peak</display_name>
+      <type>Double</type>
+      <units>$/kW</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>8</default_value>
+    </argument>
+    <argument>
+      <name>elec_demand_win_offpeak</name>
+      <display_name>Electric Demand Charge Winter Off-Peak</display_name>
+      <type>Double</type>
+      <units>$/kW</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>8</default_value>
+    </argument>
+    <argument>
+      <name>gas_rate</name>
+      <display_name>Gas Rate</display_name>
+      <type>Double</type>
+      <units>$/therm</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.85</default_value>
+    </argument>
+    <argument>
+      <name>water_rate</name>
+      <display_name>Water Rate</display_name>
+      <type>Double</type>
+      <units>$/gal</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.005</default_value>
+    </argument>
+    <argument>
+      <name>disthtg_rate</name>
+      <display_name>District Heating Rate</display_name>
+      <type>Double</type>
+      <units>$/kBtu</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.2</default_value>
+    </argument>
+    <argument>
+      <name>distclg_rate</name>
+      <display_name>District Cooling Rate</display_name>
+      <type>Double</type>
+      <units>$/kBtu</units>
+      <required>true</required>
+      <model_dependent>false</model_dependent>
+      <default_value>0.2</default_value>
+    </argument>
+  </arguments>
+  <outputs/>
+  <provenances/>
+  <tags>
+    <tag>Economics.Life Cycle Cost Analysis</tag>
+  </tags>
+  <attributes>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Analysis Spreadsheet</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Sensitivity Analysis</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Analysis Spreadsheet</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Sensitivity Analysis</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Analysis Spreadsheet</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Sensitivity Analysis</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Measure Type</name>
+      <value>EnergyPlusMeasure</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>OpenStudio Application</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Parametric Analysis Tool</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Software Tool</name>
+      <value>Analysis Spreadsheet</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Sensitivity Analysis</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>New Construction EE</value>
+      <datatype>string</datatype>
+    </attribute>
+    <attribute>
+      <name>Intended Use Case</name>
+      <value>Retrofit EE</value>
+      <datatype>string</datatype>
+    </attribute>
+  </attributes>
+  <files>
+    <file>
+      <filename>os_lib_helper_methods.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>9336238A</checksum>
+    </file>
+    <file>
+      <filename>EnvelopeAndLoadTestModel_01.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>E11F67BD</checksum>
+    </file>
+    <file>
+      <filename>TariffSelectionTimeAndDateDependentWithOffPeakDemandCharge_Test.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>test</usage_type>
+      <checksum>0E1CA218</checksum>
+    </file>
+    <file>
+      <version>
+        <software_program>OpenStudio</software_program>
+        <identifier>1.6.0</identifier>
+        <min_compatible>1.8.0</min_compatible>
+      </version>
+      <filename>measure.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>script</usage_type>
+      <checksum>F2EBBBEE</checksum>
+    </file>
+  </files>
+</measure>
