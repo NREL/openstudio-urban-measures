@@ -2,8 +2,13 @@
   <schema_version>3.0</schema_version>
   <name>predicted_mean_vote</name>
   <uid>11cd3144-dac6-4f64-90e4-b8804c6bfc5e</uid>
+<<<<<<< HEAD
   <version_id>13d60d41-3a35-4811-877b-45a052cb416e</version_id>
   <version_modified>20180827T231723Z</version_modified>
+=======
+  <version_id>1fdf351e-ad77-4f2c-8efa-11c1461f8741</version_id>
+  <version_modified>20180911T170630Z</version_modified>
+>>>>>>> 3e5c7f3b781cbf1e6056f75bbbc2ab19aa1a7358
   <xml_checksum>0CA4D54C</xml_checksum>
   <class_name>PredictedMeanVote</class_name>
   <display_name>Predicted Mean Vote</display_name>

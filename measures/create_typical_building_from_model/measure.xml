@@ -1,10 +1,9 @@
 <measure>
   <schema_version>3.0</schema_version>
-  <error>Unable to extract OpenStudio::Measure::OSMeasure object from /Users/rgugliel/src/openstudio-urban-measures/measures/create_typical_building_from_model/measure.rb. The script should contain a class that derives from OpenStudio::Measure::OSMeasure and should close with a line stating the class name followed by .new.registerWithApplication.</error>
   <name>create_typical_building_from_model</name>
   <uid>339a2e3a-273c-4494-bb50-bfe586a0647c</uid>
-  <version_id>9b7902b1-9ce0-42c1-8427-8b1ca1e6d6a4</version_id>
-  <version_modified>20180525T194643Z</version_modified>
+  <version_id>20eaed38-447f-4ed7-bbd8-d61de3f1092b</version_id>
+  <version_modified>20180912T192954Z</version_modified>
   <xml_checksum>EE13F09F</xml_checksum>
   <class_name>CreateTypicalBuildingFromModel</class_name>
   <display_name>Create Typical Building from Model</display_name>
@@ -707,7 +706,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>91DFD0E3</checksum>
+      <checksum>351A127A</checksum>
     </file>
   </files>
 </measure>

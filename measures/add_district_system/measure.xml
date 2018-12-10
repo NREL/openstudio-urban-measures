@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>add_district_system</name>
   <uid>5c781ee3-b77c-4a71-ac0d-5ad19863c96b</uid>
-  <version_id>be669b6d-a47e-48eb-b1ea-09c7fd871ec3</version_id>
-  <version_modified>20180314T222212Z</version_modified>
+  <version_id>fc6dd892-ae2f-4b1f-9dc5-1afaec5e284d</version_id>
+  <version_modified>20180911T161056Z</version_modified>
   <xml_checksum>A7890DC7</xml_checksum>
   <class_name>AddDistrictSystem</class_name>
   <display_name>Add district system</display_name>
@@ -38,6 +38,10 @@
         <choice>
           <value>Transformer</value>
           <display_name>Transformer</display_name>
+        </choice>
+        <choice>
+          <value>Transformer with Storage</value>
+          <display_name>Transformer with Storage</display_name>
         </choice>
       </choices>
     </argument>
@@ -106,7 +110,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>5B86C067</checksum>
+      <checksum>B1CEB0D0</checksum>
     </file>
   </files>
 </measure>

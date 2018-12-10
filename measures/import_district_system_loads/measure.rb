@@ -8,6 +8,7 @@ require 'json'
 require 'net/http'
 require 'base64'
 require 'csv'
+require 'FileUtils'
 
 # start the measure
 class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
@@ -175,6 +176,14 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       @result = false
     end
 
+    # # TEMP: TO USE LOCAL CSV (FOR TESTING) INSTEAD OF DOWNLOADING A DATAPOINT
+    # # copy file over
+    # filename = "#{datapoint_id}_timeseries.csv"
+    # file = FileUtils.cp("../../../datapoint_#{datapoint_id}/reports/datapoint_reports_report.csv", filename)
+    # return filename
+    # # END TEMP
+
+    # REAL
     datapoint = JSON.parse(response.body, :symbolize_names => true)[:datapoint]
     datapoint_files = datapoint[:datapoint_files]
     if datapoint_files
@@ -214,6 +223,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
         end
       end
     end
+    # END REAL
     
     return nil
   end
@@ -311,7 +321,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     end
 
     datapoint_files = []
-    if district_system_type == 'Transformer'
+    if district_system_type == 'Transformer' || district_system_type == 'Transformer with Storage'
       # this datapoint corresponds to 1 transformer in a specific scenario
       # get all datapoints for this scenario that represent a feature with transformer_id equal to this transformer (buildings AND district systems)
       datapoints = get_transformer_datapoints(project_id, scenario_id, feature_id)
@@ -357,7 +367,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
                              {name: "Net Power", units: "W", normalize: false},
                              {name: "Net Apparent Power", units: "W", normalize: false}]                            
 
-    if district_system_type == 'Transformer'
+    if district_system_type == 'Transformer' || district_system_type == 'Transformer with Storage'
       transformerTimeseries[2..6].each do |t|
         timeseries << t
       end
@@ -394,7 +404,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
       end
       
       # make schedules for all 'Electricity' rows for all features connected to transformer
-      if district_system_type == 'Transformer'
+      if district_system_type == 'Transformer' || district_system_type == 'Transformer with Storage'
         transformerTimeseries.each do |ts|
           makeSchedule(start_date, time_step, values[ts[:name]], model, basename, ts)
         end
@@ -409,7 +419,7 @@ class ImportDistrictSystemLoads < OpenStudio::Ruleset::ModelUserScript
     end
 
     # make transformer schedule
-    if district_system_type == 'Transformer'
+    if district_system_type == 'Transformer' || district_system_type == 'Transformer with Storage'
       transformer_values = OpenStudio::Vector.new(num_rows, 0.0)
       (0..(num_rows-1)).each do |i|
         transformer_values[i] = summed_values['Electricity:Facility'][i] - summed_values['ElectricityProduced:Facility'][i]

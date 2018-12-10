@@ -2,8 +2,13 @@
   <schema_version>3.0</schema_version>
   <name>apply_sce_tariffs</name>
   <uid>64108fa6-f380-49da-8361-1ee8f97c88ef</uid>
+<<<<<<< HEAD
   <version_id>891a190c-acb7-45ae-b7b6-528747d891f8</version_id>
   <version_modified>20180827T231722Z</version_modified>
+=======
+  <version_id>747c8eb5-c7c4-4e86-ab09-51d0966c7633</version_id>
+  <version_modified>20180827T184705Z</version_modified>
+>>>>>>> 3e5c7f3b781cbf1e6056f75bbbc2ab19aa1a7358
   <xml_checksum>ED085E62</xml_checksum>
   <class_name>ApplySceTariffs</class_name>
   <display_name>ApplySceTariffs</display_name>

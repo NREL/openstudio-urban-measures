@@ -1,0 +1,760 @@
+{
+  "feature_type": "District System",
+  "seed_file": null,
+  "weather_file": null,
+  "root_directory": null,
+  "run_directory": "./run",
+  "file_paths": [
+    "./../project_files",
+    "./../../../weather/"
+  ],
+  "measure_paths": [
+    "./../../../measures/",
+    "./../../../../OpenStudio-measures/NREL working measures/",
+    "./../../../../OpenStudio-measures/NREL internal measures/"
+  ],
+  "steps": [
+    {
+      "name": "gem_env_report",
+      "measure_dir_name": "gem_env_report",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "gem_environment_report",
+        "uid": "3f9f1a2f-0e8a-4c88-b817-10494fc3e73a",
+        "uuid": "{3f9f1a2f-0e8a-4c88-b817-10494fc3e73a}",
+        "version_id": "c2787324-da95-4957-a79d-6bca7211f5b9",
+        "version_uuid": "{c2787324-da95-4957-a79d-6bca7211f5b9}",
+        "version_modified": "20170322T154845Z",
+        "xml_checksum": "D1F10311",
+        "display_name": "gem environment report",
+        "class_name": "GemEnvironmentReport",
+        "description": "For OpenStudio testing and development; this measure reports out information about the gem path and gems that are available and loaded.  Used for debugging different runtime environments.",
+        "modeler_description": "For OpenStudio testing and development; this measure reports out information about the gem path and gems that are available and loaded.  Used for debugging different runtime environments.",
+        "tags": [
+          "Reporting.Troubleshooting"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "set_run_period",
+      "measure_dir_name": "set_run_period",
+      "arguments": {
+        "__SKIP__": false,
+        "timesteps_per_hour": 4,
+        "begin_date": "2017-01-01",
+        "end_date": "2017-12-31"
+      },
+      "measure_definition": {
+        "name": "set_run_period",
+        "uid": "7a84292a-3975-4ab3-9284-6edabcbe750b",
+        "uuid": "{7a84292a-3975-4ab3-9284-6edabcbe750b}",
+        "version_id": "d44923db-6aaf-46b6-9d93-3bb27a1816ff",
+        "version_uuid": "{d44923db-6aaf-46b6-9d93-3bb27a1816ff}",
+        "version_modified": "20170615T203344Z",
+        "xml_checksum": "2AF3A68E",
+        "display_name": "SetRunPeriod",
+        "class_name": "SetRunPeriod",
+        "description": "Sets the run period and timestep for simulation",
+        "modeler_description": "",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "timesteps_per_hour",
+            "display_name": "Timesteps per hour",
+            "description": "Number of simulation timesteps per hour",
+            "type": "Integer",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "begin_date",
+            "display_name": "Begin date",
+            "description": "Simulation start date, YYYY-MM-DD format",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "end_date",
+            "display_name": "End date",
+            "description": "Simulation end date, YYYY-MM-DD format",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ChangeBuildingLocation",
+      "measure_dir_name": "ChangeBuildingLocation",
+      "arguments": {
+        "__SKIP__": false,
+        "weather_file_name": "USA_CO_Denver.Intl.AP.725650_TMY3.epw",
+        "climate_zone": "5B"
+      },
+      "measure_definition": {
+        "name": "change_building_location",
+        "uid": "d4db4971-f5ba-11e3-a3ac-0800200c9a66",
+        "uuid": "{d4db4971-f5ba-11e3-a3ac-0800200c9a66}",
+        "version_id": "9ea5cefa-a33c-48bc-b2b4-55388a783ace",
+        "version_uuid": "{9ea5cefa-a33c-48bc-b2b4-55388a783ace}",
+        "version_modified": "20180621T034432Z",
+        "xml_checksum": "057E8D9D",
+        "display_name": "ChangeBuildingLocation",
+        "class_name": "ChangeBuildingLocation",
+        "description": "Change the building location",
+        "modeler_description": "Change the building location",
+        "tags": [
+          "Whole Building.Space Types"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+          {
+            "name": "weather_file_name",
+            "display_name": "Weather File Name",
+            "description": "Name of the weather file to change to. This is the filename with the extension (e.g. NewWeather.epw). Optionally this can inclucde the full file path, but for most use cases should just be file name.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "climate_zone",
+            "display_name": "Climate Zone",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "Lookup From Stat File",
+            "choice_values": [
+              "1A",
+              "1B",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "3C",
+              "4A",
+              "4B",
+              "4C",
+              "5A",
+              "5B",
+              "5C",
+              "6A",
+              "6B",
+              "7",
+              "8",
+              "Lookup From Stat File",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "9",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16"
+            ],
+            "choice_display_names": [
+              "1A",
+              "1B",
+              "2A",
+              "2B",
+              "3A",
+              "3B",
+              "3C",
+              "4A",
+              "4B",
+              "4C",
+              "5A",
+              "5B",
+              "5C",
+              "6A",
+              "6B",
+              "7",
+              "8",
+              "Lookup From Stat File",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "9",
+              "10",
+              "11",
+              "12",
+              "13",
+              "14",
+              "15",
+              "16"
+            ],
+            "visible": true
+          },
+          {
+            "name": "climate_zone_type",
+            "display_name": "Climate Zone Type",
+            "description": "",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "ASHRAE",
+            "choice_values": [
+              "ASHRAE",
+              "CEC"
+            ],
+            "choice_display_names": [
+              "ASHRAE",
+              "CEC"
+            ],
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "urban_geometry_creation",
+      "measure_dir_name": "urban_geometry_creation",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "feature_id": null,
+        "surrounding_buildings": "None"
+      },
+      "measure_definition": {
+        "name": "urban_geometry_creation",
+        "uid": "5ab85d6b-c9af-4361-8ab9-613ee99a5666",
+        "uuid": "{5ab85d6b-c9af-4361-8ab9-613ee99a5666}",
+        "version_id": "57259c7c-9791-40c5-9bc5-f611f9e2bb23",
+        "version_uuid": "{57259c7c-9791-40c5-9bc5-f611f9e2bb23}",
+        "version_modified": "20180827T184707Z",
+        "xml_checksum": "D254E772",
+        "display_name": "UrbanGeometryCreation",
+        "class_name": "UrbanGeometryCreation",
+        "description": "This measure queries the URBANopt database for a building then creates geometry for it.  Surrounding buildings are included as shading structures.",
+        "modeler_description": "",
+        "tags": [
+          "Envelope.Form"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Analysis Spreadsheet"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "http://insight4.hpc.nrel.gov:8081/",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "feature_id",
+            "display_name": "Feature ID",
+            "description": "Feature ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "surrounding_buildings",
+            "display_name": "Surrounding Buildings",
+            "description": "Select which surrounding buildings to include.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "ShadingOnly",
+            "choice_values": [
+              "None",
+              "ShadingOnly",
+              "All"
+            ],
+            "choice_display_names": [
+              "None",
+              "ShadingOnly",
+              "All"
+            ],
+            "visible": true
+          },
+          {
+            "name": "scale_footprint_area_by_floor_area",
+            "display_name": "Scale Footprint Area by the Floor Area?",
+            "description": "If true, the footprint area from GeoJSON will be scaled by the floor_area provided by the user in URBANopt.",
+            "type": "Boolean",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "import_district_system_loads",
+      "measure_dir_name": "import_district_system_loads",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "scenario_id": null,
+        "feature_id": null
+      },
+      "measure_definition": {
+        "name": "import_district_system_loads",
+        "uid": "edadcce2-a22a-4ac9-90a3-25e4de02d2f8",
+        "uuid": "{edadcce2-a22a-4ac9-90a3-25e4de02d2f8}",
+        "version_id": "f85a268f-c5cb-43da-83e5-93703c429ed0",
+        "version_uuid": "{f85a268f-c5cb-43da-83e5-93703c429ed0}",
+        "version_modified": "20180409T154448Z",
+        "xml_checksum": "45EB89EB",
+        "display_name": "Import District System Loads",
+        "class_name": "ImportDistrictSystemLoads",
+        "description": "Imports District System Loads as Schedules",
+        "modeler_description": "",
+        "tags": [
+          "HVAC.Whole System"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "http://insight4.hpc.nrel.gov:8081/",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "scenario_id",
+            "display_name": "Scenario ID",
+            "description": "Scenario ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          },
+          {
+            "name": "feature_id",
+            "display_name": "Feature ID",
+            "description": "Feature ID.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "add_district_system",
+      "measure_dir_name": "add_district_system",
+      "arguments": {
+        "district_system_type": null
+      },
+      "measure_definition": {
+        "name": "add_district_system",
+        "uid": "5c781ee3-b77c-4a71-ac0d-5ad19863c96b",
+        "uuid": "{5c781ee3-b77c-4a71-ac0d-5ad19863c96b}",
+        "version_id": "be669b6d-a47e-48eb-b1ea-09c7fd871ec3",
+        "version_uuid": "{be669b6d-a47e-48eb-b1ea-09c7fd871ec3}",
+        "version_modified": "20180314T222212Z",
+        "xml_checksum": "A7890DC7",
+        "display_name": "Add district system",
+        "class_name": "AddDistrictSystem",
+        "description": "Add district system",
+        "modeler_description": "Add district system",
+        "tags": [
+          "HVAC.Whole System"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Apply Measure Now"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Model Articulation"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "New Construction EE"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Retrofit EE"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "district_system_type",
+            "display_name": "System Type",
+            "description": "Type of central system.",
+            "type": "Choice",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "None",
+            "choice_values": [
+              "None",
+              "Community Photovoltaic",
+              "Central Hot and Chilled Water",
+              "Ambient Loop",
+              "Transformer"
+            ],
+            "choice_display_names": [
+              "None",
+              "Community Photovoltaic",
+              "Central Hot and Chilled Water",
+              "Ambient Loop",
+              "Transformer"
+            ],
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "ViewModel",
+      "measure_dir_name": "ViewModel",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "view_model",
+        "uid": "f4669f10-fda5-489d-8e1c-7ca3c2d40378",
+        "uuid": "{f4669f10-fda5-489d-8e1c-7ca3c2d40378}",
+        "version_id": "bd64b522-f949-4210-ac7d-73a75ee27763",
+        "version_uuid": "{bd64b522-f949-4210-ac7d-73a75ee27763}",
+        "version_modified": "20170428T221620Z",
+        "xml_checksum": "1E1F8B97",
+        "display_name": "ViewModel",
+        "class_name": "ViewModel",
+        "description": "Visualize an OpenStudio model in a web based viewer",
+        "modeler_description": "Converts the OpenStudio model to vA3C JSON format and renders using Three.js",
+        "tags": [
+          "Reporting.QAQC"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Uses SketchUp API",
+            "display_name": "Uses SketchUp API",
+            "value": false
+          }
+        ],
+        "arguments": [
+
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "add_transformer_with_storage",
+      "measure_dir_name": "add_transformer_with_storage",
+      "arguments": {
+      },
+      "measure_definition": {
+        "name": "add_transformer_with_storage",
+        "uid": "b53bd785-b5d0-4c93-97cd-16cc558ca17a",
+        "uuid": "{b53bd785-b5d0-4c93-97cd-16cc558ca17a}",
+        "version_id": "04617ff1-bfd5-4b8b-bebb-a996f0257611",
+        "version_uuid": "{04617ff1-bfd5-4b8b-bebb-a996f0257611}",
+        "version_modified": "20180910T211044Z",
+        "xml_checksum": "06DA00AF",
+        "display_name": "Add Transformer With Storage",
+        "class_name": "AddTransformerWithStorage",
+        "description": "Adds an ELC:Transformer, a ELC:storage-simple and an ELC:distribution objects to the model, requires Schedule named 'Transformer Output Electric Energy Schedule' to exist in the model. This schedule should be in units of Joules.",
+        "modeler_description": "",
+        "tags": [
+          "Whole Building.Whole Building Schedules"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ModelMeasure"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "OpenStudio Application"
+          },
+          {
+            "name": "Intended Software Tool",
+            "display_name": "Intended Software Tool",
+            "value": "Parametric Analysis Tool"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "name_plate_rating",
+            "display_name": "Transformer rating",
+            "description": "",
+            "type": "Double",
+            "required": true,
+            "model_dependent": false,
+            "units": "VA",
+            "default_value": 0.0,
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    },
+    {
+      "name": "datapoint_reports",
+      "measure_dir_name": "datapoint_reports",
+      "arguments": {
+        "city_db_url": null,
+        "project_id": null,
+        "datapoint_id": null
+      },
+      "measure_definition": {
+        "name": "datapoint_reports",
+        "uid": "635ed4fb-6d66-42df-8d2f-26f652f8fd01",
+        "uuid": "{635ed4fb-6d66-42df-8d2f-26f652f8fd01}",
+        "version_id": "10820a61-e89b-4e0d-a8b5-c645ae204f84",
+        "version_uuid": "{10820a61-e89b-4e0d-a8b5-c645ae204f84}",
+        "version_modified": "20180721T233934Z",
+        "xml_checksum": "FB304155",
+        "display_name": "DatapointReports",
+        "class_name": "DatapointReports",
+        "description": "Updates Datapoint in CityDB with simulation results",
+        "modeler_description": "",
+        "tags": [
+          "Reporting.QAQC"
+        ],
+        "outputs": [
+
+        ],
+        "attributes": [
+          {
+            "name": "Measure Type",
+            "display_name": "Measure Type",
+            "value": "ReportingMeasure"
+          },
+          {
+            "name": "Intended Use Case",
+            "display_name": "Intended Use Case",
+            "value": "Automatic Report Generation"
+          }
+        ],
+        "arguments": [
+          {
+            "name": "city_db_url",
+            "display_name": "City Database Url",
+            "description": "Url of the City Database",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "",
+            "visible": true
+          },
+          {
+            "name": "project_id",
+            "display_name": "Project ID",
+            "description": "Project ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          },
+          {
+            "name": "datapoint_id",
+            "display_name": "Datapoint ID",
+            "description": "Datapoint ID to generate reports for.",
+            "type": "String",
+            "required": true,
+            "model_dependent": false,
+            "default_value": "0",
+            "visible": true
+          }
+        ],
+        "visible": true
+      }
+    }
+  ]
+}

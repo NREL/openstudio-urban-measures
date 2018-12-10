@@ -42,7 +42,12 @@ class Runner
     @logger.info("Running command: '#{command}'")
     @logger.info("Current directory: '#{Dir.pwd}'")
     @logger.info("trying to update measures")
-    stdout_str, stderr_str, s = Open3.capture3(command)
+
+    new_env = {}
+    new_env["BUNDLE_PATH"] = nil
+    new_env["BUNDLE_GEMFILE"] = nil
+
+    stdout_str, stderr_str, s = Open3.capture3(new_env, command)
     if s.success?
       @logger.info("Command completed successfully")
     else
@@ -297,8 +302,8 @@ class Runner
       # separate buildings, district systems, and transformers
       new_dps = {}
       new_dps[:buildings] = datapoints.select { |dp| dp[:feature_type] == 'Building'}
-      new_dps[:district_systems] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] != 'Transformer'}     
-      new_dps[:transformers] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && dp[:district_system_type] == 'Transformer'}
+      new_dps[:district_systems] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && (dp[:district_system_type] != 'Transformer' && dp[:district_sytem_type] != 'Transformer with Storage')}     
+      new_dps[:transformers] = datapoints.select { |dp| dp[:feature_type] == 'District System' && dp[:district_system_type] && (dp[:district_system_type] == 'Transformer' || dp[:district_system_type] == 'Transformer with Storage')}
 
       result = {}
       new_dps.each do |key, dpArr|
@@ -646,6 +651,7 @@ class Runner
         new_env["BUNDLE_GEMFILE"] = nil
         new_env["RUBYLIB"] = nil
         new_env["RUBYOPT"] = nil
+        new_env["BUNDLE_PATH"] = "/Users/kflemin/.rbenv/versions/2.2.4/lib/ruby/gems/2.2.0"
         
         # ok to put user name and password in environment variables?
         stdout_str, stderr_str, status = Open3.capture3(new_env, command)
@@ -653,8 +659,8 @@ class Runner
           @logger.info("'#{osw_path}' completed successfully")
         else
           @logger.error("Error running command: '#{command}'")
-          #@logger.error(stdout_str)
-          #@logger.error(stderr_str)
+          @logger.error(stdout_str)
+          @logger.error(stderr_str)
         end
         
         #Open3.popen3(new_env, command) do |stdin, stdout, stderr, wait_thr|

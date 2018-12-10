@@ -2,8 +2,13 @@
   <schema_version>3.0</schema_version>
   <name>swap_hvac_systems</name>
   <uid>339a2e3a-273c-4494-bb50-bfe586a0647c</uid>
+<<<<<<< HEAD
   <version_id>99ffb21c-9f38-4956-b684-fb66d20c4de9</version_id>
   <version_modified>20181130T231045Z</version_modified>
+=======
+  <version_id>b79e10d5-7970-46f9-9e11-91de23ecdb9a</version_id>
+  <version_modified>20180911T164252Z</version_modified>
+>>>>>>> 3e5c7f3b781cbf1e6056f75bbbc2ab19aa1a7358
   <xml_checksum>5E2576E4</xml_checksum>
   <class_name>SwapHVACSystems</class_name>
   <display_name>Swap HVAC Systems</display_name>
