@@ -1,9 +1,10 @@
 <measure>
   <schema_version>3.0</schema_version>
+  <error>cannot load such file -- FileUtils</error>
   <name>import_district_system_loads</name>
   <uid>edadcce2-a22a-4ac9-90a3-25e4de02d2f8</uid>
-  <version_id>3249b9f8-c9b9-45e6-8c48-2622404cb7aa</version_id>
-  <version_modified>20180919T195343Z</version_modified>
+  <version_id>d797d3de-cedf-4716-a103-222ebf2894ee</version_id>
+  <version_modified>20181210T192105Z</version_modified>
   <xml_checksum>45EB89EB</xml_checksum>
   <class_name>ImportDistrictSystemLoads</class_name>
   <display_name>Import District System Loads</display_name>
@@ -77,7 +78,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>4B2E4822</checksum>
+      <checksum>F0B83E73</checksum>
     </file>
   </files>
 </measure>

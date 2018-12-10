@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>add_transformer_with_storage</name>
   <uid>b53bd785-b5d0-4c93-97cd-16cc558ca17a</uid>
-  <version_id>33b9dd46-ee7a-4a90-a7d1-bb6c198b2c83</version_id>
-  <version_modified>20180919T195057Z</version_modified>
+  <version_id>c513b816-2201-49b4-b41a-d67618377b7a</version_id>
+  <version_modified>20181210T192105Z</version_modified>
   <xml_checksum>06DA00AF</xml_checksum>
   <class_name>AddTransformerWithStorage</class_name>
   <display_name>Add Transformer With Storage</display_name>
@@ -64,7 +64,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-      <checksum>BFC27F55</checksum>
+      <checksum>804BE278</checksum>
     </file>
   </files>
 </measure>
