@@ -2,13 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>datapoint_reports</name>
   <uid>635ed4fb-6d66-42df-8d2f-26f652f8fd01</uid>
-<<<<<<< HEAD
   <version_id>97231c6a-c4f6-43b5-b8a1-24a4b4ec3216</version_id>
   <version_modified>20181205T192312Z</version_modified>
-=======
-  <version_id>15b5a4ca-6844-43a3-8e99-56b12c417b60</version_id>
-  <version_modified>20180917T205935Z</version_modified>
->>>>>>> 3e5c7f3b781cbf1e6056f75bbbc2ab19aa1a7358
   <xml_checksum>FB304155</xml_checksum>
   <class_name>DatapointReports</class_name>
   <display_name>DatapointReports</display_name>
@@ -88,11 +83,7 @@
       <filename>measure.rb</filename>
       <filetype>rb</filetype>
       <usage_type>script</usage_type>
-<<<<<<< HEAD
       <checksum>4AEC9EA9</checksum>
-=======
-      <checksum>7BA8DFD5</checksum>
->>>>>>> 3e5c7f3b781cbf1e6056f75bbbc2ab19aa1a7358
     </file>
   </files>
 </measure>
