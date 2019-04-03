@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>change_roof_thermal_properties</name>
   <uid>6c4eb22b-770f-456c-bcd1-084cfad89eeb</uid>
-  <version_id>f7b551df-9610-44f4-9ee2-ddf69bf6f965</version_id>
-  <version_modified>20170320T192150Z</version_modified>
+  <version_id>6c5d2f44-e20a-4319-83ee-cd83f4c21457</version_id>
+  <version_modified>20181210T192105Z</version_modified>
   <xml_checksum>31085437</xml_checksum>
   <class_name>ChangeRoofThermalProperties</class_name>
   <display_name>Change Roof Thermal Properties</display_name>
@@ -75,12 +75,6 @@
       <filetype>osm</filetype>
       <usage_type>test</usage_type>
       <checksum>0B94403D</checksum>
-    </file>
-    <file>
-      <filename>ChangeRoofThermalProperties_Test.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>test</usage_type>
-      <checksum>D73E5688</checksum>
     </file>
     <file>
       <version>

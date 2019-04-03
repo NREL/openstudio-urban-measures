@@ -2,8 +2,8 @@
   <schema_version>3.0</schema_version>
   <name>openstudio_results</name>
   <uid>a25386cd-60e4-46bc-8b11-c755f379d916</uid>
-  <version_id>088b755f-bd87-48f9-938e-3de62f483558</version_id>
-  <version_modified>20180721T221354Z</version_modified>
+  <version_id>2cba3a54-bc72-4c3c-8c2d-63e7ba3ccc36</version_id>
+  <version_modified>20181210T203439Z</version_modified>
   <xml_checksum>557BF06F</xml_checksum>
   <class_name>OpenStudioResults</class_name>
   <display_name>OpenStudio Results</display_name>
@@ -84,7 +84,7 @@
     </argument>
     <argument>
       <name>envelope_section_section</name>
-      <display_name>Envelope</display_name>
+      <display_name>Envelope Summary</display_name>
       <type>Boolean</type>
       <required>true</required>
       <model_dependent>false</model_dependent>
@@ -1073,12 +1073,6 @@
       <checksum>5F1CEF3A</checksum>
     </file>
     <file>
-      <filename>report.html.erb</filename>
-      <filetype>erb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>4F5045AC</checksum>
-    </file>
-    <file>
       <filename>os_lib_helper_methods.rb</filename>
       <filetype>rb</filetype>
       <usage_type>resource</usage_type>
@@ -1372,12 +1366,6 @@
       <checksum>47B98BCD</checksum>
     </file>
     <file>
-      <filename>os_lib_reporting.rb</filename>
-      <filetype>rb</filetype>
-      <usage_type>resource</usage_type>
-      <checksum>B1C164F5</checksum>
-    </file>
-    <file>
       <filename>LICENSE.md</filename>
       <filetype>md</filetype>
       <usage_type>license</usage_type>
@@ -1396,22 +1384,28 @@
       <checksum>66701C4F</checksum>
     </file>
     <file>
+      <filename>HeatingOnly.osm</filename>
+      <filetype>osm</filetype>
+      <usage_type>test</usage_type>
+      <checksum>99A21A4F</checksum>
+    </file>
+    <file>
+      <filename>os_lib_reporting.rb</filename>
+      <filetype>rb</filetype>
+      <usage_type>resource</usage_type>
+      <checksum>5FF3480A</checksum>
+    </file>
+    <file>
       <filename>report.html.erb</filename>
       <filetype>erb</filetype>
       <usage_type>resource</usage_type>
-      <checksum>7DC1F0A7</checksum>
+      <checksum>4F5045AC</checksum>
     </file>
     <file>
       <filename>OpenStudioResults_Test.rb</filename>
       <filetype>rb</filetype>
       <usage_type>test</usage_type>
-      <checksum>50A163F9</checksum>
-    </file>
-    <file>
-      <filename>HeatingOnly.osm</filename>
-      <filetype>osm</filetype>
-      <usage_type>test</usage_type>
-      <checksum>99A21A4F</checksum>
+      <checksum>0D1C78D5</checksum>
     </file>
   </files>
 </measure>
