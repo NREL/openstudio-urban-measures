@@ -21,7 +21,7 @@ The following tutorial describes the process of performing urban modeling with O
 1.  Checkout a copy of the [openstudio-urban-measures](https://github.com/NREL/openstudio-urban-measures) repository.  This repo will be used to run the local analyses.
 
 
-##<a name="setup"></a>Setup the project on URBANopt website
+## <a name="setup"></a>Setup the project on URBANopt website
 
 ### Initial Setup
 1. First login to the URBANopt website.  Once logged in, you will be redirected to the main Projects page.
@@ -220,7 +220,8 @@ Example workflows can be found in the *workflows* directory of the *openstudio-u
 	```
 	bundle exec ruby workflow_checker.rb <path-to-workflow>
 	```
-    where `<path-to-workflow>` is the path to your workflow osw file.
+
+   where `<path-to-workflow>` is the path to your workflow osw file.
     
 1. In order for the URBANopt website to correctly display the workflow's measures and allow its configuration, a *measure_definition* section is required on each measure section in the osw.  The *add_measure_definitions.rb* script in the *openstudio-urban-measures* repo will do this automatically.  To run the script, type the following command in a terminal window:
 	
