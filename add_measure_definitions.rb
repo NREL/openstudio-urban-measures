@@ -9,7 +9,7 @@ require 'pathname'
 # read in OSW
 workflow = nil
 File.open(ARGV[0], 'r') do |file|
-  workflow = JSON::parse(file.read, :symbolize_names => true)
+  workflow = JSON.parse(file.read, symbolize_names: true)
 end
 
 def get_measure_definition(measure_dir)
@@ -18,18 +18,18 @@ def get_measure_definition(measure_dir)
   Open3.popen3(command) do |stdin, stdout, stderr, wait_thr|
     # calling wait_thr.value blocks until command is complete
     if wait_thr.value.success?
-      result =  JSON::parse(stdout.read, :symbolize_names => true)
+      result = JSON.parse(stdout.read, symbolize_names: true)
       result.delete(:directory)
       result.delete(:measure_dir)
     end
   end
-  
+
   return result
 end
 
 workflow[:steps].each do |step|
   measure_dir_name = step[:measure_dir_name]
-  
+
   definition = nil
   UrbanOptConfig::OPENSTUDIO_MEASURES.each do |dir|
     measure_dir = nil
@@ -38,13 +38,13 @@ workflow[:steps].each do |step|
     else
       measure_dir = File.join(File.absolute_path(dir, './run/scenario/datapoint/'), measure_dir_name)
     end
-    
-    if File.exists?(measure_dir) 
+
+    if File.exist?(measure_dir)
       definition = get_measure_definition(measure_dir)
       break
     end
   end
-  
+
   if definition
     definition[:visible] = true
     definition[:arguments].each do |argument|
@@ -56,8 +56,5 @@ end
 
 # write modified workflow
 File.open(ARGV[0] + '.out', 'w') do |file|
-  file << JSON::pretty_generate(workflow)
+  file << JSON.pretty_generate(workflow)
 end
-
-
-

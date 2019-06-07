@@ -5,10 +5,10 @@ require 'openstudio'
 require 'fileutils'
 
 puts ARGV[0]
-workflow = OpenStudio::WorkflowJSON::load(OpenStudio::toPath(ARGV[0])).get
+workflow = OpenStudio::WorkflowJSON.load(OpenStudio.toPath(ARGV[0])).get
 
 export_dir = ARGV[1]
-if !File.exists?(export_dir)
+if !File.exist?(export_dir)
   FileUtils.mkdir_p(export_dir)
 end
 

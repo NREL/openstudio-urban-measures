@@ -43,12 +43,12 @@ If you want to develop or run the OpenStudio City Database locally, follow these
 1. Install OpenStudio. 
 1. Update the `config.rb` file with information specific to your computer.  If you do not have a `config.rb`, copy the file `config.rb.in` to `config.rb` and edit.
 1. Open a command prompt (must have git commands available) in the root directory:
-    * Run the command `rake` to initialize your simulation environment.
     * Run the command `bundle install` to install dependencies.
+    * Run the command `rake` to initialize your simulation environment.
     * Run the command `bundle exec ruby test_run.rb` to test running workflows without access to a City Database.
     * Run the command `bundle exec ruby find_test_failures.rb` to find test failures.
     * Run the command `bundle exec ruby run_datapoints.rb` to run specific datapoints for a specific project (configured in `config.rb`).
-    * Run the command `bundle exec ruby run_everything.rb` to run all datapoints in a specific project (configured in `config.rb`).
+    * Run the command `bundle exec ruby run_project.rb` to run all datapoints in a specific project (configured in `config.rb`).
     * Run the command `bundle exec ruby run_watcher.rb` to start a process that watches for new datapoints and runs them as they are created.
     * Run the command `bundle exec ruby find_run_failures.rb` to find simulation failures.
 1. Simulation results will be created in the `run` directory as well as pushed results to the City Database.

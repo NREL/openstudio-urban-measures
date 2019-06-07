@@ -9,3 +9,8 @@ data/co_tracts/
 config.rb
 Gemfile.lock
 openstudio-measures
+measures/test_results
+test_results
+.rubocop-https*
+.rubocop.yml
+rubocop
